@@ -13,8 +13,8 @@
 	<version>0.1.0</version>
 	<packaging>jar</packaging>
 
-	<name>My Custom Rule</name>
-	<description>This is my custom rule.</description>
+	<name>Restrict Imports Enforcer Rule</name>
+	<description>Bans imports of specified classes/packages</description>
 
 	<properties>
 		<!-- Activate Coveralls here -->

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -42,7 +43,8 @@ public class RestrictImports implements EnforcerRule {
                 return;
             }
 
-            final Map<String, List<Match>> matches = listSourceFiles(project)
+            log.debug("Checking for banned imports");
+            final Map<String, List<Match>> matches = listSourceFiles(project, log)
                     .peek(sourceFile -> log.debug("Analyzing '" + sourceFile.toString()
                             +"' for banned imports"))
                     .flatMap(matchFile(bannedPatterns, allowedPatterns))
@@ -50,6 +52,8 @@ public class RestrictImports implements EnforcerRule {
 
             if (!matches.isEmpty()) {
                 throw new EnforcerRuleException(formatErrorString(matches));
+            } else {
+                log.debug("No banned imports found");
             }
 
         } catch (final RuntimeIOException e) {
@@ -77,26 +81,26 @@ public class RestrictImports implements EnforcerRule {
         return sourceFile -> this.matcher.matchFile(sourceFile, banned, allowed);
     }
 
-    private static boolean isJavaSourceFile(Path path) {
+    private static boolean isJavaSourceFile(Path path, BasicFileAttributes bfa) {
         return !Files.isDirectory(path) &&
             path.getFileName().toString().toLowerCase().endsWith(".java");
     }
 
     private static Stream<Path> listFiles(Path dir) {
         try {
-            return Files.list(dir);
+            return Files.find(dir, Integer.MAX_VALUE, RestrictImports::isJavaSourceFile);
         } catch (final IOException e) {
             throw new RuntimeIOException(e);
         }
     }
 
     @SuppressWarnings("unchecked")
-    private Stream<Path> listSourceFiles(MavenProject project) {
+    private Stream<Path> listSourceFiles(MavenProject project, Log log) {
         final List<String> roots = project.getCompileSourceRoots();
         return roots.stream()
+                .peek(root -> log.debug("Including source dir: " + root))
                 .map(Paths::get)
-                .flatMap(RestrictImports::listFiles)
-                .filter(RestrictImports::isJavaSourceFile);
+                .flatMap(RestrictImports::listFiles);
     }
 
     private List<PackagePattern> compile(List<String> patterns) {

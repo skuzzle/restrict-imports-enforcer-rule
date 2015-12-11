@@ -28,7 +28,12 @@
 		<site.name>restrict-imports-enforcer-rule</site.name>
 		<github.name>restrict-imports-enforcer-rule</github.name>
 	</properties>
-
+	
+	<scm>
+		<developerConnection>scm:git:https://github.com/skuzzle/${github.name}.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+	
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -69,11 +74,11 @@
 			<artifactId>plexus-container-default</artifactId>
 			<version>1.0-alpha-9</version>
 		</dependency>
-        <dependency>
-            <groupId>backport-util-concurrent</groupId>
-            <artifactId>backport-util-concurrent</artifactId>
-            <version>3.1</version>
-        </dependency>
+		<dependency>
+			<groupId>backport-util-concurrent</groupId>
+			<artifactId>backport-util-concurrent</artifactId>
+			<version>3.1</version>
+		</dependency>
 		<!-- Test -->
 		<dependency>
 			<groupId>org.mockito</groupId>

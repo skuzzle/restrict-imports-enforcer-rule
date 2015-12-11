@@ -38,8 +38,8 @@ class ImportMatcherImpl implements ImportMatcher {
         try (Stream<String> lines = this.supplier.lines(file)) {
             return lines.map(String::trim)
                     .peek(counter)
-                    .filter(this::isImport)
-                    .map(this::extractPackage)
+                    .filter(ImportMatcherImpl::isImport)
+                    .map(ImportMatcherImpl::extractPackage)
                     .filter(matchesAnyPattern(bannedImports))
                     .filter(not(matchesAnyPattern(allowed)))
                     .map(toMatch(counter::getLine, file.toString()))
@@ -60,20 +60,20 @@ class ImportMatcherImpl implements ImportMatcher {
                 .anyMatch(pattern -> pattern.matches(packageName));
     }
 
-    private Function<String, Match> toMatch(Supplier<Integer> lineGetter,
+    private static Function<String, Match> toMatch(Supplier<Integer> lineGetter,
             String filePath) {
         return matchedImport ->
             new Match(filePath, lineGetter.get(), matchedImport);
     }
 
-    private String extractPackage(String line) {
+    private static String extractPackage(String line) {
         final int spaceIdx = line.indexOf(" ");
         final int semiIdx = line.indexOf(";");
         final String sub = line.substring(spaceIdx, semiIdx);
         return sub.trim();
     }
 
-    private boolean isImport(String line) {
+    private static boolean isImport(String line) {
         return line.startsWith("import") && line.endsWith(";");
     }
 

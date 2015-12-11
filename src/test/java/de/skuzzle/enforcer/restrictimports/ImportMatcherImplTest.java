@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,6 +40,14 @@ public class ImportMatcherImplTest {
                 "import   foo.bar.xyz;",
                 "import de.skuzzle.sample.Test2;",
                 "import de.foo.bar.Test").stream());
+    }
+
+    @Test(expected = RuntimeIOException.class)
+    public void testException() throws Exception {
+        when(this.mockLineSupplier.lines(this.path)).thenThrow(new IOException());
+        this.subject.matchFile(this.path,
+                ImmutableList.of(),
+                ImmutableList.of()).collect(Collectors.toList());
     }
 
     @Test

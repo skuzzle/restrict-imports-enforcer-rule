@@ -38,7 +38,7 @@ final class PackagePatternImpl implements PackagePattern {
         }
     }
 
-    private boolean matchParts(String patternPart, String matchPart) {
+    private static boolean matchParts(String patternPart, String matchPart) {
         if ("*".equals(patternPart) || "**".equals(patternPart)) {
             return true;
         }

@@ -24,7 +24,6 @@ import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluatio
 public class RestrictImports implements EnforcerRule {
 
     private List<String> bannedImports = new ArrayList<>();
-
     private List<String> allowedImports = new ArrayList<>();
 
     private final ImportMatcher matcher = new ImportMatcherImpl();
@@ -38,12 +37,16 @@ public class RestrictImports implements EnforcerRule {
             final List<PackagePattern> bannedPatterns = compile(this.bannedImports);
             final List<PackagePattern> allowedPatterns = compile(this.allowedImports);
 
-            final Map<String, List<Match>> matches = listSourceFiles(project)
-                .peek(sourceFile -> log.debug(
-                        "Analyzing '" + sourceFile.toString() +"' for banned imports"))
-                .flatMap(matchFile(bannedPatterns, allowedPatterns))
-                .collect(Collectors.groupingBy(Match::getSourceFile));
+            if (bannedPatterns.isEmpty()) {
+                log.info("No banned imports have been specified");
+                return;
+            }
 
+            final Map<String, List<Match>> matches = listSourceFiles(project)
+                    .peek(sourceFile -> log.debug("Analyzing '" + sourceFile.toString()
+                            +"' for banned imports"))
+                    .flatMap(matchFile(bannedPatterns, allowedPatterns))
+                    .collect(Collectors.groupingBy(Match::getSourceFile));
 
             if (!matches.isEmpty()) {
                 throw new EnforcerRuleException(formatErrorString(matches));

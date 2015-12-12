@@ -49,4 +49,10 @@ public class PackagePatternImplTest {
     public void testWildCardNoSuffix() throws Exception {
         PackagePattern.parse("de.skuzzle.**.test");
     }
+
+    @Test
+    public void testLogger() throws Exception {
+        final PackagePattern pattern = PackagePattern.parse("java.util.**");
+        assertTrue(pattern.matches("java.util.logging.Logger"));
+    }
 }

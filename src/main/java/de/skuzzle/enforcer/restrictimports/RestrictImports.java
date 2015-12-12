@@ -30,6 +30,7 @@ public class RestrictImports implements EnforcerRule {
     private final ImportMatcher matcher = new ImportMatcherImpl();
 
     @Override
+    @SuppressWarnings("unchecked")
     public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException {
         final Log log = helper.getLog();
         try {
@@ -51,7 +52,8 @@ public class RestrictImports implements EnforcerRule {
                     .collect(Collectors.groupingBy(Match::getSourceFile));
 
             if (!matches.isEmpty()) {
-                throw new EnforcerRuleException(formatErrorString(matches));
+                final List<String> roots = project.getCompileSourceRoots();
+                throw new EnforcerRuleException(formatErrorString(roots, matches));
             } else {
                 log.debug("No banned imports found");
             }
@@ -64,10 +66,19 @@ public class RestrictImports implements EnforcerRule {
         }
     }
 
-    private String formatErrorString(Map<String, List<Match>> groups) {
+    private String relativize(Collection<String> roots, String path) {
+        for (final String root : roots) {
+            if (path.startsWith(root)) {
+                return path.substring(root.length());
+            }
+        }
+        return path;
+    }
+
+    private String formatErrorString(Collection<String> roots, Map<String, List<Match>> groups) {
         final StringBuilder b = new StringBuilder("\nBanned imports detected:\n");
         groups.forEach((fileName, matches) -> {
-            b.append("\tin file: ").append(fileName).append("\n");
+            b.append("\tin file: ").append(relativize(roots, fileName)).append("\n");
             matches.forEach(match -> {
                 b.append("\t\t").append(match.getMatchedString())
                 .append(" (Line: ").append(match.getImportLine()).append(")\n");

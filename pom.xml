@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>de.skuzzle</groupId>
@@ -27,12 +28,12 @@
 		<site.name>restrict-imports-enforcer-rule</site.name>
 		<github.name>restrict-imports-enforcer-rule</github.name>
 	</properties>
-	
+
 	<scm>
 		<developerConnection>scm:git:https://github.com/skuzzle/${github.name}.git</developerConnection>
 		<tag>HEAD</tag>
 	</scm>
-	
+
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -72,11 +73,6 @@
 			<groupId>org.codehaus.plexus</groupId>
 			<artifactId>plexus-container-default</artifactId>
 			<version>1.0-alpha-9</version>
-		</dependency>
-		<dependency>
-			<groupId>backport-util-concurrent</groupId>
-			<artifactId>backport-util-concurrent</artifactId>
-			<version>3.1</version>
 		</dependency>
 		<!-- Test -->
 		<dependency>
@@ -120,25 +116,25 @@
 			</plugin>
 		</plugins>
 	</build>
-	
-    <profiles>
-        <profile>
-            <id>release</id>
-            <build>
-                <plugins>
-                    <!-- package java doc into jar file -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-javadoc-plugin</artifactId>
-                    </plugin>
 
-                    <!-- package sources into jar file -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-source-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+	<profiles>
+		<profile>
+			<id>release</id>
+			<build>
+				<plugins>
+					<!-- package java doc into jar file -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+					</plugin>
+
+					<!-- package sources into jar file -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

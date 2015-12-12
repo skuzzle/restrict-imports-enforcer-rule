@@ -1,9 +1,9 @@
 package de.skuzzle.enforcer.restrictimports;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.Arrays;
+
 
 final class PackagePatternImpl implements PackagePattern {
-
     private final String[] parts;
 
     PackagePatternImpl(String s) {

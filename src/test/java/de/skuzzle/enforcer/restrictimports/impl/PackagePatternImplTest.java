@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports;
+package de.skuzzle.enforcer.restrictimports.impl;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -6,10 +6,24 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.skuzzle.enforcer.restrictimports.PackagePattern;
+
 public class PackagePatternImplTest {
 
     @Before
     public void setUp() throws Exception {}
+
+    @Test
+    public void testMatchDefaultPackage() throws Exception {
+        final PackagePattern pattern = PackagePattern.parse("**");
+        assertTrue(pattern.matches(""));
+    }
+
+    @Test
+    public void testMatchesDefaultPackage2() throws Exception {
+        final PackagePattern pattern = PackagePattern.parse("*");
+        assertTrue(pattern.matches(""));
+    }
 
     @Test
     public void testMatchExactly() throws Exception {
@@ -54,5 +68,11 @@ public class PackagePatternImplTest {
     public void testLogger() throws Exception {
         final PackagePattern pattern = PackagePattern.parse("java.util.**");
         assertTrue(pattern.matches("java.util.logging.Logger"));
+    }
+
+    @Test
+    public void testWildcardInStringToTest() throws Exception {
+        final PackagePattern pattern = PackagePattern.parse("java.util.ArrayList");
+        assertFalse(pattern.matches("java.util.*"));
     }
 }

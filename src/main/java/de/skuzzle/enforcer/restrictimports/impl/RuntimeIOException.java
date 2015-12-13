@@ -1,9 +1,9 @@
-package de.skuzzle.enforcer.restrictimports;
+package de.skuzzle.enforcer.restrictimports.impl;
 
 import java.io.IOException;
 
 
-class RuntimeIOException extends RuntimeException {
+public class RuntimeIOException extends RuntimeException {
 
     /** */
     private static final long serialVersionUID = 1L;

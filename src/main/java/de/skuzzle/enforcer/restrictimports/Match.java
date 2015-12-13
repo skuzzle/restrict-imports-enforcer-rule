@@ -1,6 +1,11 @@
 package de.skuzzle.enforcer.restrictimports;
 
-class Match {
+/**
+ * Represents a single match of a banned import within a java source file.
+ *
+ * @author Simon Taddiken
+ */
+public class Match {
 
     private final String sourceFile;
     private final int importLine;

@@ -1,16 +1,11 @@
 package de.skuzzle.enforcer.restrictimports;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.maven.enforcer.rule.api.EnforcerRule;
@@ -20,14 +15,18 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 
+import de.skuzzle.enforcer.restrictimports.impl.DefaultAnalyzerFactory;
+import de.skuzzle.enforcer.restrictimports.impl.RuntimeIOException;
+
 /**
  */
 public class RestrictImports implements EnforcerRule {
 
-    private List<String> bannedImports = new ArrayList<>();
-    private List<String> allowedImports = new ArrayList<>();
+    private List<BannedImportGroup> bannedImportGroups = new ArrayList<>();
 
-    private final ImportMatcher matcher = new ImportMatcherImpl();
+    private final static SourceTreeAnalyzer ANALYZER = DefaultAnalyzerFactory
+            .getInstance()
+            .createAnalyzer();
 
     @Override
     @SuppressWarnings("unchecked")
@@ -36,20 +35,10 @@ public class RestrictImports implements EnforcerRule {
         try {
             final MavenProject project = (MavenProject) helper.evaluate("${project}");
 
-            final List<PackagePattern> bannedPatterns = compile(this.bannedImports);
-            final List<PackagePattern> allowedPatterns = compile(this.allowedImports);
-
-            if (bannedPatterns.isEmpty()) {
-                log.info("No banned imports have been specified");
-                return;
-            }
-
             log.debug("Checking for banned imports");
-            final Map<String, List<Match>> matches = listSourceFiles(project, log)
-                    .peek(sourceFile -> log.debug("Analyzing '" + sourceFile.toString()
-                            +"' for banned imports"))
-                    .flatMap(matchFile(bannedPatterns, allowedPatterns))
-                    .collect(Collectors.groupingBy(Match::getSourceFile));
+            final Map<String, List<Match>> matches = ANALYZER.analyze(
+                    listSourceRoots(project, log),
+                    this.bannedImportGroups);
 
             if (!matches.isEmpty()) {
                 final List<String> roots = project.getCompileSourceRoots();
@@ -75,47 +64,25 @@ public class RestrictImports implements EnforcerRule {
         return path;
     }
 
-    private String formatErrorString(Collection<String> roots, Map<String, List<Match>> groups) {
+    private String formatErrorString(Collection<String> roots,
+            Map<String, List<Match>> groups) {
         final StringBuilder b = new StringBuilder("\nBanned imports detected:\n");
         groups.forEach((fileName, matches) -> {
             b.append("\tin file: ").append(relativize(roots, fileName)).append("\n");
             matches.forEach(match -> {
                 b.append("\t\t").append(match.getMatchedString())
-                .append(" (Line: ").append(match.getImportLine()).append(")\n");
+                        .append(" (Line: ").append(match.getImportLine()).append(")\n");
             });
         });
         return b.toString();
     }
 
-    private Function<Path, Stream<Match>> matchFile(Collection<PackagePattern> banned,
-            Collection<PackagePattern> allowed) {
-        return sourceFile -> this.matcher.matchFile(sourceFile, banned, allowed);
-    }
-
-    private static boolean isJavaSourceFile(Path path, BasicFileAttributes bfa) {
-        return !Files.isDirectory(path) &&
-            path.getFileName().toString().toLowerCase().endsWith(".java");
-    }
-
-    private static Stream<Path> listFiles(Path dir) {
-        try {
-            return Files.find(dir, Integer.MAX_VALUE, RestrictImports::isJavaSourceFile);
-        } catch (final IOException e) {
-            throw new RuntimeIOException(e);
-        }
-    }
-
     @SuppressWarnings("unchecked")
-    private Stream<Path> listSourceFiles(MavenProject project, Log log) {
+    private Stream<Path> listSourceRoots(MavenProject project, Log log) {
         final List<String> roots = project.getCompileSourceRoots();
         return roots.stream()
                 .peek(root -> log.debug("Including source dir: " + root))
-                .map(Paths::get)
-                .flatMap(RestrictImports::listFiles);
-    }
-
-    private List<PackagePattern> compile(List<String> patterns) {
-        return patterns.stream().map(PackagePattern::parse).collect(Collectors.toList());
+                .map(Paths::get);
     }
 
     @Override
@@ -133,11 +100,7 @@ public class RestrictImports implements EnforcerRule {
         return false;
     }
 
-    public void setAllowedImports(List<String> allowedImports) {
-        this.allowedImports = allowedImports;
-    }
-
-    public void setBannedImports(List<String> bannedImports) {
-        this.bannedImports = bannedImports;
+    public void setBannedImports(List<BannedImportGroup> bannedImportGroups) {
+        this.bannedImportGroups = bannedImportGroups;
     }
 }

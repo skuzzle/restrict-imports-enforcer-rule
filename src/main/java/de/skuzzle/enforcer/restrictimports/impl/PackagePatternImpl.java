@@ -1,12 +1,15 @@
-package de.skuzzle.enforcer.restrictimports;
+package de.skuzzle.enforcer.restrictimports.impl;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
+
+import de.skuzzle.enforcer.restrictimports.PackagePattern;
 
 
-final class PackagePatternImpl implements PackagePattern {
+public final class PackagePatternImpl implements PackagePattern {
     private final String[] parts;
 
-    PackagePatternImpl(String s) {
+    public PackagePatternImpl(String s) {
         this.parts = s.split("\\.");
         for (int i = 0; i < this.parts.length; ++i) {
             final boolean last = i == this.parts.length - 1;
@@ -43,6 +46,11 @@ final class PackagePatternImpl implements PackagePattern {
             return true;
         }
         return patternPart.equals(matchPart);
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.stream(this.parts).collect(Collectors.joining("."));
     }
 
     @Override

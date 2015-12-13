@@ -24,7 +24,7 @@ public class RestrictImports implements EnforcerRule {
 
     private List<BannedImportGroup> bannedImportGroups = new ArrayList<>();
 
-    private final static SourceTreeAnalyzer ANALYZER = DefaultAnalyzerFactory
+    private static final SourceTreeAnalyzer ANALYZER = DefaultAnalyzerFactory
             .getInstance()
             .createAnalyzer();
 

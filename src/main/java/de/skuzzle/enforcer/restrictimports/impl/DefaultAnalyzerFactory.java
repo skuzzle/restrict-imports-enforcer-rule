@@ -19,8 +19,7 @@ public final class DefaultAnalyzerFactory implements AnalyzerFactory {
     public SourceTreeAnalyzer createAnalyzer() {
         final IOUtils ioUtils = new IOUtilsImpl();
         final ImportMatcher matcher = new ImportMatcherImpl(ioUtils::lines);
-        final SourceTreeAnalyzer anaylzer = new SourceTreeAnalyzerImpl(matcher, ioUtils);
-        return anaylzer;
+        return new SourceTreeAnalyzerImpl(matcher, ioUtils);
     }
 
 }

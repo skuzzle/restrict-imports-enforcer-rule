@@ -15,7 +15,6 @@ import de.skuzzle.enforcer.restrictimports.SourceTreeAnalyzer;
 
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
-
     private final ImportMatcher matcher;
     private final IOUtils ioUtil;
 

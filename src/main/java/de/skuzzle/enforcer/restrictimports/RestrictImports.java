@@ -55,7 +55,7 @@ public class RestrictImports implements EnforcerRule {
         }
     }
 
-    private String relativize(Collection<String> roots, String path) {
+    private static String relativize(Collection<String> roots, String path) {
         for (final String root : roots) {
             if (path.startsWith(root)) {
                 return path.substring(root.length());

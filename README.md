@@ -66,25 +66,6 @@ operator and then include some concrete classes:
 </configuration>
 ```
 
-Finally you can exclude whole classes/packages from being analyzed by this rule at all 
-using the `excludedClasses` tag:
-```xml
-<configuration>
-    <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
-            <bannedImports>
-                <!-- Ban loggers i.e. to enforce usage of slf4j -->
-                <bannedImport>java.util.logging.**</bannedImport>
-            </bannedImports>
-            <allowedImports>
-                <allowedImport>java.util.logging.Handler</allowedImport>
-            </allowedImports>
-            <excludedClasses>
-            </excludedClasses>
-        </restrictImports>
-    </rules>
-</configuration>
-```
 
 ## Limitation
 Import recognition works by comparing the import statements within your source files 

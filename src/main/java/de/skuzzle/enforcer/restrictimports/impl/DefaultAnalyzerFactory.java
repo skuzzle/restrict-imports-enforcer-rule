@@ -9,7 +9,9 @@ public final class DefaultAnalyzerFactory implements AnalyzerFactory {
 
     private static final AnalyzerFactory INSTANCE = new DefaultAnalyzerFactory();
 
-    private DefaultAnalyzerFactory() {}
+    private DefaultAnalyzerFactory() {
+        // hidden constructor
+    }
 
     public static AnalyzerFactory getInstance() {
         return INSTANCE;

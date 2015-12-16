@@ -23,17 +23,15 @@
                 <configuration>
                     <rules>
                         <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
-                            <bannedImportGroups>
-                                <bannedImportGroup>
-                                    <basePackage>**</basePackage>
-                                    <bannedImports>
-                                        <bannedImport>java.util.*</bannedImport>
-                                    </bannedImports>
-                                    <excludedClasses>
-                                        <excludedClass>de.skuzzle.**</excludedClass>
-                                    </excludedClasses>
-                                </bannedImportGroup>
-                            </bannedImportGroups>
+                            <bannedImportGroup>
+                                <basePackage>**</basePackage>
+                                <bannedImports>
+                                    <bannedImport>java.util.*</bannedImport>
+                                </bannedImports>
+                                <excludedClasses>
+                                    <excludedClass>de.skuzzle.**</excludedClass>
+                                </excludedClasses>
+                            </bannedImportGroup>
                         </restrictImports>
                     </rules>
                 </configuration>

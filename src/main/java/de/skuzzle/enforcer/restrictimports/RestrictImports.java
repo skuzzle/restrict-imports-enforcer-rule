@@ -2,7 +2,6 @@ package de.skuzzle.enforcer.restrictimports;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +21,7 @@ import de.skuzzle.enforcer.restrictimports.impl.RuntimeIOException;
  */
 public class RestrictImports implements EnforcerRule {
 
-    private List<BannedImportGroup> bannedImportGroups = new ArrayList<>();
+    private BannedImportGroup bannedImportGroup;
 
     private static final SourceTreeAnalyzer ANALYZER = DefaultAnalyzerFactory
             .getInstance()
@@ -38,7 +37,7 @@ public class RestrictImports implements EnforcerRule {
             log.debug("Checking for banned imports");
             final Map<String, List<Match>> matches = ANALYZER.analyze(
                     listSourceRoots(project, log),
-                    this.bannedImportGroups);
+                    this.bannedImportGroup);
 
             if (!matches.isEmpty()) {
                 final List<String> roots = project.getCompileSourceRoots();
@@ -100,7 +99,7 @@ public class RestrictImports implements EnforcerRule {
         return false;
     }
 
-    public void setBannedImports(List<BannedImportGroup> bannedImportGroups) {
-        this.bannedImportGroups = bannedImportGroups;
+    public void setBannedImports(BannedImportGroup group) {
+        this.bannedImportGroup = group;
     }
 }

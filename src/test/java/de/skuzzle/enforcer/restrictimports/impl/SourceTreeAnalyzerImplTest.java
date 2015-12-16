@@ -21,8 +21,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import com.google.common.collect.ImmutableList;
-
 import de.skuzzle.enforcer.restrictimports.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.IOUtils;
 import de.skuzzle.enforcer.restrictimports.ImportMatcher;
@@ -67,7 +65,7 @@ public class SourceTreeAnalyzerImplTest {
         when(this.matcher.matchFile(this.javaFile2, group)).thenReturn(
                 Stream.empty());
         final Map<String, List<Match>> result = this.subject.analyze(
-                this.rootStream, ImmutableList.of(group));
+                this.rootStream, group);
 
         final Match actual = result.get("xyz").get(0);
         assertSame(file1Match, actual);

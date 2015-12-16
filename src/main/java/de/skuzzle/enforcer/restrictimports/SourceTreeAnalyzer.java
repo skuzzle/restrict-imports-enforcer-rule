@@ -1,7 +1,6 @@
 package de.skuzzle.enforcer.restrictimports;
 
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -18,9 +17,8 @@ public interface SourceTreeAnalyzer {
      * for matches of banned imports.
      *
      * @param roots The source directories.
-     * @param groups The banned imports.
+     * @param group The banned import.
      * @return A map of file names to the matches found within that file.
      */
-    Map<String, List<Match>> analyze(Stream<Path> roots,
-            Collection<BannedImportGroup> groups);
+    Map<String, List<Match>> analyze(Stream<Path> roots, BannedImportGroup group);
 }

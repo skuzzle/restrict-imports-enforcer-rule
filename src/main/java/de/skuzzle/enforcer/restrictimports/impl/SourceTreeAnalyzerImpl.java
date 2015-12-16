@@ -1,7 +1,6 @@
 package de.skuzzle.enforcer.restrictimports.impl;
 
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,16 +23,10 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
     }
 
     @Override
-    public Map<String, List<Match>> analyze(Stream<Path> roots,
-            Collection<BannedImportGroup> groups) {
+    public Map<String, List<Match>> analyze(Stream<Path> roots, BannedImportGroup group) {
         return roots.flatMap(root -> this.ioUtil.listFiles(root, this::isJavaSourceFile))
-                .flatMap(root -> matchAll(root, groups))
+                .flatMap(path -> this.matcher.matchFile(path, group))
                 .collect(Collectors.groupingBy(Match::getSourceFile));
-    }
-
-    private Stream<Match> matchAll(Path file, Collection<BannedImportGroup> groups) {
-        return groups.stream()
-                .flatMap(group -> this.matcher.matchFile(file, group));
     }
 
     private boolean isJavaSourceFile(Path path) {

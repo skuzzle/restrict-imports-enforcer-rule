@@ -35,7 +35,7 @@ public class RestrictImportsTest {
 
     @Before
     public void setUp() throws Exception {
-        this.subject.setBannedImports(Collections.singletonList(this.group));
+        this.subject.setBannedImports(this.group);
 
         when(this.helper.getLog()).thenReturn(this.log);
         when(this.helper.evaluate("${project}")).thenReturn(this.mavenProject);

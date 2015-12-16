@@ -12,16 +12,26 @@ Maven enforcer rule that bans certain imports. Available from Maven Central.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>0.2.0</version>
+            <version>0.3.0</version>
         </dependency>
     </dependencies>
     <configuration>
         <rules>
             <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
-                <bannedImports>
-                    <!-- Ban loggers i.e. to enforce usage of slf4j -->
-                    <bannedImport>java.util.logging.**</bannedImport>
-                </bannedImports>
+                <bannedImportGroups>
+                    <!-- Group that prohibits use of java loggers in every source file -->
+                    <bannedImportGroup>
+                        <basePackage>**</basePackage>
+                        <bannedImports>
+                            <bannedImport>java.util.logging.**</bannedImport>
+                        </bannedImports>
+                    </bannedImportGroup>
+                    
+                    <!-- Furhter groups -->
+                    <bannedImportGroup>
+                        <!-- ... -->
+                    </bannedImportGroup>
+                </bannedImportGroups>
             </restrictImports>
         </rules>
     </configuration>
@@ -46,26 +56,57 @@ If a pattern does not contain any wildcards matching degrades to a simple String
 comparison.
 
 ## Includes and Excludes
-To refine the classes that are banned you may use the `allowedImports` tag in addition to 
-the `bannedImports` tag. For example you can exclude a whole sub package using a wildcard
+To refine the classes that are banned by a certain group you may use the `allowedImports` 
+tag in addition to the `bannedImports` tag. For example you can exclude a whole sub package using a wildcard
 operator and then include some concrete classes:
 
 ```xml
 <configuration>
     <rules>
         <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
-            <bannedImports>
-                <!-- Ban loggers i.e. to enforce usage of slf4j -->
-                <bannedImport>java.util.logging.**</bannedImport>
-            </bannedImports>
-            <allowedImports>
-                <allowedImport>java.util.logging.Handler</allowedImport>
-            </allowedImports>
+            <bannedImportGroups>
+                <bannedImportGroup>
+                    <basePackage>**</basePackage>
+                    <bannedImports>
+                        <bannedImport>java.util.logging.**</bannedImport>
+                    </bannedImports>
+                    <allowedImports>
+                        <allowedImport>java.util.logging.Handler</allowedImport>
+                    </allowedImports>
+                </bannedImportGroup>
+            </bannedImportGroups>
         </restrictImports>
     </rules>
 </configuration>
 ```
 
+It is possible to exclude certain source files from being affected by a banned group at 
+all. You can use `basePackage` to specify a package pattern of classes that are affected 
+by the rule. You may then exclude some classes to refine the matches using the
+`excludedClasses` tag.
+
+```xml
+<configuration>
+    <rules>
+        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+            <bannedImportGroups>
+                <bannedImportGroup>
+                    <basePackage>com.your.domain.**</basePackage>
+                    <bannedImports>
+                        <bannedImport>java.util.logging.**</bannedImport>
+                    </bannedImports>
+                    <allowedImports>
+                        <allowedImport>java.util.logging.Handler</allowedImport>
+                    </allowedImports>
+                    <excludedClasses>
+                        <excludedClass>com.your.domain.treat.special.*</excludedClass>
+                    </excludedClasses>
+                </bannedImportGroup>
+            </bannedImportGroups>
+        </restrictImports>
+    </rules>
+</configuration>
+```
 
 ## Limitation
 Import recognition works by comparing the import statements within your source files 

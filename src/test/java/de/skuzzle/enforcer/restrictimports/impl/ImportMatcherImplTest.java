@@ -22,6 +22,7 @@ import com.google.common.collect.ImmutableList;
 
 import de.skuzzle.enforcer.restrictimports.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.Match;
+import de.skuzzle.enforcer.restrictimports.PackagePattern;
 import de.skuzzle.enforcer.restrictimports.impl.ImportMatcherImpl.LineSupplier;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -55,11 +56,9 @@ public class ImportMatcherImplTest {
 
     private BannedImportGroup group(String basePackage, List<String> banned,
             List<String> allowed) {
-        final BannedImportGroup group = new BannedImportGroup();
-        group.setBasePackage(basePackage);
-        group.setAllowedImports(allowed);
-        group.setBannedImports(banned);
-        return group;
+        return new BannedImportGroup(
+                PackagePattern.parse(basePackage), PackagePattern.parseAll(banned),
+                PackagePattern.parseAll(allowed), ImmutableList.of());
     }
 
     @Test(expected = RuntimeIOException.class)
@@ -106,8 +105,12 @@ public class ImportMatcherImplTest {
 
     @Test
     public void testExcludeFile() throws Exception {
-        final BannedImportGroup group = group("**", ImmutableList.of("foo"));
-        group.setExcludedClasses(ImmutableList.of("de.skuzzle.test.File"));
+        final BannedImportGroup group = new BannedImportGroup(
+                PackagePattern.parse("**"),
+                PackagePattern.parseAll(ImmutableList.of("foo")),
+                ImmutableList.of(),
+                PackagePattern.parseAll(ImmutableList.of("de.skuzzle.test.File")));
+
         final Stream<Match> matches = this.subject.matchFile(this.path, group);
 
         assertFalse(matches.iterator().hasNext());

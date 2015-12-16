@@ -3,6 +3,7 @@ package de.skuzzle.enforcer.restrictimports.impl;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -58,14 +59,13 @@ public class SourceTreeAnalyzerImplTest {
         when(this.ioUtil.listFiles(eq(this.root), filter.capture())).thenReturn(Stream.of(
                 this.javaFile1, this.javaFile2));
 
-        final BannedImportGroup group = new BannedImportGroup();
         final Match file1Match = new Match("xyz", 1, "dfdg");
-        when(this.matcher.matchFile(this.javaFile1, group)).thenReturn(
+        when(this.matcher.matchFile(eq(this.javaFile1), any())).thenReturn(
                 Stream.of(file1Match));
-        when(this.matcher.matchFile(this.javaFile2, group)).thenReturn(
+        when(this.matcher.matchFile(eq(this.javaFile2), any())).thenReturn(
                 Stream.empty());
         final Map<String, List<Match>> result = this.subject.analyze(
-                this.rootStream, group);
+                this.rootStream, mock(BannedImportGroup.class));
 
         final Match actual = result.get("xyz").get(0);
         assertSame(file1Match, actual);

@@ -31,12 +31,8 @@ public class RestrictImportsTest {
     @InjectMocks
     private RestrictImports subject;
 
-    private final BannedImportGroup group = new BannedImportGroup();
-
     @Before
     public void setUp() throws Exception {
-        this.subject.setBannedImports(this.group);
-
         when(this.helper.getLog()).thenReturn(this.log);
         when(this.helper.evaluate("${project}")).thenReturn(this.mavenProject);
 
@@ -54,28 +50,28 @@ public class RestrictImportsTest {
 
     @Test(expected = EnforcerRuleException.class)
     public void testRestrictFailure() throws Exception {
-        this.group.setBannedImports(Collections.singletonList("java.util.**"));
+        this.subject.setBannedImports(Collections.singletonList("java.util.**"));
         this.subject.execute(this.helper);
     }
 
     @Test
     public void testExcludedByBasePackage() throws Exception {
-        this.group.setBasePackage("foo.bar");
-        this.group.setBannedImports(Collections.singletonList("java.util.**"));
+        this.subject.setBasePackage("foo.bar");
+        this.subject.setBannedImports(Collections.singletonList("java.util.**"));
         this.subject.execute(this.helper);
     }
 
     @Test
     public void testExcludedClass() throws Exception {
-        this.group.setBannedImports(Collections.singletonList("java.util.**"));
-        this.group.setExcludedClasses(Collections.singletonList("de.skuzzle.**"));
+        this.subject.setBannedImports(Collections.singletonList("java.util.**"));
+        this.subject.setExcludedClasses(Collections.singletonList("de.skuzzle.**"));
         this.subject.execute(this.helper);
     }
 
     @Test
     public void testAllowImport() throws Exception {
-        this.group.setBannedImports(Collections.singletonList("java.util.**"));
-        this.group.setAllowedImports(Collections.singletonList("java.util.ArrayList"));
+        this.subject.setBannedImports(Collections.singletonList("java.util.**"));
+        this.subject.setAllowedImports(Collections.singletonList("java.util.ArrayList"));
         this.subject.execute(this.helper);
     }
 }

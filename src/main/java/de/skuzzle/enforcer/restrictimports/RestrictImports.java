@@ -1,7 +1,10 @@
 package de.skuzzle.enforcer.restrictimports;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +24,10 @@ import de.skuzzle.enforcer.restrictimports.impl.RuntimeIOException;
  */
 public class RestrictImports implements EnforcerRule {
 
-    private BannedImportGroup bannedImportGroup;
+    private PackagePattern basePackage = PackagePattern.parse("**");
+    private List<PackagePattern> bannedImports = new ArrayList<>();
+    private List<PackagePattern> allowedImports = new ArrayList<>();
+    private List<PackagePattern> excludedClasses = new ArrayList<>();
 
     private static final SourceTreeAnalyzer ANALYZER = DefaultAnalyzerFactory
             .getInstance()
@@ -35,9 +41,11 @@ public class RestrictImports implements EnforcerRule {
             final MavenProject project = (MavenProject) helper.evaluate("${project}");
 
             log.debug("Checking for banned imports");
+            final BannedImportGroup group = new BannedImportGroup(this.basePackage,
+                    this.bannedImports, this.allowedImports, this.excludedClasses);
             final Map<String, List<Match>> matches = ANALYZER.analyze(
                     listSourceRoots(project, log),
-                    this.bannedImportGroup);
+                    group);
 
             if (!matches.isEmpty()) {
                 final List<String> roots = project.getCompileSourceRoots();
@@ -99,7 +107,37 @@ public class RestrictImports implements EnforcerRule {
         return false;
     }
 
-    public void setBannedImports(BannedImportGroup group) {
-        this.bannedImportGroup = group;
+    public final PackagePattern getBasePackage() {
+        return this.basePackage;
+    }
+
+    public final void setBasePackage(String basePackage) {
+        this.basePackage = PackagePattern.parse(basePackage);
+    }
+
+    public final List<PackagePattern> getBannedImports() {
+        return this.bannedImports;
+    }
+
+    public final void setBannedImports(List<String> bannedPackages) {
+        checkArgument(bannedPackages != null && !bannedPackages.isEmpty(),
+                "bannedPackages must not be empty");
+        this.bannedImports = PackagePattern.parseAll(bannedPackages);
+    }
+
+    public final List<PackagePattern> getAllowedImports() {
+        return this.allowedImports;
+    }
+
+    public final void setAllowedImports(List<String> allowedImports) {
+        this.allowedImports = PackagePattern.parseAll(allowedImports);
+    }
+
+    public final List<PackagePattern> getExcludedClasses() {
+        return this.excludedClasses;
+    }
+
+    public final void setExcludedClasses(List<String> excludedClasses) {
+        this.excludedClasses = PackagePattern.parseAll(excludedClasses);
     }
 }

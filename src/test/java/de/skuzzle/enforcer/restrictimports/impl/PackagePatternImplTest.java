@@ -1,6 +1,8 @@
 package de.skuzzle.enforcer.restrictimports.impl;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
@@ -12,6 +14,25 @@ public class PackagePatternImplTest {
 
     @Before
     public void setUp() throws Exception {}
+
+    @Test
+    public void testToString() throws Exception {
+        assertEquals("de.skuzzle.**", PackagePattern.parse("de.skuzzle.**").toString());
+    }
+
+    @Test
+    public void testEquals() throws Exception {
+        assertEquals(PackagePattern.parse("de.skuzzle.**"),
+                PackagePattern.parse("de.skuzzle.**"));
+        assertEquals(PackagePattern.parse("de.skuzzle.**").hashCode(),
+                PackagePattern.parse("de.skuzzle.**").hashCode());
+    }
+
+    @Test
+    public void testNotEquals() throws Exception {
+        assertNotEquals(PackagePattern.parse("de.skuzzle.**"),
+                PackagePattern.parse("de.skuzzle.*"));
+    }
 
     @Test
     public void testMatchDefaultPackage() throws Exception {

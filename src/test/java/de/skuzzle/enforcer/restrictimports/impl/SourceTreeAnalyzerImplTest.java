@@ -1,7 +1,8 @@
 package de.skuzzle.enforcer.restrictimports.impl;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
-import static org.mockito.Matchers.any;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -9,11 +10,13 @@ import static org.mockito.Mockito.when;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -49,12 +52,14 @@ public class SourceTreeAnalyzerImplTest {
         this.javaFile1 = mockFile("Foo.java");
         this.javaFile2 = mockFile("Bar.java");
 
-        when(this.ioUtil.listFiles(eq(this.root), any())).thenReturn(Stream.of(
-                this.javaFile1, this.javaFile2));
     }
 
     @Test
     public void testName() throws Exception {
+        final ArgumentCaptor<Predicate> filter = ArgumentCaptor.forClass(Predicate.class);
+        when(this.ioUtil.listFiles(eq(this.root), filter.capture())).thenReturn(Stream.of(
+                this.javaFile1, this.javaFile2));
+
         final BannedImportGroup group = new BannedImportGroup();
         final Match file1Match = new Match("xyz", 1, "dfdg");
         when(this.matcher.matchFile(this.javaFile1, group)).thenReturn(
@@ -66,6 +71,13 @@ public class SourceTreeAnalyzerImplTest {
 
         final Match actual = result.get("xyz").get(0);
         assertSame(file1Match, actual);
+        final Predicate pred = filter.getValue();
+        assertTrue(pred.test(this.javaFile1));
+        assertTrue(pred.test(this.javaFile2));
+
+        final Path dir = mock(Path.class);
+        when(this.ioUtil.isFile(dir)).thenReturn(false);
+        assertFalse(pred.test(dir));
     }
 
     private Path mockFile(String fileName) {

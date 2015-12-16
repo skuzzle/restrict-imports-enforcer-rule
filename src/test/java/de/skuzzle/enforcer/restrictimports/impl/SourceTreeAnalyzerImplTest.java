@@ -24,7 +24,6 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import de.skuzzle.enforcer.restrictimports.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.IOUtils;
-import de.skuzzle.enforcer.restrictimports.ImportMatcher;
 import de.skuzzle.enforcer.restrictimports.Match;
 
 @RunWith(MockitoJUnitRunner.class)

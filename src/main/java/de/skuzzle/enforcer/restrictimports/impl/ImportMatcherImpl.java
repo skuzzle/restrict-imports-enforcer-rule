@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import de.skuzzle.enforcer.restrictimports.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.ImportMatcher;
 import de.skuzzle.enforcer.restrictimports.Match;
 import de.skuzzle.enforcer.restrictimports.PackagePattern;
 

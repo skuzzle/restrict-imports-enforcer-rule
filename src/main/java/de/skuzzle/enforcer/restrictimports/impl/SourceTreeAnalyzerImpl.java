@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 
 import de.skuzzle.enforcer.restrictimports.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.IOUtils;
-import de.skuzzle.enforcer.restrictimports.ImportMatcher;
 import de.skuzzle.enforcer.restrictimports.Match;
 import de.skuzzle.enforcer.restrictimports.SourceTreeAnalyzer;
 

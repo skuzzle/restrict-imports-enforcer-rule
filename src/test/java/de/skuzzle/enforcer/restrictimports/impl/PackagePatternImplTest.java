@@ -15,6 +15,16 @@ public class PackagePatternImplTest {
     @Before
     public void setUp() throws Exception {}
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testNull() throws Exception {
+        PackagePattern.parse(null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNull2() throws Exception {
+        PackagePattern.parseAll(null);
+    }
+
     @Test
     public void testToString() throws Exception {
         assertEquals("de.skuzzle.**", PackagePattern.parse("de.skuzzle.**").toString());

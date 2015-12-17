@@ -17,6 +17,7 @@ import de.skuzzle.enforcer.restrictimports.impl.PackagePatternImpl;
 public interface PackagePattern {
 
     public static List<PackagePattern> parseAll(Collection<String> strings) {
+        checkArgument(strings != null);
         return strings.stream()
                 .map(PackagePattern::parse)
                 .collect(Collectors.toList());

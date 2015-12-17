@@ -107,16 +107,8 @@ public class RestrictImports implements EnforcerRule {
         return false;
     }
 
-    public final PackagePattern getBasePackage() {
-        return this.basePackage;
-    }
-
     public final void setBasePackage(String basePackage) {
         this.basePackage = PackagePattern.parse(basePackage);
-    }
-
-    public final List<PackagePattern> getBannedImports() {
-        return this.bannedImports;
     }
 
     public final void setBannedImports(List<String> bannedPackages) {
@@ -125,16 +117,8 @@ public class RestrictImports implements EnforcerRule {
         this.bannedImports = PackagePattern.parseAll(bannedPackages);
     }
 
-    public final List<PackagePattern> getAllowedImports() {
-        return this.allowedImports;
-    }
-
     public final void setAllowedImports(List<String> allowedImports) {
         this.allowedImports = PackagePattern.parseAll(allowedImports);
-    }
-
-    public final List<PackagePattern> getExcludedClasses() {
-        return this.excludedClasses;
     }
 
     public final void setExcludedClasses(List<String> excludedClasses) {

@@ -29,6 +29,15 @@ Maven enforcer rule that bans certain imports. Available from Maven Central.
             </restrictImports>
         </rules>
     </configuration>
+    <executions>
+        <execution>
+            <id>check-logging-imports</id> <!-- put an explanatory ID here -->
+            <phase>process-sources</phase>
+            <goals>
+                <goal>enforce</goal>
+            </goals>
+        </execution>
+    </executions>
 </plugin>
 ```
 

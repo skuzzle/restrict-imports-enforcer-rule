@@ -36,7 +36,7 @@ class ImportMatcherImpl implements ImportMatcher {
                     .peek(packageExtractor)
                     .filter(ImportMatcherImpl::isImport)
                     // package statement must always occur before the first import
-                    // statement, thus package must be known by the time the prev. filter
+                    // statement, thus package is known by the time the prev. filter
                     // has matched
                     .peek(includeClass(file, packageExtractor, group))
                     .map(ImportMatcherImpl::extractPackageName)
@@ -100,11 +100,11 @@ class ImportMatcherImpl implements ImportMatcher {
     }
 
     private static boolean isPackage(String line) {
-        return is("package", line);
+        return is("package ", line);
     }
 
     private static boolean isImport(String line) {
-        return is("import", line);
+        return is("import ", line);
     }
 
     private static class LineCounter implements Consumer<String> {

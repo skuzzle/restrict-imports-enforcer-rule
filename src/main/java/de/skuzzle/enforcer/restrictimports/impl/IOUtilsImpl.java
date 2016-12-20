@@ -22,6 +22,9 @@ public class IOUtilsImpl implements IOUtils {
     @Override
     public Stream<Path> listFiles(Path root, Predicate<Path> filter) {
         try {
+            if (!Files.exists(root)) {
+                return Stream.empty();
+            }
             return Files.find(root, Integer.MAX_VALUE, (path, bfa) -> filter.test(path));
         } catch (final IOException e) {
             throw new RuntimeIOException(e);

@@ -15,7 +15,7 @@ Maven enforcer rule that bans certain imports. Available from Maven Central.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>0.5.0</version>
+            <version>0.6.0</version>
         </dependency>
     </dependencies>
     <configuration>

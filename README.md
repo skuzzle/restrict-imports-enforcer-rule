@@ -15,7 +15,7 @@ Maven enforcer rule that bans certain imports. Available from Maven Central.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>0.6.0</version>
+            <version>0.7.0</version>
         </dependency>
     </dependencies>
     <executions>
@@ -102,6 +102,21 @@ by the rule. You may then exclude some classes to refine the matches using the
             <excludedClasses>
                 <excludedClass>com.your.domain.treat.special.*</excludedClass>
             </excludedClasses>
+        </restrictImports>
+    </rules>
+</configuration>
+```
+
+## Test code
+By default, test code is not subject to the banned import checks. You can enable analysis
+of test code using the `includeTestCode` option.
+```xml
+<configuration>
+    <rules>
+        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+            <basePackage>com.your.domain.**</basePackage>
+            <includeTestCode>true</includeTestCode>
+            <!-- ... -->
         </restrictImports>
     </rules>
 </configuration>

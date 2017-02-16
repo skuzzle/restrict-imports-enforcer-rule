@@ -28,6 +28,7 @@ public class RestrictImports implements EnforcerRule {
     private List<PackagePattern> bannedImports = new ArrayList<>();
     private List<PackagePattern> allowedImports = new ArrayList<>();
     private List<PackagePattern> excludedClasses = new ArrayList<>();
+    private boolean includeTestCode;
 
     private static final SourceTreeAnalyzer ANALYZER = DefaultAnalyzerFactory
             .getInstance()
@@ -58,7 +59,7 @@ public class RestrictImports implements EnforcerRule {
             throw new EnforcerRuleException("Encountered IO exception", e);
         } catch (final ExpressionEvaluationException e) {
             throw new EnforcerRuleException("Unable to lookup an expression " +
-                e.getLocalizedMessage(), e);
+                    e.getLocalizedMessage(), e);
         }
     }
 
@@ -86,8 +87,18 @@ public class RestrictImports implements EnforcerRule {
 
     @SuppressWarnings("unchecked")
     private Stream<Path> listSourceRoots(MavenProject project, Log log) {
-        final List<String> roots = project.getCompileSourceRoots();
-        return roots.stream()
+        final Stream<String> compileStream = project.getCompileSourceRoots().stream();
+
+        final Stream<String> rootFolders;
+        if (this.includeTestCode) {
+            final Stream<String> testStream = project.getTestCompileSourceRoots()
+                    .stream();
+            rootFolders = Stream.concat(compileStream, testStream);
+        } else {
+            rootFolders = compileStream;
+        }
+
+        return rootFolders
                 .peek(root -> log.debug("Including source dir: " + root))
                 .map(Paths::get);
     }
@@ -123,5 +134,9 @@ public class RestrictImports implements EnforcerRule {
 
     public final void setExcludedClasses(List<String> excludedClasses) {
         this.excludedClasses = PackagePattern.parseAll(excludedClasses);
+    }
+
+    public void setIncludeTestCode(boolean includeTestCode) {
+        this.includeTestCode = includeTestCode;
     }
 }

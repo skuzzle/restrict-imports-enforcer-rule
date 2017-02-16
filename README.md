@@ -18,17 +18,6 @@ Maven enforcer rule that bans certain imports. Available from Maven Central.
             <version>0.6.0</version>
         </dependency>
     </dependencies>
-    <configuration>
-        <rules>
-            <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
-                <!-- prohibit use of java loggers in every source file -->
-                <basePackage>**</basePackage>
-                <bannedImports>
-                    <bannedImport>java.util.logging.**</bannedImport>
-                </bannedImports>
-            </restrictImports>
-        </rules>
-    </configuration>
     <executions>
         <execution>
             <id>check-logging-imports</id> <!-- put an explanatory ID here -->
@@ -36,7 +25,23 @@ Maven enforcer rule that bans certain imports. Available from Maven Central.
             <goals>
                 <goal>enforce</goal>
             </goals>
+            <configuration>
+                <rules>
+                    <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+                        <!-- prohibit use of java loggers in every source file -->
+                        <basePackage>**</basePackage>
+                        <!-- Since 0.7.0: Whether to also analyze test code. Defaults to false -->
+                        <includeTestCode>true</includeTestCode>
+                        <bannedImports>
+                            <bannedImport>java.util.logging.**</bannedImport>
+                        </bannedImports>
+                    </restrictImports>
+                </rules>
+            </configuration>
         </execution>
+        
+        <!-- You could have another execution here for restricting further imports -->
+        
     </executions>
 </plugin>
 ```
@@ -122,9 +127,10 @@ classes or classes where the file name is not equal to the containing class name
 
 Overview of all configuration parameters:
 
-| Parameter         | Type                    | Required | Default    |
-|-------------------|-------------------------|----------|------------|
-| `basePackage`     | Package pattern         | no       | `**`       |
-| `bannedImports`   | List of package pattern | yes      | -          |
-| `allowedImports`  | List of package pattern | no       | empty list |
-| `excludedClasses` | List of package pattern | no       | empty list |
+| Parameter         | Type                    | Required | Default    | Since   |
+|-------------------|-------------------------|----------|------------|---------|
+| `basePackage`     | Package pattern         | no       | `**`       |         |
+| `bannedImports`   | List of package pattern | yes      | -          |         |
+| `allowedImports`  | List of package pattern | no       | empty list |         |
+| `excludedClasses` | List of package pattern | no       | empty list |         |
+| `includeTestCode` | Boolean                 | no       | `false`    | `0.7.0` |

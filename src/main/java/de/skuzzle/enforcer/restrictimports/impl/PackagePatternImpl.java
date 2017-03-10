@@ -5,40 +5,44 @@ import java.util.stream.Collectors;
 
 import de.skuzzle.enforcer.restrictimports.PackagePattern;
 
-
 public final class PackagePatternImpl implements PackagePattern {
     private final String[] parts;
 
     public PackagePatternImpl(String s) {
         this.parts = s.split("\\.");
-        for (int i = 0; i < this.parts.length; ++i) {
-            final boolean last = i == this.parts.length - 1;
-            if (!last && "**".equals(this.parts[i])) {
-                throw new IllegalArgumentException(
-                        "Double wildcard '**' only allowed at end of pattern");
-            }
-        }
     }
 
     @Override
     public boolean matches(String packageName) {
         final String[] matchParts = packageName.split("\\.");
-        final int count = Math.min(matchParts.length, this.parts.length);
-        int i = 0;
-        for (; i < count; ++i) {
-            final String patternPart = this.parts[i];
-            final String matchPart = matchParts[i];
-            if (!matchParts(patternPart, matchPart)) {
-                return false;
+        if (this.parts.length > matchParts.length) {
+            // if the pattern is longer than the string to match, match cant be true
+            return false;
+        }
+
+        int patternIndex = 0;
+        int matchIndex = 0;
+        for (; patternIndex < this.parts.length
+                && matchIndex < matchParts.length; ++patternIndex) {
+            final String patternPart = this.parts[patternIndex];
+            final String matchPart = matchParts[matchIndex];
+
+            if ("**".equals(patternPart)) {
+                if (patternIndex + 1 < this.parts.length) {
+                    final String nextPatternPart = this.parts[patternIndex + 1];
+                    while (matchIndex < matchParts.length
+                            && !matchParts(nextPatternPart, matchParts[matchIndex])) {
+                        ++matchIndex;
+                    }
+                } else {
+                    matchIndex = matchParts.length;
+                }
+            } else if (matchParts(patternPart, matchPart)) {
+                ++matchIndex;
             }
         }
-        if (this.parts.length == matchParts.length) {
-            return true;
-        } else if (this.parts.length > matchParts.length) {
-            return false;
-        } else {
-            return "**".equals(this.parts[this.parts.length - 1]);
-        }
+
+        return patternIndex == this.parts.length && matchIndex == matchParts.length;
     }
 
     private static boolean matchParts(String patternPart, String matchPart) {

@@ -13,7 +13,8 @@ import de.skuzzle.enforcer.restrictimports.PackagePattern;
 public class PackagePatternImplTest {
 
     @Before
-    public void setUp() throws Exception {}
+    public void setUp() throws Exception {
+    }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNull() throws Exception {
@@ -90,11 +91,6 @@ public class PackagePatternImplTest {
         assertTrue(pattern.matches("de.skuzzle.TestClass2"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testWildCardNoSuffix() throws Exception {
-        PackagePattern.parse("de.skuzzle.**.test");
-    }
-
     @Test
     public void testLogger() throws Exception {
         final PackagePattern pattern = PackagePattern.parse("java.util.**");
@@ -105,5 +101,33 @@ public class PackagePatternImplTest {
     public void testWildcardInStringToTest() throws Exception {
         final PackagePattern pattern = PackagePattern.parse("java.util.ArrayList");
         assertFalse(pattern.matches("java.util.*"));
+    }
+
+    @Test
+    public void testDoubleWildcardInBetween() throws Exception {
+        final PackagePattern pattern = PackagePattern.parse("com.**.bar.ClassName");
+        assertTrue(pattern.matches("com.foo.bar.ClassName"));
+        assertFalse(pattern.matches("com.xyz.foo.bar"));
+        assertFalse(pattern.matches("com.xyz.foo.ClassName"));
+    }
+
+    @Test
+    public void testDoubleWildcardInBetweenSkipMultiple() throws Exception {
+        final PackagePattern pattern = PackagePattern.parse("com.**.bar.ClassName");
+        assertTrue(pattern.matches("com.xyz.foo.bar.ClassName"));
+        assertFalse(pattern.matches("com.xyz.foo.bar"));
+    }
+
+    @Test
+    public void testConsecutiveDoubleWildcard() throws Exception {
+        final PackagePattern pattern = PackagePattern.parse("com.**.**.ClassName");
+        assertTrue(pattern.matches("com.xyz.foo.bar.ClassName"));
+        assertFalse(pattern.matches("com.xyz.foo.bar"));
+    }
+
+    @Test
+    public void testDoubleWildCartBeginning() throws Exception {
+        final PackagePattern pattern = PackagePattern.parse("**.ClassName");
+        assertTrue(pattern.matches("com.xyz.foo.bar.ClassName"));
     }
 }

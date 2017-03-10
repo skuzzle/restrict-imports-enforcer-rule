@@ -58,7 +58,10 @@ class ImportMatcherImpl implements ImportMatcher {
         return line -> {
             final String javaFileName = getJavaFileName(file);
             final String javaResource = extractor.getPackageName() + "." + javaFileName;
-            if (!group.getBasePackage().matches(javaResource)) {
+            final boolean matchBasePattern = group.getBasePackages().stream()
+                    .anyMatch(pattern -> pattern.matches(javaResource));
+
+            if (!matchBasePattern) {
                 throw new PrematureAbortion();
             }
             final boolean isExcluded = group.getExcludedClasses().stream()
@@ -84,8 +87,7 @@ class ImportMatcherImpl implements ImportMatcher {
 
     private static Function<String, Match> toMatch(Supplier<Integer> lineGetter,
             String filePath) {
-        return matchedImport ->
-            new Match(filePath, lineGetter.get(), matchedImport);
+        return matchedImport -> new Match(filePath, lineGetter.get(), matchedImport);
     }
 
     private static String extractPackageName(String line) {

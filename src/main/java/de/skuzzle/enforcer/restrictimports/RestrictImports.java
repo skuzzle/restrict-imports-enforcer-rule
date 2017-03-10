@@ -25,9 +25,17 @@ import de.skuzzle.enforcer.restrictimports.impl.RuntimeIOException;
 public class RestrictImports implements EnforcerRule {
 
     private PackagePattern basePackage = PackagePattern.parse("**");
+    private List<PackagePattern> basePackages = new ArrayList<>();
+
+    private PackagePattern bannedImport = null;
     private List<PackagePattern> bannedImports = new ArrayList<>();
+
+    private PackagePattern allowedImport = null;
     private List<PackagePattern> allowedImports = new ArrayList<>();
+
+    private PackagePattern excludedClass = null;
     private List<PackagePattern> excludedClasses = new ArrayList<>();
+
     private boolean includeTestCode;
 
     private static final SourceTreeAnalyzer ANALYZER = DefaultAnalyzerFactory
@@ -42,8 +50,12 @@ public class RestrictImports implements EnforcerRule {
             final MavenProject project = (MavenProject) helper.evaluate("${project}");
 
             log.debug("Checking for banned imports");
-            final BannedImportGroup group = new BannedImportGroup(this.basePackage,
-                    this.bannedImports, this.allowedImports, this.excludedClasses);
+            final BannedImportGroup group = new BannedImportGroup(
+                    assembleList(this.basePackage, this.basePackages),
+                    assembleList(this.bannedImport, this.bannedImports),
+                    assembleList(this.allowedImport, this.allowedImports),
+                    assembleList(this.excludedClass, this.excludedClasses));
+
             final Map<String, List<Match>> matches = ANALYZER.analyze(
                     listSourceRoots(project, log),
                     group);
@@ -61,6 +73,18 @@ public class RestrictImports implements EnforcerRule {
             throw new EnforcerRuleException("Unable to lookup an expression " +
                     e.getLocalizedMessage(), e);
         }
+    }
+
+    private List<PackagePattern> assembleList(PackagePattern single,
+            List<PackagePattern> multi) {
+        if (single == null) {
+            return multi;
+        } else {
+            final List<PackagePattern> result = new ArrayList<>(multi);
+            result.add(single);
+            return result;
+        }
+
     }
 
     private static String relativize(Collection<String> roots, String path) {
@@ -122,14 +146,32 @@ public class RestrictImports implements EnforcerRule {
         this.basePackage = PackagePattern.parse(basePackage);
     }
 
+    public final void setBasePackages(List<String> basePackages) {
+        checkArgument(basePackages != null && !basePackages.isEmpty(),
+                "bannedPackages must not be empty");
+        this.basePackages = PackagePattern.parseAll(basePackages);
+    }
+
+    public void setBannedImport(String bannedImport) {
+        this.bannedImport = PackagePattern.parse(bannedImport);
+    }
+
     public final void setBannedImports(List<String> bannedPackages) {
         checkArgument(bannedPackages != null && !bannedPackages.isEmpty(),
                 "bannedPackages must not be empty");
         this.bannedImports = PackagePattern.parseAll(bannedPackages);
     }
 
+    public final void setAllowedImport(String allowedImport) {
+        this.allowedImport = PackagePattern.parse(allowedImport);
+    }
+
     public final void setAllowedImports(List<String> allowedImports) {
         this.allowedImports = PackagePattern.parseAll(allowedImports);
+    }
+
+    public final void setExcludedClass(String excludedClass) {
+        this.excludedClass = PackagePattern.parse(excludedClass);
     }
 
     public final void setExcludedClasses(List<String> excludedClasses) {

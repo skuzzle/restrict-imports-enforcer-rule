@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -50,22 +51,25 @@ public class ImportMatcherImplTest {
                 "import de.foo.bar.Test").stream());
     }
 
-    private BannedImportGroup group(String basePackage, List<String> banned) {
-        return group(basePackage, banned, ImmutableList.of());
+    private BannedImportGroup group(List<String> basePackages, List<String> banned) {
+        return group(basePackages, banned, ImmutableList.of());
     }
 
-    private BannedImportGroup group(String basePackage, List<String> banned,
+    private BannedImportGroup group(List<String> basePackages, List<String> banned,
             List<String> allowed) {
         return new BannedImportGroup(
-                PackagePattern.parse(basePackage), PackagePattern.parseAll(banned),
-                PackagePattern.parseAll(allowed), ImmutableList.of());
+                PackagePattern.parseAll(basePackages),
+                PackagePattern.parseAll(banned),
+                PackagePattern.parseAll(allowed),
+                ImmutableList.of());
     }
 
     @Test(expected = RuntimeIOException.class)
     public void testException() throws Exception {
         when(this.mockLineSupplier.lines(this.path)).thenThrow(new IOException());
         this.subject.matchFile(this.path,
-                group("**", ImmutableList.of("bla"))).collect(Collectors.toList());
+                group(Arrays.asList("**"), ImmutableList.of("bla")))
+                .collect(Collectors.toList());
     }
 
     @Test
@@ -73,7 +77,8 @@ public class ImportMatcherImplTest {
         final List<String> banned = ImmutableList.of("de.skuzzle.sample.*");
 
         final List<Match> matches = this.subject.matchFile(this.path,
-                group("de.skuzzle.test.*", banned, ImmutableList.of()))
+                group(Arrays.asList("foo.bar", "de.skuzzle.test.*"),
+                        banned, ImmutableList.of()))
                 .collect(Collectors.toList());
 
         assertEquals(2, matches.size());
@@ -93,7 +98,7 @@ public class ImportMatcherImplTest {
         final List<String> banned = ImmutableList.of("de.skuzzle.sample.*");
         final List<String> include = ImmutableList.of("de.skuzzle.sample.Test2");
         final List<Match> matches = this.subject
-                .matchFile(this.path, group("**", banned, include))
+                .matchFile(this.path, group(Arrays.asList("**"), banned, include))
                 .collect(Collectors.toList());
 
         assertEquals(1, matches.size());
@@ -106,7 +111,7 @@ public class ImportMatcherImplTest {
     @Test
     public void testExcludeFile() throws Exception {
         final BannedImportGroup group = new BannedImportGroup(
-                PackagePattern.parse("**"),
+                Arrays.asList(PackagePattern.parse("**")),
                 PackagePattern.parseAll(ImmutableList.of("foo")),
                 ImmutableList.of(),
                 PackagePattern.parseAll(ImmutableList.of("de.skuzzle.test.File")));
@@ -119,7 +124,8 @@ public class ImportMatcherImplTest {
     @Test
     public void testExcludeWholeFile() throws Exception {
         final Stream<Match> matches = this.subject.matchFile(this.path,
-                group("de.foo.bar", ImmutableList.of("de.skuzzle.sample.*")));
+                group(Arrays.asList("de.foo.bar"),
+                        ImmutableList.of("de.skuzzle.sample.*")));
 
         assertFalse(matches.iterator().hasNext());
     }

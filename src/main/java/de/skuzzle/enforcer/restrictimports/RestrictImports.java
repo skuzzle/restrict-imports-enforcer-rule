@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.maven.enforcer.rule.api.EnforcerRule;
@@ -37,13 +38,13 @@ public class RestrictImports implements EnforcerRule {
     private List<PackagePattern> exclusions = new ArrayList<>();
 
     private boolean includeTestCode;
+    private String reason;
 
     private static final SourceTreeAnalyzer ANALYZER = DefaultAnalyzerFactory
             .getInstance()
             .createAnalyzer();
 
     @Override
-    @SuppressWarnings("unchecked")
     public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException {
         final Log log = helper.getLog();
         try {
@@ -54,15 +55,18 @@ public class RestrictImports implements EnforcerRule {
                     assembleList(this.basePackage, this.basePackages),
                     assembleList(this.bannedImport, this.bannedImports),
                     assembleList(this.allowedImport, this.allowedImports),
-                    assembleList(this.exclusion, this.exclusions));
+                    assembleList(this.exclusion, this.exclusions),
+                    this.reason);
+
+            final Collection<Path> sourceRoots = listSourceRoots(project, log)
+                    .collect(Collectors.toList());
 
             final Map<String, List<Match>> matches = ANALYZER.analyze(
-                    listSourceRoots(project, log),
-                    group);
+                    sourceRoots.stream(), group);
 
             if (!matches.isEmpty()) {
-                final List<String> roots = project.getCompileSourceRoots();
-                throw new EnforcerRuleException(formatErrorString(roots, matches));
+                throw new EnforcerRuleException(
+                        formatErrorString(sourceRoots, group, matches));
             } else {
                 log.debug("No banned imports found");
             }
@@ -84,21 +88,25 @@ public class RestrictImports implements EnforcerRule {
             result.add(single);
             return result;
         }
-
     }
 
-    private static String relativize(Collection<String> roots, String path) {
-        for (final String root : roots) {
-            if (path.startsWith(root)) {
-                return path.substring(root.length());
+    private static String relativize(Collection<Path> roots, String path) {
+        for (final Path root : roots) {
+            final String absoluteRoot = root.toAbsolutePath().toString();
+            if (path.startsWith(absoluteRoot)) {
+                return path.substring(absoluteRoot.length());
             }
         }
         return path;
     }
 
-    private String formatErrorString(Collection<String> roots,
+    private String formatErrorString(Collection<Path> roots, BannedImportGroup group,
             Map<String, List<Match>> groups) {
         final StringBuilder b = new StringBuilder("\nBanned imports detected:\n");
+        final String message = group.getReason();
+        if (message != null && !message.isEmpty()) {
+            b.append("Reason: ").append(message).append("\n");
+        }
         groups.forEach((fileName, matches) -> {
             b.append("\tin file: ").append(relativize(roots, fileName)).append("\n");
             matches.forEach(match -> {
@@ -178,7 +186,11 @@ public class RestrictImports implements EnforcerRule {
         this.exclusions = PackagePattern.parseAll(exclusions);
     }
 
-    public void setIncludeTestCode(boolean includeTestCode) {
+    public final void setIncludeTestCode(boolean includeTestCode) {
         this.includeTestCode = includeTestCode;
+    }
+
+    public final void setReason(String reason) {
+        this.reason = reason;
     }
 }

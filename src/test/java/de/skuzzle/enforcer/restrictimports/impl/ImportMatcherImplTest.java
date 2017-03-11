@@ -61,7 +61,8 @@ public class ImportMatcherImplTest {
                 PackagePattern.parseAll(basePackages),
                 PackagePattern.parseAll(banned),
                 PackagePattern.parseAll(allowed),
-                ImmutableList.of());
+                ImmutableList.of(),
+                "message");
     }
 
     @Test(expected = RuntimeIOException.class)
@@ -114,7 +115,8 @@ public class ImportMatcherImplTest {
                 Arrays.asList(PackagePattern.parse("**")),
                 PackagePattern.parseAll(ImmutableList.of("foo")),
                 ImmutableList.of(),
-                PackagePattern.parseAll(ImmutableList.of("de.skuzzle.test.File")));
+                PackagePattern.parseAll(ImmutableList.of("de.skuzzle.test.File")),
+                "message");
 
         final Stream<Match> matches = this.subject.matchFile(this.path, group);
 

@@ -8,15 +8,18 @@ public class BannedImportGroup {
     private final List<PackagePattern> bannedImports;
     private final List<PackagePattern> allowedImports;
     private final List<PackagePattern> excludedClasses;
+    private final String reason;
 
     public BannedImportGroup(List<PackagePattern> basePackages,
             List<PackagePattern> bannedImports,
             List<PackagePattern> allowedImports,
-            List<PackagePattern> excludedClasses) {
+            List<PackagePattern> excludedClasses,
+            String reason) {
         this.basePackages = basePackages;
         this.bannedImports = bannedImports;
         this.allowedImports = allowedImports;
         this.excludedClasses = excludedClasses;
+        this.reason = reason;
     }
 
     public final List<PackagePattern> getBasePackages() {
@@ -33,5 +36,9 @@ public class BannedImportGroup {
 
     public final List<PackagePattern> getExcludedClasses() {
         return this.excludedClasses;
+    }
+
+    public String getReason() {
+        return this.reason;
     }
 }

@@ -33,8 +33,8 @@ public class RestrictImports implements EnforcerRule {
     private PackagePattern allowedImport = null;
     private List<PackagePattern> allowedImports = new ArrayList<>();
 
-    private PackagePattern excludedClass = null;
-    private List<PackagePattern> excludedClasses = new ArrayList<>();
+    private PackagePattern exclusion = null;
+    private List<PackagePattern> exclusions = new ArrayList<>();
 
     private boolean includeTestCode;
 
@@ -54,7 +54,7 @@ public class RestrictImports implements EnforcerRule {
                     assembleList(this.basePackage, this.basePackages),
                     assembleList(this.bannedImport, this.bannedImports),
                     assembleList(this.allowedImport, this.allowedImports),
-                    assembleList(this.excludedClass, this.excludedClasses));
+                    assembleList(this.exclusion, this.exclusions));
 
             final Map<String, List<Match>> matches = ANALYZER.analyze(
                     listSourceRoots(project, log),
@@ -170,12 +170,12 @@ public class RestrictImports implements EnforcerRule {
         this.allowedImports = PackagePattern.parseAll(allowedImports);
     }
 
-    public final void setExcludedClass(String excludedClass) {
-        this.excludedClass = PackagePattern.parse(excludedClass);
+    public final void setExclusion(String exclusion) {
+        this.exclusion = PackagePattern.parse(exclusion);
     }
 
-    public final void setExcludedClasses(List<String> excludedClasses) {
-        this.excludedClasses = PackagePattern.parseAll(excludedClasses);
+    public final void setExclusions(List<String> exclusions) {
+        this.exclusions = PackagePattern.parseAll(exclusions);
     }
 
     public void setIncludeTestCode(boolean includeTestCode) {

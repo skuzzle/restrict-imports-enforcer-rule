@@ -64,7 +64,7 @@ public class RestrictImportsTest {
     @Test
     public void testExcludedClass() throws Exception {
         this.subject.setBannedImports(Collections.singletonList("java.util.**"));
-        this.subject.setExcludedClasses(Collections.singletonList("de.skuzzle.**"));
+        this.subject.setExclusions(Collections.singletonList("de.skuzzle.**"));
         this.subject.execute(this.helper);
     }
 

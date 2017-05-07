@@ -21,10 +21,11 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.ImmutableList;
 
-import de.skuzzle.enforcer.restrictimports.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.Match;
-import de.skuzzle.enforcer.restrictimports.PackagePattern;
+import de.skuzzle.enforcer.restrictimports.api.RuntimeIOException;
 import de.skuzzle.enforcer.restrictimports.impl.ImportMatcherImpl.LineSupplier;
+import de.skuzzle.enforcer.restrictimports.model.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.model.Match;
+import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ImportMatcherImplTest {

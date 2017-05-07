@@ -3,13 +3,18 @@ package de.skuzzle.enforcer.restrictimports.impl;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import de.skuzzle.enforcer.restrictimports.PackagePattern;
+import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
 
 public final class PackagePatternImpl implements PackagePattern {
     private final String[] parts;
 
     public PackagePatternImpl(String s) {
         this.parts = s.split("\\.");
+    }
+
+    @Override
+    public boolean matches(PackagePattern packagePattern) {
+        return matches(packagePattern.toString());
     }
 
     @Override
@@ -39,6 +44,8 @@ public final class PackagePatternImpl implements PackagePattern {
                 }
             } else if (matchParts(patternPart, matchPart)) {
                 ++matchIndex;
+            } else {
+                return false;
             }
         }
 

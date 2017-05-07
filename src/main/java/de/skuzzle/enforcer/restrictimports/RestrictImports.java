@@ -18,10 +18,16 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 
-import de.skuzzle.enforcer.restrictimports.impl.DefaultAnalyzerFactory;
-import de.skuzzle.enforcer.restrictimports.impl.RuntimeIOException;
+import de.skuzzle.enforcer.restrictimports.api.AnalyzerFactory;
+import de.skuzzle.enforcer.restrictimports.api.RuntimeIOException;
+import de.skuzzle.enforcer.restrictimports.api.SourceTreeAnalyzer;
+import de.skuzzle.enforcer.restrictimports.model.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.model.Match;
+import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
 
 /**
+ * Enforcer rule which restricts the usage of certain packages or classes within a Java
+ * code base.
  */
 public class RestrictImports implements EnforcerRule {
 
@@ -40,7 +46,7 @@ public class RestrictImports implements EnforcerRule {
     private boolean includeTestCode;
     private String reason;
 
-    private static final SourceTreeAnalyzer ANALYZER = DefaultAnalyzerFactory
+    private static final SourceTreeAnalyzer ANALYZER = AnalyzerFactory
             .getInstance()
             .createAnalyzer();
 
@@ -57,6 +63,8 @@ public class RestrictImports implements EnforcerRule {
                     assembleList(this.allowedImport, this.allowedImports),
                     assembleList(this.exclusion, this.exclusions),
                     this.reason);
+
+            checkConsistency(group);
 
             final Collection<Path> sourceRoots = listSourceRoots(project, log)
                     .collect(Collectors.toList());
@@ -77,6 +85,10 @@ public class RestrictImports implements EnforcerRule {
             throw new EnforcerRuleException("Unable to lookup an expression " +
                     e.getLocalizedMessage(), e);
         }
+    }
+
+    private void checkConsistency(BannedImportGroup group) throws EnforcerRuleException {
+        ANALYZER.checkGroupConsistency(group);
     }
 
     private List<PackagePattern> assembleList(PackagePattern single,
@@ -108,13 +120,20 @@ public class RestrictImports implements EnforcerRule {
             b.append("Reason: ").append(message).append("\n");
         }
         groups.forEach((fileName, matches) -> {
-            b.append("\tin file: ").append(relativize(roots, fileName)).append("\n");
-            matches.forEach(match -> {
-                b.append("\t\t").append(match.getMatchedString())
-                        .append(" (Line: ").append(match.getImportLine()).append(")\n");
-            });
+            b.append("\tin file: ")
+                    .append(relativize(roots, fileName))
+                    .append("\n");
+            matches.forEach(match -> appendMatch(match, b));
         });
         return b.toString();
+    }
+
+    private void appendMatch(Match match, StringBuilder b) {
+        b.append("\t\t")
+                .append(match.getMatchedString())
+                .append(" (Line: ")
+                .append(match.getImportLine())
+                .append(")\n");
     }
 
     @SuppressWarnings("unchecked")
@@ -167,6 +186,7 @@ public class RestrictImports implements EnforcerRule {
     public final void setBannedImports(List<String> bannedPackages) {
         checkArgument(bannedPackages != null && !bannedPackages.isEmpty(),
                 "bannedPackages must not be empty");
+        this.bannedImport = null;
         this.bannedImports = PackagePattern.parseAll(bannedPackages);
     }
 

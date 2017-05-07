@@ -8,7 +8,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.skuzzle.enforcer.restrictimports.PackagePattern;
+import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
 
 public class PackagePatternImplTest {
 
@@ -109,6 +109,7 @@ public class PackagePatternImplTest {
         assertTrue(pattern.matches("com.foo.bar.ClassName"));
         assertFalse(pattern.matches("com.xyz.foo.bar"));
         assertFalse(pattern.matches("com.xyz.foo.ClassName"));
+        assertFalse(pattern.matches("com.bar.ClassName"));
     }
 
     @Test
@@ -129,5 +130,11 @@ public class PackagePatternImplTest {
     public void testDoubleWildCartBeginning() throws Exception {
         final PackagePattern pattern = PackagePattern.parse("**.ClassName");
         assertTrue(pattern.matches("com.xyz.foo.bar.ClassName"));
+    }
+
+    @Test
+    public void test() throws Exception {
+        final PackagePattern pattern = PackagePattern.parse("com.foo.**");
+        assertFalse(pattern.matches("java.util.ArrayList"));
     }
 }

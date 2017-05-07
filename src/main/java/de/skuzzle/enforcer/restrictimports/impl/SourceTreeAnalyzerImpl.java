@@ -6,10 +6,12 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.skuzzle.enforcer.restrictimports.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.IOUtils;
-import de.skuzzle.enforcer.restrictimports.Match;
-import de.skuzzle.enforcer.restrictimports.SourceTreeAnalyzer;
+import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
+
+import de.skuzzle.enforcer.restrictimports.api.SourceTreeAnalyzer;
+import de.skuzzle.enforcer.restrictimports.model.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.model.Match;
+import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
 
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
@@ -33,4 +35,30 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
                 path.getFileName().toString().toLowerCase().endsWith(".java");
     }
 
+    @Override
+    public void checkGroupConsistency(BannedImportGroup group)
+            throws EnforcerRuleException {
+        checkBannedImportsPresent(group);
+        allowedImportMustMatchBasePattern(group);
+    }
+
+    private void checkBannedImportsPresent(BannedImportGroup group)
+            throws EnforcerRuleException {
+        if (group.getBannedImports().isEmpty()) {
+            throw new EnforcerRuleException("There are no banned imports specified");
+        }
+    }
+
+    private void allowedImportMustMatchBasePattern(BannedImportGroup group)
+            throws EnforcerRuleException {
+        for (final PackagePattern allowedImport : group.getAllowedImports()) {
+            final boolean matches = group.getBasePackages().stream()
+                    .anyMatch(basePackage -> basePackage.matches(allowedImport));
+            if (!matches) {
+                throw new EnforcerRuleException(String.format(
+                        "The allowed import pattern '%s' does not match any base package.",
+                        allowedImport));
+            }
+        }
+    }
 }

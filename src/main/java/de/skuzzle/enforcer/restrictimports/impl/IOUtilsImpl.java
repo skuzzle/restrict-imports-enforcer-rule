@@ -6,7 +6,7 @@ import java.nio.file.Path;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import de.skuzzle.enforcer.restrictimports.IOUtils;
+import de.skuzzle.enforcer.restrictimports.api.RuntimeIOException;
 
 public class IOUtilsImpl implements IOUtils {
 

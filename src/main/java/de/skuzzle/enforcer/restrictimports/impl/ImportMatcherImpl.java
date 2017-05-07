@@ -3,6 +3,7 @@ package de.skuzzle.enforcer.restrictimports.impl;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -10,9 +11,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.skuzzle.enforcer.restrictimports.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.Match;
-import de.skuzzle.enforcer.restrictimports.PackagePattern;
+import de.skuzzle.enforcer.restrictimports.api.RuntimeIOException;
+import de.skuzzle.enforcer.restrictimports.model.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.model.Match;
+import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
 
 class ImportMatcherImpl implements ImportMatcher {
 
@@ -28,6 +30,7 @@ class ImportMatcherImpl implements ImportMatcher {
 
     @Override
     public Stream<Match> matchFile(Path file, BannedImportGroup group) {
+        // Sweet abuse of Stream processing ;)
         final LineCounter counter = new LineCounter();
         final PackageExtractor packageExtractor = new PackageExtractor();
         try (Stream<String> lines = this.supplier.lines(file)) {
@@ -48,7 +51,8 @@ class ImportMatcherImpl implements ImportMatcher {
         } catch (final IOException e) {
             throw new RuntimeIOException(e);
         } catch (final PrematureAbortion ignore) {
-            // the processed file's package did not match the group's basePackage
+            // the processed file's package did not match the group's basePackage or
+            // matched any exclusion pattern
             return Stream.empty();
         }
     }
@@ -81,8 +85,13 @@ class ImportMatcherImpl implements ImportMatcher {
 
     private static Predicate<String> matchesAnyPattern(
             Collection<PackagePattern> patterns) {
-        return packageName -> patterns.stream()
-                .anyMatch(pattern -> pattern.matches(packageName));
+        return packageName -> {
+            final Optional<PackagePattern> match = patterns.stream()
+                    .filter(pattern -> pattern.matches(packageName))
+                    .findAny();
+
+            return match.isPresent();
+        };
     }
 
     private static Function<String, Match> toMatch(Supplier<Integer> lineGetter,

@@ -1,8 +1,7 @@
 package de.skuzzle.enforcer.restrictimports.impl;
 
-import de.skuzzle.enforcer.restrictimports.AnalyzerFactory;
-import de.skuzzle.enforcer.restrictimports.IOUtils;
-import de.skuzzle.enforcer.restrictimports.SourceTreeAnalyzer;
+import de.skuzzle.enforcer.restrictimports.api.AnalyzerFactory;
+import de.skuzzle.enforcer.restrictimports.api.SourceTreeAnalyzer;
 
 public final class DefaultAnalyzerFactory implements AnalyzerFactory {
 

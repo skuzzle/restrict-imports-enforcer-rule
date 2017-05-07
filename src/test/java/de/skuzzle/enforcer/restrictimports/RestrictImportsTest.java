@@ -45,6 +45,7 @@ public class RestrictImportsTest {
 
     @Test
     public void testRestrictImportsNoFailure() throws Exception {
+        this.subject.setBannedImport("foo.com.**");
         this.subject.execute(this.helper);
     }
 

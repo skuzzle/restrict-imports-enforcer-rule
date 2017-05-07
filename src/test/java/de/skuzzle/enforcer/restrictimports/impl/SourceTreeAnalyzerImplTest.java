@@ -9,11 +9,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,9 +25,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import de.skuzzle.enforcer.restrictimports.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.IOUtils;
-import de.skuzzle.enforcer.restrictimports.Match;
+import de.skuzzle.enforcer.restrictimports.model.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.model.Match;
+import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SourceTreeAnalyzerImplTest {
@@ -84,5 +87,28 @@ public class SourceTreeAnalyzerImplTest {
         when(fn.toString()).thenReturn(fileName);
         when(this.ioUtil.isFile(path)).thenReturn(true);
         return path;
+    }
+
+    @Test(expected = EnforcerRuleException.class)
+    public void testNoBannedImports() throws Exception {
+        final BannedImportGroup group = mock(BannedImportGroup.class);
+        when(group.getBannedImports()).thenReturn(Collections.emptyList());
+        when(group.getBasePackages()).thenReturn(Collections.emptyList());
+        when(group.getAllowedImports()).thenReturn(Collections.emptyList());
+
+        this.subject.checkGroupConsistency(group);
+    }
+
+    @Test(expected = EnforcerRuleException.class)
+    public void testInconsistentAllowedImports() throws Exception {
+        final BannedImportGroup group = mock(BannedImportGroup.class);
+        when(group.getBannedImports())
+                .thenReturn(Arrays.asList(PackagePattern.parse("dont.care.**")));
+        when(group.getBasePackages())
+                .thenReturn(Arrays.asList(PackagePattern.parse("com.foo.**")));
+        when(group.getAllowedImports())
+                .thenReturn(Arrays.asList(PackagePattern.parse("foo.**")));
+
+        this.subject.checkGroupConsistency(group);
     }
 }

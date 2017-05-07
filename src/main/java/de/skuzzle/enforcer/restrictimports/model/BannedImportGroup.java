@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports;
+package de.skuzzle.enforcer.restrictimports.model;
 
 import java.util.List;
 
@@ -22,19 +22,19 @@ public class BannedImportGroup {
         this.reason = reason;
     }
 
-    public final List<PackagePattern> getBasePackages() {
+    public List<PackagePattern> getBasePackages() {
         return this.basePackages;
     }
 
-    public final List<PackagePattern> getBannedImports() {
+    public List<PackagePattern> getBannedImports() {
         return this.bannedImports;
     }
 
-    public final List<PackagePattern> getAllowedImports() {
+    public List<PackagePattern> getAllowedImports() {
         return this.allowedImports;
     }
 
-    public final List<PackagePattern> getExcludedClasses() {
+    public List<PackagePattern> getExcludedClasses() {
         return this.excludedClasses;
     }
 

@@ -15,7 +15,7 @@ Maven enforcer rule that bans certain imports. Available from Maven Central.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>0.7.0</version>
+            <version>0.8.0</version>
         </dependency>
     </dependencies>
     <executions>
@@ -28,20 +28,16 @@ Maven enforcer rule that bans certain imports. Available from Maven Central.
             <configuration>
                 <rules>
                     <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
-                        <!-- prohibit use of java loggers in every source file -->
-                        <basePackage>**</basePackage>
-                        <!-- Since 0.7.0: Whether to also analyze test code. Defaults to false -->
-                        <includeTestCode>true</includeTestCode>
-                        <bannedImports>
-                            <bannedImport>java.util.logging.**</bannedImport>
-                        </bannedImports>
+                        <!-- Since 0.8.0: Define an explanatory reason why these imports are prohibited -->
+                        <reason>Use SLF4j for logging</reason>
+                        <!-- Specify a single pattern to be banned -->
+                        <bannedImport>java.util.logging.**</bannedImport>
                     </restrictImports>
+        
+                    <!-- You could have another rule instance here for restricting further imports -->
                 </rules>
             </configuration>
         </execution>
-        
-        <!-- You could have another execution here for restricting further imports -->
-        
     </executions>
 </plugin>
 ```
@@ -51,15 +47,16 @@ Maven enforcer rule that bans certain imports. Available from Maven Central.
 Package patterns are matched case sensitively part by part. There are two supported 
 wildcard operators:
 
-1. `*` matches a single package part.
-2. `**` matches any remaining parts and may only be applied at the end of a pattern.
+1. `*` matches every package part but exactly one.
+2. `**` matches multiple package parts but at least one.
 
 The pattern `java.util.*` matches `java.util.ArrayList` but not `java.util.regex.Pattern`.
 
 Likewise the pattern `java.util.**` matches all classes and subclasses contained in 
-`java.util`.
+`java.util`. Double wildcards are now supported everywhere within a pattern. `**.DumbName`
+would match every import which ends in `DumbName`.
 
-If a pattern does not contain any wildcards matching degrades to a simple String 
+If a pattern does not contain any wildcards, matching degrades to a simple String 
 comparison.
 
 ## Includes and Excludes
@@ -71,13 +68,8 @@ operator and then include some concrete classes:
 <configuration>
     <rules>
         <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
-            <basePackage>**</basePackage>
-            <bannedImports>
-                <bannedImport>java.util.logging.**</bannedImport>
-            </bannedImports>
-            <allowedImports>
-                <allowedImport>java.util.logging.Handler</allowedImport>
-            </allowedImports>
+            <bannedImport>java.util.logging.**</bannedImport>
+            <allowedImport>java.util.logging.Handler</allowedImport>
         </restrictImports>
     </rules>
 </configuration>
@@ -86,26 +78,46 @@ operator and then include some concrete classes:
 It is possible to exclude certain source files from being affected by the bans at 
 all. You can use `basePackage` to specify a package pattern of classes that are affected 
 by the rule. You may then exclude some classes to refine the matches using the
-`excludedClasses` tag.
+`excludedClasses` tag. It is also possible to specify multiple base packages.
 
 ```xml
 <configuration>
     <rules>
         <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
-            <basePackage>com.your.domain.**</basePackage>
-            <bannedImports>
-                <bannedImport>java.util.logging.**</bannedImport>
-            </bannedImports>
-            <allowedImports>
-                <allowedImport>java.util.logging.Handler</allowedImport>
-            </allowedImports>
-            <excludedClasses>
-                <excludedClass>com.your.domain.treat.special.*</excludedClass>
-            </excludedClasses>
+            <basePackages>
+                <basePackage>com.your.domain.**</basePackage>
+                <basePackage>com.your.company.**</basePackage>
+            </basePackages>
+            <bannedImport>java.util.logging.**</bannedImport>
+            <allowedImport>java.util.logging.Handler</allowedImport>
+            <!-- The following packages will not be checked for banned imports -->
+            <excludedClass>com.your.domain.treat.special.*</excludedClass>
         </restrictImports>
     </rules>
 </configuration>
 ```
+
+Wherever you write package patterns you can also specify a list of patterns. Thus it is 
+possible to define multiple banned imports/exclusions/allowed imports or base packages.
+
+```xml
+<configuration>
+    <rules>
+        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+            <bannedImports>
+                <bannedImport>java.util.logging.**</bannedImport>
+                <bannedImport>what.ever.**</bannedImport>
+            </bannedImports>
+            <allowedImports>
+                <allowedImport>java.util.logging.Handler</allowedImport>
+                <allowedImport>what.ever.IsCool</allowedImport>
+            <allowedImports>
+            <!-- ... -->
+        </restrictImports>
+    </rules>
+</configuration>
+```
+
 
 ## Test code
 By default, test code is not subject to the banned import checks. You can enable analysis
@@ -114,13 +126,13 @@ of test code using the `includeTestCode` option.
 <configuration>
     <rules>
         <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
-            <basePackage>com.your.domain.**</basePackage>
             <includeTestCode>true</includeTestCode>
             <!-- ... -->
         </restrictImports>
     </rules>
 </configuration>
 ```
+
 
 ## Limitation
 Import recognition works by comparing the import statements within your source files 
@@ -138,14 +150,16 @@ Likewise `basePackage` and `excludedClass` patterns will only be matched against
 file's file name concatenated to its package. Thus it is not possible to match inner 
 classes or classes where the file name is not equal to the containing class name.
 
+
 ## Configuration options
 
 Overview of all configuration parameters:
 
-| Parameter         | Type                    | Required | Default    | Since   |
-|-------------------|-------------------------|----------|------------|---------|
-| `basePackage`     | Package pattern         | no       | `**`       |         |
-| `bannedImports`   | List of package pattern | yes      | -          |         |
-| `allowedImports`  | List of package pattern | no       | empty list |         |
-| `excludedClasses` | List of package pattern | no       | empty list |         |
-| `includeTestCode` | Boolean                 | no       | `false`    | `0.7.0` |
+| Parameter           | Type                      | Required | Default    | Since   |
+|---------------------|---------------------------|----------|------------|---------|
+| `basePackage(s)`    | (List of) package pattern | no       | `**`       |         |
+| `bannedImport(s)`   | (List of) package pattern | yes      |            |         |
+| `allowedImport(s)`  | (List of) package pattern | no       | empty list |         |
+| `excludedClasse(s)` | (List of) package pattern | no       | empty list |         |
+| `includeTestCode`    | Boolean                   | no       | `false`    | `0.7.0` |
+| `reason`            | String                    |          | empty      | `0.8.0` |

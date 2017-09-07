@@ -91,7 +91,7 @@ by the rule. You may then exclude some classes to refine the matches using the
             <bannedImport>java.util.logging.**</bannedImport>
             <allowedImport>java.util.logging.Handler</allowedImport>
             <!-- The following packages will not be checked for banned imports -->
-            <excludedClass>com.your.domain.treat.special.*</excludedClass>
+            <exclusion>com.your.domain.treat.special.*</exclusion>
         </restrictImports>
     </rules>
 </configuration>
@@ -160,6 +160,6 @@ Overview of all configuration parameters:
 | `basePackage(s)`    | (List of) package pattern | no       | `**`       |         |
 | `bannedImport(s)`   | (List of) package pattern | yes      |            |         |
 | `allowedImport(s)`  | (List of) package pattern | no       | empty list |         |
-| `excludedClasse(s)` | (List of) package pattern | no       | empty list |         |
-| `includeTestCode`    | Boolean                   | no       | `false`    | `0.7.0` |
+| `exclusion(s)`      | (List of) package pattern | no       | empty list |         |
+| `includeTestCode`   | Boolean                   | no       | `false`    | `0.7.0` |
 | `reason`            | String                    |          | empty      | `0.8.0` |

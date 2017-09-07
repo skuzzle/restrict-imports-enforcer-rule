@@ -146,7 +146,7 @@ this plugin will not be able to match that import against a banned pattern point
 concrete class like `java.util.ArrayList`. However, wildcard recognition would still work
 as expected.
 
-Likewise `basePackage` and `excludedClass` patterns will only be matched against a source 
+Likewise `basePackage` and `exclusion` patterns will only be matched against a source 
 file's file name concatenated to its package. Thus it is not possible to match inner 
 classes or classes where the file name is not equal to the containing class name.
 

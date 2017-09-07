@@ -162,4 +162,4 @@ Overview of all configuration parameters:
 | `allowedImport(s)`  | (List of) package pattern | no       | empty list |         |
 | `exclusion(s)`      | (List of) package pattern | no       | empty list |         |
 | `includeTestCode`   | Boolean                   | no       | `false`    | `0.7.0` |
-| `reason`            | String                    |          | empty      | `0.8.0` |
+| `reason`            | String                    | no       | empty      | `0.8.0` |

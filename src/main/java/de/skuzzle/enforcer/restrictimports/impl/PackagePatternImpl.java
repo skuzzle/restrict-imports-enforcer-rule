@@ -14,27 +14,37 @@ public final class PackagePatternImpl implements PackagePattern {
 
     @Override
     public boolean matches(PackagePattern packagePattern) {
+        if (packagePattern == this) {
+            return true;
+        } else if (packagePattern instanceof PackagePatternImpl) {
+            final PackagePatternImpl ppi = (PackagePatternImpl) packagePattern;
+            return matchesInternal(ppi.parts, this.parts);
+        }
         return matches(packagePattern.toString());
     }
 
     @Override
     public boolean matches(String packageName) {
         final String[] matchParts = packageName.split("\\.");
-        if (this.parts.length > matchParts.length) {
+        return matchesInternal(matchParts, this.parts);
+    }
+
+    private boolean matchesInternal(String[] matchParts, String[] parts) {
+        if (parts.length > matchParts.length) {
             // if the pattern is longer than the string to match, match cant be true
             return false;
         }
 
         int patternIndex = 0;
         int matchIndex = 0;
-        for (; patternIndex < this.parts.length
+        for (; patternIndex < parts.length
                 && matchIndex < matchParts.length; ++patternIndex) {
             final String patternPart = this.parts[patternIndex];
             final String matchPart = matchParts[matchIndex];
 
             if ("**".equals(patternPart)) {
-                if (patternIndex + 1 < this.parts.length) {
-                    final String nextPatternPart = this.parts[patternIndex + 1];
+                if (patternIndex + 1 < parts.length) {
+                    final String nextPatternPart = parts[patternIndex + 1];
                     while (matchIndex < matchParts.length
                             && !matchParts(nextPatternPart, matchParts[matchIndex])) {
                         ++matchIndex;
@@ -49,7 +59,7 @@ public final class PackagePatternImpl implements PackagePattern {
             }
         }
 
-        return patternIndex == this.parts.length && matchIndex == matchParts.length;
+        return patternIndex == parts.length && matchIndex == matchParts.length;
     }
 
     private static boolean matchParts(String patternPart, String matchPart) {

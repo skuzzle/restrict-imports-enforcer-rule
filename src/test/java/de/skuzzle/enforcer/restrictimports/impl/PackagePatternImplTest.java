@@ -85,7 +85,14 @@ public class PackagePatternImplTest {
     }
 
     @Test
-    public void testWildCatMatchMultiple() throws Exception {
+    public void testMatchMultipleInfix() throws Exception {
+        final PackagePattern pattern = PackagePattern.parse("de.skuzzle.*.xx.*.test");
+        assertTrue(pattern.matches("de.skuzzle.foo.xx.bar.test"));
+        assertFalse(pattern.matches("de.skuzzle.foo.xx.bar"));
+    }
+
+    @Test
+    public void testWildcardMatchMultiple() throws Exception {
         final PackagePattern pattern = PackagePattern.parse("de.skuzzle.**");
         assertTrue(pattern.matches("de.skuzzle.sub.TestClass"));
         assertTrue(pattern.matches("de.skuzzle.TestClass2"));
@@ -127,6 +134,13 @@ public class PackagePatternImplTest {
     }
 
     @Test
+    public void testDoubleWildcard() throws Exception {
+        final PackagePattern pattern = PackagePattern.parse("com.**.xx.**.ClassName");
+        assertTrue(pattern.matches("com.xyz.foo.yy.xx.bar.ClassName"));
+        assertFalse(pattern.matches("com.xyz.foo.bar"));
+    }
+
+    @Test
     public void testDoubleWildCartBeginning() throws Exception {
         final PackagePattern pattern = PackagePattern.parse("**.ClassName");
         assertTrue(pattern.matches("com.xyz.foo.bar.ClassName"));
@@ -136,5 +150,15 @@ public class PackagePatternImplTest {
     public void test() throws Exception {
         final PackagePattern pattern = PackagePattern.parse("com.foo.**");
         assertFalse(pattern.matches("java.util.ArrayList"));
+    }
+
+    @Test
+    public void testPatternMatchesPattern() throws Exception {
+        assertTrue(PackagePattern.parse("com.foo.**")
+                .matches(PackagePattern.parse("com.foo.*")));
+        assertTrue(PackagePattern.parse("com.foo.*")
+                .matches(PackagePattern.parse("com.foo.Class")));
+        assertFalse(PackagePattern.parse("com.foo.Class")
+                .matches(PackagePattern.parse("com.foo.*")));
     }
 }

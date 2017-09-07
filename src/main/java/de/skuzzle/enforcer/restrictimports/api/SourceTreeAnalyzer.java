@@ -19,9 +19,9 @@ public interface SourceTreeAnalyzer {
 
     /**
      * Checks whether the given group is consistent with respect to all user input.
-     * 
+     *
      * @param group The group to check.
-     * @throws If the group is not consistent.
+     * @throws EnforcerRuleException If the group is not consistent.
      */
     void checkGroupConsistency(BannedImportGroup group) throws EnforcerRuleException;
 

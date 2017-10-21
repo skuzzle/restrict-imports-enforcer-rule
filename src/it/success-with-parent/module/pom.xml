@@ -11,6 +11,6 @@
     <groupId>de.skuzzle.enforcer.it</groupId>
     <artifactId>success4-module</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Banned Import found</name>
+    <name>Banned Import child</name>
 
 </project>

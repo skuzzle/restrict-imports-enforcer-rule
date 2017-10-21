@@ -4,7 +4,9 @@
 # restrict-imports-enforcer-rule
 Maven enforcer rule that bans certain imports. Available from Maven Central.
 
-## Usage
+## Simple usage
+This is a minimal usage example. Please scroll down for detailed configuration 
+information.
 
 ```xml
 <plugin>
@@ -53,8 +55,10 @@ wildcard operators:
 The pattern `java.util.*` matches `java.util.ArrayList` but not `java.util.regex.Pattern`.
 
 Likewise the pattern `java.util.**` matches all classes and subclasses contained in 
-`java.util`. Double wildcards are now supported everywhere within a pattern. `**.DumbName`
-would match every import which ends in `DumbName`.
+`java.util`. Double wildcards are supported everywhere within a pattern. `**.DumbName`
+would match every import which ends in `DumbName`. Wildcards are forbidden to be used in 
+combination with other characters within a single part, like in `com.foo**`. Also parts 
+within a package must not be empty like in `foo..bar`.
 
 If a pattern does not contain any wildcards, matching degrades to a simple String 
 comparison.

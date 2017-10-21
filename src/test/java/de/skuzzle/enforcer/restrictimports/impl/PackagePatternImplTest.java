@@ -26,6 +26,51 @@ public class PackagePatternImplTest {
         PackagePattern.parseAll(null);
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testMisplacedDoubleWildcardInfix() throws Exception {
+        PackagePattern.parse("foo.xyz**abc");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMisplacedSingleWildcardInfix() throws Exception {
+        PackagePattern.parse("foo.xyz*abc");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMisplacedDoubleWildcardPrefix() throws Exception {
+        PackagePattern.parse("foo.**abc");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMisplacedDoubleWildcardSuffix() throws Exception {
+        PackagePattern.parse("foo.abc**");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMisplacedSingleWildcardPrefix() throws Exception {
+        PackagePattern.parse("foo.*abc");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testMisplacedSingleWildcardSuffix() throws Exception {
+        PackagePattern.parse("foo.abc*");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEmptyPartInfix() throws Exception {
+        PackagePattern.parse("foo..bar");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEmptyPartPrefix() throws Exception {
+        PackagePattern.parse(".bar");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testEmptyPartSuffix() throws Exception {
+        PackagePattern.parse("bar.");
+    }
+
     @Test
     public void testToString() throws Exception {
         assertEquals("de.skuzzle.**", PackagePattern.parse("de.skuzzle.**").toString());
@@ -161,4 +206,5 @@ public class PackagePatternImplTest {
         assertFalse(PackagePattern.parse("com.foo.Class")
                 .matches(PackagePattern.parse("com.foo.*")));
     }
+
 }

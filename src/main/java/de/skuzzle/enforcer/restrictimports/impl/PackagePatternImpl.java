@@ -10,6 +10,27 @@ public final class PackagePatternImpl implements PackagePattern {
 
     public PackagePatternImpl(String s) {
         this.parts = s.split("\\.");
+        checkParts(s, this.parts);
+    }
+
+    private void checkParts(String full, String[] parts) {
+        if (full.startsWith(".") || full.endsWith(".")) {
+            throw new IllegalArgumentException(String.format(
+                    "The pattern '%s' contains an empty part", full));
+        }
+        for (final String part : parts) {
+            if (part.isEmpty()) {
+                throw new IllegalArgumentException(String.format(
+                        "The pattern '%s' contains an empty part", full));
+            } else if ("*".equals(part) || "**".equals(part)) {
+                continue;
+            } else if (part.contains("*")) {
+                throw new IllegalArgumentException(String.format(
+                        "The pattern '%s' contains a part which mixes "
+                                + "wildcards and normal characters",
+                        full));
+            }
+        }
     }
 
     @Override

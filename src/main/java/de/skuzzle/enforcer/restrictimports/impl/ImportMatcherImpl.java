@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,6 +18,8 @@ import de.skuzzle.enforcer.restrictimports.model.Match;
 import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
 
 class ImportMatcherImpl implements ImportMatcher {
+
+    private static final Pattern COMMENT_BLOCK_PATTERN = Pattern.compile("/\\*.*?\\*/");
 
     public interface LineSupplier {
         Stream<String> lines(Path path) throws IOException;
@@ -34,7 +37,8 @@ class ImportMatcherImpl implements ImportMatcher {
         final LineCounter counter = new LineCounter();
         final PackageExtractor packageExtractor = new PackageExtractor();
         try (Stream<String> lines = this.supplier.lines(file)) {
-            return lines.map(String::trim)
+            return lines
+                    .map(ImportMatcherImpl::trimComments)
                     .peek(counter)
                     .peek(packageExtractor)
                     .filter(ImportMatcherImpl::isImport)
@@ -107,12 +111,7 @@ class ImportMatcherImpl implements ImportMatcher {
     }
 
     private static boolean is(String compare, String line) {
-        String stripped = line.replaceAll("\\/\\*.*?\\*\\/", "");
-        int inlineCommentIndex = stripped.indexOf("//");
-        if (inlineCommentIndex >= 0) {
-            stripped = stripped.substring(0, inlineCommentIndex);
-        }
-        return stripped.startsWith(compare) && stripped.endsWith(";");
+        return line.startsWith(compare) && line.endsWith(";");
     }
 
     private static boolean isPackage(String line) {
@@ -121,6 +120,15 @@ class ImportMatcherImpl implements ImportMatcher {
 
     private static boolean isImport(String line) {
         return is("import ", line);
+    }
+
+    private static String trimComments(String line) {
+        String stripped = COMMENT_BLOCK_PATTERN.matcher(line.trim()).replaceAll("");
+        int inlineCommentIndex = stripped.indexOf("//");
+        if (inlineCommentIndex >= 0) {
+            stripped = stripped.substring(0, inlineCommentIndex);
+        }
+        return stripped;
     }
 
     private static class LineCounter implements Consumer<String> {

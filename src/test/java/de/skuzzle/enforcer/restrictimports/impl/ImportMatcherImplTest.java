@@ -125,6 +125,28 @@ public class ImportMatcherImplTest {
     }
 
     @Test
+    public void testExcludeInstrumentedFile() throws Exception {
+        when(this.mockLineSupplier.lines(this.path)).thenReturn(ImmutableList.of(
+                "/*Instrumented*/package de.skuzzle.test;",
+                "",
+                "import de.skuzzle.sample.Test;",
+                "import   foo.bar.xyz;",
+                "import de.skuzzle.sample.Test2;",
+                "import de.foo.bar.Test").stream());
+
+        final BannedImportGroup group = new BannedImportGroup(
+                Arrays.asList(PackagePattern.parse("**")),
+                PackagePattern.parseAll(ImmutableList.of("foo")),
+                ImmutableList.of(),
+                PackagePattern.parseAll(ImmutableList.of("de.skuzzle.test.File")),
+                "message");
+
+        final Stream<Match> matches = this.subject.matchFile(this.path, group);
+
+        assertFalse(matches.iterator().hasNext());
+    }
+
+    @Test
     public void testExcludeWholeFile() throws Exception {
         final Stream<Match> matches = this.subject.matchFile(this.path,
                 group(Arrays.asList("de.foo.bar"),

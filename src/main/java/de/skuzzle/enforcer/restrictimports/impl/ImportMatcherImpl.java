@@ -107,7 +107,12 @@ class ImportMatcherImpl implements ImportMatcher {
     }
 
     private static boolean is(String compare, String line) {
-        return line.startsWith(compare) && line.endsWith(";");
+        String stripped = line.replaceAll("\\/\\*.*?\\*\\/", "");
+        int inlineCommentIndex = stripped.indexOf("//");
+        if (inlineCommentIndex >= 0) {
+            stripped = stripped.substring(0, inlineCommentIndex);
+        }
+        return stripped.startsWith(compare) && stripped.endsWith(";");
     }
 
     private static boolean isPackage(String line) {

@@ -16,10 +16,8 @@ import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 
 import de.skuzzle.enforcer.restrictimports.api.AnalyzerFactory;
-import de.skuzzle.enforcer.restrictimports.api.RuntimeIOException;
 import de.skuzzle.enforcer.restrictimports.api.SourceTreeAnalyzer;
 import de.skuzzle.enforcer.restrictimports.model.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.model.Match;
@@ -78,11 +76,8 @@ public class RestrictImports implements EnforcerRule {
             } else {
                 log.debug("No banned imports found");
             }
-
-        } catch (final RuntimeIOException e) {
-            throw new EnforcerRuleException("Encountered IO exception", e);
-        } catch (final ExpressionEvaluationException e) {
-            throw new EnforcerRuleException("Unable to lookup an expression " +
+        } catch (final Exception e) {
+            throw new EnforcerRuleException("Encountered unexpected exception: " +
                     e.getLocalizedMessage(), e);
         }
     }

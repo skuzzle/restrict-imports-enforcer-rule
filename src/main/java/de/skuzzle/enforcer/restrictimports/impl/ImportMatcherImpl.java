@@ -3,7 +3,6 @@ package de.skuzzle.enforcer.restrictimports.impl;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -89,13 +88,8 @@ class ImportMatcherImpl implements ImportMatcher {
 
     private static Predicate<String> matchesAnyPattern(
             Collection<PackagePattern> patterns) {
-        return packageName -> {
-            final Optional<PackagePattern> match = patterns.stream()
-                    .filter(pattern -> pattern.matches(packageName))
-                    .findAny();
-
-            return match.isPresent();
-        };
+        return packageName -> patterns.stream()
+                .anyMatch(pattern -> pattern.matches(packageName));
     }
 
     private static Function<String, Match> toMatch(Supplier<Integer> lineGetter,
@@ -124,7 +118,8 @@ class ImportMatcherImpl implements ImportMatcher {
 
     private static String trimComments(String line) {
         String stripped = COMMENT_BLOCK_PATTERN.matcher(line.trim()).replaceAll("");
-        int inlineCommentIndex = stripped.indexOf("//");
+
+        final int inlineCommentIndex = stripped.indexOf("//");
         if (inlineCommentIndex >= 0) {
             stripped = stripped.substring(0, inlineCommentIndex);
         }

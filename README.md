@@ -122,6 +122,13 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
 </configuration>
 ```
 
+## Static imports
+Matching static imports is also possible (though it is quite a hack given the current implementation). Just prefix your
+pattern with `static `:
+```xml
+	<bannedImport>static org.junit.Assert.*</bannedImport>
+```
+Inclusions and exclusion will work the same way.
 
 ## Test code
 By default, test code is not subject to the banned import checks. You can enable analysis

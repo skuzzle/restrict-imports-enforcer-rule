@@ -1,14 +1,22 @@
 package de.skuzzle.enforcer.restrictimports.impl;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
 
 public final class PackagePatternImpl implements PackagePattern {
+    private static final String STATIC_PREFIX = "static ";
     private final String[] parts;
+    private final boolean staticc;
 
     public PackagePatternImpl(String s) {
+        this.staticc = s.startsWith(STATIC_PREFIX);
+        if (staticc) {
+            s = s.substring(STATIC_PREFIX.length());
+
+        }
         this.parts = s.split("\\.");
         checkParts(s, this.parts);
     }
@@ -18,17 +26,40 @@ public final class PackagePatternImpl implements PackagePattern {
             throw new IllegalArgumentException(String.format(
                     "The pattern '%s' contains an empty part", full));
         }
-        for (final String part : parts) {
-            if (part.isEmpty()) {
+        for (int i = 0; i < parts.length; i++) {
+            final String part = parts[i];
+            checkCharacters(full, part, i);
+
+        }
+    }
+
+    private void checkCharacters(String full, String part, int partIndex) {
+        final char[] chars = part.toCharArray();
+
+        if (part.isEmpty()) {
+            throw new IllegalArgumentException(String.format(
+                    "The pattern '%s' contains an empty part", full));
+        } else if ("*".equals(part) || "**".equals(part)) {
+            return;
+        } else if (part.contains("*")) {
+            throw new IllegalArgumentException(String.format(
+                    "The pattern '%s' contains a part which mixes "
+                            + "wildcards and normal characters",
+                    full));
+        } else if (partIndex == 0 && "static".equals(part)) {
+            return;
+        } else if (!Character.isJavaIdentifierStart(chars[0]) && '*' != chars[0]) {
+            throw new IllegalArgumentException(String.format(
+                    "The pattern '%s' contains a non-identifier character '%s'", full,
+                    chars[0]));
+        }
+
+        for (int i = 1; i < chars.length; i++) {
+            final char c = chars[i];
+            if (!Character.isJavaIdentifierPart(c) && '*' != chars[0]) {
                 throw new IllegalArgumentException(String.format(
-                        "The pattern '%s' contains an empty part", full));
-            } else if ("*".equals(part) || "**".equals(part)) {
-                continue;
-            } else if (part.contains("*")) {
-                throw new IllegalArgumentException(String.format(
-                        "The pattern '%s' contains a part which mixes "
-                                + "wildcards and normal characters",
-                        full));
+                        "The pattern '%s' contains a non-identifier character '%s'", full,
+                        chars[i]));
             }
         }
     }
@@ -39,18 +70,26 @@ public final class PackagePatternImpl implements PackagePattern {
             return true;
         } else if (packagePattern instanceof PackagePatternImpl) {
             final PackagePatternImpl ppi = (PackagePatternImpl) packagePattern;
-            return matchesInternal(ppi.parts, this.parts);
+            return matchesInternal(ppi.staticc, ppi.parts, this.staticc, this.parts);
         }
         return matches(packagePattern.toString());
     }
 
     @Override
     public boolean matches(String packageName) {
+        final boolean matchIsStatic = packageName.startsWith(STATIC_PREFIX);
+        if (matchIsStatic) {
+            packageName = packageName.substring(STATIC_PREFIX.length());
+        }
         final String[] matchParts = packageName.split("\\.");
-        return matchesInternal(matchParts, this.parts);
+        return matchesInternal(matchIsStatic, matchParts, this.staticc, this.parts);
     }
 
-    private boolean matchesInternal(String[] matchParts, String[] parts) {
+    private boolean matchesInternal(boolean matchIsStatic, String[] matchParts,
+            boolean partsIsStatic, String[] parts) {
+        if (matchIsStatic != partsIsStatic) {
+            return false;
+        }
         if (parts.length > matchParts.length) {
             // if the pattern is longer than the string to match, match cant be true
             return false;
@@ -92,17 +131,23 @@ public final class PackagePatternImpl implements PackagePattern {
 
     @Override
     public String toString() {
-        return Arrays.stream(this.parts).collect(Collectors.joining("."));
+        final StringBuilder result = new StringBuilder();
+        if (staticc) {
+            result.append(STATIC_PREFIX);
+        }
+        result.append(Arrays.stream(this.parts).collect(Collectors.joining(".")));
+        return result.toString();
     }
 
     @Override
     public int hashCode() {
-        return Arrays.hashCode(this.parts);
+        return Objects.hash(Arrays.hashCode(parts), staticc);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return obj == this || obj instanceof PackagePatternImpl &&
-                Arrays.equals(this.parts, ((PackagePatternImpl) obj).parts);
+        return obj == this || obj instanceof PackagePatternImpl
+                && this.staticc == ((PackagePatternImpl) obj).staticc
+                && Arrays.equals(this.parts, ((PackagePatternImpl) obj).parts);
     }
 }

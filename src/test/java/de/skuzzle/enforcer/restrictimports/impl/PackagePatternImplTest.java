@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 public class PackagePatternImplTest {
 
@@ -71,9 +72,20 @@ public class PackagePatternImplTest {
         PackagePattern.parse("bar.");
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalWhitespace() throws Exception {
+        PackagePattern.parse("com foo");
+    }
+
     @Test
     public void testToString() throws Exception {
         assertEquals("de.skuzzle.**", PackagePattern.parse("de.skuzzle.**").toString());
+    }
+
+    @Test
+    public void testToStringStatic() throws Exception {
+        assertEquals("static de.skuzzle.**",
+                PackagePattern.parse("static de.skuzzle.**").toString());
     }
 
     @Test
@@ -82,6 +94,11 @@ public class PackagePatternImplTest {
                 PackagePattern.parse("de.skuzzle.**"));
         assertEquals(PackagePattern.parse("de.skuzzle.**").hashCode(),
                 PackagePattern.parse("de.skuzzle.**").hashCode());
+    }
+
+    @Test
+    public void testVerifyEquals() throws Exception {
+        EqualsVerifier.forClass(PackagePatternImpl.class).verify();
     }
 
     @Test
@@ -207,4 +224,9 @@ public class PackagePatternImplTest {
                 .matches(PackagePattern.parse("com.foo.*")));
     }
 
+    @Test
+    public void testStaticImport() throws Exception {
+        assertTrue(PackagePattern.parse("static com.foo.bar.*")
+                .matches("static com.foo.bar.Test"));
+    }
 }

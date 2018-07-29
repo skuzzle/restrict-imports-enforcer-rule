@@ -39,7 +39,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
     public void checkGroupConsistency(BannedImportGroup group)
             throws EnforcerRuleException {
         checkBannedImportsPresent(group);
-        allowedImportMustMatchBasePattern(group);
+        allowedImportMustMatchBannedPattern(group);
     }
 
     private void checkBannedImportsPresent(BannedImportGroup group)
@@ -49,10 +49,10 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
         }
     }
 
-    private void allowedImportMustMatchBasePattern(BannedImportGroup group)
+    private void allowedImportMustMatchBannedPattern(BannedImportGroup group)
             throws EnforcerRuleException {
         for (final PackagePattern allowedImport : group.getAllowedImports()) {
-            final boolean matches = group.getBasePackages().stream()
+            final boolean matches = group.getBannedImports().stream()
                     .anyMatch(basePackage -> basePackage.matches(allowedImport));
             if (!matches) {
                 throw new EnforcerRuleException(String.format(

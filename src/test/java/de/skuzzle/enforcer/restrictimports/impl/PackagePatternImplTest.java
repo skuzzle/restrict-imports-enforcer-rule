@@ -229,4 +229,9 @@ public class PackagePatternImplTest {
         assertTrue(PackagePattern.parse("static com.foo.bar.*")
                 .matches("static com.foo.bar.Test"));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testParseEmptyString() throws Exception {
+        PackagePattern.parse("");
+    }
 }

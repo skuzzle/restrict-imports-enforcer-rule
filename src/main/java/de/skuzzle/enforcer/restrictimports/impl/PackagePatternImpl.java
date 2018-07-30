@@ -15,8 +15,8 @@ public final class PackagePatternImpl implements PackagePattern {
         this.staticc = s.startsWith(STATIC_PREFIX);
         if (staticc) {
             s = s.substring(STATIC_PREFIX.length());
-
         }
+
         this.parts = s.split("\\.");
         checkParts(s, this.parts);
     }
@@ -48,7 +48,7 @@ public final class PackagePatternImpl implements PackagePattern {
                     full));
         } else if (partIndex == 0 && "static".equals(part)) {
             return;
-        } else if (!Character.isJavaIdentifierStart(chars[0]) && '*' != chars[0]) {
+        } else if (!Character.isJavaIdentifierStart(chars[0])) {
             throw new IllegalArgumentException(String.format(
                     "The pattern '%s' contains a non-identifier character '%s'", full,
                     chars[0]));
@@ -56,7 +56,7 @@ public final class PackagePatternImpl implements PackagePattern {
 
         for (int i = 1; i < chars.length; i++) {
             final char c = chars[i];
-            if (!Character.isJavaIdentifierPart(c) && '*' != chars[0]) {
+            if (!Character.isJavaIdentifierPart(c)) {
                 throw new IllegalArgumentException(String.format(
                         "The pattern '%s' contains a non-identifier character '%s'", full,
                         chars[i]));

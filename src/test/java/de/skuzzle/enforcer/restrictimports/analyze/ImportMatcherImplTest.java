@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.impl;
+package de.skuzzle.enforcer.restrictimports.analyze;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -21,11 +21,13 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import com.google.common.collect.ImmutableList;
 
-import de.skuzzle.enforcer.restrictimports.api.RuntimeIOException;
-import de.skuzzle.enforcer.restrictimports.impl.ImportMatcherImpl.LineSupplier;
-import de.skuzzle.enforcer.restrictimports.model.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.model.Match;
-import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.analyze.ImportMatcherImpl;
+import de.skuzzle.enforcer.restrictimports.analyze.Match;
+import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
+
+import de.skuzzle.enforcer.restrictimports.analyze.RuntimeIOException;
+import de.skuzzle.enforcer.restrictimports.analyze.ImportMatcherImpl.LineSupplier;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ImportMatcherImplTest {

@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.impl;
+package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -7,11 +7,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
-
-import de.skuzzle.enforcer.restrictimports.api.SourceTreeAnalyzer;
-import de.skuzzle.enforcer.restrictimports.model.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.model.Match;
-import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
 
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 

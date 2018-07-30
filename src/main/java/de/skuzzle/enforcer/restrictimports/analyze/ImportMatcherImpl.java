@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.impl;
+package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -10,11 +10,6 @@ import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import de.skuzzle.enforcer.restrictimports.api.RuntimeIOException;
-import de.skuzzle.enforcer.restrictimports.model.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.model.Match;
-import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
 
 class ImportMatcherImpl implements ImportMatcher {
 

@@ -18,11 +18,11 @@ import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 
-import de.skuzzle.enforcer.restrictimports.api.AnalyzerFactory;
-import de.skuzzle.enforcer.restrictimports.api.SourceTreeAnalyzer;
-import de.skuzzle.enforcer.restrictimports.model.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.model.Match;
-import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerFactory;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.analyze.Match;
+import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
+import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
 
 /**
  * Enforcer rule which restricts the usage of certain packages or classes within a Java

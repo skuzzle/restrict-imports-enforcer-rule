@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.model;
+package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.api;
+package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.io.IOException;
 

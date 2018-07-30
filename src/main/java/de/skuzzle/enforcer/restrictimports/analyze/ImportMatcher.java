@@ -1,10 +1,7 @@
-package de.skuzzle.enforcer.restrictimports.impl;
+package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
-
-import de.skuzzle.enforcer.restrictimports.model.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.model.Match;
 
 /**
  * Collects banned import matches from a single java source file.

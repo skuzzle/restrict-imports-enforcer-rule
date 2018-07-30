@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.model;
+package de.skuzzle.enforcer.restrictimports.analyze;
 
 /**
  * Represents a single match of a banned import within a java source file.

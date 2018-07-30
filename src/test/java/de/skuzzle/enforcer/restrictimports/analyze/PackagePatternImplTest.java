@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.impl;
+package de.skuzzle.enforcer.restrictimports.analyze;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,7 +8,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
+import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
+import de.skuzzle.enforcer.restrictimports.analyze.PackagePatternImpl;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 public class PackagePatternImplTest {

@@ -1,12 +1,10 @@
-package de.skuzzle.enforcer.restrictimports.model;
+package de.skuzzle.enforcer.restrictimports.analyze;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import de.skuzzle.enforcer.restrictimports.impl.PackagePatternImpl;
 
 /**
  * Pattern class to match java style package and class names using wild card operators.

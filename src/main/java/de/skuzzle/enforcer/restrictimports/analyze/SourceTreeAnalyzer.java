@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.api;
+package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -6,9 +6,6 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
-
-import de.skuzzle.enforcer.restrictimports.model.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.model.Match;
 
 /**
  * Analyzes the whole source tree for matches of banned imports.

@@ -1,6 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.api;
-
-import de.skuzzle.enforcer.restrictimports.impl.DefaultAnalyzerFactory;
+package de.skuzzle.enforcer.restrictimports.analyze;
 
 /**
  * Factory class for obtaining {@link SourceTreeAnalyzer} instances.
@@ -15,7 +13,7 @@ public interface AnalyzerFactory {
      * @return The factory instance.
      */
     public static AnalyzerFactory getInstance() {
-        return DefaultAnalyzerFactory.getInstance();
+        return AnalyzerFactoryImpl.getInstance();
     }
 
     /**

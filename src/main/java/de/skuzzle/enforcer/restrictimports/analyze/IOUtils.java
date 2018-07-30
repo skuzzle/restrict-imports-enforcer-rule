@@ -1,17 +1,12 @@
-package de.skuzzle.enforcer.restrictimports.impl;
+package de.skuzzle.enforcer.restrictimports.analyze;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import de.skuzzle.enforcer.restrictimports.api.RuntimeIOException;
-
-/**
- * Some IO utility methods for java NIO features. Only for better testability.
- *
- * @author Simon Taddiken
- */
-interface IOUtils {
+class IOUtils {
 
     /**
      * Returns a Stream of the given file's lines.
@@ -20,7 +15,13 @@ interface IOUtils {
      * @return A Stream of lines.
      * @throws RuntimeIOException If an IO error occurs.
      */
-    Stream<String> lines(Path path);
+    public Stream<String> lines(Path path) throws RuntimeIOException {
+        try {
+            return Files.lines(path);
+        } catch (final IOException e) {
+            throw new RuntimeIOException(e);
+        }
+    }
 
     /**
      * Lists files in the given root directory that match the given predicate. Returns an
@@ -32,7 +33,16 @@ interface IOUtils {
      * @return A stream of found files.
      * @throws RuntimeIOException If an IO error occurs.
      */
-    Stream<Path> listFiles(Path root, Predicate<Path> filter);
+    public Stream<Path> listFiles(Path root, Predicate<Path> filter) {
+        try {
+            if (!Files.exists(root)) {
+                return Stream.empty();
+            }
+            return Files.find(root, Integer.MAX_VALUE, (path, bfa) -> filter.test(path));
+        } catch (final IOException e) {
+            throw new RuntimeIOException(e);
+        }
+    }
 
     /**
      * Determines whether the given path represents a file.
@@ -40,5 +50,8 @@ interface IOUtils {
      * @param path The path to check.
      * @return Whether the path represents a file.
      */
-    boolean isFile(Path path);
+    public boolean isFile(Path path) {
+        return !Files.isDirectory(path);
+    }
+
 }

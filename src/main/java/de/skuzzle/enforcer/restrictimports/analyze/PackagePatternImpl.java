@@ -1,12 +1,11 @@
-package de.skuzzle.enforcer.restrictimports.impl;
+package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import de.skuzzle.enforcer.restrictimports.model.PackagePattern;
+final class PackagePatternImpl implements PackagePattern {
 
-public final class PackagePatternImpl implements PackagePattern {
     private static final String STATIC_PREFIX = "static ";
     private final String[] parts;
     private final boolean staticc;

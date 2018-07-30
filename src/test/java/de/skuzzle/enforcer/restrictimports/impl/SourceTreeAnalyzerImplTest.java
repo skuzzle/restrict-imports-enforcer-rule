@@ -111,4 +111,17 @@ public class SourceTreeAnalyzerImplTest {
 
         this.subject.checkGroupConsistency(group);
     }
+
+    @Test(expected = EnforcerRuleException.class)
+    public void testInconsistentExclusions() throws Exception {
+        final BannedImportGroup group = mock(BannedImportGroup.class);
+        when(group.getBannedImports())
+                .thenReturn(Arrays.asList(PackagePattern.parse("dont.care.**")));
+        when(group.getBasePackages())
+                .thenReturn(Arrays.asList(PackagePattern.parse("base.package.**")));
+        when(group.getExcludedClasses())
+                .thenReturn(Arrays.asList(PackagePattern.parse("foo.bar.**")));
+
+        this.subject.checkGroupConsistency(group);
+    }
 }

@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>de.skuzzle</groupId>
 		<artifactId>skuzzle-parent</artifactId>
-		<version>1.3.6</version>
+		<version>1.3.7</version>
 	</parent>
 
 	<groupId>de.skuzzle.enforcer</groupId>

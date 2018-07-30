@@ -56,7 +56,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
                     .anyMatch(basePackage -> basePackage.matches(allowedImport));
             if (!matches) {
                 throw new EnforcerRuleException(String.format(
-                        "The allowed import pattern '%s' does not match any base package.",
+                        "The allowed import pattern '%s' does not match any banned package.",
                         allowedImport));
             }
         }

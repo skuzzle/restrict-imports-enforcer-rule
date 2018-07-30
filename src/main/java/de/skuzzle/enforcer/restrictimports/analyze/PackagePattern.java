@@ -17,12 +17,12 @@ public interface PackagePattern {
      * Parses each string of the given collection into a {@link PackagePattern} and
      * returns them in a list.
      *
-     * @param strings The Strings to parse.
+     * @param patternStrings The Strings to parse.
      * @return A list of parsed package patterns.
      */
-    public static List<PackagePattern> parseAll(Collection<String> strings) {
-        checkArgument(strings != null);
-        return strings.stream()
+    public static List<PackagePattern> parseAll(Collection<String> patternStrings) {
+        checkArgument(patternStrings != null);
+        return patternStrings.stream()
                 .map(PackagePattern::parse)
                 .collect(Collectors.toList());
     }
@@ -30,12 +30,12 @@ public interface PackagePattern {
     /**
      * Parses the given String into a {@link PackagePattern}.
      *
-     * @param s The String to parse.
+     * @param patternString The String to parse.
      * @return The parsed package pattern.
      */
-    public static PackagePattern parse(String s) {
-        checkArgument(s != null);
-        return new PackagePatternImpl(s);
+    public static PackagePattern parse(String patternString) {
+        checkArgument(patternString != null);
+        return new PackagePatternImpl(patternString);
     }
 
     /**

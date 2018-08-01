@@ -93,7 +93,7 @@ class ImportMatcherImpl implements ImportMatcher {
     }
 
     private static String extractPackageName(String line) {
-        final int spaceIdx = line.indexOf(" ");
+        final int spaceIdx = line.lastIndexOf(" ");
         final int semiIdx = line.indexOf(";");
         final String sub = line.substring(spaceIdx, semiIdx);
         return sub.trim();

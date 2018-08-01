@@ -43,7 +43,7 @@ class ImportMatcherImpl implements ImportMatcher {
                     .map(ImportMatcherImpl::extractPackageName)
                     .filter(matchesAnyPattern(group.getBannedImports()))
                     .filter(matchesAnyPattern(group.getAllowedImports()).negate())
-                    .map(toMatch(counter::getLine, file.toString()))
+                    .map(toMatch(counter::getLine, file))
                     // need to copy because underlying stream is closed by try-resources
                     .collect(Collectors.toList()).stream();
         } catch (final IOException e) {
@@ -88,7 +88,7 @@ class ImportMatcherImpl implements ImportMatcher {
     }
 
     private static Function<String, Match> toMatch(Supplier<Integer> lineGetter,
-            String filePath) {
+            Path filePath) {
         return matchedImport -> new Match(filePath, lineGetter.get(), matchedImport);
     }
 

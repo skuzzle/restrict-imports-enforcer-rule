@@ -1,5 +1,7 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
+import java.nio.file.Path;
+
 /**
  * Represents a single match of a banned import within a java source file.
  *
@@ -7,17 +9,17 @@ package de.skuzzle.enforcer.restrictimports.analyze;
  */
 public class Match {
 
-    private final String sourceFile;
+    private final Path sourceFile;
     private final int importLine;
     private final String matchedString;
 
-    public Match(String sourceFile, int importLine, String matchedString) {
+    Match(Path sourceFile, int importLine, String matchedString) {
         this.sourceFile = sourceFile;
         this.importLine = importLine;
         this.matchedString = matchedString;
     }
 
-    public final String getSourceFile() {
+    public final Path getSourceFile() {
         return this.sourceFile;
     }
 

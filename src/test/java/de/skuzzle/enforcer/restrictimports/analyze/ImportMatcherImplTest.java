@@ -12,21 +12,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import com.google.common.collect.ImmutableList;
 
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.analyze.ImportMatcherImpl;
-import de.skuzzle.enforcer.restrictimports.analyze.Match;
-import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
-
-import de.skuzzle.enforcer.restrictimports.analyze.RuntimeIOException;
 import de.skuzzle.enforcer.restrictimports.analyze.ImportMatcherImpl.LineSupplier;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -57,18 +52,20 @@ public class ImportMatcherImplTest {
                 "import de.foo.bar.Test").stream());
     }
 
-    private BannedImportGroup group(List<String> basePackages, List<String> banned) {
+    private BannedImportGroup group(List<String> basePackages, List<String> banned)
+            throws EnforcerRuleException {
         return group(basePackages, banned, ImmutableList.of());
     }
 
     private BannedImportGroup group(List<String> basePackages, List<String> banned,
-            List<String> allowed) {
-        return new BannedImportGroup(
-                PackagePattern.parseAll(basePackages),
-                PackagePattern.parseAll(banned),
-                PackagePattern.parseAll(allowed),
-                ImmutableList.of(),
-                "message");
+            List<String> allowed) throws EnforcerRuleException {
+        return BannedImportGroup.builder()
+                .withBasePackages(PackagePattern.parseAll(basePackages))
+                .withBannedImports(PackagePattern.parseAll(banned))
+                .withAllowedImports(PackagePattern.parseAll(allowed))
+                .withExcludedClasses(ImmutableList.of())
+                .withReason("message")
+                .build();
     }
 
     @Test(expected = RuntimeIOException.class)
@@ -92,27 +89,27 @@ public class ImportMatcherImplTest {
         final Match match1 = matches.get(0);
         assertEquals("de.skuzzle.sample.Test", match1.getMatchedString());
         assertEquals(3, match1.getImportLine());
-        assertEquals("path/to/File.java", match1.getSourceFile());
+        assertEquals("path/to/File.java", match1.getSourceFile().toString());
 
         final Match match2 = matches.get(1);
         assertEquals(5, match2.getImportLine());
         assertEquals("de.skuzzle.sample.Test2", match2.getMatchedString());
-        assertEquals("path/to/File.java", match2.getSourceFile());
+        assertEquals("path/to/File.java", match2.getSourceFile().toString());
 
         final Match match3 = matches.get(2);
         assertEquals(6, match3.getImportLine());
         assertEquals("de.skuzzle.sample.Test3", match3.getMatchedString());
-        assertEquals("path/to/File.java", match3.getSourceFile());
+        assertEquals("path/to/File.java", match3.getSourceFile().toString());
 
         final Match match4 = matches.get(3);
         assertEquals(7, match4.getImportLine());
         assertEquals("de.skuzzle.sample.Test4", match4.getMatchedString());
-        assertEquals("path/to/File.java", match4.getSourceFile());
+        assertEquals("path/to/File.java", match4.getSourceFile().toString());
 
         final Match match5 = matches.get(4);
         assertEquals(8, match5.getImportLine());
         assertEquals("de.skuzzle.sample.Test5", match5.getMatchedString());
-        assertEquals("path/to/File.java", match5.getSourceFile());
+        assertEquals("path/to/File.java", match5.getSourceFile().toString());
     }
 
     @Test
@@ -129,27 +126,29 @@ public class ImportMatcherImplTest {
         final Match match1 = matches.get(0);
         assertEquals("de.skuzzle.sample.Test", match1.getMatchedString());
         assertEquals(3, match1.getImportLine());
-        assertEquals("path/to/File.java", match1.getSourceFile());
+        assertEquals("path/to/File.java", match1.getSourceFile().toString());
 
         final Match match2 = matches.get(1);
         assertEquals(6, match2.getImportLine());
         assertEquals("de.skuzzle.sample.Test3", match2.getMatchedString());
-        assertEquals("path/to/File.java", match2.getSourceFile());
+        assertEquals("path/to/File.java", match2.getSourceFile().toString());
 
         final Match match3 = matches.get(2);
         assertEquals(8, match3.getImportLine());
         assertEquals("de.skuzzle.sample.Test5", match3.getMatchedString());
-        assertEquals("path/to/File.java", match3.getSourceFile());
+        assertEquals("path/to/File.java", match3.getSourceFile().toString());
     }
 
     @Test
     public void testExcludeFile() throws Exception {
-        final BannedImportGroup group = new BannedImportGroup(
-                Arrays.asList(PackagePattern.parse("**")),
-                PackagePattern.parseAll(ImmutableList.of("foo")),
-                ImmutableList.of(),
-                PackagePattern.parseAll(ImmutableList.of("de.skuzzle.test.File")),
-                "message");
+        final BannedImportGroup group = BannedImportGroup.builder()
+                .withBasePackages(Arrays.asList(PackagePattern.parse("**")))
+                .withBannedImports(PackagePattern.parseAll(ImmutableList.of("foo")))
+                .withAllowedImports(ImmutableList.of())
+                .withExcludedClasses(
+                        PackagePattern.parseAll(ImmutableList.of("de.skuzzle.test.File")))
+                .withReason("message")
+                .build();
 
         final Stream<Match> matches = this.subject.matchFile(this.path, group);
 
@@ -166,12 +165,14 @@ public class ImportMatcherImplTest {
                 "import de.skuzzle.sample.Test2;",
                 "import de.foo.bar.Test").stream());
 
-        final BannedImportGroup group = new BannedImportGroup(
-                Arrays.asList(PackagePattern.parse("**")),
-                PackagePattern.parseAll(ImmutableList.of("foo")),
-                ImmutableList.of(),
-                PackagePattern.parseAll(ImmutableList.of("de.skuzzle.test.File")),
-                "message");
+        final BannedImportGroup group = BannedImportGroup.builder()
+                .withBasePackages(Arrays.asList(PackagePattern.parse("**")))
+                .withBannedImports(PackagePattern.parseAll(ImmutableList.of("foo")))
+                .withAllowedImports(ImmutableList.of())
+                .withExcludedClasses(
+                        PackagePattern.parseAll(ImmutableList.of("de.skuzzle.test.File")))
+                .withReason("message")
+                .build();
 
         final Stream<Match> matches = this.subject.matchFile(this.path, group);
 

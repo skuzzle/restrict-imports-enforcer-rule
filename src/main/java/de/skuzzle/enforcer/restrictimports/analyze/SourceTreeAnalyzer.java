@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
-
 /**
  * Analyzes the whole source tree for matches of banned imports.
  *
@@ -15,12 +13,15 @@ import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 public interface SourceTreeAnalyzer {
 
     /**
-     * Checks whether the given group is consistent with respect to all user input.
+     * Creates a new {@link SourceTreeAnalyzer} instance.
      *
-     * @param group The group to check.
-     * @throws EnforcerRuleException If the group is not consistent.
+     * @return The analyzer.
      */
-    void checkGroupConsistency(BannedImportGroup group) throws EnforcerRuleException;
+    public static SourceTreeAnalyzer getInstance() {
+        final IOUtils ioUtils = new IOUtils();
+        final ImportMatcher matcher = new ImportMatcherImpl(ioUtils::lines);
+        return new SourceTreeAnalyzerImpl(matcher, ioUtils);
+    }
 
     /**
      * Analyzes all java classes found recursively in the given root directories for
@@ -30,5 +31,5 @@ public interface SourceTreeAnalyzer {
      * @param group The banned import.
      * @return A map of file names to the matches found within that file.
      */
-    Map<String, List<Match>> analyze(Stream<Path> roots, BannedImportGroup group);
+    Map<Path, List<Match>> analyze(Stream<Path> roots, BannedImportGroup group);
 }

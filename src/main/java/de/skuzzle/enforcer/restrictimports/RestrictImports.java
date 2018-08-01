@@ -18,9 +18,9 @@ import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 
-import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerFactory;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.analyze.Match;
+import de.skuzzle.enforcer.restrictimports.analyze.MatchFormatter;
 import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
 
@@ -47,9 +47,7 @@ public class RestrictImports implements EnforcerRule {
     private boolean includeTestCode;
     private String reason;
 
-    private static final SourceTreeAnalyzer ANALYZER = AnalyzerFactory
-            .getInstance()
-            .createAnalyzer();
+    private static final SourceTreeAnalyzer ANALYZER = SourceTreeAnalyzer.getInstance();
 
     @Override
     public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException {
@@ -58,19 +56,11 @@ public class RestrictImports implements EnforcerRule {
             final MavenProject project = (MavenProject) helper.evaluate("${project}");
 
             log.debug("Checking for banned imports");
-            final BannedImportGroup group = new BannedImportGroup(
-                    assembleList(this.basePackage, this.basePackages),
-                    assembleList(this.bannedImport, this.bannedImports),
-                    assembleList(this.allowedImport, this.allowedImports),
-                    assembleList(this.exclusion, this.exclusions),
-                    this.reason);
-
-            checkConsistency(group);
-
+            final BannedImportGroup group = createGroupFromPluginConfiguration();
             final Collection<Path> sourceRoots = listSourceRoots(project, log)
                     .collect(Collectors.toList());
 
-            final Map<String, List<Match>> matches = ANALYZER.analyze(
+            final Map<Path, List<Match>> matches = ANALYZER.analyze(
                     sourceRoots.stream(), group);
 
             if (!matches.isEmpty()) {
@@ -85,8 +75,15 @@ public class RestrictImports implements EnforcerRule {
         }
     }
 
-    private void checkConsistency(BannedImportGroup group) throws EnforcerRuleException {
-        ANALYZER.checkGroupConsistency(group);
+    private BannedImportGroup createGroupFromPluginConfiguration()
+            throws EnforcerRuleException {
+        return BannedImportGroup.builder()
+                .withBasePackages(assembleList(this.basePackage, this.basePackages))
+                .withBannedImports(assembleList(this.bannedImport, this.bannedImports))
+                .withAllowedImports(assembleList(this.allowedImport, this.allowedImports))
+                .withExcludedClasses(assembleList(this.exclusion, this.exclusions))
+                .withReason(reason)
+                .build();
     }
 
     private List<PackagePattern> assembleList(PackagePattern single,
@@ -98,38 +95,9 @@ public class RestrictImports implements EnforcerRule {
         }
     }
 
-    private static String relativize(Collection<Path> roots, String path) {
-        for (final Path root : roots) {
-            final String absoluteRoot = root.toAbsolutePath().toString();
-            if (path.startsWith(absoluteRoot)) {
-                return path.substring(absoluteRoot.length());
-            }
-        }
-        return path;
-    }
-
     private String formatErrorString(Collection<Path> roots, BannedImportGroup group,
-            Map<String, List<Match>> groups) {
-        final StringBuilder b = new StringBuilder("\nBanned imports detected:\n");
-        final String message = group.getReason();
-        if (message != null && !message.isEmpty()) {
-            b.append("Reason: ").append(message).append("\n");
-        }
-        groups.forEach((fileName, matches) -> {
-            b.append("\tin file: ")
-                    .append(relativize(roots, fileName))
-                    .append("\n");
-            matches.forEach(match -> appendMatch(match, b));
-        });
-        return b.toString();
-    }
-
-    private void appendMatch(Match match, StringBuilder b) {
-        b.append("\t\t")
-                .append(match.getMatchedString())
-                .append(" (Line: ")
-                .append(match.getImportLine())
-                .append(")\n");
+            Map<Path, List<Match>> groups) {
+        return MatchFormatter.getInstance().formatMatches(roots, groups, group);
     }
 
     @SuppressWarnings("unchecked")

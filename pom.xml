@@ -20,7 +20,6 @@
 		<coveralls.skip>false</coveralls.skip>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.release>8</maven.compiler.release>
 		<skuzzle.runtime.version>0.9.6</skuzzle.runtime.version>
 		<api.version>3.0.0-M2</api.version>
 		<maven.version>2.2.1</maven.version>

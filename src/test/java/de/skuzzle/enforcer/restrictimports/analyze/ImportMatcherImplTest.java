@@ -113,6 +113,28 @@ public class ImportMatcherImplTest {
     }
 
     @Test
+    public void testMatchBannedStaticImports() throws Exception {
+        when(this.mockLineSupplier.lines(this.path)).thenReturn(ImmutableList.of(
+                "package de.skuzzle.test;",
+                "",
+                "import static de.skuzzle.sample1.Test.CONSTANT;",
+                "import static de.skuzzle.sample2.Test.CONSTANT;").stream());
+
+        final List<String> banned = Arrays.asList("de.skuzzle.sample1.**", "de.skuzzle.sample2.*");
+
+        final List<Match> matches = this.subject.matchFile(this.path,
+                group(Arrays.asList("foo.bar", "de.skuzzle.test.*"),
+                        banned, ImmutableList.of()))
+                .collect(Collectors.toList());
+
+        assertEquals(1, matches.size());
+        final Match match1 = matches.get(0);
+        assertEquals("de.skuzzle.sample1.Test.CONSTANT", match1.getMatchedString());
+        assertEquals(3, match1.getImportLine());
+        assertEquals("path/to/File.java", match1.getSourceFile());
+    }
+
+    @Test
     public void testMatchWithInclude() throws Exception {
         final List<String> banned = ImmutableList.of("de.skuzzle.sample.*");
         final List<String> include = ImmutableList.of(

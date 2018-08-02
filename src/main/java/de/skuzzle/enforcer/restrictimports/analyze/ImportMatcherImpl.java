@@ -26,7 +26,7 @@ class ImportMatcherImpl implements ImportMatcher {
     }
 
     @Override
-    public Stream<Match> matchFile(Path file, BannedImportGroup group) {
+    public Stream<MatchedImport> matchFile(Path file, BannedImportGroup group) {
         // Sweet abuse of Stream processing ;)
         final LineCounter counter = new LineCounter();
         final PackageExtractor packageExtractor = new PackageExtractor();
@@ -87,9 +87,9 @@ class ImportMatcherImpl implements ImportMatcher {
                 .anyMatch(pattern -> pattern.matches(packageName));
     }
 
-    private static Function<String, Match> toMatch(Supplier<Integer> lineGetter,
+    private static Function<String, MatchedImport> toMatch(Supplier<Integer> lineGetter,
             Path filePath) {
-        return matchedImport -> new Match(filePath, lineGetter.get(), matchedImport);
+        return matchedImport -> new MatchedImport(filePath, lineGetter.get(), matchedImport);
     }
 
     private static String extractPackageName(String line) {

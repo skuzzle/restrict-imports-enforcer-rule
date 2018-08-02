@@ -80,33 +80,33 @@ public class ImportMatcherImplTest {
     public void testMatchBannedOnly() throws Exception {
         final List<String> banned = ImmutableList.of("de.skuzzle.sample.*");
 
-        final List<Match> matches = this.subject.matchFile(this.path,
+        final List<MatchedImport> matches = this.subject.matchFile(this.path,
                 group(Arrays.asList("foo.bar", "de.skuzzle.test.*"),
                         banned, ImmutableList.of()))
                 .collect(Collectors.toList());
 
         assertEquals(5, matches.size());
-        final Match match1 = matches.get(0);
+        final MatchedImport match1 = matches.get(0);
         assertEquals("de.skuzzle.sample.Test", match1.getMatchedString());
         assertEquals(3, match1.getImportLine());
         assertEquals("path/to/File.java", match1.getSourceFile().toString());
 
-        final Match match2 = matches.get(1);
+        final MatchedImport match2 = matches.get(1);
         assertEquals(5, match2.getImportLine());
         assertEquals("de.skuzzle.sample.Test2", match2.getMatchedString());
         assertEquals("path/to/File.java", match2.getSourceFile().toString());
 
-        final Match match3 = matches.get(2);
+        final MatchedImport match3 = matches.get(2);
         assertEquals(6, match3.getImportLine());
         assertEquals("de.skuzzle.sample.Test3", match3.getMatchedString());
         assertEquals("path/to/File.java", match3.getSourceFile().toString());
 
-        final Match match4 = matches.get(3);
+        final MatchedImport match4 = matches.get(3);
         assertEquals(7, match4.getImportLine());
         assertEquals("de.skuzzle.sample.Test4", match4.getMatchedString());
         assertEquals("path/to/File.java", match4.getSourceFile().toString());
 
-        final Match match5 = matches.get(4);
+        final MatchedImport match5 = matches.get(4);
         assertEquals(8, match5.getImportLine());
         assertEquals("de.skuzzle.sample.Test5", match5.getMatchedString());
         assertEquals("path/to/File.java", match5.getSourceFile().toString());
@@ -118,22 +118,22 @@ public class ImportMatcherImplTest {
         final List<String> include = ImmutableList.of(
                 "de.skuzzle.sample.Test2",
                 "de.skuzzle.sample.Test4");
-        final List<Match> matches = this.subject
+        final List<MatchedImport> matches = this.subject
                 .matchFile(this.path, group(Arrays.asList("**"), banned, include))
                 .collect(Collectors.toList());
 
         assertEquals(3, matches.size());
-        final Match match1 = matches.get(0);
+        final MatchedImport match1 = matches.get(0);
         assertEquals("de.skuzzle.sample.Test", match1.getMatchedString());
         assertEquals(3, match1.getImportLine());
         assertEquals("path/to/File.java", match1.getSourceFile().toString());
 
-        final Match match2 = matches.get(1);
+        final MatchedImport match2 = matches.get(1);
         assertEquals(6, match2.getImportLine());
         assertEquals("de.skuzzle.sample.Test3", match2.getMatchedString());
         assertEquals("path/to/File.java", match2.getSourceFile().toString());
 
-        final Match match3 = matches.get(2);
+        final MatchedImport match3 = matches.get(2);
         assertEquals(8, match3.getImportLine());
         assertEquals("de.skuzzle.sample.Test5", match3.getMatchedString());
         assertEquals("path/to/File.java", match3.getSourceFile().toString());
@@ -150,7 +150,7 @@ public class ImportMatcherImplTest {
                 .withReason("message")
                 .build();
 
-        final Stream<Match> matches = this.subject.matchFile(this.path, group);
+        final Stream<MatchedImport> matches = this.subject.matchFile(this.path, group);
 
         assertFalse(matches.iterator().hasNext());
     }
@@ -174,14 +174,14 @@ public class ImportMatcherImplTest {
                 .withReason("message")
                 .build();
 
-        final Stream<Match> matches = this.subject.matchFile(this.path, group);
+        final Stream<MatchedImport> matches = this.subject.matchFile(this.path, group);
 
         assertFalse(matches.iterator().hasNext());
     }
 
     @Test
     public void testExcludeWholeFile() throws Exception {
-        final Stream<Match> matches = this.subject.matchFile(this.path,
+        final Stream<MatchedImport> matches = this.subject.matchFile(this.path,
                 group(Arrays.asList("de.foo.bar"),
                         ImmutableList.of("de.skuzzle.sample.*")));
 

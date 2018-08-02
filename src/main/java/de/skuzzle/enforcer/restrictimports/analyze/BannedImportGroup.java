@@ -1,12 +1,21 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
 
-public class BannedImportGroup {
+/**
+ * Holds the user configured information of what imports should be banned including all
+ * further meta information like base packages, allowed imports and excluded classes.
+ *
+ * @author Simon Taddiken
+ */
+public final class BannedImportGroup {
 
     private final List<PackagePattern> basePackages;
     private final List<PackagePattern> bannedImports;
@@ -50,6 +59,35 @@ public class BannedImportGroup {
         return this.reason;
     }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(basePackages, bannedImports, allowedImports, excludedClasses,
+                reason);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj == this || obj instanceof BannedImportGroup
+                && Objects.equals(basePackages, ((BannedImportGroup) obj).basePackages)
+                && Objects.equals(bannedImports, ((BannedImportGroup) obj).bannedImports)
+                && Objects.equals(allowedImports,
+                        ((BannedImportGroup) obj).allowedImports)
+                && Objects.equals(excludedClasses,
+                        ((BannedImportGroup) obj).excludedClasses)
+                && Objects.equals(reason, ((BannedImportGroup) obj).reason);
+    }
+
+    @Override
+    public String toString() {
+        return MoreObjects.toStringHelper(this)
+                .add("basePackages", this.basePackages)
+                .add("bannedImports", this.bannedImports)
+                .add("allowedImports", this.allowedImports)
+                .add("excludedClasses", this.excludedClasses)
+                .add("reason", this.reason)
+                .toString();
+    }
+
     public static class Builder {
         private List<PackagePattern> basePackages = ImmutableList.of();
         private List<PackagePattern> bannedImports = ImmutableList.of();
@@ -57,9 +95,17 @@ public class BannedImportGroup {
         private List<PackagePattern> excludedClasses = ImmutableList.of();
         private String reason;
 
+        private Builder() {
+            // hidden
+        }
+
         public Builder withBasePackages(List<PackagePattern> basePackages) {
             this.basePackages = basePackages;
             return this;
+        }
+
+        public Builder withBasePackages(String... basePackages) {
+            return withBasePackages(PackagePattern.parseAll(Arrays.asList(basePackages)));
         }
 
         public Builder withBannedImports(List<PackagePattern> bannedImports) {
@@ -67,14 +113,29 @@ public class BannedImportGroup {
             return this;
         }
 
+        public Builder withBannedImports(String... bannedImports) {
+            return withBannedImports(
+                    PackagePattern.parseAll(Arrays.asList(bannedImports)));
+        }
+
         public Builder withAllowedImports(List<PackagePattern> allowedImports) {
             this.allowedImports = allowedImports;
             return this;
         }
 
+        public Builder withAllowedImports(String... allowedImports) {
+            return withAllowedImports(
+                    PackagePattern.parseAll(Arrays.asList(allowedImports)));
+        }
+
         public Builder withExcludedClasses(List<PackagePattern> excludedClasses) {
             this.excludedClasses = excludedClasses;
             return this;
+        }
+
+        public Builder withExcludedClasses(String... excludedClasses) {
+            return withExcludedClasses(
+                    PackagePattern.parseAll(Arrays.asList(excludedClasses)));
         }
 
         public Builder withReason(String reason) {

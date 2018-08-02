@@ -2,8 +2,6 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.nio.file.Path;
 import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 public interface MatchFormatter {
 
@@ -11,6 +9,6 @@ public interface MatchFormatter {
         return MatchFormatterImpl.INSTANCE;
     }
 
-    String formatMatches(Collection<Path> roots, Map<Path, List<Match>> matchesPerFile,
+    String formatMatches(Collection<Path> roots, AnalyzeResult analyzeResult,
             BannedImportGroup group);
 }

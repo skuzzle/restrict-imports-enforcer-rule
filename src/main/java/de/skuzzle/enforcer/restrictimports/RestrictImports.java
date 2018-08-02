@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -18,8 +17,8 @@ import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.analyze.Match;
 import de.skuzzle.enforcer.restrictimports.analyze.MatchFormatter;
 import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
@@ -60,12 +59,12 @@ public class RestrictImports implements EnforcerRule {
             final Collection<Path> sourceRoots = listSourceRoots(project, log)
                     .collect(Collectors.toList());
 
-            final Map<Path, List<Match>> matches = ANALYZER.analyze(
+            final AnalyzeResult analyzeResult = ANALYZER.analyze(
                     sourceRoots.stream(), group);
 
-            if (!matches.isEmpty()) {
+            if (analyzeResult.bannedImportsFound()) {
                 throw new EnforcerRuleException(
-                        formatErrorString(sourceRoots, group, matches));
+                        formatErrorString(sourceRoots, group, analyzeResult));
             } else {
                 log.debug("No banned imports found");
             }
@@ -96,8 +95,8 @@ public class RestrictImports implements EnforcerRule {
     }
 
     private String formatErrorString(Collection<Path> roots, BannedImportGroup group,
-            Map<Path, List<Match>> groups) {
-        return MatchFormatter.getInstance().formatMatches(roots, groups, group);
+            AnalyzeResult analyzeResult) {
+        return MatchFormatter.getInstance().formatMatches(roots, analyzeResult, group);
     }
 
     @SuppressWarnings("unchecked")

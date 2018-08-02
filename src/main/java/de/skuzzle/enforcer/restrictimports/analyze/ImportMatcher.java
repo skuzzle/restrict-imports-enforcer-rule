@@ -17,5 +17,5 @@ interface ImportMatcher {
      * @param group The group of banned imports to check the file against.
      * @return A stream of found matches.
      */
-    Stream<Match> matchFile(Path file, BannedImportGroup group);
+    Stream<MatchedImport> matchFile(Path file, BannedImportGroup group);
 }

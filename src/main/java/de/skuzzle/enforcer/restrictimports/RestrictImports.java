@@ -68,6 +68,8 @@ public class RestrictImports implements EnforcerRule {
             } else {
                 log.debug("No banned imports found");
             }
+        } catch (final EnforcerRuleException e) {
+            throw e;
         } catch (final Exception e) {
             throw new EnforcerRuleException("Encountered unexpected exception: " +
                     e.getLocalizedMessage(), e);

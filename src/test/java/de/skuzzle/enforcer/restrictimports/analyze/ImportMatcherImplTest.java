@@ -1,40 +1,31 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
 
 import de.skuzzle.enforcer.restrictimports.analyze.ImportMatcherImpl.LineSupplier;
 
-@RunWith(MockitoJUnitRunner.class)
 public class ImportMatcherImplTest {
 
-    @Mock
-    private LineSupplier mockLineSupplier;
-    @InjectMocks
-    private ImportMatcherImpl subject;
+    private final LineSupplier mockLineSupplier = mock(LineSupplier.class);
+    private final ImportMatcherImpl subject = new ImportMatcherImpl(mockLineSupplier);
 
     private final Path path = mock(Path.class);
     private final Path fileName = mock(Path.class);
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         when(this.path.getFileName()).thenReturn(this.fileName);
         when(this.fileName.toString()).thenReturn("File.java");
@@ -50,14 +41,17 @@ public class ImportMatcherImplTest {
                 "import de.foo.bar.Test").stream());
     }
 
-    @Test(expected = RuntimeIOException.class)
+    @Test
     public void testException() throws Exception {
-        when(this.mockLineSupplier.lines(this.path)).thenThrow(new IOException());
-        this.subject.matchFile(this.path, BannedImportGroup.builder()
-                .withBasePackages("**")
-                .withBannedImports("bla")
-                .build())
-                .collect(Collectors.toList());
+        // when(this.mockLineSupplier.lines(this.path)).thenThrow(new IOException());
+
+        assertThatExceptionOfType(RuntimeIOException.class)
+                .isThrownBy(() -> this.subject
+                        .matchFile(this.path, BannedImportGroup.builder()
+                                .withBasePackages("**")
+                                .withBannedImports("bla")
+                                .build())
+                        .collect(Collectors.toList()));
     }
 
     @Test
@@ -76,7 +70,7 @@ public class ImportMatcherImplTest {
                 new MatchedImport(path, 7, "de.skuzzle.sample.Test4"),
                 new MatchedImport(path, 8, "de.skuzzle.sample.Test5"));
 
-        assertThat(matches, is(expected));
+        assertThat(matches).isEqualTo(expected);
     }
 
     @Test
@@ -95,7 +89,7 @@ public class ImportMatcherImplTest {
                 new MatchedImport(path, 6, "de.skuzzle.sample.Test3"),
                 new MatchedImport(path, 8, "de.skuzzle.sample.Test5"));
 
-        assertThat(matches, is(expected));
+        assertThat(matches).isEqualTo(expected);
     }
 
     @Test
@@ -108,8 +102,7 @@ public class ImportMatcherImplTest {
                 .build();
 
         final Stream<MatchedImport> matches = this.subject.matchFile(this.path, group);
-
-        assertFalse(matches.iterator().hasNext());
+        assertThat(matches).isEmpty();
     }
 
     @Test
@@ -130,8 +123,7 @@ public class ImportMatcherImplTest {
                 .build();
 
         final Stream<MatchedImport> matches = this.subject.matchFile(this.path, group);
-
-        assertFalse(matches.iterator().hasNext());
+        assertThat(matches).isEmpty();
     }
 
     @Test
@@ -141,7 +133,6 @@ public class ImportMatcherImplTest {
                         .withBasePackages("de.foo.bar")
                         .withBannedImports("de.skuzzle.sample.*")
                         .build());
-
-        assertFalse(matches.iterator().hasNext());
+        assertThat(matches).isEmpty();
     }
 }

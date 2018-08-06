@@ -1,7 +1,6 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.IOException;
 import java.nio.file.FileSystem;
@@ -10,7 +9,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
@@ -40,7 +39,7 @@ public class SourceTreeAnalyzerImplIT {
                         .withMatchAt(2, "java.util.ArrayList"))
                 .build();
 
-        assertThat(analyzeResult, is(expected));
+        assertThat(analyzeResult).isEqualTo(expected);
     }
 
     @Test
@@ -73,7 +72,7 @@ public class SourceTreeAnalyzerImplIT {
                                         "java.util.ArrayList"))
                 .build();
 
-        assertThat(analyzeResult, is(expected));
+        assertThat(analyzeResult).isEqualTo(expected);
     }
 
     @Test
@@ -90,7 +89,7 @@ public class SourceTreeAnalyzerImplIT {
                         .withBannedImports("java.util.ArrayList")
                         .build());
 
-        assertThat(analyzeResult.bannedImportsFound(), is(false));
+        assertThat(analyzeResult.bannedImportsFound()).isFalse();
     }
 
     private class SourceFileBuilder {

@@ -22,15 +22,15 @@ public final class MatchedImport {
         this.matchedString = matchedString;
     }
 
-    public final Path getSourceFile() {
+    public Path getSourceFile() {
         return this.sourceFile;
     }
 
-    public final int getImportLine() {
+    public int getImportLine() {
         return this.importLine;
     }
 
-    public final String getMatchedString() {
+    public String getMatchedString() {
         return this.matchedString;
     }
 
@@ -44,7 +44,8 @@ public final class MatchedImport {
         return obj == this || obj instanceof MatchedImport
                 && Objects.equals(this.sourceFile, ((MatchedImport) obj).sourceFile)
                 && Objects.equals(this.importLine, ((MatchedImport) obj).importLine)
-                && Objects.equals(this.matchedString, ((MatchedImport) obj).matchedString);
+                && Objects.equals(this.matchedString,
+                        ((MatchedImport) obj).matchedString);
     }
 
     @Override

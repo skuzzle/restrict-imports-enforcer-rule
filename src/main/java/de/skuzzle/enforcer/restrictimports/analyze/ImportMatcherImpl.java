@@ -46,8 +46,12 @@ class ImportMatcherImpl implements ImportMatcher {
                     .map(toMatch(counter::getLine, file))
                     // need to copy because underlying stream is closed by try-resources
                     .collect(Collectors.toList()).stream();
+        } catch (final RuntimeIOException e) {
+            throw e;
         } catch (final IOException e) {
-            throw new RuntimeIOException(e);
+            throw new RuntimeIOException(String.format(
+                    "Encountered IOException while analyzing %s for banned imports",
+                    file), e);
         } catch (final PrematureAbortion ignore) {
             // the processed file's package did not match the group's basePackage or
             // matched any exclusion pattern
@@ -89,7 +93,8 @@ class ImportMatcherImpl implements ImportMatcher {
 
     private static Function<String, MatchedImport> toMatch(Supplier<Integer> lineGetter,
             Path filePath) {
-        return matchedImport -> new MatchedImport(filePath, lineGetter.get(), matchedImport);
+        return matchedImport -> new MatchedImport(filePath, lineGetter.get(),
+                matchedImport);
     }
 
     private static String extractPackageName(String line) {

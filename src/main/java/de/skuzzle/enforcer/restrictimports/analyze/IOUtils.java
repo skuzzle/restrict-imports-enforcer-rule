@@ -19,7 +19,8 @@ class IOUtils {
         try {
             return Files.lines(path);
         } catch (final IOException e) {
-            throw new RuntimeIOException(e);
+            throw new RuntimeIOException("Encountered IOException while reading " + path,
+                    e);
         }
     }
 
@@ -40,7 +41,8 @@ class IOUtils {
             }
             return Files.find(root, Integer.MAX_VALUE, (path, bfa) -> filter.test(path));
         } catch (final IOException e) {
-            throw new RuntimeIOException(e);
+            throw new RuntimeIOException(
+                    "Encountered IOException while listing files of " + root, e);
         }
     }
 

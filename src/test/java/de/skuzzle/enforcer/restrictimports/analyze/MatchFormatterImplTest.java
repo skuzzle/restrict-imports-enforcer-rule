@@ -1,13 +1,13 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
 
@@ -36,9 +36,9 @@ public class MatchFormatterImplTest {
 
         final String formatted = subject.formatMatches(roots, analyzeResult, group);
 
-        assertEquals("\nBanned imports detected:\n" +
+        assertThat(formatted).isEqualTo("\nBanned imports detected:\n" +
                 "Reason: Some reason\n" +
                 "\tin file: SampleJavaFile.java\n" +
-                "\t\tjava.util.ArrayList (Line: 3)\n", formatted);
+                "\t\tjava.util.ArrayList (Line: 3)\n");
     }
 }

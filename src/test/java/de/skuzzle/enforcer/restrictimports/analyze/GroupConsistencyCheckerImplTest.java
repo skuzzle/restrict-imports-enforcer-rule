@@ -1,31 +1,40 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class GroupConsistencyCheckerImplTest {
 
-    @Test(expected = EnforcerRuleException.class)
+    @Test
     public void testNoBannedImports() throws Exception {
-        BannedImportGroup.builder().build();
+        assertThatExceptionOfType(EnforcerRuleException.class)
+                .isThrownBy(() -> BannedImportGroup.builder().build());
     }
 
-    @Test(expected = EnforcerRuleException.class)
+    @Test
     public void testInconsistentAllowedImports() throws Exception {
-        BannedImportGroup.builder()
-                .withBannedImports("dont.care")
-                .withBasePackages("com.foo.*")
-                .withAllowedImports("foo.**")
-                .build();
+        assertThatExceptionOfType(EnforcerRuleException.class)
+                .isThrownBy(() -> {
+                    BannedImportGroup.builder()
+                            .withBannedImports("dont.care")
+                            .withBasePackages("com.foo.*")
+                            .withAllowedImports("foo.**")
+                            .build();
+                });
 
     }
 
-    @Test(expected = EnforcerRuleException.class)
+    @Test
     public void testInconsistentExclusions() throws Exception {
-        BannedImportGroup.builder()
-                .withBannedImports("dont.care")
-                .withBasePackages("base.package.**")
-                .withAllowedImports("foo.bar.**")
-                .build();
+        assertThatExceptionOfType(EnforcerRuleException.class)
+                .isThrownBy(() -> {
+                    BannedImportGroup.builder()
+                            .withBannedImports("dont.care")
+                            .withBasePackages("base.package.**")
+                            .withAllowedImports("foo.bar.**")
+                            .build();
+                });
     }
 }

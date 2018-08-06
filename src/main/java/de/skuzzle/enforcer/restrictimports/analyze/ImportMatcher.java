@@ -13,9 +13,9 @@ interface ImportMatcher {
     /**
      * Collects all imports that are banned within the given java source file.
      *
-     * @param file The file to check.
+     * @param sourceFile The path to a java source file to check for banned imports..
      * @param group The group of banned imports to check the file against.
      * @return A stream of found matches.
      */
-    Stream<MatchedImport> matchFile(Path file, BannedImportGroup group);
+    Stream<MatchedImport> matchFile(Path sourceFile, BannedImportGroup group);
 }

@@ -95,6 +95,10 @@
 			<artifactId>junit-jupiter-api</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>nl.jqno.equalsverifier</groupId>
 			<artifactId>equalsverifier</artifactId>
 			<version>2.4.8</version>
@@ -117,6 +121,12 @@
 			<plugin>
 				<groupId>org.eluder.coveralls</groupId>
 				<artifactId>coveralls-maven-plugin</artifactId>
+				<configuration>
+					<jacocoReports>
+						<jacocoReport>${project.reporting.outputDirectory}/jacoco/jacoco.xml</jacocoReport>
+						<jacocoReport>${project.reporting.outputDirectory}/jacoco-it/jacoco.xml</jacocoReport>
+					</jacocoReports>
+				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-invoker-plugin</artifactId>
@@ -125,8 +135,6 @@
 					<showErrors>true</showErrors>
 					<streamLogs>false</streamLogs>
 					<settingsFile>src/it/settings.xml</settingsFile>
-					<postBuildHookScript>verify</postBuildHookScript>
-					<addTestClassPath>true</addTestClassPath>
 					<!--uncomment next line to debug invoker tests -->
 					<!--<mavenOpts>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000</mavenOpts> -->
 				</configuration>
@@ -143,6 +151,7 @@
 								<!-- Include sub directories -->
 							</pomIncludes>
 							<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+							<mavenOpts>${argLine}</mavenOpts>
 						</configuration>
 					</execution>
 				</executions>

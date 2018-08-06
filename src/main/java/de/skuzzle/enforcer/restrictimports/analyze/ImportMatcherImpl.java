@@ -26,11 +26,11 @@ class ImportMatcherImpl implements ImportMatcher {
     }
 
     @Override
-    public Stream<MatchedImport> matchFile(Path file, BannedImportGroup group) {
+    public Stream<MatchedImport> matchFile(Path sourceFile, BannedImportGroup group) {
         // Sweet abuse of Stream processing ;)
         final LineCounter counter = new LineCounter();
         final PackageExtractor packageExtractor = new PackageExtractor();
-        try (Stream<String> lines = this.supplier.lines(file)) {
+        try (Stream<String> lines = this.supplier.lines(sourceFile)) {
             return lines
                     .map(ImportMatcherImpl::trimComments)
                     .peek(counter)
@@ -39,11 +39,11 @@ class ImportMatcherImpl implements ImportMatcher {
                     // package statement must always occur before the first import
                     // statement, thus package is known by the time the prev. filter
                     // has matched
-                    .peek(includeClass(file, packageExtractor, group))
+                    .peek(includeClass(sourceFile, packageExtractor, group))
                     .map(ImportMatcherImpl::extractPackageName)
                     .filter(matchesAnyPattern(group.getBannedImports()))
                     .filter(matchesAnyPattern(group.getAllowedImports()).negate())
-                    .map(toMatch(counter::getLine, file))
+                    .map(toMatch(counter::getLine, sourceFile))
                     // need to copy because underlying stream is closed by try-resources
                     .collect(Collectors.toList())
                     .stream();
@@ -52,7 +52,7 @@ class ImportMatcherImpl implements ImportMatcher {
         } catch (final IOException e) {
             throw new RuntimeIOException(String.format(
                     "Encountered IOException while analyzing %s for banned imports",
-                    file), e);
+                    sourceFile), e);
         } catch (final PrematureAbortion ignore) {
             // the processed file's package did not match the group's basePackage or
             // matched at least one exclusion pattern

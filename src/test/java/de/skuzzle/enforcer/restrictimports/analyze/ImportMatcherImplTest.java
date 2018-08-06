@@ -65,11 +65,11 @@ public class ImportMatcherImplTest {
                 .collect(Collectors.toList());
 
         final ImmutableList<MatchedImport> expected = ImmutableList.of(
-                new MatchedImport(path, 3, "de.skuzzle.sample.Test"),
-                new MatchedImport(path, 5, "de.skuzzle.sample.Test2"),
-                new MatchedImport(path, 6, "de.skuzzle.sample.Test3"),
-                new MatchedImport(path, 7, "de.skuzzle.sample.Test4"),
-                new MatchedImport(path, 8, "de.skuzzle.sample.Test5"));
+                new MatchedImport(3, "de.skuzzle.sample.Test"),
+                new MatchedImport(5, "de.skuzzle.sample.Test2"),
+                new MatchedImport(6, "de.skuzzle.sample.Test3"),
+                new MatchedImport(7, "de.skuzzle.sample.Test4"),
+                new MatchedImport(8, "de.skuzzle.sample.Test5"));
 
         assertThat(matches).isEqualTo(expected);
     }
@@ -86,9 +86,9 @@ public class ImportMatcherImplTest {
                 .collect(Collectors.toList());
 
         final ImmutableList<MatchedImport> expected = ImmutableList.of(
-                new MatchedImport(path, 3, "de.skuzzle.sample.Test"),
-                new MatchedImport(path, 6, "de.skuzzle.sample.Test3"),
-                new MatchedImport(path, 8, "de.skuzzle.sample.Test5"));
+                new MatchedImport(3, "de.skuzzle.sample.Test"),
+                new MatchedImport(6, "de.skuzzle.sample.Test3"),
+                new MatchedImport(8, "de.skuzzle.sample.Test5"));
 
         assertThat(matches).isEqualTo(expected);
     }

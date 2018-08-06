@@ -74,7 +74,7 @@ public final class MatchedFile {
 
         public Builder withMatchAt(int importLine, String matchedString) {
             this.matchedImports.add(
-                    new MatchedImport(sourceFile, importLine, matchedString));
+                    new MatchedImport(importLine, matchedString));
             return this;
         }
 

@@ -45,7 +45,8 @@ class ImportMatcherImpl implements ImportMatcher {
                     .filter(matchesAnyPattern(group.getAllowedImports()).negate())
                     .map(toMatch(counter::getLine, file))
                     // need to copy because underlying stream is closed by try-resources
-                    .collect(Collectors.toList()).stream();
+                    .collect(Collectors.toList())
+                    .stream();
         } catch (final RuntimeIOException e) {
             throw e;
         } catch (final IOException e) {
@@ -54,7 +55,7 @@ class ImportMatcherImpl implements ImportMatcher {
                     file), e);
         } catch (final PrematureAbortion ignore) {
             // the processed file's package did not match the group's basePackage or
-            // matched any exclusion pattern
+            // matched at least one exclusion pattern
             return Stream.empty();
         }
     }

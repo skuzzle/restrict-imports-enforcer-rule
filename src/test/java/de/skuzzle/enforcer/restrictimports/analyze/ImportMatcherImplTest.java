@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,7 +44,7 @@ public class ImportMatcherImplTest {
 
     @Test
     public void testException() throws Exception {
-        // when(this.mockLineSupplier.lines(this.path)).thenThrow(new IOException());
+        when(this.mockLineSupplier.lines(this.path)).thenThrow(new IOException());
 
         assertThatExceptionOfType(RuntimeIOException.class)
                 .isThrownBy(() -> this.subject

@@ -1,5 +1,6 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
@@ -17,7 +18,7 @@ public interface SourceTreeAnalyzer {
      */
     public static SourceTreeAnalyzer getInstance() {
         final IOUtils ioUtils = new IOUtils();
-        final ImportMatcher matcher = new ImportMatcherImpl(ioUtils::lines);
+        final ImportMatcher matcher = new ImportMatcherImpl(Files::lines);
         return new SourceTreeAnalyzerImpl(matcher, ioUtils);
     }
 

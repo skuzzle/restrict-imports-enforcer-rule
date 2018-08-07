@@ -19,7 +19,7 @@ public class MatchFormatterImplTest {
     public void testFormatWithReason() throws Exception {
         final BannedImportGroup group = BannedImportGroup.builder()
                 .withBasePackages("**")
-                .withBannedImports("foo.bar.**")
+                .withBannedImports("java.util.*")
                 .withReason("Some reason")
                 .build();
 
@@ -31,7 +31,8 @@ public class MatchFormatterImplTest {
 
         final AnalyzeResult analyzeResult = AnalyzeResult.builder()
                 .withMatches(MatchedFile.forSourceFile(sourceFile)
-                        .withMatchAt(3, "java.util.ArrayList"))
+                        .withMatchAt(3, "java.util.ArrayList",
+                                PackagePattern.parse("java.util.*")))
                 .build();
 
         final String formatted = subject.formatMatches(roots, analyzeResult, group);
@@ -39,6 +40,6 @@ public class MatchFormatterImplTest {
         assertThat(formatted).isEqualTo("\nBanned imports detected:\n" +
                 "Reason: Some reason\n" +
                 "\tin file: SampleJavaFile.java\n" +
-                "\t\tjava.util.ArrayList (Line: 3)\n");
+                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n");
     }
 }

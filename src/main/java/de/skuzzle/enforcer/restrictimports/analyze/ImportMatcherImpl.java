@@ -2,13 +2,11 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 class ImportMatcherImpl implements ImportMatcher {
@@ -27,74 +25,97 @@ class ImportMatcherImpl implements ImportMatcher {
 
     @Override
     public Stream<MatchedImport> matchFile(Path sourceFile, BannedImportGroup group) {
-        // Sweet abuse of Stream processing ;)
-        final LineCounter counter = new LineCounter();
-        final PackageExtractor packageExtractor = new PackageExtractor();
-        try (Stream<String> lines = this.supplier.lines(sourceFile)) {
-            return lines
-                    .map(ImportMatcherImpl::trimComments)
-                    .peek(counter)
-                    .peek(packageExtractor)
-                    .filter(ImportMatcherImpl::isImport)
-                    // package statement must always occur before the first import
-                    // statement, thus package is known by the time the prev. filter
-                    // has matched
-                    .peek(includeClass(sourceFile, packageExtractor, group))
-                    .map(ImportMatcherImpl::extractPackageName)
-                    .filter(matchesAnyPattern(group.getBannedImports()))
-                    .filter(matchesAnyPattern(group.getAllowedImports()).negate())
-                    .map(toMatch(counter::getLine))
-                    // need to copy because underlying stream is closed by try-resources
-                    .collect(Collectors.toList())
-                    .stream();
+
+        final List<MatchedImport> matches = new ArrayList<>();
+        try (final Stream<String> lines = this.supplier.lines(sourceFile)) {
+
+            final Iterable<String> lineIt = lines
+                    .map(this::trimComments)::iterator;
+
+            int row = 1;
+            String packageName = "";
+            boolean blockCommentStarted = false;
+            for (final Iterator<String> it = lineIt.iterator(); it.hasNext(); ++row) {
+                final String line = it.next();
+                if (line.isEmpty()) {
+                    continue;
+                } else if (line.startsWith("/*")) {
+                    blockCommentStarted = true;
+                    continue;
+                } else if (blockCommentStarted) {
+                    if (line.indexOf("*/") >= 0) {
+                        blockCommentStarted = false;
+                    }
+                    continue;
+                } else if (isPackage(line)) {
+                    // INVARIANT: our own package name occurs in the first non-empty line
+                    // of the java source file (after trimming leading comments)
+                    packageName = extractPackageName(line);
+                    continue;
+                }
+
+                if (isExcluded(sourceFile, packageName, group)) {
+                    return Stream.empty();
+                } else if (!isImport(line)) {
+                    // as we are skipping empty (and comment) lines,
+                    continue;
+                }
+
+                final String importName = extractPackageName(line);
+                if (matchesAnyPattern(importName, group.getAllowedImports())) {
+                    continue;
+                }
+                final int lineNumber = row;
+                group.getBannedImports().stream()
+                        .filter(bannedImport -> bannedImport.matches(importName))
+                        .findFirst()
+                        .map(matchedBy -> new MatchedImport(lineNumber, importName,
+                                matchedBy))
+                        .ifPresent(matches::add);
+
+            }
+
+            return matches.stream();
         } catch (final RuntimeIOException e) {
             throw e;
         } catch (final IOException e) {
             throw new RuntimeIOException(String.format(
                     "Encountered IOException while analyzing %s for banned imports",
                     sourceFile), e);
-        } catch (final PrematureAbortion ignore) {
-            // the processed file's package did not match the group's basePackage or
-            // matched at least one exclusion pattern
-            return Stream.empty();
         }
     }
 
-    private static Consumer<String> includeClass(Path file, PackageExtractor extractor,
+    private boolean isExcluded(Path sourceFile, String packageName,
             BannedImportGroup group) {
-        return line -> {
-            final String javaFileName = getJavaFileName(file);
-            final String javaResource = extractor.getPackageName() + "." + javaFileName;
-            final boolean matchBasePattern = group.getBasePackages().stream()
-                    .anyMatch(pattern -> pattern.matches(javaResource));
+        final String javaFileName = getJavaFileName(sourceFile);
+        final String fqcn = guessFQCN(packageName, javaFileName);
+        final boolean matchBasePattern = group.getBasePackages().stream()
+                .anyMatch(pattern -> pattern.matches(fqcn));
 
-            if (!matchBasePattern) {
-                throw new PrematureAbortion();
-            }
-            final boolean isExcluded = group.getExcludedClasses().stream()
-                    .anyMatch(pattern -> pattern.matches(javaResource));
-            if (isExcluded) {
-                throw new PrematureAbortion();
-            }
-
-        };
+        if (!matchBasePattern) {
+            return true;
+        }
+        final boolean matchExclusion = group.getExcludedClasses().stream()
+                .anyMatch(pattern -> pattern.matches(fqcn));
+        return matchExclusion;
     }
 
-    private static String getJavaFileName(Path file) {
+    private String guessFQCN(String packageName, String javaFileName) {
+        return packageName.isEmpty()
+                ? javaFileName
+                : packageName + "." + javaFileName;
+    }
+
+    private String getJavaFileName(Path file) {
         final String s = file.getFileName().toString();
         final int i = s.lastIndexOf(".java");
         return s.substring(0, i);
     }
 
-    private static Predicate<String> matchesAnyPattern(
+    private boolean matchesAnyPattern(String packageName,
             Collection<PackagePattern> patterns) {
-        return packageName -> patterns.stream()
+        return patterns.stream()
                 .anyMatch(pattern -> pattern.matches(packageName));
-    }
-
-    private static Function<String, MatchedImport> toMatch(Supplier<Integer> lineGetter) {
-        return matchedImport -> new MatchedImport(lineGetter.get(),
-                matchedImport);
     }
 
     private static String extractPackageName(String line) {
@@ -104,19 +125,19 @@ class ImportMatcherImpl implements ImportMatcher {
         return sub.trim();
     }
 
-    private static boolean is(String compare, String line) {
+    private boolean is(String compare, String line) {
         return line.startsWith(compare) && line.endsWith(";");
     }
 
-    private static boolean isPackage(String line) {
+    private boolean isPackage(String line) {
         return is("package ", line);
     }
 
-    private static boolean isImport(String line) {
+    private boolean isImport(String line) {
         return is("import ", line);
     }
 
-    private static String trimComments(String line) {
+    private String trimComments(String line) {
         String stripped = COMMENT_BLOCK_PATTERN.matcher(line.trim()).replaceAll("");
 
         final int inlineCommentIndex = stripped.indexOf("//");
@@ -126,39 +147,4 @@ class ImportMatcherImpl implements ImportMatcher {
         return stripped;
     }
 
-    private static class LineCounter implements Consumer<String> {
-
-        private int line = 0;
-
-        @Override
-        public void accept(String t) {
-            ++this.line;
-        }
-
-        public int getLine() {
-            return this.line;
-        }
-    }
-
-    private static class PackageExtractor implements Consumer<String> {
-        private String packageName = "";
-
-        @Override
-        public void accept(String line) {
-            if (isPackage(line)) {
-                this.packageName = extractPackageName(line);
-            }
-        }
-
-        public String getPackageName() {
-            return this.packageName;
-        }
-    }
-
-    private static class PrematureAbortion extends RuntimeException {
-
-        /** */
-        private static final long serialVersionUID = 1L;
-
-    }
 }

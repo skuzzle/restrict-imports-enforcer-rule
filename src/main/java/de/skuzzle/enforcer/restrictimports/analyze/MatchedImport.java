@@ -13,10 +13,12 @@ public final class MatchedImport {
 
     private final int importLine;
     private final String matchedString;
+    private final PackagePattern matchedBy;
 
-    MatchedImport(int importLine, String matchedString) {
+    MatchedImport(int importLine, String matchedString, PackagePattern matchedBy) {
         this.importLine = importLine;
         this.matchedString = matchedString;
+        this.matchedBy = matchedBy;
     }
 
     public int getImportLine() {
@@ -27,9 +29,13 @@ public final class MatchedImport {
         return this.matchedString;
     }
 
+    public PackagePattern getMatchedBy() {
+        return this.matchedBy;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(this.importLine, this.matchedString);
+        return Objects.hash(this.importLine, this.matchedString, this.matchedBy);
     }
 
     @Override
@@ -37,7 +43,8 @@ public final class MatchedImport {
         return obj == this || obj instanceof MatchedImport
                 && Objects.equals(this.importLine, ((MatchedImport) obj).importLine)
                 && Objects.equals(this.matchedString,
-                        ((MatchedImport) obj).matchedString);
+                        ((MatchedImport) obj).matchedString)
+                && Objects.equals(this.matchedBy, ((MatchedImport) obj).matchedBy);
     }
 
     @Override
@@ -45,6 +52,7 @@ public final class MatchedImport {
         return MoreObjects.toStringHelper(this)
                 .add("importLine", this.importLine)
                 .add("matchedString", matchedString)
+                .add("matchedBy", matchedBy)
                 .toString();
     }
 }

@@ -39,6 +39,8 @@ class MatchFormatterImpl implements MatchFormatter {
                 .append(match.getMatchedString())
                 .append(" (Line: ")
                 .append(match.getImportLine())
+                .append(", Matched by: ")
+                .append(match.getMatchedBy())
                 .append(")\n");
     }
 

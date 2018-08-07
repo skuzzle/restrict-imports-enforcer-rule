@@ -46,6 +46,6 @@ public class ExceptionFormattingTest {
                 .withMessage("\nBanned imports detected:\n" +
                         "Reason: Some reason\n" +
                         "\tin file: SampleJavaFile.java\n" +
-                        "\t\tjava.util.ArrayList (Line: 3)\n");
+                        "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.**)\n");
     }
 }

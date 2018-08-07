@@ -33,10 +33,12 @@ public class SourceTreeAnalyzerImplIT {
                         .withBannedImports("java.util.ArrayList")
                         .build());
 
+        final PackagePattern expectedMatchedBy = PackagePattern
+                .parse("java.util.ArrayList");
         final AnalyzeResult expected = AnalyzeResult.builder()
                 .withMatches(MatchedFile
                         .forSourceFile(sourceFile)
-                        .withMatchAt(2, "java.util.ArrayList"))
+                        .withMatchAt(2, "java.util.ArrayList", expectedMatchedBy))
                 .build();
 
         assertThat(analyzeResult).isEqualTo(expected);
@@ -62,14 +64,15 @@ public class SourceTreeAnalyzerImplIT {
                         .withBannedImports("java.util.ArrayList")
                         .build());
 
+        final PackagePattern expectedMatchedBy = PackagePattern
+                .parse("java.util.ArrayList");
         final AnalyzeResult expected = AnalyzeResult.builder()
                 .withMatches(
                         MatchedFile
                                 .forSourceFile(sourceFile1)
-                                .withMatchAt(2, "java.util.ArrayList"),
+                                .withMatchAt(2, "java.util.ArrayList", expectedMatchedBy),
                         MatchedFile.forSourceFile(sourceFile2)
-                                .withMatchAt(2,
-                                        "java.util.ArrayList"))
+                                .withMatchAt(2, "java.util.ArrayList", expectedMatchedBy))
                 .build();
 
         assertThat(analyzeResult).isEqualTo(expected);

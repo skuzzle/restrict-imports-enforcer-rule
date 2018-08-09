@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.analyze;
+package de.skuzzle.enforcer.restrictimports.formatting;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,6 +10,11 @@ import java.util.Collection;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
+
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.analyze.MatchedFile;
+import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 
 public class MatchFormatterImplTest {
 

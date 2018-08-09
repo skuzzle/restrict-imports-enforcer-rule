@@ -8,7 +8,7 @@ import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
  *
  * @author Simon Taddiken
  */
-public interface GroupConsistencyChecker {
+interface GroupConsistencyChecker {
 
     /**
      * Returns a {@link GroupConsistencyChecker} implementation.

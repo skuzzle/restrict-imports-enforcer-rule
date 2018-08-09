@@ -1,28 +1,31 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
     private final ImportMatcher matcher;
-    private final IOUtils ioUtil;
+    private final AnalyzerSettings settings;
 
-    public SourceTreeAnalyzerImpl(ImportMatcher matcher, IOUtils ioUtils) {
+    public SourceTreeAnalyzerImpl(AnalyzerSettings settings, ImportMatcher matcher) {
+        this.settings = settings;
         this.matcher = matcher;
-        this.ioUtil = ioUtils;
     }
 
     @Override
-    public AnalyzeResult analyze(Stream<Path> roots, BannedImportGroup group) {
-        final Iterable<Path> rootsIterable = roots::iterator;
+    public AnalyzeResult analyze(BannedImportGroup group) {
+        final Iterable<Path> rootsIterable = settings.getRootDirectories();
         final List<MatchedFile> matchedFiles = new ArrayList<>();
 
         for (final Path root : rootsIterable) {
-            final Iterable<Path> sourceFilesIterable = ioUtil.listFiles(root,
+            final Iterable<Path> sourceFilesIterable = listFiles(root,
                     this::isJavaSourceFile)::iterator;
 
             for (final Path sourceFile : sourceFilesIterable) {
@@ -39,8 +42,24 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
         return new AnalyzeResult(matchedFiles);
     }
 
+    private Stream<Path> listFiles(Path root, Predicate<Path> filter) {
+        try {
+            if (!Files.exists(root)) {
+                return Stream.empty();
+            }
+            return Files.find(root, Integer.MAX_VALUE, (path, bfa) -> filter.test(path));
+        } catch (final IOException e) {
+            throw new RuntimeIOException(
+                    "Encountered IOException while listing files of " + root, e);
+        }
+    }
+
+    private boolean isFile(Path path) {
+        return !Files.isDirectory(path);
+    }
+
     private boolean isJavaSourceFile(Path path) {
-        return this.ioUtil.isFile(path) &&
+        return isFile(path) &&
                 path.getFileName().toString().toLowerCase().endsWith(".java");
     }
 

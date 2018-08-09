@@ -9,6 +9,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Properties;
 
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
@@ -33,7 +34,9 @@ public class RestrictImportsTest {
         final URL url = getClass().getResource("/SampleJavaFile.java");
         final File f = new File(url.toURI());
         final Path path = f.toPath().getParent();
+        when(this.mavenProject.getProperties()).thenReturn(new Properties());
         when(this.mavenProject.getCompileSourceRoots())
+
                 .thenReturn(Collections.singletonList(path.toString()));
     }
 
@@ -159,5 +162,11 @@ public class RestrictImportsTest {
         this.subject.setBannedImports(Arrays.asList("java.util.*"));
         this.subject.setAllowedImports(Arrays.asList("java.util.ArrayList"));
         subject.execute(helper);
+    }
+
+    @Test
+    void testConsistentConfigurationIllegalBufferSize() throws Exception {
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> subject.setCommentLineBufferSize(0));
     }
 }

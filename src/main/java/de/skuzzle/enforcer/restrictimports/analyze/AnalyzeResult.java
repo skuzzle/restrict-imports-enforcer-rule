@@ -53,7 +53,7 @@ public final class AnalyzeResult {
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
-                .add("matches", this.fileMatches)
+                .add("fileMatches", this.fileMatches)
                 .toString();
     }
 

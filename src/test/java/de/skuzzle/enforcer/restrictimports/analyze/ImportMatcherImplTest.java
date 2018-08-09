@@ -12,12 +12,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
-
-import de.skuzzle.enforcer.restrictimports.analyze.ImportMatcherImpl.LineSupplier;
 
 public class ImportMatcherImplTest {
 
@@ -37,9 +34,7 @@ public class ImportMatcherImplTest {
                 "import de.skuzzle.sample.Test;",
                 "import   foo.bar.xyz;",
                 "import de.skuzzle.sample.Test2;",
-                "import de.skuzzle.sample.Test3;//inline comment",
-                "/*block comment */import de.skuzzle.sample.Test4;",
-                "/** Weird block comment ///**//**/import de.skuzzle.sample.Test5;//de.skuzzle.sample.TestIgnored",
+                "import de.skuzzle.sample.Test3;",
                 "import de.foo.bar.Test").stream());
     }
 
@@ -70,9 +65,7 @@ public class ImportMatcherImplTest {
         final ImmutableList<MatchedImport> expected = ImmutableList.of(
                 new MatchedImport(3, "de.skuzzle.sample.Test", expectedMatchedBy),
                 new MatchedImport(5, "de.skuzzle.sample.Test2", expectedMatchedBy),
-                new MatchedImport(6, "de.skuzzle.sample.Test3", expectedMatchedBy),
-                new MatchedImport(7, "de.skuzzle.sample.Test4", expectedMatchedBy),
-                new MatchedImport(8, "de.skuzzle.sample.Test5", expectedMatchedBy));
+                new MatchedImport(6, "de.skuzzle.sample.Test3", expectedMatchedBy));
 
         assertThat(matches).isEqualTo(expected);
     }
@@ -92,35 +85,13 @@ public class ImportMatcherImplTest {
                 .parse("de.skuzzle.sample.*");
         final ImmutableList<MatchedImport> expected = ImmutableList.of(
                 new MatchedImport(3, "de.skuzzle.sample.Test", expectedMatchedBy),
-                new MatchedImport(6, "de.skuzzle.sample.Test3", expectedMatchedBy),
-                new MatchedImport(8, "de.skuzzle.sample.Test5", expectedMatchedBy));
+                new MatchedImport(6, "de.skuzzle.sample.Test3", expectedMatchedBy));
 
         assertThat(matches).isEqualTo(expected);
     }
 
     @Test
     public void testExcludeFile() throws Exception {
-        final BannedImportGroup group = BannedImportGroup.builder()
-                .withBasePackages("**")
-                .withBannedImports("foo")
-                .withExcludedClasses("de.skuzzle.test.File")
-                .withReason("message")
-                .build();
-
-        final Stream<MatchedImport> matches = this.subject.matchFile(this.path, group);
-        assertThat(matches).isEmpty();
-    }
-
-    @Test
-    public void testExcludeInstrumentedFile() throws Exception {
-        when(this.mockLineSupplier.lines(this.path)).thenReturn(ImmutableList.of(
-                "/*Instrumented*/package de.skuzzle.test;",
-                "",
-                "import de.skuzzle.sample.Test;",
-                "import   foo.bar.xyz;",
-                "import de.skuzzle.sample.Test2;",
-                "import de.foo.bar.Test").stream());
-
         final BannedImportGroup group = BannedImportGroup.builder()
                 .withBasePackages("**")
                 .withBannedImports("foo")
@@ -146,41 +117,6 @@ public class ImportMatcherImplTest {
                 .withBannedImports("de.skuzzle.sample.**")
                 .build();
         assertThat(subject.matchFile(path, group)).first().isEqualTo(new MatchedImport(5,
-                "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
-    }
-
-    @Test
-    public void testLeadingBlockComment() throws Exception {
-        when(this.mockLineSupplier.lines(this.path)).thenReturn(ImmutableList.of(
-                "/**",
-                " * Endless license text",
-                " */",
-                "package de.skuzzle.test;",
-                "",
-                "import de.skuzzle.sample.Test;").stream());
-
-        final BannedImportGroup group = BannedImportGroup.builder()
-                .withBasePackages("de.skuzzle.test.**")
-                .withBannedImports("de.skuzzle.sample.**")
-                .build();
-        assertThat(subject.matchFile(path, group)).first().isEqualTo(new MatchedImport(6,
-                "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
-    }
-
-    @Test
-    @Disabled
-    public void testInfixBlockComment() throws Exception {
-        when(this.mockLineSupplier.lines(this.path)).thenReturn(ImmutableList.of(
-                "package de.skuzzle.test;",
-                "/*Why",
-                "would you place a block comment like",
-                "this?*/import de.skuzzle.sample.Test;").stream());
-
-        final BannedImportGroup group = BannedImportGroup.builder()
-                .withBasePackages("de.skuzzle.test.**")
-                .withBannedImports("de.skuzzle.sample.**")
-                .build();
-        assertThat(subject.matchFile(path, group)).first().isEqualTo(new MatchedImport(6,
                 "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
     }
 

@@ -165,11 +165,13 @@ classes or classes where the file name is not equal to the containing class name
 
 Overview of all configuration parameters:
 
-| Parameter           | Type                      | Required | Default    | Since   |
-|---------------------|---------------------------|----------|------------|---------|
-| `basePackage(s)`    | (List of) package pattern | no       | `**`       |         |
-| `bannedImport(s)`   | (List of) package pattern | yes      |            |         |
-| `allowedImport(s)`  | (List of) package pattern | no       | empty list |         |
-| `exclusion(s)`      | (List of) package pattern | no       | empty list |         |
-| `includeTestCode`   | Boolean                   | no       | `false`    | `0.7.0` |
-| `reason`            | String                    | no       | empty      | `0.8.0` |
+| Parameter               | Type                      | Required | Default                           | Since    |
+|-------------------------|---------------------------|----------|-----------------------------------|----------|
+| `basePackage(s)`        | (List of) package pattern | no       | `**`                              |          |
+| `bannedImport(s)`       | (List of) package pattern | yes      |                                   |          |
+| `allowedImport(s)`      | (List of) package pattern | no       | empty list                        |          |
+| `exclusion(s)`          | (List of) package pattern | no       | empty list                        |          |
+| `includeTestCode`       | Boolean                   | no       | `false`                           | `0.7.0`  |
+| `reason`                | String                    | no       | empty                             | `0.8.0`  |
+| `commentLineBufferSize` | Integer                   | no       | 512                               | `0.11.0` |
+| `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` |

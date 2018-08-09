@@ -2,6 +2,7 @@ package de.skuzzle.enforcer.restrictimports;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -18,10 +19,12 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.analyze.MatchFormatter;
+import de.skuzzle.enforcer.restrictimports.analyze.CommentBufferOverflowException;
 import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
+import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
 
 /**
  * Enforcer rule which restricts the usage of certain packages or classes within a Java
@@ -45,8 +48,8 @@ public class RestrictImports implements EnforcerRule {
 
     private boolean includeTestCode;
     private String reason;
-
-    private static final SourceTreeAnalyzer ANALYZER = SourceTreeAnalyzer.getInstance();
+    private int commentLineBufferSize = 512;
+    private Charset sourceFileCharset;
 
     @Override
     public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException {
@@ -58,9 +61,17 @@ public class RestrictImports implements EnforcerRule {
             final BannedImportGroup group = createGroupFromPluginConfiguration();
             final Collection<Path> sourceRoots = listSourceRoots(project, log)
                     .collect(Collectors.toList());
+            final Charset sourceFileCharset = determineSourceFileCharset(project);
 
-            final AnalyzeResult analyzeResult = ANALYZER.analyze(
-                    sourceRoots.stream(), group);
+            final AnalyzerSettings analyzerSettings = AnalyzerSettings.builder()
+                    .withRootDirectories(sourceRoots)
+                    .withCommentLineBufferSize(commentLineBufferSize)
+                    .withSourceFileCharset(sourceFileCharset)
+                    .build();
+
+            final AnalyzeResult analyzeResult = SourceTreeAnalyzer
+                    .getInstance(analyzerSettings)
+                    .analyze(group);
 
             if (analyzeResult.bannedImportsFound()) {
                 throw new EnforcerRuleException(
@@ -68,6 +79,13 @@ public class RestrictImports implements EnforcerRule {
             } else {
                 log.debug("No banned imports found");
             }
+        } catch (final CommentBufferOverflowException e) {
+            // thrown by the TransientCommentReader in case the comment buffer is too
+            // small
+            throw new EnforcerRuleException(String.format(
+                    "Error while reading java source file. The comment line buffer is too small. "
+                            + "Please set <commentLineBufferSize> to a value greater than %d. %s",
+                    commentLineBufferSize, e.getMessage()));
         } catch (final EnforcerRuleException e) {
             throw e;
         } catch (final Exception e) {
@@ -85,6 +103,18 @@ public class RestrictImports implements EnforcerRule {
                 .withExcludedClasses(assembleList(this.exclusion, this.exclusions))
                 .withReason(reason)
                 .build();
+    }
+
+    private Charset determineSourceFileCharset(MavenProject mavenProject) {
+        if (this.sourceFileCharset != null) {
+            return this.sourceFileCharset;
+        }
+        final String mavenCharsetName = (String) mavenProject.getProperties()
+                .get("project.build.sourceEncoding");
+        if (mavenCharsetName != null) {
+            return Charset.forName(mavenCharsetName);
+        }
+        return Charset.defaultCharset();
     }
 
     private List<PackagePattern> assembleList(PackagePattern single,
@@ -202,5 +232,15 @@ public class RestrictImports implements EnforcerRule {
 
     public final void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public final void setCommentLineBufferSize(int commentLineBufferSize) {
+        checkArgument(commentLineBufferSize > 0,
+                "Configuration error: commentLineBufferSize must be > 0");
+        this.commentLineBufferSize = commentLineBufferSize;
+    }
+
+    public final void setSourceFileCharset(String sourceFileCharset) {
+        this.sourceFileCharset = Charset.forName(sourceFileCharset);
     }
 }

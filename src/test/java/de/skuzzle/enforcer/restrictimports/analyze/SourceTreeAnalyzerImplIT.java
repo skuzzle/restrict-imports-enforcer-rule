@@ -2,12 +2,8 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.io.IOException;
 import java.nio.file.FileSystem;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,22 +12,25 @@ import com.google.common.jimfs.Jimfs;
 
 public class SourceTreeAnalyzerImplIT {
 
-    private final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
-
     private final FileSystem fs = Jimfs.newFileSystem(Configuration.unix());
+    private final Path root = fs.getPath("/");
+
+    private final AnalyzerSettings settings = AnalyzerSettings.builder()
+            .withRootDirectories(root)
+            .withCommentLineBufferSize(3)
+            .build();
+    private final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance(settings);
 
     @Test
-    public void testFindBannedImportInSingleBasePackage() throws Exception {
-        final Path root = fs.getPath("/");
-        final Path sourceFile = new SourceFileBuilder()
+    void testFindBannedImportInSingleBasePackage() throws Exception {
+        final Path sourceFile = new SourceFileBuilder(fs)
                 .atPath("src/main/java/de/skuzzle/Sample.java")
                 .withLines("package de.skuzzle;", "import java.util.ArrayList;");
 
-        final AnalyzeResult analyzeResult = subject.analyze(Stream.of(root),
-                BannedImportGroup.builder()
-                        .withBasePackages("**")
-                        .withBannedImports("java.util.ArrayList")
-                        .build());
+        final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports("java.util.ArrayList")
+                .build());
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("java.util.ArrayList");
@@ -45,24 +44,121 @@ public class SourceTreeAnalyzerImplIT {
     }
 
     @Test
-    public void testFindBannedImportInMultipleBasePackages() throws Exception {
-        final Path root = fs.getPath("/");
-        final Path sourceFile1 = new SourceFileBuilder()
+    void testFindBannedImportOnCorrectLineWithSkippedInlineComment() throws Exception {
+        final Path sourceFile = new SourceFileBuilder(fs)
+                .atPath("src/main/java/de/skuzzle/Sample.java")
+                .withLines("",
+                        "package de.skuzzle;",
+                        "//skiped comment",
+                        "import java.util.ArrayList;");
+
+        final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports("java.util.ArrayList")
+                .build());
+
+        final PackagePattern expectedMatchedBy = PackagePattern
+                .parse("java.util.ArrayList");
+        final AnalyzeResult expected = AnalyzeResult.builder()
+                .withMatches(MatchedFile
+                        .forSourceFile(sourceFile)
+                        .withMatchAt(4, "java.util.ArrayList", expectedMatchedBy))
+                .build();
+
+        assertThat(analyzeResult).isEqualTo(expected);
+    }
+
+    @Test
+    void testFindBannedImportOnCorrectLineWithSkippedBlockComment() throws Exception {
+        final Path sourceFile = new SourceFileBuilder(fs)
+                .atPath("src/main/java/de/skuzzle/Sample.java")
+                .withLines("",
+                        "package de.skuzzle;/*",
+                        "skiped comment",
+                        "*/import java.util.ArrayList;");
+
+        final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports("java.util.ArrayList")
+                .build());
+
+        final PackagePattern expectedMatchedBy = PackagePattern
+                .parse("java.util.ArrayList");
+        final AnalyzeResult expected = AnalyzeResult.builder()
+                .withMatches(MatchedFile
+                        .forSourceFile(sourceFile)
+                        .withMatchAt(4, "java.util.ArrayList", expectedMatchedBy))
+                .build();
+
+        assertThat(analyzeResult).isEqualTo(expected);
+    }
+
+    @Test
+    void testLeadingBlockComment() throws Exception {
+        final Path sourceFile = new SourceFileBuilder(fs)
+                .atPath("src/main/java/de/skuzzle/Sample.java")
+                .withLines("",
+                        "/Instrumented*/package de.skuzzle;",
+                        "import java.util.ArrayList;");
+
+        final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports("java.util.ArrayList")
+                .build());
+
+        final PackagePattern expectedMatchedBy = PackagePattern
+                .parse("java.util.ArrayList");
+        final AnalyzeResult expected = AnalyzeResult.builder()
+                .withMatches(MatchedFile
+                        .forSourceFile(sourceFile)
+                        .withMatchAt(3, "java.util.ArrayList", expectedMatchedBy))
+                .build();
+
+        assertThat(analyzeResult).isEqualTo(expected);
+    }
+
+    @Test
+    void testWeirdComment() throws Exception {
+        final Path sourceFile = new SourceFileBuilder(fs)
+                .atPath("src/main/java/de/skuzzle/Sample.java")
+                .withLines("",
+                        "package de.skuzzle.test;",
+                        "/** Weird block comment ///**//**/import de.skuzzle.sample.Test5;//de.skuzzle.sample.TestIgnored");
+
+        final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports("de.skuzzle.sample.*")
+                .build());
+
+        final PackagePattern expectedMatchedBy = PackagePattern
+                .parse("de.skuzzle.sample.*");
+        final AnalyzeResult expected = AnalyzeResult.builder()
+                .withMatches(MatchedFile
+                        .forSourceFile(sourceFile)
+                        .withMatchAt(3, "de.skuzzle.sample.Test5", expectedMatchedBy))
+                .build();
+
+        //
+        assertThat(analyzeResult).isEqualTo(expected);
+    }
+
+    @Test
+    void testFindBannedImportInMultipleBasePackages() throws Exception {
+        final Path sourceFile1 = new SourceFileBuilder(fs)
                 .atPath("src/main/java/de/skuzzle1/Sample.java")
                 .withLines(
                         "package de.skuzzle1;",
                         "import java.util.ArrayList;");
-        final Path sourceFile2 = new SourceFileBuilder()
+        final Path sourceFile2 = new SourceFileBuilder(fs)
                 .atPath("src/main/java/de/skuzzle2/Sample2.java")
                 .withLines(
                         "package de.skuzzle2;",
                         "import java.util.ArrayList;");
 
-        final AnalyzeResult analyzeResult = subject.analyze(Stream.of(root),
-                BannedImportGroup.builder()
-                        .withBasePackages("de.skuzzle1.**", "de.skuzzle2.**")
-                        .withBannedImports("java.util.ArrayList")
-                        .build());
+        final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
+                .withBasePackages("de.skuzzle1.**", "de.skuzzle2.**")
+                .withBannedImports("java.util.ArrayList")
+                .build());
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("java.util.ArrayList");
@@ -79,39 +175,66 @@ public class SourceTreeAnalyzerImplIT {
     }
 
     @Test
-    public void testSkipNonJavaFile() throws Exception {
-        final Path root = fs.getPath("/");
-
-        new SourceFileBuilder()
+    void testSkipNonJavaFile() throws Exception {
+        new SourceFileBuilder(fs)
                 .atPath("src/main/java/de/skuzzle/Sample.NOT_JAVA")
                 .withLines("package de.skuzzle;", "import java.util.ArrayList;");
 
-        final AnalyzeResult analyzeResult = subject.analyze(Stream.of(root),
-                BannedImportGroup.builder()
-                        .withBasePackages("**")
-                        .withBannedImports("java.util.ArrayList")
-                        .build());
+        final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports("java.util.ArrayList")
+                .build());
 
         assertThat(analyzeResult.bannedImportsFound()).isFalse();
     }
 
-    private class SourceFileBuilder {
-        private Path file;
+    @Test
+    void testEverythingExcludedByBasePackage() throws Exception {
+        new SourceFileBuilder(fs)
+                .atPath("src/main/java/de/skuzzle/Sample.java")
+                .withLines("",
+                        "package de.skuzzle;",
+                        "import java.util.ArrayList;");
 
-        public SourceFileBuilder atPath(String first)
-                throws IOException {
+        final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
+                .withBasePackages("com.foo.*")
+                .withBannedImports("java.util.ArrayList")
+                .build());
 
-            final String[] parts = first.split("/");
+        assertThat(analyzeResult.bannedImportsFound()).isFalse();
+    }
 
-            file = fs.getPath(parts[0], Arrays.copyOfRange(parts, 1, parts.length));
-            Files.createDirectories(file.getParent());
-            return this;
-        }
+    @Test
+    void testEverythingExcludedByExclusion() throws Exception {
+        new SourceFileBuilder(fs)
+                .atPath("src/main/java/de/skuzzle/Sample.java")
+                .withLines("",
+                        "package de.skuzzle;",
+                        "import java.util.ArrayList;");
 
-        public Path withLines(CharSequence... lines) throws IOException {
-            final Iterable<? extends CharSequence> it = Arrays.stream(lines)::iterator;
-            Files.write(file, it);
-            return file.toAbsolutePath();
-        }
+        final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
+                .withBasePackages("de.skuzzle.*")
+                .withBannedImports("java.util.ArrayList")
+                .withExcludedClasses("de.skuzzle.Sample")
+                .build());
+
+        assertThat(analyzeResult.bannedImportsFound()).isFalse();
+    }
+
+    @Test
+    void testAllowedImport() throws Exception {
+        new SourceFileBuilder(fs)
+                .atPath("src/main/java/de/skuzzle/Sample.java")
+                .withLines("",
+                        "package de.skuzzle;",
+                        "import java.util.ArrayList;");
+
+        final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports("java.util.*")
+                .withAllowedImports("java.util.ArrayList")
+                .build());
+
+        assertThat(analyzeResult.bannedImportsFound()).isFalse();
     }
 }

@@ -48,7 +48,7 @@ public class RestrictImports implements EnforcerRule {
 
     private boolean includeTestCode;
     private String reason;
-    private int commentLineBufferSize = 512;
+    private int commentLineBufferSize = 128;
     private Charset sourceFileCharset;
 
     @Override

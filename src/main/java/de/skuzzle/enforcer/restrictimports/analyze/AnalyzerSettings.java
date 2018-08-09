@@ -74,7 +74,7 @@ public final class AnalyzerSettings {
 
         private final List<Path> rootDirectories = new ArrayList<>();
         private Charset sourceFileCharset = Charset.defaultCharset();
-        private int commentLineBufferSize = 512;
+        private int commentLineBufferSize = 128;
 
         private Builder() {
             // hidden

@@ -137,6 +137,23 @@ public class ImportMatcherImplTest {
     }
 
     @Test
+    public void testAbortOnNonImportLine() throws Exception {
+        when(this.mockLineSupplier.lines(this.path)).thenReturn(ImmutableList.of(
+                "package de.skuzzle.test;",
+                "import de.skuzzle.sample.Test;",
+                "public class Foo {",
+                "import de.skuzzle.sample.Test2;").stream());
+
+        final BannedImportGroup group = BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports("de.skuzzle.sample.**")
+                .build();
+
+        assertThat(subject.matchFile(path, group)).first().isEqualTo(new MatchedImport(2,
+                "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
+    }
+
+    @Test
     public void testExcludeWholeFileByBasePackage() throws Exception {
         final Stream<MatchedImport> matches = this.subject.matchFile(this.path,
                 BannedImportGroup.builder()

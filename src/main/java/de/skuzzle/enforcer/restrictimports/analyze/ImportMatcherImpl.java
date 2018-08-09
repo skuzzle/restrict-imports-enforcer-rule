@@ -41,8 +41,9 @@ class ImportMatcherImpl implements ImportMatcher {
                 if (isExcluded(sourceFile, packageName, group)) {
                     return Stream.empty();
                 } else if (!isImport(line)) {
-                    // as we are skipping empty (and comment) lines,
-                    continue;
+                    // as we are skipping empty (and comment) lines, by the time we
+                    // encounter a non-import line we can stop processing this file
+                    return matches.stream();
                 }
 
                 final String importName = extractPackageName(line);

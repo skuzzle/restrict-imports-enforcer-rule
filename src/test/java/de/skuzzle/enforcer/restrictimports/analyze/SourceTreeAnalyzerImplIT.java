@@ -2,6 +2,7 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 
@@ -19,7 +20,6 @@ public class SourceTreeAnalyzerImplIT {
             .withRootDirectories(root)
             .withCommentLineBufferSize(3)
             .build();
-    private final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance(settings);
 
     @Test
     void testFindBannedImportInSingleBasePackage() throws Exception {
@@ -27,6 +27,7 @@ public class SourceTreeAnalyzerImplIT {
                 .atPath("src/main/java/de/skuzzle/Sample.java")
                 .withLines("package de.skuzzle;", "import java.util.ArrayList;");
 
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance(settings);
         final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
                 .withBasePackages("**")
                 .withBannedImports("java.util.ArrayList")
@@ -52,6 +53,7 @@ public class SourceTreeAnalyzerImplIT {
                         "//skiped comment",
                         "import java.util.ArrayList;");
 
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance(settings);
         final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
                 .withBasePackages("**")
                 .withBannedImports("java.util.ArrayList")
@@ -77,6 +79,7 @@ public class SourceTreeAnalyzerImplIT {
                         "skiped comment",
                         "*/import java.util.ArrayList;");
 
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance(settings);
         final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
                 .withBasePackages("**")
                 .withBannedImports("java.util.ArrayList")
@@ -98,9 +101,10 @@ public class SourceTreeAnalyzerImplIT {
         final Path sourceFile = new SourceFileBuilder(fs)
                 .atPath("src/main/java/de/skuzzle/Sample.java")
                 .withLines("",
-                        "/Instrumented*/package de.skuzzle;",
+                        "/*Instrumented*/package de.skuzzle;",
                         "import java.util.ArrayList;");
 
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance(settings);
         final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
                 .withBasePackages("**")
                 .withBannedImports("java.util.ArrayList")
@@ -125,6 +129,7 @@ public class SourceTreeAnalyzerImplIT {
                         "package de.skuzzle.test;",
                         "/** Weird block comment ///**//**/import de.skuzzle.sample.Test5;//de.skuzzle.sample.TestIgnored");
 
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance(settings);
         final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
                 .withBasePackages("**")
                 .withBannedImports("de.skuzzle.sample.*")
@@ -138,7 +143,36 @@ public class SourceTreeAnalyzerImplIT {
                         .withMatchAt(3, "de.skuzzle.sample.Test5", expectedMatchedBy))
                 .build();
 
-        //
+        assertThat(analyzeResult).isEqualTo(expected);
+    }
+
+    @Test
+    void testDifferentCharset() throws Exception {
+        final Path sourceFile = new SourceFileBuilder(fs)
+                .atPath("src/main/java/de/skuzzle/Sample.java")
+                .witchCharset(StandardCharsets.ISO_8859_1)
+                .withLines("",
+                        "package de.sküzzle;",
+                        "import jävä.ütil.ArrayList;");
+
+        final AnalyzerSettings localSettings = AnalyzerSettings.builder()
+                .withRootDirectories(this.root)
+                .withSourceFileCharset(StandardCharsets.ISO_8859_1)
+                .build();
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance(localSettings);
+        final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
+                .withBasePackages("de.sküzzle.**")
+                .withBannedImports("jävä.ütil.ArrayList")
+                .build());
+
+        final PackagePattern expectedMatchedBy = PackagePattern
+                .parse("jävä.ütil.ArrayList");
+        final AnalyzeResult expected = AnalyzeResult.builder()
+                .withMatches(MatchedFile
+                        .forSourceFile(sourceFile)
+                        .withMatchAt(3, "jävä.ütil.ArrayList", expectedMatchedBy))
+                .build();
+
         assertThat(analyzeResult).isEqualTo(expected);
     }
 
@@ -155,6 +189,7 @@ public class SourceTreeAnalyzerImplIT {
                         "package de.skuzzle2;",
                         "import java.util.ArrayList;");
 
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance(settings);
         final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
                 .withBasePackages("de.skuzzle1.**", "de.skuzzle2.**")
                 .withBannedImports("java.util.ArrayList")
@@ -180,6 +215,7 @@ public class SourceTreeAnalyzerImplIT {
                 .atPath("src/main/java/de/skuzzle/Sample.NOT_JAVA")
                 .withLines("package de.skuzzle;", "import java.util.ArrayList;");
 
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance(settings);
         final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
                 .withBasePackages("**")
                 .withBannedImports("java.util.ArrayList")
@@ -196,6 +232,7 @@ public class SourceTreeAnalyzerImplIT {
                         "package de.skuzzle;",
                         "import java.util.ArrayList;");
 
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance(settings);
         final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
                 .withBasePackages("com.foo.*")
                 .withBannedImports("java.util.ArrayList")
@@ -212,6 +249,7 @@ public class SourceTreeAnalyzerImplIT {
                         "package de.skuzzle;",
                         "import java.util.ArrayList;");
 
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance(settings);
         final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
                 .withBasePackages("de.skuzzle.*")
                 .withBannedImports("java.util.ArrayList")
@@ -229,6 +267,7 @@ public class SourceTreeAnalyzerImplIT {
                         "package de.skuzzle;",
                         "import java.util.ArrayList;");
 
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance(settings);
         final AnalyzeResult analyzeResult = subject.analyze(BannedImportGroup.builder()
                 .withBasePackages("**")
                 .withBannedImports("java.util.*")

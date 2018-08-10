@@ -15,14 +15,16 @@ import java.util.stream.Stream;
 import org.apache.maven.enforcer.rule.api.EnforcerRule;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.analyze.CommentBufferOverflowException;
 import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
+import de.skuzzle.enforcer.restrictimports.analyze.RuntimeIOException;
 import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
 import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
 
@@ -31,6 +33,8 @@ import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
  * code base.
  */
 public class RestrictImports implements EnforcerRule {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RestrictImports.class);
 
     private static final PackagePattern DEFAULT_BASE_PACKAGE = PackagePattern.parse("**");
 
@@ -53,32 +57,34 @@ public class RestrictImports implements EnforcerRule {
 
     @Override
     public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException {
-        final Log log = helper.getLog();
         try {
             final MavenProject project = (MavenProject) helper.evaluate("${project}");
 
-            log.debug("Checking for banned imports");
-            final BannedImportGroup group = createGroupFromPluginConfiguration();
-            final Collection<Path> sourceRoots = listSourceRoots(project, log)
-                    .collect(Collectors.toList());
-            final Charset sourceFileCharset = determineSourceFileCharset(project);
+            LOGGER.debug("Checking for banned imports");
 
-            final AnalyzerSettings analyzerSettings = AnalyzerSettings.builder()
-                    .withRootDirectories(sourceRoots)
-                    .withCommentLineBufferSize(commentLineBufferSize)
-                    .withSourceFileCharset(sourceFileCharset)
-                    .build();
+            final BannedImportGroup group = createGroupFromPluginConfiguration();
+            LOGGER.debug("Banned import group:\n{}", group);
+
+            final AnalyzerSettings analyzerSettings = createAnalyzerSettingsFromPluginConfiguration(
+                    project);
+            LOGGER.debug("Analyzer settings:\n{}", analyzerSettings);
 
             final AnalyzeResult analyzeResult = SourceTreeAnalyzer
                     .getInstance(analyzerSettings)
                     .analyze(group);
+            LOGGER.debug("Analyzer result:\n{}", analyzeResult);
 
             if (analyzeResult.bannedImportsFound()) {
                 throw new EnforcerRuleException(
-                        formatErrorString(sourceRoots, group, analyzeResult));
+                        formatErrorString(
+                                analyzerSettings.getRootDirectories(),
+                                group,
+                                analyzeResult));
             } else {
-                log.debug("No banned imports found");
+                LOGGER.debug("No banned imports found");
             }
+        } catch (final RuntimeIOException e) {
+            throw new EnforcerRuleException(e.getMessage(), e);
         } catch (final CommentBufferOverflowException e) {
             // thrown by the TransientCommentReader in case the comment buffer is too
             // small
@@ -102,6 +108,19 @@ public class RestrictImports implements EnforcerRule {
                 .withAllowedImports(assembleList(this.allowedImport, this.allowedImports))
                 .withExcludedClasses(assembleList(this.exclusion, this.exclusions))
                 .withReason(reason)
+                .build();
+    }
+
+    private AnalyzerSettings createAnalyzerSettingsFromPluginConfiguration(
+            MavenProject mavenProject) {
+        final Collection<Path> sourceRoots = listSourceRoots(mavenProject)
+                .collect(Collectors.toList());
+        final Charset sourceFileCharset = determineSourceFileCharset(mavenProject);
+
+        return AnalyzerSettings.builder()
+                .withRootDirectories(sourceRoots)
+                .withCommentLineBufferSize(commentLineBufferSize)
+                .withSourceFileCharset(sourceFileCharset)
                 .build();
     }
 
@@ -132,7 +151,7 @@ public class RestrictImports implements EnforcerRule {
     }
 
     @SuppressWarnings("unchecked")
-    private Stream<Path> listSourceRoots(MavenProject project, Log log) {
+    private Stream<Path> listSourceRoots(MavenProject project) {
         final Stream<String> compileStream = project.getCompileSourceRoots().stream();
 
         final Stream<String> rootFolders;
@@ -145,7 +164,7 @@ public class RestrictImports implements EnforcerRule {
         }
 
         return rootFolders
-                .peek(root -> log.debug("Including source dir: " + root))
+                .peek(root -> LOGGER.debug("Including source dir: {}", root))
                 .map(Paths::get);
     }
 

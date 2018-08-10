@@ -36,7 +36,6 @@ public class RestrictImportsTest {
         final Path path = f.toPath().getParent();
         when(this.mavenProject.getProperties()).thenReturn(new Properties());
         when(this.mavenProject.getCompileSourceRoots())
-
                 .thenReturn(Collections.singletonList(path.toString()));
     }
 

@@ -8,7 +8,7 @@ import java.io.IOException;
  *
  * @author Simon Taddiken
  */
-class RuntimeIOException extends RuntimeException {
+public class RuntimeIOException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 

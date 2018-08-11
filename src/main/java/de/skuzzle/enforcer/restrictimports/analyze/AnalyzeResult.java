@@ -61,7 +61,7 @@ public final class AnalyzeResult {
         private final List<MatchedFile> matches = new ArrayList<>();
 
         private Builder() {
-            // hidem
+            // hidden
         }
 
         public Builder withMatches(MatchedFile.Builder... matches) {

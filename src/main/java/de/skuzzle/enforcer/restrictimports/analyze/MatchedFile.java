@@ -27,7 +27,7 @@ public final class MatchedFile {
      * Constructs a MatchedFile
      *
      * @param sourceFile The path to the java source file.
-     * @return A Builder for furhter configuration of the MatchedFile instance.
+     * @return A Builder for further configuration of the MatchedFile instance.
      */
     public static Builder forSourceFile(Path sourceFile) {
         return new Builder(sourceFile);

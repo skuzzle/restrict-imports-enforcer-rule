@@ -183,9 +183,13 @@ this plugin will not be able to match that import against a banned pattern point
 concrete class like `java.util.ArrayList`. However, wildcard recognition would still work
 as expected.
 
-Likewise `basePackage` and `exclusion` patterns will only be matched against a source 
-file's file name concatenated to its package. Thus it is not possible to match inner 
-classes or classes where the file name is not equal to the containing class name.
+For checking the `basePackage` and `exclusion` patterns, the plugin tries to construct the
+_full qualified class name_ (FQCN) of each analyzed source file. It does so by 
+concatenating the file name to the source file's value of the `package <value>;` 
+statement. Thus if your `exclusion` pattern points to a concrete class like 
+`com.name.ClassName` the exclusion will only match if this class is declared in a file 
+with the exact name `ClassName.java`. The same applies in case you use a base package 
+pattern with no wild cards.
 
 
 ## Configuration options
@@ -199,6 +203,6 @@ Overview of all configuration parameters:
 | `allowedImport(s)`      | (List of) package pattern | no       | empty list                        |          |
 | `exclusion(s)`          | (List of) package pattern | no       | empty list                        |          |
 | `includeTestCode`       | Boolean                   | no       | `false`                           | `0.7.0`  |
-| `reason`                | String                    | no       | empty                             | `0.8.0`  |
+| `reason`                | String                    | no       | empty String                      | `0.8.0`  |
 | `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` |
 | `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` |

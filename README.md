@@ -44,25 +44,6 @@ information.
 </plugin>
 ```
 
-## Package Patterns
-
-Package patterns are matched case sensitively part by part. There are two supported 
-wildcard operators:
-
-1. `*` matches every package part but exactly one.
-2. `**` matches multiple package parts but at least one.
-
-The pattern `java.util.*` matches `java.util.ArrayList` but not `java.util.regex.Pattern`.
-
-Likewise the pattern `java.util.**` matches all classes and subclasses contained in 
-`java.util`. Double wildcards are supported everywhere within a pattern. `**.DumbName`
-would match every import which ends in `DumbName`. Wildcards are forbidden to be used in 
-combination with other characters within a single part, like in `com.foo**`. Also parts 
-within a package must not be empty like in `foo..bar`.
-
-If a pattern does not contain any wildcards, matching degrades to a simple String 
-comparison.
-
 ## Includes and Excludes
 To refine the classes that are banned you may use the `allowedImports` tag in addition to 
 the `bannedImports` tag. For example you can exclude a whole sub package using a wildcard
@@ -148,6 +129,25 @@ of test code using the `includeTestCode` option.
     </rules>
 </configuration>
 ```
+
+## Package Patterns
+
+Package patterns are matched case sensitively part by part. There are two supported 
+wildcard operators:
+
+1. `*` matches every package part but exactly one.
+2. `**` matches multiple package parts but at least one.
+
+The pattern `java.util.*` matches `java.util.ArrayList` but not `java.util.regex.Pattern`.
+
+Likewise the pattern `java.util.**` matches all classes and subclasses contained in 
+`java.util`. Double wildcards are supported everywhere within a pattern. `**.DumbName`
+would match every import which ends in `DumbName`. Wildcards are forbidden to be used in 
+combination with other characters within a single part, like in `com.foo**`. Also parts 
+within a package must not be empty like in `foo..bar`.
+
+If a pattern does not contain any wildcards, matching degrades to a simple String 
+comparison.
 
 ## Limitation
 

@@ -70,8 +70,8 @@ public class RestrictImports implements EnforcerRule {
             LOGGER.debug("Analyzer settings:\n{}", analyzerSettings);
 
             final AnalyzeResult analyzeResult = SourceTreeAnalyzer
-                    .getInstance(analyzerSettings)
-                    .analyze(group);
+                    .getInstance()
+                    .analyze(analyzerSettings, group);
             LOGGER.debug("Analyzer result:\n{}", analyzeResult);
 
             if (analyzeResult.bannedImportsFound()) {

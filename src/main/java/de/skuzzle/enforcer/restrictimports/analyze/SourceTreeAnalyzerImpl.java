@@ -11,16 +11,14 @@ import java.util.stream.Stream;
 
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
-    private final ImportMatcher matcher;
-    private final AnalyzerSettings settings;
-
-    public SourceTreeAnalyzerImpl(AnalyzerSettings settings, ImportMatcher matcher) {
-        this.settings = settings;
-        this.matcher = matcher;
-    }
-
     @Override
-    public AnalyzeResult analyze(BannedImportGroup group) {
+    public AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroup group) {
+
+        final LineSupplier lineSupplier = new SkipCommentsLineSupplier(
+                settings.getSourceFileCharset(),
+                settings.getCommentLineBufferSize());
+        final ImportMatcher importMatcher = new ImportMatcherImpl(lineSupplier);
+
         final Iterable<Path> rootsIterable = settings.getRootDirectories();
         final List<MatchedFile> matchedFiles = new ArrayList<>();
 
@@ -29,7 +27,8 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
                     this::isJavaSourceFile)::iterator;
 
             for (final Path sourceFile : sourceFilesIterable) {
-                final List<MatchedImport> matches = matcher.matchFile(sourceFile, group)
+                final List<MatchedImport> matches = importMatcher
+                        .matchFile(sourceFile, group)
                         .collect(Collectors.toList());
 
                 if (!matches.isEmpty()) {

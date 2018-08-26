@@ -17,7 +17,7 @@ information.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>0.11.0</version>
+            <version>0.12.0</version>
         </dependency>
     </dependencies>
     <executions>
@@ -29,7 +29,7 @@ information.
             </goals>
             <configuration>
                 <rules>
-                    <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+                    <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
                         <!-- Since 0.8.0: Define an explanatory reason why these imports are prohibited -->
                         <reason>Use SLF4j for logging</reason>
                         <!-- Specify a single pattern to be banned -->
@@ -52,7 +52,7 @@ operator and then include some concrete classes:
 ```xml
 <configuration>
     <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
             <bannedImport>java.util.logging.**</bannedImport>
             <allowedImport>java.util.logging.Handler</allowedImport>
         </restrictImports>
@@ -68,7 +68,7 @@ by the rule. You may then exclude some classes to refine the matches using the
 ```xml
 <configuration>
     <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
             <basePackages>
                 <basePackage>com.your.domain.**</basePackage>
                 <basePackage>com.your.company.**</basePackage>
@@ -88,7 +88,7 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
 ```xml
 <configuration>
     <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
             <bannedImports>
                 <bannedImport>java.util.logging.**</bannedImport>
                 <bannedImport>what.ever.**</bannedImport>
@@ -108,7 +108,7 @@ Matching static imports is also possible but the `static ` prefix must be explic
 ```xml
 <configuration>
     <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
             <bannedImport>static org.junit.Assert.*</bannedImport>
         </restrictImports>
     </rules>
@@ -122,7 +122,7 @@ of test code using the `includeTestCode` option.
 ```xml
 <configuration>
     <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
             <includeTestCode>true</includeTestCode>
             <!-- ... -->
         </restrictImports>
@@ -164,7 +164,7 @@ set `commentLineBufferSize` accordingly.
 ```xml
 <configuration>
     <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
             <commentLineBufferSize>512</commentLineBufferSize>
         </restrictImports>
     </rules>

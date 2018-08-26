@@ -26,7 +26,7 @@
                 </dependencies>
                 <configuration>
                     <rules>
-                        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+                        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
                             <basePackage>de.sküzzle.**</basePackage>
                             <bannedImport>jävä.ütil.*</bannedImport>
                         </restrictImports>

@@ -27,7 +27,7 @@
                 </dependencies>
                 <configuration>
                     <rules>
-                        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+                        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
                             <basePackage>**</basePackage>
                             <bannedImports>
                                 <bannedImport>java.util.*</bannedImport>

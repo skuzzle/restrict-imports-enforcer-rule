@@ -22,7 +22,7 @@
                 </dependencies>
                 <configuration>
                     <rules>
-                        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+                        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
                             <basePackage>**</basePackage>
                             <includeTestCode>false</includeTestCode>
                             <bannedImports>

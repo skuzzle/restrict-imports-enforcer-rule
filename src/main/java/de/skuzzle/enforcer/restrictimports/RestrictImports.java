@@ -25,9 +25,8 @@ public class RestrictImports
         LOGGER.warn("Deprecation warning:");
         LOGGER.warn(
                 "You are using the deprecated RestrictImports rule from '{}'. Please use the class '{}' instead",
-                this.getClass().getSimpleName(),
-                de.skuzzle.enforcer.restrictimports.rule.RestrictImports.class
-                        .getSimpleName());
+                this.getClass().getName(),
+                de.skuzzle.enforcer.restrictimports.rule.RestrictImports.class.getName());
         LOGGER.warn("");
         super.execute(helper);
     }

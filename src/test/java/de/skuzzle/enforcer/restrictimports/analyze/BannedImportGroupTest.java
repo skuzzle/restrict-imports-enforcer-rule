@@ -38,7 +38,8 @@ public class BannedImportGroupTest {
                         .withBannedImports("dont.care")
                         .withBasePackages("base.package.**")
                         .withAllowedImports("foo.bar.**")
-                        .build());
+                        .build())
+                .withMessageContaining("The allowed import pattern 'foo.bar.**'");
     }
 
     @Test
@@ -48,7 +49,29 @@ public class BannedImportGroupTest {
                         .withBasePackages("de.skuzzle.**")
                         .withBannedImports("foo.bar")
                         .withExcludedClasses("de.not.skuzzle.**")
-                        .build());
+                        .build())
+                .withMessageContaining("The exclusion pattern 'de.not.skuzzle.**'");
+    }
+
+    @Test
+    void testBasePackageMustNotBeStatic() throws Exception {
+        assertThatExceptionOfType(EnforcerRuleException.class)
+                .isThrownBy(() -> BannedImportGroup.builder()
+                        .withBasePackages("static de.skuzzle.Foo")
+                        .withBannedImports("foo.bar")
+                        .build())
+                .withMessageContaining("Base packages must not be static");
+    }
+
+    @Test
+    void testExclusionMustNotBeStatic() throws Exception {
+        assertThatExceptionOfType(EnforcerRuleException.class)
+                .isThrownBy(() -> BannedImportGroup.builder()
+                        .withBasePackages("de.skuzzle.**")
+                        .withBannedImports("foo.bar")
+                        .withExcludedClasses("static de.skuzzle.Foo")
+                        .build())
+                .withMessageContaining("Exclusions must not be static");
     }
 
 }

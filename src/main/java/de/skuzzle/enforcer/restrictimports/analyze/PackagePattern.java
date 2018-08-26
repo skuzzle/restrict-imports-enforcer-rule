@@ -55,4 +55,12 @@ public interface PackagePattern {
      * @since 0.8.0
      */
     boolean matches(PackagePattern packagePattern);
+
+    /**
+     * Whether this is a pattern starting with 'static '.
+     *
+     * @return Whether this is a static pattern.
+     * @since 0.12.0
+     */
+    boolean isStatic();
 }

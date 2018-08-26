@@ -139,6 +139,11 @@ final class PackagePatternImpl implements PackagePattern {
     }
 
     @Override
+    public boolean isStatic() {
+        return staticc;
+    }
+
+    @Override
     public int hashCode() {
         return Objects.hash(Arrays.hashCode(parts), staticc);
     }

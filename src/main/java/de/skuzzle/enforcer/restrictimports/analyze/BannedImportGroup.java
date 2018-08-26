@@ -155,7 +155,23 @@ public final class BannedImportGroup {
                 throws EnforcerRuleException {
             checkBannedImportsPresent(group);
             allowedImportMustMatchBannedPattern(group);
+            checkBasePackageNotStatic(group);
+            checkExclusionNotStatic(group);
             exclusionsMustMatchBasePattern(group);
+        }
+
+        private void checkBasePackageNotStatic(BannedImportGroup group)
+                throws EnforcerRuleException {
+            if (group.getBasePackages().stream().anyMatch(PackagePattern::isStatic)) {
+                throw new EnforcerRuleException("Base packages must not be static");
+            }
+        }
+
+        private void checkExclusionNotStatic(BannedImportGroup group)
+                throws EnforcerRuleException {
+            if (group.getExcludedClasses().stream().anyMatch(PackagePattern::isStatic)) {
+                throw new EnforcerRuleException("Exclusions must not be static");
+            }
         }
 
         private void checkBannedImportsPresent(BannedImportGroup group)

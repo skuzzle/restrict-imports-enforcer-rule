@@ -18,8 +18,6 @@ import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.ImmutableList;
-
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
@@ -92,10 +90,14 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
             final List<BannedImportGroup> bannedImportGroups = this.groups.stream()
                     .map(BannedImportGroupDefinition::createGroupFromPluginConfiguration)
                     .collect(Collectors.toList());
-            return new BannedImportGroups(bannedImportGroups);
+            return BannedImportGroups.builder()
+                    .withGroups(bannedImportGroups)
+                    .build();
         }
         final BannedImportGroup singleGroup = createGroupFromPluginConfiguration();
-        return new BannedImportGroups(ImmutableList.of(singleGroup));
+        return BannedImportGroups.builder()
+                .withGroup(singleGroup)
+                .build();
     }
 
     private AnalyzerSettings createAnalyzerSettingsFromPluginConfiguration(

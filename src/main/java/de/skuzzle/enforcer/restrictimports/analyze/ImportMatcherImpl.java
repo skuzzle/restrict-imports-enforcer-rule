@@ -3,7 +3,6 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -15,10 +14,6 @@ class ImportMatcherImpl implements ImportMatcher {
 
     ImportMatcherImpl(LineSupplier supplier) {
         this.supplier = supplier;
-    }
-
-    Optional<MatchedFile> matchFile(Path sourceFile, BannedImportGroup group) {
-        return matchFile(sourceFile, new BannedImportGroups(Arrays.asList(group)));
     }
 
     @Override

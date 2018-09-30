@@ -40,21 +40,24 @@ public class ImportMatcherImplTest {
     public void testException() throws Exception {
         when(this.mockLineSupplier.lines(this.path)).thenThrow(new IOException());
 
+        final BannedImportGroups groups = BannedImportGroups.builder()
+                .withGroup(BannedImportGroup.builder()
+                        .withBasePackages("**")
+                        .withBannedImports("bla"))
+                .build();
         assertThatExceptionOfType(RuntimeIOException.class)
                 .isThrownBy(() -> this.subject
-                        .matchFile(this.path, BannedImportGroup.builder()
-                                .withBasePackages("**")
-                                .withBannedImports("bla")
-                                .build()));
+                        .matchFile(this.path, groups));
     }
 
     @Test
     public void testMatchBannedOnly() throws Exception {
-        final BannedImportGroup group = BannedImportGroup.builder()
-                .withBasePackages("foo.bar", "de.skuzzle.test.*")
-                .withBannedImports("de.skuzzle.sample.*")
+        final BannedImportGroups groups = BannedImportGroups.builder()
+                .withGroup(BannedImportGroup.builder()
+                        .withBasePackages("foo.bar", "de.skuzzle.test.*")
+                        .withBannedImports("de.skuzzle.sample.*"))
                 .build();
-        final Optional<MatchedFile> matches = this.subject.matchFile(this.path, group);
+        final Optional<MatchedFile> matches = this.subject.matchFile(this.path, groups);
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("de.skuzzle.sample.*");
@@ -68,14 +71,15 @@ public class ImportMatcherImplTest {
 
     @Test
     public void testMatchWithInclude() throws Exception {
-        final BannedImportGroup group = BannedImportGroup.builder()
-                .withBasePackages("**")
-                .withBannedImports("de.skuzzle.sample.*")
-                .withAllowedImports("de.skuzzle.sample.Test2",
-                        "de.skuzzle.sample.Test4")
+        final BannedImportGroups groups = BannedImportGroups.builder()
+                .withGroup(BannedImportGroup.builder()
+                        .withBasePackages("**")
+                        .withBannedImports("de.skuzzle.sample.*")
+                        .withAllowedImports("de.skuzzle.sample.Test2",
+                                "de.skuzzle.sample.Test4"))
                 .build();
         final Optional<MatchedFile> matches = this.subject
-                .matchFile(this.path, group);
+                .matchFile(this.path, groups);
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("de.skuzzle.sample.*");
@@ -88,14 +92,15 @@ public class ImportMatcherImplTest {
 
     @Test
     public void testExcludeFile() throws Exception {
-        final BannedImportGroup group = BannedImportGroup.builder()
-                .withBasePackages("**")
-                .withBannedImports("foo")
-                .withExcludedClasses("de.skuzzle.test.File")
-                .withReason("message")
+        final BannedImportGroups groups = BannedImportGroups.builder()
+                .withGroup(BannedImportGroup.builder()
+                        .withBasePackages("**")
+                        .withBannedImports("foo")
+                        .withExcludedClasses("de.skuzzle.test.File")
+                        .withReason("message"))
                 .build();
 
-        final Optional<MatchedFile> matches = this.subject.matchFile(this.path, group);
+        final Optional<MatchedFile> matches = this.subject.matchFile(this.path, groups);
         assertThat(matches).isEmpty();
     }
 
@@ -108,11 +113,12 @@ public class ImportMatcherImplTest {
                 "",
                 "import de.skuzzle.sample.Test;").stream());
 
-        final BannedImportGroup group = BannedImportGroup.builder()
-                .withBasePackages("de.skuzzle.test.**")
-                .withBannedImports("de.skuzzle.sample.**")
+        final BannedImportGroups groups = BannedImportGroups.builder()
+                .withGroup(BannedImportGroup.builder()
+                        .withBasePackages("de.skuzzle.test.**")
+                        .withBannedImports("de.skuzzle.sample.**"))
                 .build();
-        assertThat(subject.matchFile(path, group).get().getMatchedImports()).first().isEqualTo(new MatchedImport(5,
+        assertThat(subject.matchFile(path, groups).get().getMatchedImports()).first().isEqualTo(new MatchedImport(5,
                 "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
     }
 
@@ -123,12 +129,13 @@ public class ImportMatcherImplTest {
                 "",
                 "import de.skuzzle.sample.Test;").stream());
 
-        final BannedImportGroup group = BannedImportGroup.builder()
-                .withBasePackages("**")
-                .withBannedImports("de.skuzzle.sample.**")
+        final BannedImportGroups groups = BannedImportGroups.builder()
+                .withGroup(BannedImportGroup.builder()
+                        .withBasePackages("**")
+                        .withBannedImports("de.skuzzle.sample.**"))
                 .build();
 
-        assertThat(subject.matchFile(path, group).get().getMatchedImports()).first().isEqualTo(new MatchedImport(3,
+        assertThat(subject.matchFile(path, groups).get().getMatchedImports()).first().isEqualTo(new MatchedImport(3,
                 "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
     }
 
@@ -140,21 +147,23 @@ public class ImportMatcherImplTest {
                 "public class Foo {",
                 "import de.skuzzle.sample.Test2;").stream());
 
-        final BannedImportGroup group = BannedImportGroup.builder()
-                .withBasePackages("**")
-                .withBannedImports("de.skuzzle.sample.**")
+        final BannedImportGroups groups = BannedImportGroups.builder()
+                .withGroup(BannedImportGroup.builder()
+                        .withBasePackages("**")
+                        .withBannedImports("de.skuzzle.sample.**"))
                 .build();
 
-        assertThat(subject.matchFile(path, group).get().getMatchedImports()).first().isEqualTo(new MatchedImport(2,
+        assertThat(subject.matchFile(path, groups).get().getMatchedImports()).first().isEqualTo(new MatchedImport(2,
                 "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
     }
 
     @Test
     public void testExcludeWholeFileByBasePackage() throws Exception {
         final Optional<MatchedFile> matches = this.subject.matchFile(this.path,
-                BannedImportGroup.builder()
-                        .withBasePackages("de.foo.bar")
-                        .withBannedImports("de.skuzzle.sample.*")
+                BannedImportGroups.builder()
+                        .withGroup(BannedImportGroup.builder()
+                                .withBasePackages("de.foo.bar")
+                                .withBannedImports("de.skuzzle.sample.*"))
                         .build());
         assertThat(matches).isEmpty();
     }

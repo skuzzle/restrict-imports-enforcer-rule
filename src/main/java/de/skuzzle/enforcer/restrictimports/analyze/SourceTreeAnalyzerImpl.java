@@ -13,7 +13,6 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
     @Override
     public AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroups groups) {
-
         final LineSupplier lineSupplier = new SkipCommentsLineSupplier(
                 settings.getSourceFileCharset(),
                 settings.getCommentLineBufferSize());
@@ -32,7 +31,9 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
                     .forEach(matchedFiles::add);
         }
 
-        return new AnalyzeResult(matchedFiles);
+        return AnalyzeResult.builder()
+                .withMatches(matchedFiles)
+                .build();
     }
 
     private Stream<Path> listFiles(Path root, Predicate<Path> filter) {

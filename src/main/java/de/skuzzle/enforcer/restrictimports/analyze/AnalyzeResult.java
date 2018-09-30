@@ -2,18 +2,18 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableList;
 
 public final class AnalyzeResult {
 
     private final List<MatchedFile> fileMatches;
 
-    AnalyzeResult(List<MatchedFile> matches) {
-        this.fileMatches = ImmutableList.copyOf(matches);
+    private AnalyzeResult(List<MatchedFile> matches) {
+        this.fileMatches = matches;
     }
 
     public static Builder builder() {
@@ -62,6 +62,11 @@ public final class AnalyzeResult {
 
         private Builder() {
             // hidden
+        }
+
+        public Builder withMatches(Collection<MatchedFile> matches) {
+            this.matches.addAll(matches);
+            return this;
         }
 
         public Builder withMatches(MatchedFile.Builder... matches) {

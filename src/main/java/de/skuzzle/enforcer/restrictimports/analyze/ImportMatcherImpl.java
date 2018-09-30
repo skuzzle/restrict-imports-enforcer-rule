@@ -65,7 +65,6 @@ class ImportMatcherImpl implements ImportMatcher {
                 group.ifImportIsBanned(importName)
                         .map(bannedImport -> new MatchedImport(lineNumber, importName, bannedImport))
                         .ifPresent(matches::add);
-
             }
 
             if (matches.isEmpty()) {

@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  *
  * @author Simon Taddiken
  */
-public interface PackagePattern {
+public interface PackagePattern extends Comparable<PackagePattern> {
 
     /**
      * Parses each string of the given collection into a {@link PackagePattern} and
@@ -55,6 +55,8 @@ public interface PackagePattern {
      * @since 0.8.0
      */
     boolean matches(PackagePattern packagePattern);
+
+    boolean isMoreSpecificThan(PackagePattern other);
 
     /**
      * Whether this is a pattern starting with 'static '.

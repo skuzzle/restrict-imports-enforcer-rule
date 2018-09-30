@@ -36,11 +36,12 @@ public class MatchFormatterImplTest {
 
         final AnalyzeResult analyzeResult = AnalyzeResult.builder()
                 .withMatches(MatchedFile.forSourceFile(sourceFile)
+                        .matchedBy(group)
                         .withMatchAt(3, "java.util.ArrayList",
                                 PackagePattern.parse("java.util.*")))
                 .build();
 
-        final String formatted = subject.formatMatches(roots, analyzeResult, group);
+        final String formatted = subject.formatMatches(roots, analyzeResult);
 
         assertThat(formatted).isEqualTo("\nBanned imports detected:\n" +
                 "Reason: Some reason\n" +

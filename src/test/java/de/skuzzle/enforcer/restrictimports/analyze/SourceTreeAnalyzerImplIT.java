@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup.Builder;
+
 public class SourceTreeAnalyzerImplIT {
 
     private final FileSystem fs = Jimfs.newFileSystem(Configuration.unix());
@@ -28,17 +30,18 @@ public class SourceTreeAnalyzerImplIT {
                 .withLines("package de.skuzzle;", "import java.util.ArrayList;");
 
         final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
-        final AnalyzeResult analyzeResult = subject.analyze(settings,
-                BannedImportGroup.builder()
-                        .withBasePackages("**")
-                        .withBannedImports("java.util.ArrayList")
-                        .build());
+        final BannedImportGroup group = BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports("java.util.ArrayList")
+                .build();
+        final AnalyzeResult analyzeResult = subject.analyze(settings, group);
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("java.util.ArrayList");
         final AnalyzeResult expected = AnalyzeResult.builder()
                 .withMatches(MatchedFile
                         .forSourceFile(sourceFile)
+                        .matchedBy(group)
                         .withMatchAt(2, "java.util.ArrayList", expectedMatchedBy))
                 .build();
 
@@ -55,17 +58,18 @@ public class SourceTreeAnalyzerImplIT {
                         "import java.util.ArrayList;");
 
         final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
-        final AnalyzeResult analyzeResult = subject.analyze(settings,
-                BannedImportGroup.builder()
-                        .withBasePackages("**")
-                        .withBannedImports("java.util.ArrayList")
-                        .build());
+        final BannedImportGroup group = BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports("java.util.ArrayList")
+                .build();
+        final AnalyzeResult analyzeResult = subject.analyze(settings, group);
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("java.util.ArrayList");
         final AnalyzeResult expected = AnalyzeResult.builder()
                 .withMatches(MatchedFile
                         .forSourceFile(sourceFile)
+                        .matchedBy(group)
                         .withMatchAt(4, "java.util.ArrayList", expectedMatchedBy))
                 .build();
 
@@ -82,17 +86,18 @@ public class SourceTreeAnalyzerImplIT {
                         "*/import java.util.ArrayList;");
 
         final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
-        final AnalyzeResult analyzeResult = subject.analyze(settings,
-                BannedImportGroup.builder()
-                        .withBasePackages("**")
-                        .withBannedImports("java.util.ArrayList")
-                        .build());
+        final BannedImportGroup group = BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports("java.util.ArrayList")
+                .build();
+        final AnalyzeResult analyzeResult = subject.analyze(settings, group);
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("java.util.ArrayList");
         final AnalyzeResult expected = AnalyzeResult.builder()
                 .withMatches(MatchedFile
                         .forSourceFile(sourceFile)
+                        .matchedBy(group)
                         .withMatchAt(4, "java.util.ArrayList", expectedMatchedBy))
                 .build();
 
@@ -108,17 +113,19 @@ public class SourceTreeAnalyzerImplIT {
                         "import java.util.ArrayList;");
 
         final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
-        final AnalyzeResult analyzeResult = subject.analyze(settings,
-                BannedImportGroup.builder()
-                        .withBasePackages("**")
-                        .withBannedImports("java.util.ArrayList")
-                        .build());
+
+        final BannedImportGroup group = BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports("java.util.ArrayList")
+                .build();
+        final AnalyzeResult analyzeResult = subject.analyze(settings, group);
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("java.util.ArrayList");
         final AnalyzeResult expected = AnalyzeResult.builder()
                 .withMatches(MatchedFile
                         .forSourceFile(sourceFile)
+                        .matchedBy(group)
                         .withMatchAt(3, "java.util.ArrayList", expectedMatchedBy))
                 .build();
 
@@ -134,17 +141,19 @@ public class SourceTreeAnalyzerImplIT {
                         "/** Weird block comment ///**//**/import de.skuzzle.sample.Test5;//de.skuzzle.sample.TestIgnored");
 
         final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
-        final AnalyzeResult analyzeResult = subject.analyze(settings,
-                BannedImportGroup.builder()
-                        .withBasePackages("**")
-                        .withBannedImports("de.skuzzle.sample.*")
-                        .build());
+
+        final BannedImportGroup group = BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports("de.skuzzle.sample.*")
+                .build();
+        final AnalyzeResult analyzeResult = subject.analyze(settings, group);
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("de.skuzzle.sample.*");
         final AnalyzeResult expected = AnalyzeResult.builder()
                 .withMatches(MatchedFile
                         .forSourceFile(sourceFile)
+                        .matchedBy(group)
                         .withMatchAt(3, "de.skuzzle.sample.Test5", expectedMatchedBy))
                 .build();
 
@@ -157,25 +166,27 @@ public class SourceTreeAnalyzerImplIT {
                 .atPath("src/main/java/de/skuzzle/Sample.java")
                 .witchCharset(StandardCharsets.ISO_8859_1)
                 .withLines("",
-                        "package de.sküzzle;",
-                        "import jävä.ütil.ArrayList;");
+                        "  package    de.sküzzle;",
+                        "  import    jävä.ütil.ArrayList;");
 
         final AnalyzerSettings localSettings = AnalyzerSettings.builder()
                 .withRootDirectories(this.root)
                 .withSourceFileCharset(StandardCharsets.ISO_8859_1)
                 .build();
         final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
-        final AnalyzeResult analyzeResult = subject.analyze(localSettings,
-                BannedImportGroup.builder()
-                        .withBasePackages("de.sküzzle.**")
-                        .withBannedImports("jävä.ütil.ArrayList")
-                        .build());
+
+        final BannedImportGroup group = BannedImportGroup.builder()
+                .withBasePackages("de.sküzzle.**")
+                .withBannedImports("jävä.ütil.ArrayList")
+                .build();
+        final AnalyzeResult analyzeResult = subject.analyze(localSettings, group);
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("jävä.ütil.ArrayList");
         final AnalyzeResult expected = AnalyzeResult.builder()
                 .withMatches(MatchedFile
                         .forSourceFile(sourceFile)
+                        .matchedBy(group)
                         .withMatchAt(3, "jävä.ütil.ArrayList", expectedMatchedBy))
                 .build();
 
@@ -196,11 +207,12 @@ public class SourceTreeAnalyzerImplIT {
                         "import java.util.ArrayList;");
 
         final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
-        final AnalyzeResult analyzeResult = subject.analyze(settings,
-                BannedImportGroup.builder()
-                        .withBasePackages("de.skuzzle1.**", "de.skuzzle2.**")
-                        .withBannedImports("java.util.ArrayList")
-                        .build());
+
+        final BannedImportGroup group = BannedImportGroup.builder()
+                .withBasePackages("de.skuzzle1.**", "de.skuzzle2.**")
+                .withBannedImports("java.util.ArrayList")
+                .build();
+        final AnalyzeResult analyzeResult = subject.analyze(settings, group);
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("java.util.ArrayList");
@@ -208,8 +220,10 @@ public class SourceTreeAnalyzerImplIT {
                 .withMatches(
                         MatchedFile
                                 .forSourceFile(sourceFile1)
+                                .matchedBy(group)
                                 .withMatchAt(2, "java.util.ArrayList", expectedMatchedBy),
                         MatchedFile.forSourceFile(sourceFile2)
+                                .matchedBy(group)
                                 .withMatchAt(2, "java.util.ArrayList", expectedMatchedBy))
                 .build();
 
@@ -223,11 +237,12 @@ public class SourceTreeAnalyzerImplIT {
                 .withLines("package de.skuzzle;", "import java.util.ArrayList;");
 
         final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
-        final AnalyzeResult analyzeResult = subject.analyze(settings,
-                BannedImportGroup.builder()
-                        .withBasePackages("**")
-                        .withBannedImports("java.util.ArrayList")
-                        .build());
+
+        final BannedImportGroup group = BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports("java.util.ArrayList")
+                .build();
+        final AnalyzeResult analyzeResult = subject.analyze(settings, group);
 
         assertThat(analyzeResult.bannedImportsFound()).isFalse();
     }
@@ -286,5 +301,38 @@ public class SourceTreeAnalyzerImplIT {
                         .build());
 
         assertThat(analyzeResult.bannedImportsFound()).isFalse();
+    }
+
+    @Test
+    void testMultipleGroups() throws Exception {
+        final Path sourceFile = new SourceFileBuilder(fs)
+                .atPath("src/main/java/de/skuzzle/Sample.java")
+                .withLines("",
+                        "package de.skuzzle;",
+                        "import com.sun.WhatEver;",
+                        "import java.util.ArrayList;");
+
+        final Builder matchedGroup = BannedImportGroup.builder()
+                .withBasePackages("de.skuzzle.**")
+                .withBannedImports("com.sun.**");
+        final BannedImportGroups groups = BannedImportGroups.builder()
+                .withGroup(BannedImportGroup.builder()
+                        .withBasePackages("**")
+                        .withBannedImports("java.util.*"))
+                .withGroup(matchedGroup)
+                .build();
+
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
+        final AnalyzeResult result = subject.analyze(settings, groups);
+
+        final PackagePattern expectedMatchedBy = PackagePattern.parse("com.sun.**");
+        final AnalyzeResult expectedResult = AnalyzeResult.builder()
+                .withMatches(
+                        MatchedFile.forSourceFile(sourceFile)
+                                .withMatchAt(3, "com.sun.WhatEver", expectedMatchedBy)
+                                .matchedBy(matchedGroup.build()))
+                .build();
+
+        assertThat(result).isEqualTo(expectedResult);
     }
 }

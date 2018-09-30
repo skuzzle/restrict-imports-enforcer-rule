@@ -2,7 +2,6 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 import org.junit.jupiter.api.Test;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -16,13 +15,13 @@ public class BannedImportGroupTest {
 
     @Test
     void testNoBannedImports() throws Exception {
-        assertThatExceptionOfType(EnforcerRuleException.class)
+        assertThatExceptionOfType(BannedImportDefinitionException.class)
                 .isThrownBy(() -> BannedImportGroup.builder().build());
     }
 
     @Test
     void testInconsistentAllowedImports() throws Exception {
-        assertThatExceptionOfType(EnforcerRuleException.class)
+        assertThatExceptionOfType(BannedImportDefinitionException.class)
                 .isThrownBy(() -> BannedImportGroup.builder()
                         .withBannedImports("dont.care")
                         .withBasePackages("com.foo.*")
@@ -33,7 +32,7 @@ public class BannedImportGroupTest {
 
     @Test
     void testInconsistentExclusions() throws Exception {
-        assertThatExceptionOfType(EnforcerRuleException.class)
+        assertThatExceptionOfType(BannedImportDefinitionException.class)
                 .isThrownBy(() -> BannedImportGroup.builder()
                         .withBannedImports("dont.care")
                         .withBasePackages("base.package.**")
@@ -44,7 +43,7 @@ public class BannedImportGroupTest {
 
     @Test
     void testExclusionsMustMatchBasePattern() throws Exception {
-        assertThatExceptionOfType(EnforcerRuleException.class)
+        assertThatExceptionOfType(BannedImportDefinitionException.class)
                 .isThrownBy(() -> BannedImportGroup.builder()
                         .withBasePackages("de.skuzzle.**")
                         .withBannedImports("foo.bar")
@@ -55,7 +54,7 @@ public class BannedImportGroupTest {
 
     @Test
     void testBasePackageMustNotBeStatic() throws Exception {
-        assertThatExceptionOfType(EnforcerRuleException.class)
+        assertThatExceptionOfType(BannedImportDefinitionException.class)
                 .isThrownBy(() -> BannedImportGroup.builder()
                         .withBasePackages("static de.skuzzle.Foo")
                         .withBannedImports("foo.bar")
@@ -65,7 +64,7 @@ public class BannedImportGroupTest {
 
     @Test
     void testExclusionMustNotBeStatic() throws Exception {
-        assertThatExceptionOfType(EnforcerRuleException.class)
+        assertThatExceptionOfType(BannedImportDefinitionException.class)
                 .isThrownBy(() -> BannedImportGroup.builder()
                         .withBasePackages("de.skuzzle.**")
                         .withBannedImports("foo.bar")

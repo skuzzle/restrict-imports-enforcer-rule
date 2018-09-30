@@ -1,10 +1,10 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-
-import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
+import java.util.Optional;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.collect.ImmutableList;
@@ -43,16 +43,40 @@ public final class BannedImportGroup {
         return this.basePackages;
     }
 
+    public boolean basePackageMatches(String fqcn) {
+        return matchesAnyPattern(fqcn, basePackages);
+    }
+
     public List<PackagePattern> getBannedImports() {
         return this.bannedImports;
+    }
+
+    public Optional<PackagePattern> ifImportIsBanned(String importName) {
+        return bannedImports.stream()
+                .filter(bannedImport -> bannedImport.matches(importName))
+                .findFirst();
     }
 
     public List<PackagePattern> getAllowedImports() {
         return this.allowedImports;
     }
 
+    public boolean allowedImportMatches(String importName) {
+        return matchesAnyPattern(importName, allowedImports);
+    }
+
     public List<PackagePattern> getExcludedClasses() {
         return this.excludedClasses;
+    }
+
+    public boolean exclusionMatches(String fqcn) {
+        return matchesAnyPattern(fqcn, excludedClasses);
+    }
+
+    private boolean matchesAnyPattern(String packageName,
+            Collection<PackagePattern> patterns) {
+        return patterns.stream()
+                .anyMatch(pattern -> pattern.matches(packageName));
     }
 
     public String getReason() {
@@ -143,7 +167,14 @@ public final class BannedImportGroup {
             return this;
         }
 
-        public BannedImportGroup build() throws EnforcerRuleException {
+        /**
+         * Assembles the {@link BannedImportGroup} from this builder.
+         *
+         * @return The group.
+         * @throws BannedImportDefinitionException If the group definition is not
+         *             consistent.
+         */
+        public BannedImportGroup build() {
             final BannedImportGroup group = new BannedImportGroup(basePackages,
                     bannedImports, allowedImports,
                     excludedClasses, reason);
@@ -151,8 +182,7 @@ public final class BannedImportGroup {
             return group;
         }
 
-        private void checkGroupConsistency(BannedImportGroup group)
-                throws EnforcerRuleException {
+        private void checkGroupConsistency(BannedImportGroup group) {
             checkBannedImportsPresent(group);
             allowedImportMustMatchBannedPattern(group);
             checkBasePackageNotStatic(group);
@@ -160,47 +190,42 @@ public final class BannedImportGroup {
             exclusionsMustMatchBasePattern(group);
         }
 
-        private void checkBasePackageNotStatic(BannedImportGroup group)
-                throws EnforcerRuleException {
+        private void checkBasePackageNotStatic(BannedImportGroup group) {
             if (group.getBasePackages().stream().anyMatch(PackagePattern::isStatic)) {
-                throw new EnforcerRuleException("Base packages must not be static");
+                throw new BannedImportDefinitionException("Base packages must not be static");
             }
         }
 
-        private void checkExclusionNotStatic(BannedImportGroup group)
-                throws EnforcerRuleException {
+        private void checkExclusionNotStatic(BannedImportGroup group) {
             if (group.getExcludedClasses().stream().anyMatch(PackagePattern::isStatic)) {
-                throw new EnforcerRuleException("Exclusions must not be static");
+                throw new BannedImportDefinitionException("Exclusions must not be static");
             }
         }
 
-        private void checkBannedImportsPresent(BannedImportGroup group)
-                throws EnforcerRuleException {
+        private void checkBannedImportsPresent(BannedImportGroup group) {
             if (group.getBannedImports().isEmpty()) {
-                throw new EnforcerRuleException("There are no banned imports specified");
+                throw new BannedImportDefinitionException("There are no banned imports specified");
             }
         }
 
-        private void allowedImportMustMatchBannedPattern(BannedImportGroup group)
-                throws EnforcerRuleException {
+        private void allowedImportMustMatchBannedPattern(BannedImportGroup group) {
             for (final PackagePattern allowedImport : group.getAllowedImports()) {
                 final boolean matches = group.getBannedImports().stream()
                         .anyMatch(bannedPackage -> bannedPackage.matches(allowedImport));
                 if (!matches) {
-                    throw new EnforcerRuleException(String.format(
+                    throw new BannedImportDefinitionException(String.format(
                             "The allowed import pattern '%s' does not match any banned package.",
                             allowedImport));
                 }
             }
         }
 
-        private void exclusionsMustMatchBasePattern(BannedImportGroup group)
-                throws EnforcerRuleException {
+        private void exclusionsMustMatchBasePattern(BannedImportGroup group) {
             for (final PackagePattern excludedClass : group.getExcludedClasses()) {
                 final boolean matches = group.getBasePackages().stream()
                         .anyMatch(basePackage -> basePackage.matches(excludedClass));
                 if (!matches) {
-                    throw new EnforcerRuleException(String.format(
+                    throw new BannedImportDefinitionException(String.format(
                             "The exclusion pattern '%s' does not match any base package.",
                             excludedClass));
                 }

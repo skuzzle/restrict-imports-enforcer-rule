@@ -7,7 +7,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,11 +18,14 @@ import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.ImmutableList;
+
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
 import de.skuzzle.enforcer.restrictimports.analyze.CommentBufferOverflowException;
-import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 import de.skuzzle.enforcer.restrictimports.analyze.RuntimeIOException;
 import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
 import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
@@ -32,26 +34,13 @@ import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
  * Enforcer rule which restricts the usage of certain packages or classes within a Java
  * code base.
  */
-public class RestrictImports implements EnforcerRule {
+public class RestrictImports extends BannedImportGroupDefinition implements EnforcerRule {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RestrictImports.class);
 
-    private static final PackagePattern DEFAULT_BASE_PACKAGE = PackagePattern.parse("**");
-
-    private PackagePattern basePackage = DEFAULT_BASE_PACKAGE;
-    private List<PackagePattern> basePackages = new ArrayList<>();
-
-    private PackagePattern bannedImport = null;
-    private List<PackagePattern> bannedImports = new ArrayList<>();
-
-    private PackagePattern allowedImport = null;
-    private List<PackagePattern> allowedImports = new ArrayList<>();
-
-    private PackagePattern exclusion = null;
-    private List<PackagePattern> exclusions = new ArrayList<>();
+    private List<BannedImportGroupDefinition> groups = new ArrayList<>();
 
     private boolean includeTestCode;
-    private String reason;
     private int commentLineBufferSize = 128;
     private Charset sourceFileCharset;
 
@@ -62,24 +51,20 @@ public class RestrictImports implements EnforcerRule {
 
             LOGGER.debug("Checking for banned imports");
 
-            final BannedImportGroup group = createGroupFromPluginConfiguration();
-            LOGGER.debug("Banned import group:\n{}", group);
+            final BannedImportGroups groups = assembleGroups();
+            LOGGER.debug("Banned import groups:\n{}", groups);
 
-            final AnalyzerSettings analyzerSettings = createAnalyzerSettingsFromPluginConfiguration(
-                    project);
+            final AnalyzerSettings analyzerSettings = createAnalyzerSettingsFromPluginConfiguration(project);
             LOGGER.debug("Analyzer settings:\n{}", analyzerSettings);
 
             final AnalyzeResult analyzeResult = SourceTreeAnalyzer
                     .getInstance()
-                    .analyze(analyzerSettings, group);
+                    .analyze(analyzerSettings, groups);
             LOGGER.debug("Analyzer result:\n{}", analyzeResult);
 
             if (analyzeResult.bannedImportsFound()) {
                 throw new EnforcerRuleException(
-                        formatErrorString(
-                                analyzerSettings.getRootDirectories(),
-                                group,
-                                analyzeResult));
+                        formatErrorString(analyzerSettings.getRootDirectories(), analyzeResult));
             } else {
                 LOGGER.debug("No banned imports found");
             }
@@ -92,6 +77,8 @@ public class RestrictImports implements EnforcerRule {
                     "Error while reading java source file. The comment line buffer is too small. "
                             + "Please set <commentLineBufferSize> to a value greater than %d. %s",
                     commentLineBufferSize, e.getMessage()));
+        } catch (final BannedImportDefinitionException e) {
+            throw new EnforcerRuleException("RestrictImports rule configuration error: " + e.getMessage(), e);
         } catch (final EnforcerRuleException e) {
             throw e;
         } catch (final Exception e) {
@@ -100,15 +87,15 @@ public class RestrictImports implements EnforcerRule {
         }
     }
 
-    private BannedImportGroup createGroupFromPluginConfiguration()
-            throws EnforcerRuleException {
-        return BannedImportGroup.builder()
-                .withBasePackages(assembleList(this.basePackage, this.basePackages))
-                .withBannedImports(assembleList(this.bannedImport, this.bannedImports))
-                .withAllowedImports(assembleList(this.allowedImport, this.allowedImports))
-                .withExcludedClasses(assembleList(this.exclusion, this.exclusions))
-                .withReason(reason)
-                .build();
+    private BannedImportGroups assembleGroups() {
+        if (!this.groups.isEmpty()) {
+            final List<BannedImportGroup> bannedImportGroups = this.groups.stream()
+                    .map(BannedImportGroupDefinition::createGroupFromPluginConfiguration)
+                    .collect(Collectors.toList());
+            return new BannedImportGroups(bannedImportGroups);
+        }
+        final BannedImportGroup singleGroup = createGroupFromPluginConfiguration();
+        return new BannedImportGroups(ImmutableList.of(singleGroup));
     }
 
     private AnalyzerSettings createAnalyzerSettingsFromPluginConfiguration(
@@ -136,18 +123,8 @@ public class RestrictImports implements EnforcerRule {
         return Charset.defaultCharset();
     }
 
-    private List<PackagePattern> assembleList(PackagePattern single,
-            List<PackagePattern> multi) {
-        if (single == null) {
-            return multi;
-        } else {
-            return Collections.singletonList(single);
-        }
-    }
-
-    private String formatErrorString(Collection<Path> roots, BannedImportGroup group,
-            AnalyzeResult analyzeResult) {
-        return MatchFormatter.getInstance().formatMatches(roots, analyzeResult, group);
+    private String formatErrorString(Collection<Path> roots, AnalyzeResult analyzeResult) {
+        return MatchFormatter.getInstance().formatMatches(roots, analyzeResult);
     }
 
     @SuppressWarnings("unchecked")
@@ -183,74 +160,12 @@ public class RestrictImports implements EnforcerRule {
         return false;
     }
 
-    public final void setBasePackage(String basePackage) {
-        checkArgument(this.basePackages.isEmpty(),
-                "Configuration error: you should either specify a single base package using <basePackage> or multiple "
-                        + "base packages using <basePackages> but not both");
-        this.basePackage = PackagePattern.parse(basePackage);
-    }
-
-    public final void setBasePackages(List<String> basePackages) {
-        checkArgument(this.basePackage == DEFAULT_BASE_PACKAGE,
-                "Configuration error: you should either specify a single base package using <basePackage> or multiple "
-                        + "base packages using <basePackages> but not both");
-        checkArgument(basePackages != null && !basePackages.isEmpty(),
-                "bannedPackages must not be empty");
-        this.basePackage = null;
-        this.basePackages = PackagePattern.parseAll(basePackages);
-    }
-
-    public void setBannedImport(String bannedImport) {
-        checkArgument(this.bannedImports.isEmpty(),
-                "Configuration error: you should either specify a single banned import using <bannedImport> or multiple "
-                        + "banned imports using <bannedImports> but not both");
-        this.bannedImport = PackagePattern.parse(bannedImport);
-    }
-
-    public final void setBannedImports(List<String> bannedPackages) {
-        checkArgument(this.bannedImport == null,
-                "Configuration error: you should either specify a single banned import using <bannedImport> or multiple "
-                        + "banned imports using <bannedImports> but not both");
-        checkArgument(bannedPackages != null && !bannedPackages.isEmpty(),
-                "bannedPackages must not be empty");
-        this.bannedImport = null;
-        this.bannedImports = PackagePattern.parseAll(bannedPackages);
-    }
-
-    public final void setAllowedImport(String allowedImport) {
-        checkArgument(this.allowedImports.isEmpty(),
-                "Configuration error: you should either specify a single allowed import using <allowedImport> or multiple "
-                        + "allowed imports using <allowedImports> but not both");
-        this.allowedImport = PackagePattern.parse(allowedImport);
-    }
-
-    public final void setAllowedImports(List<String> allowedImports) {
-        checkArgument(this.allowedImport == null,
-                "Configuration error: you should either specify a single allowed import using <allowedImport> or multiple "
-                        + "allowed imports using <allowedImports> but not both");
-        this.allowedImports = PackagePattern.parseAll(allowedImports);
-    }
-
-    public final void setExclusion(String exclusion) {
-        checkArgument(this.exclusions.isEmpty(),
-                "Configuration error: you should either specify a single exclusion using <exclusion> or multiple "
-                        + "exclusions using <exclusions> but not both");
-        this.exclusion = PackagePattern.parse(exclusion);
-    }
-
-    public final void setExclusions(List<String> exclusions) {
-        checkArgument(this.exclusion == null,
-                "Configuration error: you should either specify a single exclusion using <exclusion> or multiple "
-                        + "exclusions using <exclusions> but not both");
-        this.exclusions = PackagePattern.parseAll(exclusions);
+    public void setGroups(List<BannedImportGroupDefinition> groups) {
+        this.groups = groups;
     }
 
     public final void setIncludeTestCode(boolean includeTestCode) {
         this.includeTestCode = includeTestCode;
-    }
-
-    public final void setReason(String reason) {
-        this.reason = reason;
     }
 
     public final void setCommentLineBufferSize(int commentLineBufferSize) {

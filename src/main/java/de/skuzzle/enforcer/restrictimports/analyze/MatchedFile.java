@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 
 /**
  * Holds the matches that were found within a single java source file. Instances can be
@@ -17,10 +18,12 @@ public final class MatchedFile {
 
     private final Path sourceFile;
     private final List<MatchedImport> matchedImports;
+    private final BannedImportGroup matchedBy;
 
-    MatchedFile(Path sourceFile, List<MatchedImport> matchedImports) {
+    MatchedFile(Path sourceFile, List<MatchedImport> matchedImports, BannedImportGroup matchedBy) {
         this.sourceFile = sourceFile;
         this.matchedImports = matchedImports;
+        this.matchedBy = matchedBy;
     }
 
     /**
@@ -51,16 +54,27 @@ public final class MatchedFile {
         return this.matchedImports;
     }
 
+    /**
+     * Returns the group that contains the banned import that caused the match in this
+     * file.
+     *
+     * @return The group.
+     */
+    public BannedImportGroup getMatchedBy() {
+        return this.matchedBy;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(sourceFile, matchedImports);
+        return Objects.hash(sourceFile, matchedImports, matchedBy);
     }
 
     @Override
     public boolean equals(Object obj) {
         return obj == this || obj instanceof MatchedFile
                 && Objects.equals(sourceFile, ((MatchedFile) obj).sourceFile)
-                && Objects.equals(matchedImports, ((MatchedFile) obj).matchedImports);
+                && Objects.equals(matchedImports, ((MatchedFile) obj).matchedImports)
+                && Objects.equals(matchedBy, ((MatchedFile) obj).matchedBy);
     }
 
     @Override
@@ -68,12 +82,14 @@ public final class MatchedFile {
         return MoreObjects.toStringHelper(this)
                 .add("sourceFile", this.sourceFile)
                 .add("matchedImports", matchedImports)
+                .add("matchedBy", matchedBy)
                 .toString();
     }
 
     public static class Builder {
         private final Path sourceFile;
         private final List<MatchedImport> matchedImports = new ArrayList<>();
+        private BannedImportGroup matchedBy;
 
         private Builder(Path sourceFile) {
             this.sourceFile = sourceFile;
@@ -90,8 +106,19 @@ public final class MatchedFile {
          */
         public Builder withMatchAt(int importLine, String matchedString,
                 PackagePattern matchedBy) {
-            this.matchedImports.add(
-                    new MatchedImport(importLine, matchedString, matchedBy));
+            this.matchedImports.add(new MatchedImport(importLine, matchedString, matchedBy));
+            return this;
+        }
+
+        /**
+         * Sets the group that contained the banned import that caused a match for this
+         * file.
+         *
+         * @param group The group.
+         * @return This builder.
+         */
+        public Builder matchedBy(BannedImportGroup group) {
+            this.matchedBy = group;
             return this;
         }
 
@@ -101,7 +128,9 @@ public final class MatchedFile {
          * @return The instance.
          */
         public MatchedFile build() {
-            return new MatchedFile(sourceFile, matchedImports);
+            Preconditions.checkArgument(sourceFile != null, "sourceFile must not be null");
+            Preconditions.checkArgument(matchedBy != null, "matchedBy must not be null for MatchedFile %s", sourceFile);
+            return new MatchedFile(sourceFile, matchedImports, matchedBy);
         }
     }
 }

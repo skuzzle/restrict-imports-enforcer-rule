@@ -3,9 +3,10 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 class ImportMatcherImpl implements ImportMatcher {
@@ -16,51 +17,66 @@ class ImportMatcherImpl implements ImportMatcher {
         this.supplier = supplier;
     }
 
-    @Override
-    public Stream<MatchedImport> matchFile(Path sourceFile, BannedImportGroup group) {
+    Optional<MatchedFile> matchFile(Path sourceFile, BannedImportGroup group) {
+        return matchFile(sourceFile, new BannedImportGroups(Arrays.asList(group)));
+    }
 
+    @Override
+    public Optional<MatchedFile> matchFile(Path sourceFile, BannedImportGroups groups) {
         final List<MatchedImport> matches = new ArrayList<>();
         try (final Stream<String> lines = this.supplier.lines(sourceFile)) {
 
-            final Iterable<String> lineIt = lines
-                    .map(String::trim)::iterator;
+            final Iterable<String> lineIt = lines.map(String::trim)::iterator;
 
             int row = 1;
-            String packageName = "";
+            final String javaFileName = getJavaFileName(sourceFile);
+            // select group default in case this file has no package statement
+            BannedImportGroup group = groups.selectGroupFor(javaFileName).orElse(null);
+
             for (final Iterator<String> it = lineIt.iterator(); it.hasNext(); ++row) {
                 final String line = it.next();
                 if (line.isEmpty()) {
                     continue;
                 } else if (isPackage(line)) {
+                    // package ...; statement
+
                     // INVARIANT: our own package name occurs in the first non-empty line
                     // of the java source file (after trimming leading comments)
-                    packageName = extractPackageName(line);
+                    final String packageName = extractPackageName(line);
+                    final String fqcn = guessFQCN(packageName, javaFileName);
+
+                    final Optional<BannedImportGroup> groupMatch = groups.selectGroupFor(fqcn);
+                    if (!groupMatch.isPresent()) {
+                        return Optional.empty();
+                    }
+                    group = groupMatch.get();
                     continue;
                 }
 
-                if (isExcluded(sourceFile, packageName, group)) {
-                    return Stream.empty();
-                } else if (!isImport(line)) {
+                if (!isImport(line)) {
                     // as we are skipping empty (and comment) lines, by the time we
                     // encounter a non-import line we can stop processing this file
-                    return matches.stream();
+                    if (matches.isEmpty()) {
+                        return Optional.empty();
+                    }
+                    return Optional.of(new MatchedFile(sourceFile, matches, group));
                 }
 
                 final String importName = extractPackageName(line);
-                if (matchesAnyPattern(importName, group.getAllowedImports())) {
+                if (group.allowedImportMatches(importName)) {
                     continue;
                 }
                 final int lineNumber = row;
-                group.getBannedImports().stream()
-                        .filter(bannedImport -> bannedImport.matches(importName))
-                        .findFirst()
-                        .map(matchedBy -> new MatchedImport(lineNumber, importName,
-                                matchedBy))
+                group.ifImportIsBanned(importName)
+                        .map(bannedImport -> new MatchedImport(lineNumber, importName, bannedImport))
                         .ifPresent(matches::add);
 
             }
 
-            return matches.stream();
+            if (matches.isEmpty()) {
+                return Optional.empty();
+            }
+            return Optional.of(new MatchedFile(sourceFile, matches, group));
         } catch (final RuntimeIOException e) {
             throw e;
         } catch (final IOException e) {
@@ -68,21 +84,6 @@ class ImportMatcherImpl implements ImportMatcher {
                     "Encountered IOException while analyzing %s for banned imports",
                     sourceFile), e);
         }
-    }
-
-    private boolean isExcluded(Path sourceFile, String packageName,
-            BannedImportGroup group) {
-        final String javaFileName = getJavaFileName(sourceFile);
-        final String fqcn = guessFQCN(packageName, javaFileName);
-        final boolean matchBasePattern = group.getBasePackages().stream()
-                .anyMatch(pattern -> pattern.matches(fqcn));
-
-        if (!matchBasePattern) {
-            return true;
-        }
-        final boolean matchExclusion = group.getExcludedClasses().stream()
-                .anyMatch(pattern -> pattern.matches(fqcn));
-        return matchExclusion;
     }
 
     private String guessFQCN(String packageName, String javaFileName) {
@@ -95,12 +96,6 @@ class ImportMatcherImpl implements ImportMatcher {
         final String s = file.getFileName().toString();
         final int i = s.lastIndexOf(".java");
         return s.substring(0, i);
-    }
-
-    private boolean matchesAnyPattern(String packageName,
-            Collection<PackagePattern> patterns) {
-        return patterns.stream()
-                .anyMatch(pattern -> pattern.matches(packageName));
     }
 
     private static String extractPackageName(String line) {

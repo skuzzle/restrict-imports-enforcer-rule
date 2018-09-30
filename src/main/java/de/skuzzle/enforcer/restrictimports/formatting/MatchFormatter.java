@@ -4,7 +4,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 
 public interface MatchFormatter {
 
@@ -12,6 +11,5 @@ public interface MatchFormatter {
         return MatchFormatterImpl.INSTANCE;
     }
 
-    String formatMatches(Collection<Path> roots, AnalyzeResult analyzeResult,
-            BannedImportGroup group);
+    String formatMatches(Collection<Path> roots, AnalyzeResult analyzeResult);
 }

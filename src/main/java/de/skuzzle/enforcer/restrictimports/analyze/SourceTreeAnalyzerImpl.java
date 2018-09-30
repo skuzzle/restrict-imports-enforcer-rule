@@ -5,37 +5,31 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
     @Override
-    public AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroup group) {
+    public AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroups groups) {
 
         final LineSupplier lineSupplier = new SkipCommentsLineSupplier(
                 settings.getSourceFileCharset(),
                 settings.getCommentLineBufferSize());
+
+        // TODO: importMatcher should be injected rather than being created here
         final ImportMatcher importMatcher = new ImportMatcherImpl(lineSupplier);
 
-        final Iterable<Path> rootsIterable = settings.getRootDirectories();
         final List<MatchedFile> matchedFiles = new ArrayList<>();
 
+        final Iterable<Path> rootsIterable = settings.getRootDirectories();
         for (final Path root : rootsIterable) {
-            final Iterable<Path> sourceFilesIterable = listFiles(root,
-                    this::isJavaSourceFile)::iterator;
-
-            for (final Path sourceFile : sourceFilesIterable) {
-                final List<MatchedImport> matches = importMatcher
-                        .matchFile(sourceFile, group)
-                        .collect(Collectors.toList());
-
-                if (!matches.isEmpty()) {
-                    final MatchedFile matchedFile = new MatchedFile(sourceFile, matches);
-                    matchedFiles.add(matchedFile);
-                }
-            }
+            listFiles(root, this::isJavaSourceFile)
+                    .map(sourceFile -> importMatcher.matchFile(sourceFile, groups))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .forEach(matchedFiles::add);
         }
 
         return new AnalyzeResult(matchedFiles);

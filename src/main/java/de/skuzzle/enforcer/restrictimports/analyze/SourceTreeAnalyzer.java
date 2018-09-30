@@ -1,5 +1,7 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
+import java.util.Arrays;
+
 /**
  * Analyzes the whole source tree for matches of banned imports.
  *
@@ -21,8 +23,21 @@ public interface SourceTreeAnalyzer {
      * matches of banned imports.
      *
      * @param settings Context information for performing the analysis.
-     * @param group The banned import.
+     * @param groups The banned imports.
      * @return The result of analyzing the given source files.
      */
-    AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroup group);
+    AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroups groups);
+
+    /**
+     *
+     * @param settings
+     * @param group
+     * @return
+     * @deprecated Since 0.13.0 - Use
+     *             {@link #analyze(AnalyzerSettings, BannedImportGroups)} instead.
+     */
+    @Deprecated
+    default AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroup group) {
+        return analyze(settings, new BannedImportGroups(Arrays.asList(group)));
+    }
 }

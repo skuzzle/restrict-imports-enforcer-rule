@@ -138,6 +138,53 @@ final class PackagePatternImpl implements PackagePattern {
         return result.toString();
     }
 
+    public int compareTo(PackagePattern other) {
+        if (isMoreSpecificThan(other)) {
+            return 1;
+        } else if (other.isMoreSpecificThan(this)) {
+            return -1;
+        }
+        return 0;
+    }
+
+    @Override
+    public boolean isMoreSpecificThan(PackagePattern other) {
+        final PackagePatternImpl o = (PackagePatternImpl) other;
+
+        final int numOfStarStarThis = count("**", this.parts);
+        final int numOfStarStarOther = count("**", o.parts);
+
+        if (numOfStarStarThis < numOfStarStarOther) {
+            return true;
+        } else if (numOfStarStarThis > numOfStarStarOther) {
+            return false;
+        }
+
+        final int numOfStarThis = count("*", this.parts);
+        final int numOfStarOther = count("*", o.parts);
+
+        if (numOfStarThis < numOfStarOther) {
+            return true;
+        } else if (numOfStarOther > numOfStarThis) {
+            return false;
+        }
+
+        final String thisLastPart = parts[this.parts.length - 1];
+        final String otherLastPart = o.parts[o.parts.length - 1];
+
+        if (thisLastPart.equals("**")) {
+            return this.parts.length > o.parts.length;
+        } else if (thisLastPart.equals("*")) {
+            return otherLastPart.equals("**");
+        }
+
+        return parts.length > o.parts.length;
+    }
+
+    private int count(String s, String[] arr) {
+        return (int) Arrays.stream(arr).filter(s::equals).count();
+    }
+
     @Override
     public boolean isStatic() {
         return staticc;

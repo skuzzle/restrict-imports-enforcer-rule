@@ -22,8 +22,7 @@ final class PackagePatternImpl implements PackagePattern {
 
     private void checkParts(String full, String[] parts) {
         if (full.startsWith(".") || full.endsWith(".")) {
-            throw new IllegalArgumentException(String.format(
-                    "The pattern '%s' contains an empty part", full));
+            throw new IllegalArgumentException(String.format("The pattern '%s' contains an empty part", full));
         }
         for (int i = 0; i < parts.length; i++) {
             final String part = parts[i];
@@ -36,29 +35,24 @@ final class PackagePatternImpl implements PackagePattern {
         final char[] chars = part.toCharArray();
 
         if (part.isEmpty()) {
-            throw new IllegalArgumentException(String.format(
-                    "The pattern '%s' contains an empty part", full));
+            throw new IllegalArgumentException(String.format("The pattern '%s' contains an empty part", full));
         } else if ("*".equals(part) || "**".equals(part)) {
             return;
         } else if (part.contains("*")) {
             throw new IllegalArgumentException(String.format(
-                    "The pattern '%s' contains a part which mixes "
-                            + "wildcards and normal characters",
-                    full));
+                    "The pattern '%s' contains a part which mixes wildcards and normal characters", full));
         } else if (partIndex == 0 && "static".equals(part)) {
             return;
         } else if (!Character.isJavaIdentifierStart(chars[0])) {
             throw new IllegalArgumentException(String.format(
-                    "The pattern '%s' contains a non-identifier character '%s'", full,
-                    chars[0]));
+                    "The pattern '%s' contains a non-identifier character '%s'", full, chars[0]));
         }
 
         for (int i = 1; i < chars.length; i++) {
             final char c = chars[i];
             if (!Character.isJavaIdentifierPart(c)) {
                 throw new IllegalArgumentException(String.format(
-                        "The pattern '%s' contains a non-identifier character '%s'", full,
-                        chars[i]));
+                        "The pattern '%s' contains a non-identifier character '%s'", full, chars[i]));
             }
         }
     }

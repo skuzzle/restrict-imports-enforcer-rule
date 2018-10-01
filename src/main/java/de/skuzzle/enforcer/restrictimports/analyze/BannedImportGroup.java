@@ -85,8 +85,7 @@ public final class BannedImportGroup {
 
     @Override
     public int hashCode() {
-        return Objects.hash(basePackages, bannedImports, allowedImports, excludedClasses,
-                reason);
+        return Objects.hash(basePackages, bannedImports, allowedImports, excludedClasses, reason);
     }
 
     @Override
@@ -94,10 +93,8 @@ public final class BannedImportGroup {
         return obj == this || obj instanceof BannedImportGroup
                 && Objects.equals(basePackages, ((BannedImportGroup) obj).basePackages)
                 && Objects.equals(bannedImports, ((BannedImportGroup) obj).bannedImports)
-                && Objects.equals(allowedImports,
-                        ((BannedImportGroup) obj).allowedImports)
-                && Objects.equals(excludedClasses,
-                        ((BannedImportGroup) obj).excludedClasses)
+                && Objects.equals(allowedImports, ((BannedImportGroup) obj).allowedImports)
+                && Objects.equals(excludedClasses, ((BannedImportGroup) obj).excludedClasses)
                 && Objects.equals(reason, ((BannedImportGroup) obj).reason);
     }
 

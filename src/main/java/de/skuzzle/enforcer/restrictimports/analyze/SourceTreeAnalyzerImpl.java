@@ -43,8 +43,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
             }
             return Files.find(root, Integer.MAX_VALUE, (path, bfa) -> filter.test(path));
         } catch (final IOException e) {
-            throw new RuntimeIOException(
-                    "Encountered IOException while listing files of " + root, e);
+            throw new RuntimeIOException("Encountered IOException while listing files of " + root, e);
         }
     }
 
@@ -53,8 +52,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
     }
 
     private boolean isJavaSourceFile(Path path) {
-        return isFile(path) &&
-                path.getFileName().toString().toLowerCase().endsWith(".java");
+        return isFile(path) && path.getFileName().toString().toLowerCase().endsWith(".java");
     }
 
 }

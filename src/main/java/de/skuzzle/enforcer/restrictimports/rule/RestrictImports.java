@@ -55,14 +55,13 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
             final AnalyzerSettings analyzerSettings = createAnalyzerSettingsFromPluginConfiguration(project);
             LOGGER.debug("Analyzer settings:\n{}", analyzerSettings);
 
-            final AnalyzeResult analyzeResult = SourceTreeAnalyzer
-                    .getInstance()
-                    .analyze(analyzerSettings, groups);
+            final AnalyzeResult analyzeResult = SourceTreeAnalyzer.getInstance().analyze(analyzerSettings, groups);
             LOGGER.debug("Analyzer result:\n{}", analyzeResult);
 
             if (analyzeResult.bannedImportsFound()) {
-                throw new EnforcerRuleException(
-                        formatErrorString(analyzerSettings.getRootDirectories(), analyzeResult));
+                final String errorMessage = MatchFormatter.getInstance()
+                        .formatMatches(analyzerSettings.getRootDirectories(), analyzeResult);
+                throw new EnforcerRuleException(errorMessage);
             } else {
                 LOGGER.debug("No banned imports found");
             }
@@ -123,10 +122,6 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
             return Charset.forName(mavenCharsetName);
         }
         return Charset.defaultCharset();
-    }
-
-    private String formatErrorString(Collection<Path> roots, AnalyzeResult analyzeResult) {
-        return MatchFormatter.getInstance().formatMatches(roots, analyzeResult);
     }
 
     @SuppressWarnings("unchecked")

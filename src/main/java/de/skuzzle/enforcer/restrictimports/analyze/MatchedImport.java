@@ -42,8 +42,7 @@ public final class MatchedImport {
     public boolean equals(Object obj) {
         return obj == this || obj instanceof MatchedImport
                 && Objects.equals(this.importLine, ((MatchedImport) obj).importLine)
-                && Objects.equals(this.matchedString,
-                        ((MatchedImport) obj).matchedString)
+                && Objects.equals(this.matchedString, ((MatchedImport) obj).matchedString)
                 && Objects.equals(this.matchedBy, ((MatchedImport) obj).matchedBy);
     }
 

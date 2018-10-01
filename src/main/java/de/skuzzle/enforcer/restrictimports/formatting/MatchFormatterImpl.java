@@ -39,12 +39,11 @@ class MatchFormatterImpl implements MatchFormatter {
     }
 
     private static Path relativize(Collection<Path> roots, Path path) {
-        for (final Path root : roots) {
-            if (path.startsWith(root)) {
-                return root.relativize(path);
-            }
-        }
-        return path;
+        return roots.stream()
+                .filter(path::startsWith)
+                .map(root -> root.relativize(path))
+                .findFirst()
+                .orElse(path);
     }
 
     private void appendMatch(MatchedImport match, StringBuilder b) {

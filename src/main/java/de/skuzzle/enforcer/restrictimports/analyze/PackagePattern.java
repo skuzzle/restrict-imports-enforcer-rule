@@ -56,8 +56,6 @@ public interface PackagePattern extends Comparable<PackagePattern> {
      */
     boolean matches(PackagePattern packagePattern);
 
-    boolean isMoreSpecificThan(PackagePattern other);
-
     /**
      * Whether this is a pattern starting with 'static '.
      *

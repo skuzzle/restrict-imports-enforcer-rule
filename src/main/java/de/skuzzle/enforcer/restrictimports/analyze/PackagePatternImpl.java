@@ -138,17 +138,18 @@ final class PackagePatternImpl implements PackagePattern {
         return result.toString();
     }
 
+    @Override
     public int compareTo(PackagePattern other) {
-        if (isMoreSpecificThan(other)) {
+        final PackagePatternImpl o = (PackagePatternImpl) other;
+        if (isMoreSpecificThan(o)) {
             return 1;
-        } else if (other.isMoreSpecificThan(this)) {
+        } else if (o.isMoreSpecificThan(this)) {
             return -1;
         }
         return 0;
     }
 
-    @Override
-    public boolean isMoreSpecificThan(PackagePattern other) {
+    private boolean isMoreSpecificThan(PackagePattern other) {
         final PackagePatternImpl o = (PackagePatternImpl) other;
 
         final int numOfStarStarThis = count("**", this.parts);

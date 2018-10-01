@@ -48,7 +48,7 @@ public class PackagePatternSpecifityTest {
             expect("*.xyz").toBeMoreSpecificThan("**.xyz"));
 
     @TestFactory
-    Stream<DynamicNode> testNeverBeMoreSpecificThanSelf() throws Exception {
+    Stream<DynamicNode> testCompareToSelf() throws Exception {
         return patterns.stream()
                 .map(pattern -> DynamicTest.dynamicTest(String.format(
                         "%s should be more specific than itself", pattern.moreSpecific),
@@ -56,8 +56,8 @@ public class PackagePatternSpecifityTest {
                             final PackagePattern moreSpecific = PackagePattern
                                     .parse(pattern.moreSpecific);
 
-                            assertThat(moreSpecific.isMoreSpecificThan(moreSpecific))
-                                    .isFalse();
+                            assertThat(moreSpecific.compareTo(moreSpecific))
+                                    .isEqualTo(0);
                         }));
     }
 
@@ -71,8 +71,9 @@ public class PackagePatternSpecifityTest {
                                     .parse(pattern.lessSpecific);
                             final PackagePattern moreSpecific = PackagePattern
                                     .parse(pattern.moreSpecific);
-                            assertThat(moreSpecific.isMoreSpecificThan(lessSpecific))
-                                    .isTrue();
+
+                            assertThat(moreSpecific.compareTo(lessSpecific))
+                                    .isGreaterThan(0);
                         }));
     }
 
@@ -87,8 +88,8 @@ public class PackagePatternSpecifityTest {
                             final PackagePattern moreSpecific = PackagePattern
                                     .parse(pattern.moreSpecific);
 
-                            assertThat(lessSpecific.isMoreSpecificThan(moreSpecific))
-                                    .isFalse();
+                            assertThat(lessSpecific.compareTo(moreSpecific))
+                                    .isLessThan(0);
                         }));
     }
 }

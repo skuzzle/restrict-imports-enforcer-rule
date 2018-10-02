@@ -58,9 +58,6 @@ class ImportMatcherImpl implements ImportMatcher {
                 }
 
                 final String importName = extractPackageName(line);
-                if (group.allowedImportMatches(importName)) {
-                    continue;
-                }
                 final int lineNumber = row;
                 group.ifImportIsBanned(importName)
                         .map(bannedImport -> new MatchedImport(lineNumber, importName, bannedImport))

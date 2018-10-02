@@ -116,8 +116,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         if (this.sourceFileCharset != null) {
             return this.sourceFileCharset;
         }
-        final String mavenCharsetName = (String) mavenProject.getProperties()
-                .get("project.build.sourceEncoding");
+        final String mavenCharsetName = (String) mavenProject.getProperties().get("project.build.sourceEncoding");
         if (mavenCharsetName != null) {
             return Charset.forName(mavenCharsetName);
         }
@@ -130,8 +129,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
         final Stream<String> rootFolders;
         if (this.includeTestCode) {
-            final Stream<String> testStream = project.getTestCompileSourceRoots()
-                    .stream();
+            final Stream<String> testStream = project.getTestCompileSourceRoots().stream();
             rootFolders = Stream.concat(compileStream, testStream);
         } else {
             rootFolders = compileStream;

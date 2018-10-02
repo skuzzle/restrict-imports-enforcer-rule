@@ -54,6 +54,7 @@ public final class BannedImportGroup {
     public Optional<PackagePattern> ifImportIsBanned(String importName) {
         return bannedImports.stream()
                 .filter(bannedImport -> bannedImport.matches(importName))
+                .filter(result -> !allowedImportMatches(importName))
                 .findFirst();
     }
 

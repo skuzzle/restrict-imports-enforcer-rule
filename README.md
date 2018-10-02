@@ -1,8 +1,11 @@
 [![Build Status](https://travis-ci.org/skuzzle/restrict-imports-enforcer-rule.svg?branch=master)](https://travis-ci.org/skuzzle/restrict-imports-enforcer-rule) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.skuzzle.enforcer/restrict-imports-enforcer-rule/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.skuzzle.enforcer/restrict-imports-enforcer-rule)
 [![Coverage Status](https://coveralls.io/repos/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master&service=github)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 
+(this README pertains to the current development version. Please view the README for the current release [Here](https://github.com/skuzzle/restrict-imports-enforcer-rule/commit/a7a544e7c47437fff44674ca1a1c22be79462088)
+
 # restrict-imports-enforcer-rule
-Maven enforcer rule that bans certain imports. Available from Maven Central.
+Maven enforcer rule that bans certain imports. Keep your code base clean and free from 
+usage of unwanted classes!
 
 ## Simple usage
 This is a minimal usage example. Please scroll down for detailed configuration 
@@ -17,7 +20,7 @@ information.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>0.12.0</version>
+            <version>0.13.0</version>
         </dependency>
     </dependencies>
     <executions>
@@ -102,6 +105,52 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
     </rules>
 </configuration>
 ```
+
+## Rule groups (beta, since 0.13.0)
+(*Note:* This is a beta feature and not thoroughly tested. Syntax and behavior 
+changes in upcoming versions are likely)
+
+Rule groups add another level of refining which imports will be matched. You can group
+the `bannedImport(s)`, `allowedImport(s)` and `basePackage(s)` tags and specify multiple 
+of this groups within a single enforcer rule. 
+
+(example stolen from #6)
+```xml
+<configuration>
+    <rules>
+        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+            <groups>
+                <group>
+                    <basePackage>**</basePackage>
+                    <bannedImports>
+                        <bannedImport>javax.persistence.EntityManager</bannedImport>
+                        <bannedImport>javax.sql.DataSource</bannedImport>
+                        <bannedImport>javax.persistence.NamedQueries</bannedImport>
+                        <bannedImport>javax.persistence.NamedQuery</bannedImport>
+                        <bannedImport>javax.ejb.Stateful</bannedImport>
+                        <bannedImport>javax.ejb.EJB</bannedImport>
+                    </bannedImports>
+                </group>
+                <group>
+                    <basePackage>com.yourdomain.persistence.**</basePackage>
+                    <bannedImports>
+                        <bannedImport>javax.persistence.NamedQueries</bannedImport>
+                        <bannedImport>javax.persistence.NamedQuery</bannedImport>
+                        <bannedImport>javax.ejb.Stateful</bannedImport>
+                        <bannedImport>javax.ejb.EJB</bannedImport>
+                    </bannedImports>
+                </group>
+            </groups>
+        </restrictImports>
+    </rules>
+</configuration>
+```
+
+When analysing a source file, the plugin filters all groups where the group's `basePackage`
+matches the source file's package name. In case multiple groups are matching only the 
+group with the _most specific_ base package is retained and the others are ignored for 
+this file.
+
 
 ## Static imports
 Matching static imports is also possible but the `static ` prefix must be explicitly mentioned:

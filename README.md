@@ -1,7 +1,9 @@
 [![Build Status](https://travis-ci.org/skuzzle/restrict-imports-enforcer-rule.svg?branch=master)](https://travis-ci.org/skuzzle/restrict-imports-enforcer-rule) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.skuzzle.enforcer/restrict-imports-enforcer-rule/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.skuzzle.enforcer/restrict-imports-enforcer-rule)
 [![Coverage Status](https://coveralls.io/repos/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master&service=github)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 
-(this README pertains to the current development version. Please view the README for the current release [Here](https://github.com/skuzzle/restrict-imports-enforcer-rule/commit/a7a544e7c47437fff44674ca1a1c22be79462088)
+This README pertains to the current development version. Click 
+[Here](https://github.com/skuzzle/restrict-imports-enforcer-rule/commit/a7a544e7c47437fff44674ca1a1c22be79462088) 
+to view the README for the current release
 
 # restrict-imports-enforcer-rule
 Maven enforcer rule that bans certain imports. Keep your code base clean and free from 

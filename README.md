@@ -1,9 +1,6 @@
 [![Build Status](https://travis-ci.org/skuzzle/restrict-imports-enforcer-rule.svg?branch=master)](https://travis-ci.org/skuzzle/restrict-imports-enforcer-rule) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.skuzzle.enforcer/restrict-imports-enforcer-rule/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.skuzzle.enforcer/restrict-imports-enforcer-rule)
 [![Coverage Status](https://coveralls.io/repos/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master&service=github)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 
-This README pertains to the current development version. Click 
-[Here](https://github.com/skuzzle/restrict-imports-enforcer-rule/commit/a7a544e7c47437fff44674ca1a1c22be79462088) 
-to view the README for the current release
 
 # restrict-imports-enforcer-rule
 Maven enforcer rule that bans certain imports. Keep your code base clean and free from 
@@ -148,10 +145,10 @@ of this groups within a single enforcer rule.
 </configuration>
 ```
 
-When analysing a source file, the plugin filters all groups where the group's `basePackage`
-matches the source file's package name. In case multiple groups are matching only the 
-group with the _most specific_ base package is retained and the others are ignored for 
-this file.
+When analysing a source file, the plugin filters all groups where the group's 
+`basePackage` matches the source file's package name. In case multiple groups are 
+matching, only the group with the _most specific_ base package is retained and the others 
+are ignored for this file.
 
 
 ## Static imports

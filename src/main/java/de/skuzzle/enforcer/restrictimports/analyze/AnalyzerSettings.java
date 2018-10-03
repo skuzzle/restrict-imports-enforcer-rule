@@ -53,20 +53,17 @@ public final class AnalyzerSettings {
     @Override
     public boolean equals(Object obj) {
         return obj == this || obj instanceof AnalyzerSettings
-                && Objects.equals(sourceFileCharset,
-                        ((AnalyzerSettings) obj).sourceFileCharset)
-                && Objects.equals(rootDirectories,
-                        ((AnalyzerSettings) obj).rootDirectories)
-                && Objects.equals(commentLineBufferSize,
-                        ((AnalyzerSettings) obj).commentLineBufferSize);
+                && Objects.equals(sourceFileCharset, ((AnalyzerSettings) obj).sourceFileCharset)
+                && Objects.equals(rootDirectories, ((AnalyzerSettings) obj).rootDirectories)
+                && Objects.equals(commentLineBufferSize, ((AnalyzerSettings) obj).commentLineBufferSize);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("sourceFileCharset", sourceFileCharset)
-                .add("rootDirectories", rootDirectories)
                 .add("commentLineBufferSize", commentLineBufferSize)
+                .add("rootDirectories", rootDirectories)
                 .toString();
     }
 

@@ -83,6 +83,22 @@ public class RestrictImportsTest {
     }
 
     @Test
+    void testConsistentConfigurationSpecifyGroupsLast() throws Exception {
+        this.subject.setBannedImport("**");
+        final BannedImportGroupDefinition group1 = new BannedImportGroupDefinition();
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> this.subject.setGroups(Arrays.asList(group1)));
+    }
+
+    @Test
+    void testConsistentConfigurationSpecifyGroupsFirst() throws Exception {
+        final BannedImportGroupDefinition group1 = new BannedImportGroupDefinition();
+        this.subject.setGroups(Arrays.asList(group1));
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> this.subject.setBannedImport("**"));
+    }
+
+    @Test
     void testConsistentConfigurationBasePackage1() throws Exception {
         this.subject.setBasePackage("**");
         assertThatExceptionOfType(IllegalArgumentException.class)

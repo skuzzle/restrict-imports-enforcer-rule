@@ -37,6 +37,23 @@ public class BannedImportGroupDefinition {
                 .build();
     }
 
+    /**
+     * Determines whether the user modified at least a single field within this
+     * definition.
+     *
+     * @return Whether there are user made changes.
+     */
+    public boolean hasInput() {
+        return basePackage != DEFAULT_BASE_PACKAGE
+                || !basePackages.isEmpty()
+                || bannedImport != null
+                || !bannedImports.isEmpty()
+                || allowedImport != null
+                || !allowedImports.isEmpty()
+                || exclusion != null
+                || !exclusions.isEmpty();
+    }
+
     private List<PackagePattern> assembleList(PackagePattern single,
             List<PackagePattern> multi) {
         if (single == null) {
@@ -46,14 +63,14 @@ public class BannedImportGroupDefinition {
         }
     }
 
-    public final void setBasePackage(String basePackage) {
+    public void setBasePackage(String basePackage) {
         checkArgument(this.basePackages.isEmpty(),
                 "Configuration error: you should either specify a single base package using <basePackage> or multiple "
                         + "base packages using <basePackages> but not both");
         this.basePackage = PackagePattern.parse(basePackage);
     }
 
-    public final void setBasePackages(List<String> basePackages) {
+    public void setBasePackages(List<String> basePackages) {
         checkArgument(this.basePackage == DEFAULT_BASE_PACKAGE,
                 "Configuration error: you should either specify a single base package using <basePackage> or multiple "
                         + "base packages using <basePackages> but not both");
@@ -70,7 +87,7 @@ public class BannedImportGroupDefinition {
         this.bannedImport = PackagePattern.parse(bannedImport);
     }
 
-    public final void setBannedImports(List<String> bannedPackages) {
+    public void setBannedImports(List<String> bannedPackages) {
         checkArgument(this.bannedImport == null,
                 "Configuration error: you should either specify a single banned import using <bannedImport> or multiple "
                         + "banned imports using <bannedImports> but not both");
@@ -80,35 +97,35 @@ public class BannedImportGroupDefinition {
         this.bannedImports = PackagePattern.parseAll(bannedPackages);
     }
 
-    public final void setAllowedImport(String allowedImport) {
+    public void setAllowedImport(String allowedImport) {
         checkArgument(this.allowedImports.isEmpty(),
                 "Configuration error: you should either specify a single allowed import using <allowedImport> or multiple "
                         + "allowed imports using <allowedImports> but not both");
         this.allowedImport = PackagePattern.parse(allowedImport);
     }
 
-    public final void setAllowedImports(List<String> allowedImports) {
+    public void setAllowedImports(List<String> allowedImports) {
         checkArgument(this.allowedImport == null,
                 "Configuration error: you should either specify a single allowed import using <allowedImport> or multiple "
                         + "allowed imports using <allowedImports> but not both");
         this.allowedImports = PackagePattern.parseAll(allowedImports);
     }
 
-    public final void setExclusion(String exclusion) {
+    public void setExclusion(String exclusion) {
         checkArgument(this.exclusions.isEmpty(),
                 "Configuration error: you should either specify a single exclusion using <exclusion> or multiple "
                         + "exclusions using <exclusions> but not both");
         this.exclusion = PackagePattern.parse(exclusion);
     }
 
-    public final void setExclusions(List<String> exclusions) {
+    public void setExclusions(List<String> exclusions) {
         checkArgument(this.exclusion == null,
                 "Configuration error: you should either specify a single exclusion using <exclusion> or multiple "
                         + "exclusions using <exclusions> but not both");
         this.exclusions = PackagePattern.parseAll(exclusions);
     }
 
-    public final void setReason(String reason) {
+    public void setReason(String reason) {
         this.reason = reason;
     }
 }

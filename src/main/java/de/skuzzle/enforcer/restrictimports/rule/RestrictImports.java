@@ -79,8 +79,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         } catch (final EnforcerRuleException e) {
             throw e;
         } catch (final Exception e) {
-            throw new EnforcerRuleException("Encountered unexpected exception: " +
-                    e.getLocalizedMessage(), e);
+            throw new EnforcerRuleException("Encountered unexpected exception: " + e.getLocalizedMessage(), e);
         }
     }
 
@@ -140,22 +139,71 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
                 .map(Paths::get);
     }
 
-    @Override
-    public String getCacheId() {
-        return "";
+    private void checkGroups(boolean condition) {
+        if (!condition) {
+            throw new IllegalArgumentException("You can either define a list of banned import definitions using "
+                    + "<groups> OR define a single banned import definition on top level without <groups> but not "
+                    + "both");
+        }
     }
 
     @Override
-    public boolean isCacheable() {
-        return false;
+    public void setBasePackage(String basePackage) {
+        checkGroups(this.groups.isEmpty());
+        super.setBasePackage(basePackage);
     }
 
     @Override
-    public boolean isResultValid(EnforcerRule rule) {
-        return false;
+    public void setBasePackages(List<String> basePackages) {
+        checkGroups(this.groups.isEmpty());
+        super.setBasePackages(basePackages);
+    }
+
+    @Override
+    public void setBannedImport(String bannedImport) {
+        checkGroups(this.groups.isEmpty());
+        super.setBannedImport(bannedImport);
+    }
+
+    @Override
+    public void setBannedImports(List<String> bannedPackages) {
+        checkGroups(this.groups.isEmpty());
+        super.setBannedImports(bannedPackages);
+    }
+
+    @Override
+    public void setAllowedImport(String allowedImport) {
+        checkGroups(this.groups.isEmpty());
+        super.setAllowedImport(allowedImport);
+    }
+
+    @Override
+    public void setAllowedImports(List<String> allowedImports) {
+        checkGroups(this.groups.isEmpty());
+        super.setAllowedImports(allowedImports);
+    }
+
+    @Override
+    public void setExclusion(String exclusion) {
+        checkGroups(this.groups.isEmpty());
+        super.setExclusion(exclusion);
+    }
+
+    @Override
+    public void setExclusions(List<String> exclusions) {
+        checkGroups(this.groups.isEmpty());
+        super.setExclusions(exclusions);
+    }
+
+    @Override
+    public void setReason(String reason) {
+        checkGroups(this.groups.isEmpty());
+        super.setReason(reason);
     }
 
     public void setGroups(List<BannedImportGroupDefinition> groups) {
+        checkGroups(!this.hasInput());
+        checkArgument(groups != null && !groups.isEmpty(), "Groups may not be empty");
         this.groups = groups;
     }
 
@@ -172,4 +220,20 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
     public final void setSourceFileCharset(String sourceFileCharset) {
         this.sourceFileCharset = Charset.forName(sourceFileCharset);
     }
+
+    @Override
+    public String getCacheId() {
+        return "";
+    }
+
+    @Override
+    public boolean isCacheable() {
+        return false;
+    }
+
+    @Override
+    public boolean isResultValid(EnforcerRule rule) {
+        return false;
+    }
+
 }

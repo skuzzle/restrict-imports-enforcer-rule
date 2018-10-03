@@ -141,9 +141,9 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     private void checkGroups(boolean condition) {
         if (!condition) {
-            throw new IllegalArgumentException("You can either define a list of banned import definitions using "
-                    + "<groups> OR define a single banned import definition on top level without <groups> but not "
-                    + "both");
+            throw new IllegalArgumentException("Configuration error: you can either define a list of banned import "
+                    + "definitions using <groups> OR define a single banned import definition on top level without "
+                    + "<groups> but not both");
         }
     }
 

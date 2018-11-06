@@ -76,8 +76,6 @@ class ImportMatcherImpl implements ImportMatcher {
                 return Optional.empty();
             }
             return Optional.of(new MatchedFile(sourceFile, matches, group));
-        } catch (final RuntimeIOException e) {
-            throw e;
         } catch (final IOException e) {
             throw new RuntimeIOException(String.format(
                     "Encountered IOException while analyzing %s for banned imports",

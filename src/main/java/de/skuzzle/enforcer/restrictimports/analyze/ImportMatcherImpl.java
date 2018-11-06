@@ -8,7 +8,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 class ImportMatcherImpl implements ImportMatcher {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImportMatcherImpl.class);
 
     private final LineSupplier supplier;
 
@@ -18,6 +23,8 @@ class ImportMatcherImpl implements ImportMatcher {
 
     @Override
     public Optional<MatchedFile> matchFile(Path sourceFile, BannedImportGroups groups) {
+        LOGGER.trace("Analyzing {} for banned imports", sourceFile);
+
         final List<MatchedImport> matches = new ArrayList<>();
         try (final Stream<String> lines = this.supplier.lines(sourceFile)) {
 
@@ -45,6 +52,7 @@ class ImportMatcherImpl implements ImportMatcher {
                         return Optional.empty();
                     }
                     group = groupMatch.get();
+                    LOGGER.trace("    Selected group {} from fqcn {}", group, fqcn);
                     continue;
                 }
 

@@ -6,9 +6,6 @@ import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 /**
@@ -33,8 +30,7 @@ class SkipCommentsLineSupplier implements LineSupplier {
         final Reader skipComments = new TransientCommentReader(fromFile, true, commentLineBufferSize);
 
         final BufferedReader lineReader = new BufferedReader(skipComments);
-        return generateWhile(Objects::nonNull, () -> readLine(lineReader))
-                .onClose(() -> close(lineReader));
+        return lineReader.lines().onClose(() -> close(lineReader));
     }
 
     private void close(Reader reader) {
@@ -43,24 +39,5 @@ class SkipCommentsLineSupplier implements LineSupplier {
         } catch (final IOException e) {
             throw new RuntimeIOException("Error while closing reader", e);
         }
-    }
-
-    private String readLine(BufferedReader reader) {
-        try {
-            return reader.readLine();
-        } catch (final IOException e) {
-            throw new RuntimeIOException("Error while reading next line", e);
-        }
-    }
-
-    public <T> Stream<T> generateWhile(Predicate<? super T> predicate, Supplier<? extends T> supplier) {
-        final T value = supplier.get();
-        return predicate.test(value)
-                ? Stream.of(value).flatMap(t -> combine(t, () -> generateWhile(predicate, supplier)))
-                : Stream.empty();
-    }
-
-    private <T> Stream<T> combine(T t, Supplier<Stream<T>> generator) {
-        return Stream.concat(Stream.of(t), generator.get());
     }
 }

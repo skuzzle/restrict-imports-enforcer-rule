@@ -16,7 +16,7 @@
 	<description>Bans imports of specified classes/packages</description>
 
 	<properties>
-		<!-- Activate Coveralls here -->
+		<maven.site.skip>true</maven.site.skip>
 		<coveralls.skip>false</coveralls.skip>
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>

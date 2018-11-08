@@ -14,12 +14,12 @@ information.
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-enforcer-plugin</artifactId>
-    <version>1.4.1</version>
+    <version>3.0.0-M2</version>
     <dependencies>
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>0.13.0</version>
+            <version>0.14.0</version>
         </dependency>
     </dependencies>
     <executions>

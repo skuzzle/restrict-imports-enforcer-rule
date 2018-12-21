@@ -40,6 +40,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     private boolean includeTestCode;
     private int commentLineBufferSize = 128;
+    @Deprecated
     private Charset sourceFileCharset;
 
     @Override
@@ -217,7 +218,11 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         this.commentLineBufferSize = commentLineBufferSize;
     }
 
+    @Deprecated
     public final void setSourceFileCharset(String sourceFileCharset) {
+        LOGGER.warn("restrict-imports-enforcer rule: Deprecation warning (since 0.15.0):\n"
+                + "Please use maven property 'project.build.sourceEnconding' for specifying the charset. "
+                + "This plugin's property 'sourceFileCharset' will be removed in later versions!");
         this.sourceFileCharset = Charset.forName(sourceFileCharset);
     }
 

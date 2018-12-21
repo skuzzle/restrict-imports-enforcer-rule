@@ -253,4 +253,4 @@ Overview of all configuration parameters:
 | `includeTestCode`       | Boolean                   | no       | `false`                           | `0.7.0`  |
 | `reason`                | String                    | no       | empty String                      | `0.8.0`  |
 | `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` |
-| `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` (deprecated in `0.15.0` |
+| `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` (deprecated in `0.15.0`) |

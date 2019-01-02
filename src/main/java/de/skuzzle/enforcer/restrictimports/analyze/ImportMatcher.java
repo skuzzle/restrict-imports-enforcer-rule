@@ -16,8 +16,10 @@ interface ImportMatcher {
      * @param sourceFile The path to a java source file to check for banned imports..
      * @param groups The groups of banned imports to check the file against. From all
      *            groups, the one with the most specific base pattern match is chosen.
+     * @param lineParser A parser that understands how to identify and parse lines in
+     *                   this source file.
      * @return a {@link MatchedFile} holds information about the found matches. Returns an
      *         empty optional if no matches were found.
      */
-    Optional<MatchedFile> matchFile(Path sourceFile, BannedImportGroups groups);
+    Optional<MatchedFile> matchFile(Path sourceFile, BannedImportGroups groups, SourceLineParser lineParser);
 }

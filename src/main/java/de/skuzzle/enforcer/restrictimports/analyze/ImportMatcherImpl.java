@@ -22,7 +22,7 @@ class ImportMatcherImpl implements ImportMatcher {
     }
 
     @Override
-    public Optional<MatchedFile> matchFile(Path sourceFile, BannedImportGroups groups) {
+    public Optional<MatchedFile> matchFile(Path sourceFile, BannedImportGroups groups, SourceLineParser lineParser) {
         LOGGER.trace("Analyzing {} for banned imports", sourceFile);
 
         final List<MatchedImport> matches = new ArrayList<>();
@@ -31,21 +31,25 @@ class ImportMatcherImpl implements ImportMatcher {
             final Iterable<String> lineIt = lines.map(String::trim)::iterator;
 
             int row = 1;
-            final String javaFileName = getJavaFileName(sourceFile);
+            String fileName = getFileName(sourceFile);
+
             // select group default in case this file has no package statement
-            BannedImportGroup group = groups.selectGroupFor(javaFileName).orElse(null);
+            BannedImportGroup group = groups.selectGroupFor(fileName).orElse(null);
 
             for (final Iterator<String> it = lineIt.iterator(); it.hasNext(); ++row) {
                 final String line = it.next();
                 if (line.isEmpty()) {
                     continue;
-                } else if (isPackage(line)) {
+                }
+
+                Optional<String> packageDeclaration = lineParser.parsePackage(line);
+                if (packageDeclaration.isPresent()) {
                     // package ...; statement
 
                     // INVARIANT: our own package name occurs in the first non-empty line
                     // of the java source file (after trimming leading comments)
-                    final String packageName = extractPackageName(line);
-                    final String fqcn = guessFQCN(packageName, javaFileName);
+                    final String packageName = packageDeclaration.get();
+                    final String fqcn = guessFQCN(packageName, fileName);
 
                     final Optional<BannedImportGroup> groupMatch = groups.selectGroupFor(fqcn);
                     if (!groupMatch.isPresent()) {
@@ -56,7 +60,8 @@ class ImportMatcherImpl implements ImportMatcher {
                     continue;
                 }
 
-                if (!isImport(line)) {
+                Optional<String> importDeclaration = lineParser.parseImport(line);
+                if (!importDeclaration.isPresent()) {
                     // as we are skipping empty (and comment) lines, by the time we
                     // encounter a non-import line we can stop processing this file
                     if (matches.isEmpty()) {
@@ -65,7 +70,7 @@ class ImportMatcherImpl implements ImportMatcher {
                     return Optional.of(new MatchedFile(sourceFile, matches, group));
                 }
 
-                final String importName = extractPackageName(line);
+                final String importName = importDeclaration.get();
                 final int lineNumber = row;
                 group.ifImportIsBanned(importName)
                         .map(bannedImport -> new MatchedImport(lineNumber, importName, bannedImport))
@@ -89,29 +94,9 @@ class ImportMatcherImpl implements ImportMatcher {
                 : packageName + "." + javaFileName;
     }
 
-    private String getJavaFileName(Path file) {
+    private String getFileName(Path file) {
         final String s = file.getFileName().toString();
-        final int i = s.lastIndexOf(".java");
+        final int i = s.lastIndexOf(".");
         return s.substring(0, i);
     }
-
-    private static String extractPackageName(String line) {
-        final int spaceIdx = line.indexOf(" ");
-        final int semiIdx = line.indexOf(";");
-        final String sub = line.substring(spaceIdx, semiIdx);
-        return sub.trim();
-    }
-
-    private boolean is(String compare, String line) {
-        return line.startsWith(compare) && line.endsWith(";");
-    }
-
-    private boolean isPackage(String line) {
-        return is("package ", line);
-    }
-
-    private boolean isImport(String line) {
-        return is("import ", line);
-    }
-
 }

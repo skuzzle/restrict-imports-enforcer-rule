@@ -16,6 +16,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
     private final Map<String, SourceLineParser> sourceFileParsers = ImmutableMap.of(
             ".groovy", new KotlinGroovyLineParser(),
+            ".kt", new KotlinGroovyLineParser(),
             ".java", new JavaLineParser());
 
     @Override

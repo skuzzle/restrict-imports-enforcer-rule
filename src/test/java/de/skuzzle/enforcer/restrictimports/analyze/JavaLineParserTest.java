@@ -1,26 +1,26 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 public class JavaLineParserTest {
 
-    private static final JavaLineParser subject = new JavaLineParser();
+    private final JavaLineParser subject = new JavaLineParser();
 
     @Test
     public void testValidImport() {
-        assertThat(subject.parseImport("import java.util.List;")).isPresent().get().isEqualTo("java.util.List");
+        assertThat(subject.parseImport("import java.util.List;")).first().isEqualTo("java.util.List");
     }
 
     @Test
     public void testInvalidImport1() {
-        assertThat(subject.parseImport("import java.util.List")).isNotPresent();
+        assertThat(subject.parseImport("import java.util.List")).isEmpty();
     }
 
     @Test
     public void testInvalidImport2() {
-        assertThat(subject.parseImport("importjava.util.List;")).isNotPresent();
+        assertThat(subject.parseImport("importjava.util.List;")).isEmpty();
     }
 
     @Test

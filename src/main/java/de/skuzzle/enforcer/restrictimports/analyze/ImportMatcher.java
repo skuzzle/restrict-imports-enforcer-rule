@@ -75,8 +75,8 @@ class ImportMatcher {
                     continue;
                 }
 
-                final Optional<String> importDeclaration = lineParser.parseImport(line);
-                if (!importDeclaration.isPresent()) {
+                final List<String> importDeclarations = lineParser.parseImport(line);
+                if (importDeclarations.isEmpty()) {
                     // as we are skipping empty (and comment) lines, by the time we
                     // encounter a non-import line we can stop processing this file
                     if (matches.isEmpty()) {
@@ -85,11 +85,12 @@ class ImportMatcher {
                     return Optional.of(new MatchedFile(sourceFile, matches, group));
                 }
 
-                final String importName = importDeclaration.get();
                 final int lineNumber = row;
-                group.ifImportIsBanned(importName)
+                final BannedImportGroup finalGroup = group;
+                importDeclarations.forEach(importName -> finalGroup
+                        .ifImportIsBanned(importName)
                         .map(bannedImport -> new MatchedImport(lineNumber, importName, bannedImport))
-                        .ifPresent(matches::add);
+                        .ifPresent(matches::add));
             }
 
             if (matches.isEmpty()) {

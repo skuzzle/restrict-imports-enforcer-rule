@@ -1,6 +1,9 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
+import java.util.List;
 import java.util.Optional;
+
+import com.google.common.collect.ImmutableList;
 
 class GroovyLineParser implements SourceLineParser {
 
@@ -14,12 +17,12 @@ class GroovyLineParser implements SourceLineParser {
     }
 
     @Override
-    public Optional<String> parseImport(String line) {
+    public List<String> parseImport(String line) {
         if (!isImport(line)) {
-            return Optional.empty();
+            return ImmutableList.of();
         }
 
-        return Optional.of(extractPackageName(line));
+        return ImmutableList.of(extractPackageName(line));
     }
 
     private boolean is(String compare, String line) {

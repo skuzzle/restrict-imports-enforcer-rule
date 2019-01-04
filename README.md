@@ -8,6 +8,7 @@ usage of unwanted classes!
 - [x] Java
 - [x] Kotlin (since 0.15)
 - [x] Groovy (since 0.15)
+- [ ] Scala (see [Issue 24](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/24))
 
 ## Simple usage
 This is a minimal usage example. Please scroll down for detailed configuration 

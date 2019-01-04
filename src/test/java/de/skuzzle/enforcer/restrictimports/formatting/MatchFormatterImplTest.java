@@ -43,7 +43,7 @@ public class MatchFormatterImplTest {
 
         final String formatted = subject.formatMatches(roots, analyzeResult);
 
-        assertThat(formatted).isEqualTo("\nBanned imports detected:\n" +
+        assertThat(formatted).isEqualTo("\nBanned imports detected:\n\n" +
                 "Reason: Some reason\n" +
                 "\tin file: SampleJavaFile.java\n" +
                 "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n");

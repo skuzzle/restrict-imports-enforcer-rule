@@ -45,7 +45,7 @@ public class ExceptionFormattingTest {
 
         assertThatExceptionOfType(EnforcerRuleException.class)
                 .isThrownBy(() -> this.subject.execute(helper))
-                .withMessage("\nBanned imports detected:\n" +
+                .withMessage("\nBanned imports detected:\n\n" +
                         "Reason: Some reason\n" +
                         "\tin file: SampleJavaFile.java\n" +
                         "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.**)\n");

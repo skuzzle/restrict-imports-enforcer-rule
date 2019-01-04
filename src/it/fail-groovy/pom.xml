@@ -8,6 +8,7 @@
     <name>Banned Import found</name>
 
     <build>
+        <sourceDirectory>${project.basedir}/src/main/groovy</sourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

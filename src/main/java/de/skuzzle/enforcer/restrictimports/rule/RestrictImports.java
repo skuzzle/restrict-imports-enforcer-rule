@@ -40,8 +40,6 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     private boolean includeTestCode;
     private int commentLineBufferSize = 128;
-    @Deprecated
-    private Charset sourceFileCharset;
 
     @Override
     public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException {
@@ -113,9 +111,6 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
     }
 
     private Charset determineSourceFileCharset(MavenProject mavenProject) {
-        if (this.sourceFileCharset != null) {
-            return this.sourceFileCharset;
-        }
         final String mavenCharsetName = (String) mavenProject.getProperties().get("project.build.sourceEncoding");
         if (mavenCharsetName != null) {
             return Charset.forName(mavenCharsetName);
@@ -220,10 +215,10 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     @Deprecated
     public final void setSourceFileCharset(String sourceFileCharset) {
-        LOGGER.warn("restrict-imports-enforcer rule: Deprecation warning (since 0.15.0):\n"
-                + "Please use maven property 'project.build.sourceEnconding' for specifying the charset. "
-                + "This plugin's property 'sourceFileCharset' will be removed in later versions!");
-        this.sourceFileCharset = Charset.forName(sourceFileCharset);
+        throw new RuntimeException(
+                "restrict-imports-enforcer rule: Deprecation warning (since 0.15.0):\n"
+                        + "Please use maven property 'project.build.sourceEnconding' for specifying the charset. "
+                        + "This plugin's property 'sourceFileCharset' will be removed in later versions!");
     }
 
     @Override

@@ -3,7 +3,7 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 import java.util.List;
 import java.util.Optional;
 
-public interface SourceLineParser {
+interface SourceLineParser {
 
     /**
      * Parses the given line and returns the declared package

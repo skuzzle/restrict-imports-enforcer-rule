@@ -2,7 +2,8 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.util.Optional;
 
-public class GroovyLineParser implements SourceLineParser {
+class GroovyLineParser implements SourceLineParser {
+
     @Override
     public Optional<String> parsePackage(String line) {
         if (!isPackage(line)) {
@@ -34,7 +35,7 @@ public class GroovyLineParser implements SourceLineParser {
     }
 
     private static String extractPackageName(String line) {
-        //groovy may or may not have a semicolon at the end
+        // groovy may or may not have a semicolon at the end
         final int spaceIdx = line.indexOf(" ");
         final int semiIdx = line.indexOf(";");
 

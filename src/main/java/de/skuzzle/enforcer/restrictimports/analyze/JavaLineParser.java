@@ -2,7 +2,8 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.util.Optional;
 
-public class JavaLineParser implements SourceLineParser {
+class JavaLineParser implements SourceLineParser {
+
     @Override
     public Optional<String> parsePackage(String line) {
         if (!isPackage(line)) {

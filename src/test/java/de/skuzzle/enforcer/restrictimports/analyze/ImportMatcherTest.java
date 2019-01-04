@@ -14,10 +14,10 @@ import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
 
-public class ImportMatcherImplTest {
+public class ImportMatcherTest {
 
     private final LineSupplier mockLineSupplier = mock(LineSupplier.class);
-    private final ImportMatcherImpl subject = new ImportMatcherImpl(mockLineSupplier);
+    private final ImportMatcher subject = new ImportMatcher(mockLineSupplier);
     private final JavaLineParser javaLineParser = new JavaLineParser();
 
     private final Path path = mock(Path.class);
@@ -119,8 +119,9 @@ public class ImportMatcherImplTest {
                         .withBasePackages("de.skuzzle.test.**")
                         .withBannedImports("de.skuzzle.sample.**"))
                 .build();
-        assertThat(subject.matchFile(path, groups, javaLineParser).get().getMatchedImports()).first().isEqualTo(new MatchedImport(5,
-                "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
+        assertThat(subject.matchFile(path, groups, javaLineParser).get().getMatchedImports()).first()
+                .isEqualTo(new MatchedImport(5,
+                        "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
     }
 
     @Test
@@ -136,8 +137,9 @@ public class ImportMatcherImplTest {
                         .withBannedImports("de.skuzzle.sample.**"))
                 .build();
 
-        assertThat(subject.matchFile(path, groups, javaLineParser).get().getMatchedImports()).first().isEqualTo(new MatchedImport(3,
-                "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
+        assertThat(subject.matchFile(path, groups, javaLineParser).get().getMatchedImports()).first()
+                .isEqualTo(new MatchedImport(3,
+                        "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
     }
 
     @Test
@@ -154,8 +156,9 @@ public class ImportMatcherImplTest {
                         .withBannedImports("de.skuzzle.sample.**"))
                 .build();
 
-        assertThat(subject.matchFile(path, groups, javaLineParser).get().getMatchedImports()).first().isEqualTo(new MatchedImport(2,
-                "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
+        assertThat(subject.matchFile(path, groups, javaLineParser).get().getMatchedImports()).first()
+                .isEqualTo(new MatchedImport(2,
+                        "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
     }
 
     @Test
@@ -165,7 +168,8 @@ public class ImportMatcherImplTest {
                         .withGroup(BannedImportGroup.builder()
                                 .withBasePackages("de.foo.bar")
                                 .withBannedImports("de.skuzzle.sample.*"))
-                        .build(), javaLineParser);
+                        .build(),
+                javaLineParser);
         assertThat(matches).isEmpty();
     }
 }

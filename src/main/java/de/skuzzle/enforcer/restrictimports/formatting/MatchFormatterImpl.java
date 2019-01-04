@@ -17,7 +17,7 @@ class MatchFormatterImpl implements MatchFormatter {
 
     @Override
     public String formatMatches(Collection<Path> roots, AnalyzeResult analyzeResult) {
-        final StringBuilder b = new StringBuilder("\nBanned imports detected:\n");
+        final StringBuilder b = new StringBuilder("\nBanned imports detected:\n\n");
 
         final Map<BannedImportGroup, List<MatchedFile>> matchesByGroup = analyzeResult.getFileMatches().stream()
                 .collect(Collectors.groupingBy(MatchedFile::getMatchedBy));

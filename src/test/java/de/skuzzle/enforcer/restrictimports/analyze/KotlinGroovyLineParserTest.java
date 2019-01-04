@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-public class GroovyLineParserTest {
+public class KotlinGroovyLineParserTest {
 
-    private final GroovyLineParser subject = new GroovyLineParser();
+    private final KotlinGroovyLineParser subject = new KotlinGroovyLineParser();
 
     @Test
     public void testValidImport1() {
@@ -16,6 +16,11 @@ public class GroovyLineParserTest {
     @Test
     public void testValidImport2() {
         assertThat(subject.parseImport("import java.util.List")).first().isEqualTo("java.util.List");
+    }
+
+    @Test
+    void testAliasedImport() throws Exception {
+        assertThat(subject.parseImport("import java.util.List as NewList")).first().isEqualTo("java.util.List");
     }
 
     @Test

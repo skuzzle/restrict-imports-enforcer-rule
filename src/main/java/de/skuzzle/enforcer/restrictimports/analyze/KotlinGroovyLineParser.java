@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import com.google.common.collect.ImmutableList;
 
-class GroovyLineParser implements SourceLineParser {
+class KotlinGroovyLineParser implements SourceLineParser {
 
     @Override
     public Optional<String> parsePackage(String line) {
@@ -21,8 +21,8 @@ class GroovyLineParser implements SourceLineParser {
         if (!isImport(line)) {
             return ImmutableList.of();
         }
-
-        return ImmutableList.of(extractPackageName(line));
+        final String packageWithAlias = extractPackageName(line);
+        return ImmutableList.of(removeAlias(packageWithAlias));
     }
 
     private boolean is(String compare, String line) {
@@ -47,5 +47,14 @@ class GroovyLineParser implements SourceLineParser {
         }
 
         return line.substring(spaceIdx).trim();
+    }
+
+    private String removeAlias(String packageWithAlias) {
+        final int asIdx = packageWithAlias.indexOf(" as ");
+        if (asIdx >= 0) {
+            return packageWithAlias.substring(0, asIdx);
+        }
+        // no alias
+        return packageWithAlias;
     }
 }

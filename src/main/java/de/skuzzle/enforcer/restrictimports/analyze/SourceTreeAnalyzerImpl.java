@@ -15,7 +15,7 @@ import com.google.common.collect.ImmutableMap;
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
     private final Map<String, SourceLineParser> sourceFileParsers = ImmutableMap.of(
-            ".groovy", new GroovyLineParser(),
+            ".groovy", new KotlinGroovyLineParser(),
             ".java", new JavaLineParser());
 
     @Override

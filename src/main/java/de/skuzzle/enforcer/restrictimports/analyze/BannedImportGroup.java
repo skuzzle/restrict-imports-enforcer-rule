@@ -181,11 +181,29 @@ public final class BannedImportGroup {
         }
 
         private void checkGroupConsistency(BannedImportGroup group) {
+            checkAmbiguous(group);
             checkBannedImportsPresent(group);
             allowedImportMustMatchBannedPattern(group);
             checkBasePackageNotStatic(group);
             checkExclusionNotStatic(group);
             exclusionsMustMatchBasePattern(group);
+        }
+
+        private void checkAmbiguous(BannedImportGroup group) {
+            checkAmbiguous(group.getBasePackages(), "base package");
+            checkAmbiguous(group.getExcludedClasses(), "exclusion");
+            checkAmbiguous(group.getBannedImports(), "banned import");
+        }
+
+        private void checkAmbiguous(Collection<PackagePattern> patterns, String errorTemplate) {
+            for (final PackagePattern outer : patterns) {
+                for (final PackagePattern inner : patterns) {
+                    if (inner != outer && (inner.matches(outer))) {
+                        throw new BannedImportDefinitionException(String
+                                .format("There are ambiguous %s definitions: %s, %s", errorTemplate, inner, outer));
+                    }
+                }
+            }
         }
 
         private void checkBasePackageNotStatic(BannedImportGroup group) {

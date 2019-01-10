@@ -21,6 +21,18 @@ public class TransientCommentReaderTest {
     }
 
     @Test
+    public void testInlineCommentWithCrLfEnding() throws Exception {
+        final String result = readString("//comment\r\ntest");
+        assertThat(result).isEqualTo("\r\ntest");
+    }
+
+    @Test
+    void testBlockCommentWithCrLfEnding() throws Exception {
+        final String result = readString("/*comment*/\r\ntest");
+        assertThat(result).isEqualTo("\r\ntest");
+    }
+
+    @Test
     public void testReadCommentOnly() {
         final String result = readString("/**/");
         assertThat(result).isEqualTo("");

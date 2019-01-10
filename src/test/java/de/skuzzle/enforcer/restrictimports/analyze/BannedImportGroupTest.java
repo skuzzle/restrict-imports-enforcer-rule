@@ -62,6 +62,17 @@ public class BannedImportGroupTest {
     }
 
     @Test
+    void testAmbiguousAllowedImports() throws Exception {
+        assertThatExceptionOfType(BannedImportDefinitionException.class)
+                .isThrownBy(() -> BannedImportGroup.builder()
+                        .withBannedImports("any.thing.**")
+                        .withAllowedImports("any.thing.xyz.**", "any.thing.*.**")
+                        .build())
+                .withMessageContaining(
+                        "There are ambiguous allowed import definitions: any.thing.*.**, any.thing.xyz.**");
+    }
+
+    @Test
     void testInconsistentExclusions() throws Exception {
         assertThatExceptionOfType(BannedImportDefinitionException.class)
                 .isThrownBy(() -> BannedImportGroup.builder()

@@ -191,8 +191,9 @@ public final class BannedImportGroup {
 
         private void checkAmbiguous(BannedImportGroup group) {
             checkAmbiguous(group.getBasePackages(), "base package");
-            checkAmbiguous(group.getExcludedClasses(), "exclusion");
             checkAmbiguous(group.getBannedImports(), "banned import");
+            checkAmbiguous(group.getAllowedImports(), "allowed import");
+            checkAmbiguous(group.getExcludedClasses(), "exclusion");
         }
 
         private void checkAmbiguous(Collection<PackagePattern> patterns, String errorTemplate) {

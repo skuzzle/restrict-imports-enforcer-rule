@@ -1,8 +1,9 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.io.IOException;
-import java.io.PushbackReader;
 import java.io.Reader;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 /**
  * A filtering Reader which hides all comments in the input from its user. Comments are
@@ -21,16 +22,12 @@ class TransientCommentReader extends Reader {
 
     private boolean eos = false;
     private final boolean trackLineBreaks;
-    private final PushbackReader in;
-    private final int bufferSize;
+    private final Reader in;
+    private final Deque<Integer> pushbackBuffer;
 
-    protected TransientCommentReader(Reader in, boolean trackLineBreaks,
-            int expectedCommentLines) {
-        this.bufferSize = trackLineBreaks
-                ? expectedCommentLines
-                : 1;
-
-        this.in = new PushbackReader(in, bufferSize);
+    protected TransientCommentReader(Reader in, boolean trackLineBreaks) {
+        this.pushbackBuffer = new ArrayDeque<>(128);
+        this.in = in;
         this.trackLineBreaks = trackLineBreaks;
     }
 
@@ -115,11 +112,6 @@ class TransientCommentReader extends Reader {
                 if (next == '/') {
                     // end of block comment
                     if (trackLineBreaks) {
-                        if (skippedLines > this.bufferSize) {
-                            throw new CommentBufferOverflowException(String.format(
-                                    "Encountered %d skipped lines in a block comment but buffer size is %d",
-                                    skippedLines, bufferSize));
-                        }
                         // push back empty lines
                         for (int i = 0; i < skippedLines; ++i) {
                             saveUnread('\n');
@@ -150,7 +142,8 @@ class TransientCommentReader extends Reader {
         if (this.eos) {
             return -1;
         }
-        final int next = in.read();
+        Integer next = pushbackBuffer.poll();
+        next = next == null ? in.read() : next;
         this.eos = next == -1;
         return next;
     }
@@ -159,7 +152,7 @@ class TransientCommentReader extends Reader {
         if (c == -1) {
             this.eos = true;
         } else {
-            this.in.unread(c);
+            this.pushbackBuffer.addFirst(c);
         }
     }
 

@@ -17,17 +17,15 @@ import java.util.stream.Stream;
 class SkipCommentsLineSupplier implements LineSupplier {
 
     private final Charset charset;
-    private final int commentLineBufferSize;
 
-    public SkipCommentsLineSupplier(Charset charset, int commentLineBufferSize) {
+    public SkipCommentsLineSupplier(Charset charset) {
         this.charset = charset;
-        this.commentLineBufferSize = commentLineBufferSize;
     }
 
     @Override
     public Stream<String> lines(Path path) throws IOException {
         final Reader fromFile = Files.newBufferedReader(path, charset);
-        final Reader skipComments = new TransientCommentReader(fromFile, true, commentLineBufferSize);
+        final Reader skipComments = new TransientCommentReader(fromFile, true);
 
         final BufferedReader lineReader = new BufferedReader(skipComments);
         return lineReader.lines().onClose(() -> close(lineReader));

@@ -178,10 +178,4 @@ public class RestrictImportsTest {
         this.subject.setAllowedImports(Arrays.asList("java.util.ArrayList"));
         subject.execute(helper);
     }
-
-    @Test
-    void testConsistentConfigurationIllegalBufferSize() throws Exception {
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> subject.setCommentLineBufferSize(0));
-    }
 }

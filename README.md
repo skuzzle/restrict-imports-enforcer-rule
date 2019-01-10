@@ -207,22 +207,6 @@ comparison.
 This rule implementation assumes that every analyzed java source file is syntactically 
 correct. If a source file is not, the analysis result is undefined.
 
-The implementation does its best to sort out all kind of java comments while still 
-preserving correct line information of match locations. This can be especially tricky if
-your imports are mixed with block comments that span multiple lines. The parser can only
-handle a fixed amount of comment lines per file. If your files exceed this limit, please
-set `commentLineBufferSize` accordingly.
-
-```xml
-<configuration>
-    <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
-            <commentLineBufferSize>512</commentLineBufferSize>
-        </restrictImports>
-    </rules>
-</configuration>
-```
-
 ### Conceptual limitation
 Import recognition works by comparing the import statements within your source files 
 against the specified patterns. If your class uses wildcard imports like in
@@ -256,5 +240,5 @@ Overview of all configuration parameters:
 | `exclusion(s)`          | (List of) package pattern | no       | empty list                        |          |
 | `includeTestCode`       | Boolean                   | no       | `false`                           | `0.7.0`  |
 | `reason`                | String                    | no       | empty String                      | `0.8.0`  |
-| `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` |
+| `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` (deprecated in `0.16.0`) |
 | `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` (deprecated in `0.15.0`, removed in `0.16.0`) |

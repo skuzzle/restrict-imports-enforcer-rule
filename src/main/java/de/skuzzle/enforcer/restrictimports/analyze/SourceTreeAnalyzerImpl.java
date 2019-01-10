@@ -21,9 +21,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
     @Override
     public AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroups groups) {
-        final LineSupplier lineSupplier = new SkipCommentsLineSupplier(
-                settings.getSourceFileCharset(),
-                settings.getCommentLineBufferSize());
+        final LineSupplier lineSupplier = new SkipCommentsLineSupplier(settings.getSourceFileCharset());
 
         // TODO: importMatcher should be injected rather than being created here
         final ImportMatcher importMatcher = new ImportMatcher(lineSupplier);

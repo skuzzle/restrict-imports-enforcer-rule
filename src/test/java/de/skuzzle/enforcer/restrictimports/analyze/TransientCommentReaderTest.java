@@ -1,7 +1,6 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -14,7 +13,7 @@ import com.google.common.io.CharStreams;
 public class TransientCommentReaderTest {
 
     private String readString(String in) {
-        try (final Reader r = new TransientCommentReader(new StringReader(in), true, 4)) {
+        try (final Reader r = new TransientCommentReader(new StringReader(in), true)) {
             return CharStreams.toString(r);
         } catch (final IOException e) {
             throw new RuntimeException(e);
@@ -123,16 +122,6 @@ public class TransientCommentReaderTest {
                 "Just /* a block\n comment\rspanning\r\n3lines*/ and more");
 
         assertThat(result).isEqualTo("Just \n\n\n and more");
-    }
-
-    @Test
-    void testCommentBufferOverflow() throws Exception {
-        assertThatExceptionOfType(CommentBufferOverflowException.class)
-                .isThrownBy(
-                        () -> readString(
-                                "/*much break in block comment: \n\n\n\n\n\n*/"))
-                .withMessageContaining("4")
-                .withMessageContaining("6");
     }
 
     @Test

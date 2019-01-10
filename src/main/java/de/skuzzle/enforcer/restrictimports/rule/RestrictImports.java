@@ -23,7 +23,6 @@ import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
-import de.skuzzle.enforcer.restrictimports.analyze.CommentBufferOverflowException;
 import de.skuzzle.enforcer.restrictimports.analyze.RuntimeIOException;
 import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
 import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
@@ -39,7 +38,6 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
     private List<BannedImportGroupDefinition> groups = new ArrayList<>();
 
     private boolean includeTestCode;
-    private int commentLineBufferSize = 128;
 
     @Override
     public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException {
@@ -66,13 +64,6 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
             }
         } catch (final RuntimeIOException e) {
             throw new EnforcerRuleException(e.getMessage(), e);
-        } catch (final CommentBufferOverflowException e) {
-            // thrown by the TransientCommentReader in case the comment buffer is too
-            // small
-            throw new EnforcerRuleException(String.format(
-                    "Error while reading java source file. The comment line buffer is too small. "
-                            + "Please set <commentLineBufferSize> to a value greater than %d. %s",
-                    commentLineBufferSize, e.getMessage()));
         } catch (final BannedImportDefinitionException e) {
             throw new EnforcerRuleException("RestrictImports rule configuration error: " + e.getMessage(), e);
         } catch (final EnforcerRuleException e) {
@@ -105,7 +96,6 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
         return AnalyzerSettings.builder()
                 .withRootDirectories(sourceRoots)
-                .withCommentLineBufferSize(commentLineBufferSize)
                 .withSourceFileCharset(sourceFileCharset)
                 .build();
     }
@@ -207,10 +197,11 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         this.includeTestCode = includeTestCode;
     }
 
+    @Deprecated
     public final void setCommentLineBufferSize(int commentLineBufferSize) {
-        checkArgument(commentLineBufferSize > 0,
-                "Configuration error: commentLineBufferSize must be > 0");
-        this.commentLineBufferSize = commentLineBufferSize;
+        LOGGER.warn("restrict-imports-enforcer rule: Deprecation warning (since 0.16.0):\n"
+                + "Setting commentLineBufferSize is no longer necessary, as we now use a dynamic buffer. "
+                + "This property no longer has any effect and will be removed in later versions!");
     }
 
     @Deprecated

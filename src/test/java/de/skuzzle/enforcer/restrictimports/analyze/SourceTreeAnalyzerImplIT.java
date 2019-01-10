@@ -20,7 +20,6 @@ public class SourceTreeAnalyzerImplIT {
 
     private final AnalyzerSettings settings = AnalyzerSettings.builder()
             .withRootDirectories(root)
-            .withCommentLineBufferSize(3)
             .build();
 
     @Test

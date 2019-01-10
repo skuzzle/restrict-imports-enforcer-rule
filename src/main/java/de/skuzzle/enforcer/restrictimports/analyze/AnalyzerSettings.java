@@ -19,14 +19,11 @@ public final class AnalyzerSettings {
 
     private final Charset sourceFileCharset;
     private final Collection<Path> rootDirectories;
-    private final int commentLineBufferSize;
 
     private AnalyzerSettings(Charset sourceFileCharset,
-            Collection<Path> rootDirectories,
-            int commentLineBufferSize) {
+            Collection<Path> rootDirectories) {
         this.sourceFileCharset = sourceFileCharset;
         this.rootDirectories = rootDirectories;
-        this.commentLineBufferSize = commentLineBufferSize;
     }
 
     public static Builder builder() {
@@ -41,28 +38,22 @@ public final class AnalyzerSettings {
         return this.rootDirectories;
     }
 
-    public int getCommentLineBufferSize() {
-        return this.commentLineBufferSize;
-    }
-
     @Override
     public int hashCode() {
-        return Objects.hash(sourceFileCharset, rootDirectories, commentLineBufferSize);
+        return Objects.hash(sourceFileCharset, rootDirectories);
     }
 
     @Override
     public boolean equals(Object obj) {
         return obj == this || obj instanceof AnalyzerSettings
                 && Objects.equals(sourceFileCharset, ((AnalyzerSettings) obj).sourceFileCharset)
-                && Objects.equals(rootDirectories, ((AnalyzerSettings) obj).rootDirectories)
-                && Objects.equals(commentLineBufferSize, ((AnalyzerSettings) obj).commentLineBufferSize);
+                && Objects.equals(rootDirectories, ((AnalyzerSettings) obj).rootDirectories);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("sourceFileCharset", sourceFileCharset)
-                .add("commentLineBufferSize", commentLineBufferSize)
                 .add("rootDirectories", rootDirectories)
                 .toString();
     }
@@ -71,7 +62,6 @@ public final class AnalyzerSettings {
 
         private final List<Path> rootDirectories = new ArrayList<>();
         private Charset sourceFileCharset = Charset.defaultCharset();
-        private int commentLineBufferSize = 128;
 
         private Builder() {
             // hidden
@@ -92,14 +82,8 @@ public final class AnalyzerSettings {
             return this;
         }
 
-        public Builder withCommentLineBufferSize(int commentLineBufferSize) {
-            this.commentLineBufferSize = commentLineBufferSize;
-            return this;
-        }
-
         public AnalyzerSettings build() {
-            return new AnalyzerSettings(sourceFileCharset, rootDirectories,
-                    commentLineBufferSize);
+            return new AnalyzerSettings(sourceFileCharset, rootDirectories);
         }
     }
 }

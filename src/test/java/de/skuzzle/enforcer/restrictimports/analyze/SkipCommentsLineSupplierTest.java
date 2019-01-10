@@ -1,7 +1,6 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
@@ -17,8 +16,7 @@ import com.google.common.jimfs.Jimfs;
 public class SkipCommentsLineSupplierTest {
 
     private final FileSystem fs = Jimfs.newFileSystem(Configuration.unix());
-    private final LineSupplier subject = new SkipCommentsLineSupplier(
-            StandardCharsets.UTF_8, 4);
+    private final LineSupplier subject = new SkipCommentsLineSupplier(StandardCharsets.UTF_8);
 
     @Test
     void testNoComments() throws Exception {
@@ -68,16 +66,5 @@ public class SkipCommentsLineSupplierTest {
 
         assertThat(subject.lines(file).collect(Collectors.toList()))
                 .isEqualTo(Arrays.asList("line", "", "1"));
-    }
-
-    @Test
-    void testCommentBufferOverflow() throws Exception {
-        final Path file = new SourceFileBuilder(fs)
-                .atPath("src/sample.txt")
-                .withLines("line/*1", " ", " ", " ", " ", " ", " ", "line*/1");
-        assertThatExceptionOfType(CommentBufferOverflowException.class)
-                .isThrownBy(() -> subject.lines(file).count())
-                .withMessageContaining("4")
-                .withMessageContaining("7");
     }
 }

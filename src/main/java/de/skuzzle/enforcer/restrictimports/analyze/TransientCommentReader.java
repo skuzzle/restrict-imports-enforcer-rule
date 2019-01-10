@@ -68,7 +68,6 @@ class TransientCommentReader extends Reader {
     private int commentRead() throws IOException {
         int next = saveRead();
         switch (next) {
-        case '"':
         case '/':
             // possible begin of a comment
             next = saveRead();

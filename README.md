@@ -278,3 +278,8 @@ Overview of all configuration parameters:
 * Fix mysterious case where `"*` would be recognized as the beginning of a block comment
 * Introduce changelog to readme
 * Add [contribution guide lines](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/master/CONTRIBUTING.md)
+
+### Version 0.16.0
+* [#26](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/26): Deprecated `commentLineBufferSize` parameter
+* [#25](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/25): Add additional configuration sanity checks
+* [#23](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/23): Removed deprecated `sourceFileCharset` parameter

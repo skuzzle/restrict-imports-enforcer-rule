@@ -266,10 +266,10 @@ Overview of all configuration parameters:
 | `exclusion(s)`          | (List of) package pattern | no       | empty list                        |          |
 | `includeTestCode`       | Boolean                   | no       | `false`                           | `0.7.0`  |
 | `reason`                | String                    | no       | empty String                      | `0.8.0`  |
-| `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` (deprecated in `0.16.0`) |
-| `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` (deprecated in `0.15.0`, removed in `0.16.0`) |
 | `failBuild`             | Boolean                   |          | `true`                            | `0.17.0` |
 | `skip`                  | Boolean                   |          | `false`                           | `0.17.0` |
+| `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` (deprecated in `0.16.0`) |
+| `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` (deprecated in `0.15.0`, removed in `0.16.0`) |
 
 ## Changelog
 

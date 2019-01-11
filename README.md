@@ -270,3 +270,9 @@ Overview of all configuration parameters:
 | `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` (deprecated in `0.15.0`, removed in `0.16.0`) |
 | `failBuild`             | Boolean                   |          | `true`                            | `0.17.0` |
 | `skip`                  | Boolean                   |          | `false`                           | `0.17.0` |
+
+## Changelog
+
+* Version 0.17.0
+** #27: Introduce `failBuild` and `skip` options
+** Fix mysterious case where `"*` would be recognized as the beginning of a block comment

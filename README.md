@@ -274,6 +274,6 @@ Overview of all configuration parameters:
 ## Changelog
 
 ### Version 0.17.0
-* #27: Introduce `failBuild` and `skip` options
+* [#27](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/27)): Introduce `failBuild` and `skip` options
 * Fix mysterious case where `"*` would be recognized as the beginning of a block comment
 * Introduce changelog to readme

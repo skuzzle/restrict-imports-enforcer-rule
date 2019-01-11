@@ -277,3 +277,4 @@ Overview of all configuration parameters:
 * [#27](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/27): Introduce `failBuild` and `skip` options
 * Fix mysterious case where `"*` would be recognized as the beginning of a block comment
 * Introduce changelog to readme
+* Add [contribution guide lines](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/master/CONTRIBUTING.md)

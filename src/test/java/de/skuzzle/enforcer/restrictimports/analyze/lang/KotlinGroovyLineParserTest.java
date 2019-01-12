@@ -1,8 +1,10 @@
-package de.skuzzle.enforcer.restrictimports.analyze;
+package de.skuzzle.enforcer.restrictimports.analyze.lang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
+
+import de.skuzzle.enforcer.restrictimports.analyze.lang.KotlinGroovyLineParser;
 
 public class KotlinGroovyLineParserTest {
 

@@ -1,0 +1,2 @@
+de.skuzzle.enforcer.restrictimports.analyze.lang.JavaLineParser
+de.skuzzle.enforcer.restrictimports.analyze.lang.KotlinGroovyLineParser

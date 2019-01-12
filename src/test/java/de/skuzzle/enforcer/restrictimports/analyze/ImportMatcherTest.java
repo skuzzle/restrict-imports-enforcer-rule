@@ -14,6 +14,8 @@ import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
 
+import de.skuzzle.enforcer.restrictimports.analyze.lang.JavaLineParser;
+
 public class ImportMatcherTest {
 
     private final LineSupplier mockLineSupplier = mock(LineSupplier.class);

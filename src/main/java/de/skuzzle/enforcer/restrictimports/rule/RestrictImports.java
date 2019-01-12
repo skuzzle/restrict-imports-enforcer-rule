@@ -69,7 +69,9 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
                 if (failBuild) {
                     throw new EnforcerRuleException(errorMessage);
                 } else {
-                    LOGGER.error(errorMessage);
+                    LOGGER.warn(errorMessage);
+                    LOGGER.warn("\nDetected banned imports will not fail the "
+                            + "build as the 'failBuild' flag is set to false!");
                 }
 
             } else {

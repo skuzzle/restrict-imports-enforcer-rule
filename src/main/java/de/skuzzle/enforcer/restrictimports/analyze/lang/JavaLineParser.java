@@ -1,11 +1,20 @@
-package de.skuzzle.enforcer.restrictimports.analyze;
+package de.skuzzle.enforcer.restrictimports.analyze.lang;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
-class KotlinGroovyLineParser implements SourceLineParser {
+import de.skuzzle.enforcer.restrictimports.analyze.SourceLineParser;
+
+public class JavaLineParser implements SourceLineParser {
+
+    @Override
+    public Set<String> getSupportedFileExtensions() {
+        return ImmutableSet.of("java");
+    }
 
     @Override
     public Optional<String> parsePackage(String line) {
@@ -21,12 +30,12 @@ class KotlinGroovyLineParser implements SourceLineParser {
         if (!isImport(line)) {
             return ImmutableList.of();
         }
-        final String packageWithAlias = extractPackageName(line);
-        return ImmutableList.of(removeAlias(packageWithAlias));
+
+        return ImmutableList.of(extractPackageName(line));
     }
 
     private boolean is(String compare, String line) {
-        return line.startsWith(compare);
+        return line.startsWith(compare) && line.endsWith(";");
     }
 
     private boolean isPackage(String line) {
@@ -38,23 +47,10 @@ class KotlinGroovyLineParser implements SourceLineParser {
     }
 
     private static String extractPackageName(String line) {
-        // groovy may or may not have a semicolon at the end
         final int spaceIdx = line.indexOf(" ");
         final int semiIdx = line.indexOf(";");
-
-        if (semiIdx >= 0) {
-            return line.substring(spaceIdx, semiIdx).trim();
-        }
-
-        return line.substring(spaceIdx).trim();
+        final String sub = line.substring(spaceIdx, semiIdx);
+        return sub.trim();
     }
 
-    private String removeAlias(String packageWithAlias) {
-        final int asIdx = packageWithAlias.indexOf(" as ");
-        if (asIdx >= 0) {
-            return packageWithAlias.substring(0, asIdx);
-        }
-        // no alias
-        return packageWithAlias;
-    }
 }

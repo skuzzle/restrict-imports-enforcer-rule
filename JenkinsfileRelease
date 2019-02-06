@@ -1,0 +1,30 @@
+pipeline {
+  agent {
+    docker {
+      image 'maven:3.6-jdk-8'
+      args '-v $HOME/.m2:/root/.m2 -v $HOME/.gnupg:/root/.gnupg -u 0:0'
+    }
+  }
+  environment {
+    GPG_SECRET = credentials('gpg_password')
+    GITHUB = credentials('Github-Username-Pw')
+  }
+  stages {
+    stage ('Set Git Information') {
+        steps {
+            sh 'git config --global user.email "simon.taddiken@gmail.com"'
+            sh 'git config --global user.name "Simon Taddiken"'
+        }
+    }
+    stage('Prepare') {
+      steps {
+        sh 'mvn -B release:prepare -Dpassword=${GITHUB_PSW} -Dusername=${GITHUB_USR}'
+      }
+    }
+    stage('Perform') {
+      steps {
+        sh 'mvn -B release:perform -Darguments="-Dgpg.passphrase=${GPG_SECRET} -Dpassword=${GITHUB_PSW} -Dusername=${GITHUB_USR}"'
+      }
+    }
+  }
+}

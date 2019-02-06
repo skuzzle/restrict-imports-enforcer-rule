@@ -1,0 +1,39 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.skuzzle.enforcer.it</groupId>
+    <artifactId>fail1</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <name>Banned Import found</name>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M1</version>
+                <dependencies>
+                    <dependency>
+                        <!--suppress MavenModelInspection --><groupId>@project.groupId@</groupId>
+                        <!--suppress MavenModelInspection --><artifactId>@project.artifactId@</artifactId>
+                        <!--suppress MavenModelInspection --><version>@project.version@</version>
+                    </dependency>
+                </dependencies>
+                <configuration>
+                    <rules>
+                        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+                            <basePackage>**</basePackage>
+                            <reason>These classes should not be used!</reason>
+                            <skip>true</skip>
+                            <bannedImports>
+                                <bannedImport>java.util.*</bannedImport>
+                            </bannedImports>
+                        </restrictImports>
+                    </rules>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

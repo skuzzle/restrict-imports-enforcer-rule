@@ -37,10 +37,17 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     private List<BannedImportGroupDefinition> groups = new ArrayList<>();
 
-    private boolean includeTestCode;
+    private boolean includeTestCode = false;
+    private boolean failBuild = true;
+    private boolean skip = false;
 
     @Override
     public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException {
+        if (skip) {
+            LOGGER.info("restrict-imports-enforcer rule is skipped");
+            return;
+        }
+
         try {
             final MavenProject project = (MavenProject) helper.evaluate("${project}");
 
@@ -58,7 +65,15 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
             if (analyzeResult.bannedImportsFound()) {
                 final String errorMessage = MatchFormatter.getInstance()
                         .formatMatches(analyzerSettings.getRootDirectories(), analyzeResult);
-                throw new EnforcerRuleException(errorMessage);
+
+                if (failBuild) {
+                    throw new EnforcerRuleException(errorMessage);
+                } else {
+                    LOGGER.warn(errorMessage);
+                    LOGGER.warn("\nDetected banned imports will not fail the "
+                            + "build as the 'failBuild' flag is set to false!");
+                }
+
             } else {
                 LOGGER.debug("No banned imports found");
             }
@@ -210,6 +225,14 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
                 "restrict-imports-enforcer rule: Deprecation warning (since 0.15.0):\n"
                         + "Please use maven property 'project.build.sourceEnconding' for specifying the charset. "
                         + "This plugin's property 'sourceFileCharset' will be removed in later versions!");
+    }
+
+    public void setFailBuild(boolean failBuild) {
+        this.failBuild = failBuild;
+    }
+
+    public void setSkip(boolean skip) {
+        this.skip = skip;
     }
 
     @Override

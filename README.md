@@ -23,7 +23,7 @@ information.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>0.16.0</version>
+            <version>0.17.0</version>
         </dependency>
     </dependencies>
     <executions>
@@ -182,6 +182,32 @@ of test code using the `includeTestCode` option.
 </configuration>
 ```
 
+## Skipping
+Using the configuration option `skip` you are able to temporarily disable a rule 
+instance. 
+```xml
+<configuration>
+    <rules>
+        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+            <skip>true</skip>
+            <!-- ... -->
+        </restrictImports>
+    </rules>
+</configuration>
+```
+If you want banned import analysis but without breaking your build you can set
+`failBuild` to `false`.
+```xml
+<configuration>
+    <rules>
+        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+            <failBuild>false</failBuild>
+            <!-- ... -->
+        </restrictImports>
+    </rules>
+</configuration>
+```
+
 ## Package Patterns
 
 Package patterns are matched case sensitively part by part. There are two supported 
@@ -240,5 +266,21 @@ Overview of all configuration parameters:
 | `exclusion(s)`          | (List of) package pattern | no       | empty list                        |          |
 | `includeTestCode`       | Boolean                   | no       | `false`                           | `0.7.0`  |
 | `reason`                | String                    | no       | empty String                      | `0.8.0`  |
+| `failBuild`             | Boolean                   |          | `true`                            | `0.17.0` |
+| `skip`                  | Boolean                   |          | `false`                           | `0.17.0` |
 | `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` (deprecated in `0.16.0`) |
 | `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` (deprecated in `0.15.0`, removed in `0.16.0`) |
+
+## Changelog
+
+### Version 0.17.0
+* [#29](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/29): SPI for `SourceLineParser` implementations
+* [#27](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/27): Introduce `failBuild` and `skip` options
+* Fix mysterious case where `"*` would be recognized as the beginning of a block comment
+* Introduce changelog to readme
+* Add [contribution guide lines](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/master/CONTRIBUTING.md)
+
+### Version 0.16.0
+* [#26](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/26): Deprecated `commentLineBufferSize` parameter
+* [#25](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/25): Add additional configuration sanity checks
+* [#23](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/23): Removed deprecated `sourceFileCharset` parameter

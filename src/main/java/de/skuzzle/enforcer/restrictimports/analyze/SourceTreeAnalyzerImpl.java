@@ -4,20 +4,35 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import com.google.common.collect.ImmutableMap;
-
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
-    private final Map<String, SourceLineParser> sourceFileParsers = ImmutableMap.of(
-            ".groovy", new KotlinGroovyLineParser(),
-            ".kt", new KotlinGroovyLineParser(),
-            ".java", new JavaLineParser());
+    private final Map<String, SourceLineParser> sourceFileParsers;
+
+    public SourceTreeAnalyzerImpl() {
+        final ServiceLoader<SourceLineParser> serviceProvider = ServiceLoader.load(SourceLineParser.class);
+        final Map<String, SourceLineParser> parsers = new HashMap<>();
+        serviceProvider.forEach(parser -> {
+            parser.getSupportedFileExtensions().forEach(extension -> {
+                final String normalizedExtension = extension.startsWith(".")
+                        ? extension.toLowerCase()
+                        : "." + extension.toLowerCase();
+
+                if (parsers.put(normalizedExtension, parser) != null) {
+                    throw new IllegalStateException(
+                            "There are multiple parsers to handle file extension: " + extension);
+                }
+            });
+        });
+        this.sourceFileParsers = parsers;
+    }
 
     @Override
     public AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroups groups) {
@@ -73,7 +88,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
                 return false;
             }
 
-            return sourceFileParsers.containsKey(extension);
+            return sourceFileParsers.containsKey(extension.toLowerCase());
         }
     }
 

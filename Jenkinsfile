@@ -15,5 +15,6 @@ pipeline {
       steps {
         sh 'mvn javadoc:javadoc'
       }
+    }
   }
 }

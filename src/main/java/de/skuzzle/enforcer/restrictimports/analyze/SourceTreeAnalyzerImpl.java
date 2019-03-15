@@ -12,6 +12,8 @@ import java.util.ServiceLoader;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import de.skuzzle.enforcer.restrictimports.analyze.lang.SourceLineParser;
+
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
     private final Map<String, SourceLineParser> sourceFileParsers;

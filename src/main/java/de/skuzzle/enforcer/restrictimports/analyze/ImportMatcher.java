@@ -11,6 +11,8 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.skuzzle.enforcer.restrictimports.analyze.lang.SourceLineParser;
+
 /**
  * Collects banned import matches from a single source file.
  *

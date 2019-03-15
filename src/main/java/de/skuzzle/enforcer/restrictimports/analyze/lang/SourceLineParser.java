@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.analyze;
+package de.skuzzle.enforcer.restrictimports.analyze.lang;
 
 import java.util.List;
 import java.util.Optional;

@@ -7,8 +7,6 @@ import java.util.Set;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
-import de.skuzzle.enforcer.restrictimports.analyze.SourceLineParser;
-
 public class KotlinGroovyLineParser implements SourceLineParser {
 
     @Override

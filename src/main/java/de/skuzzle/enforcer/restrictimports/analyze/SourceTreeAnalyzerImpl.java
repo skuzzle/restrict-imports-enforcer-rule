@@ -12,6 +12,8 @@ import java.util.ServiceLoader;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.google.common.base.Preconditions;
+
 import de.skuzzle.enforcer.restrictimports.analyze.lang.SourceLineParser;
 
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
@@ -33,6 +35,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
                 }
             });
         });
+        Preconditions.checkState(!parsers.isEmpty(), "No SourceLineParser implemenations found");
         this.sourceFileParsers = parsers;
     }
 

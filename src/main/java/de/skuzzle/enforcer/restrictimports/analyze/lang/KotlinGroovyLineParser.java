@@ -6,8 +6,9 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
+import de.skuzzle.enforcer.restrictimports.parser.SourceLineParser;
 
-import de.skuzzle.enforcer.restrictimports.analyze.SourceLineParser;
 
 public class KotlinGroovyLineParser implements SourceLineParser {
 
@@ -26,12 +27,12 @@ public class KotlinGroovyLineParser implements SourceLineParser {
     }
 
     @Override
-    public List<String> parseImport(String line) {
+    public List<ParsedFile.ImportStatement> parseImport(String line, int lineNumber) {
         if (!isImport(line)) {
             return ImmutableList.of();
         }
         final String packageWithAlias = extractPackageName(line);
-        return ImmutableList.of(removeAlias(packageWithAlias));
+        return ImmutableList.of(new ParsedFile.ImportStatement(removeAlias(packageWithAlias), lineNumber));
     }
 
     private boolean is(String compare, String line) {

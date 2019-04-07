@@ -2,6 +2,7 @@ package de.skuzzle.enforcer.restrictimports.analyze.lang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 import org.junit.jupiter.api.Test;
 
 import de.skuzzle.enforcer.restrictimports.analyze.lang.JavaLineParser;
@@ -12,17 +13,17 @@ public class JavaLineParserTest {
 
     @Test
     public void testValidImport() {
-        assertThat(subject.parseImport("import java.util.List;")).first().isEqualTo("java.util.List");
+        assertThat(subject.parseImport("import java.util.List;",1 )).first().isEqualTo(new ParsedFile.ImportStatement("java.util.List",1));
     }
 
     @Test
     public void testInvalidImport1() {
-        assertThat(subject.parseImport("import java.util.List")).isEmpty();
+        assertThat(subject.parseImport("import java.util.List",1)).isEmpty();
     }
 
     @Test
     public void testInvalidImport2() {
-        assertThat(subject.parseImport("importjava.util.List;")).isEmpty();
+        assertThat(subject.parseImport("importjava.util.List;",1)).isEmpty();
     }
 
     @Test

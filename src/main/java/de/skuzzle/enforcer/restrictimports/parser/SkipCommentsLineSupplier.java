@@ -1,4 +1,6 @@
-package de.skuzzle.enforcer.restrictimports.analyze;
+package de.skuzzle.enforcer.restrictimports.parser;
+
+import de.skuzzle.enforcer.restrictimports.analyze.RuntimeIOException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,7 +16,7 @@ import java.util.stream.Stream;
  *
  * @author Simon Taddiken
  */
-class SkipCommentsLineSupplier implements LineSupplier {
+public class SkipCommentsLineSupplier implements LineSupplier {
 
     private final Charset charset;
 

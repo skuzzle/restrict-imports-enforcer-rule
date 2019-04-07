@@ -7,8 +7,13 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
+import de.skuzzle.enforcer.restrictimports.parser.LineSupplier;
+import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -18,39 +23,28 @@ import de.skuzzle.enforcer.restrictimports.analyze.lang.JavaLineParser;
 
 public class ImportMatcherTest {
 
-    private final LineSupplier mockLineSupplier = mock(LineSupplier.class);
-    private final ImportMatcher subject = new ImportMatcher(mockLineSupplier);
-    private final JavaLineParser javaLineParser = new JavaLineParser();
+    private final ImportMatcher subject = new ImportMatcher();
 
-    private final Path path = mock(Path.class);
-    private final Path fileName = mock(Path.class);
+    private final ParsedFile parsedFile = parsedFile("File", "de.skuzzle.test",
+            "de.skuzzle.sample.Test",
+            "foo.bar.xyz",
+            "de.skuzzle.sample.Test2",
+            "de.skuzzle.sample.Test3",
+            "de.foo.bar.Test");
 
-    @BeforeEach
-    public void setUp() throws Exception {
-        when(this.path.getFileName()).thenReturn(this.fileName);
-        when(this.fileName.toString()).thenReturn("File.java");
-        when(this.mockLineSupplier.lines(this.path)).thenReturn(ImmutableList.of(
-                "package de.skuzzle.test;",
-                "",
-                "import de.skuzzle.sample.Test;",
-                "import   foo.bar.xyz;",
-                "import de.skuzzle.sample.Test2;",
-                "import de.skuzzle.sample.Test3;",
-                "import de.foo.bar.Test").stream());
-    }
+    private ParsedFile parsedFile(String className, String packageName, String... lines) {
+        final String fqcn = packageName + "." + className;
+        final Path path = mock(Path.class);
+        final Path fileName = mock(Path.class);
+        when(path.getFileName()).thenReturn(fileName);
+        when(fileName.toString()).thenReturn(className + ".java");
+        final List<ParsedFile.ImportStatement> imports = new ArrayList<>();
 
-    @Test
-    public void testException() throws Exception {
-        when(this.mockLineSupplier.lines(this.path)).thenThrow(new IOException());
+        for (int lineNumber = 0; lineNumber < lines.length; ++lineNumber) {
+            imports.add(new ParsedFile.ImportStatement(lines[lineNumber], lineNumber));
+        }
+        return new ParsedFile(path, packageName, fqcn, imports);
 
-        final BannedImportGroups groups = BannedImportGroups.builder()
-                .withGroup(BannedImportGroup.builder()
-                        .withBasePackages("**")
-                        .withBannedImports("bla"))
-                .build();
-        assertThatExceptionOfType(RuntimeIOException.class)
-                .isThrownBy(() -> this.subject
-                        .matchFile(this.path, groups, javaLineParser));
     }
 
     @Test
@@ -60,14 +54,14 @@ public class ImportMatcherTest {
                         .withBasePackages("foo.bar", "de.skuzzle.test.*")
                         .withBannedImports("de.skuzzle.sample.*"))
                 .build();
-        final Optional<MatchedFile> matches = this.subject.matchFile(this.path, groups, javaLineParser);
+           final Optional<MatchedFile> matches = this.subject.matchFile(parsedFile, groups);
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("de.skuzzle.sample.*");
         final ImmutableList<MatchedImport> expected = ImmutableList.of(
-                new MatchedImport(3, "de.skuzzle.sample.Test", expectedMatchedBy),
-                new MatchedImport(5, "de.skuzzle.sample.Test2", expectedMatchedBy),
-                new MatchedImport(6, "de.skuzzle.sample.Test3", expectedMatchedBy));
+                new MatchedImport(0, "de.skuzzle.sample.Test", expectedMatchedBy),
+                new MatchedImport(2, "de.skuzzle.sample.Test2", expectedMatchedBy),
+                new MatchedImport(3, "de.skuzzle.sample.Test3", expectedMatchedBy));
 
         assertThat(matches.get().getMatchedImports()).isEqualTo(expected);
     }
@@ -78,17 +72,15 @@ public class ImportMatcherTest {
                 .withGroup(BannedImportGroup.builder()
                         .withBasePackages("**")
                         .withBannedImports("de.skuzzle.sample.*")
-                        .withAllowedImports("de.skuzzle.sample.Test2",
-                                "de.skuzzle.sample.Test4"))
+                        .withAllowedImports("de.skuzzle.sample.Test2", "de.skuzzle.sample.Test4"))
                 .build();
-        final Optional<MatchedFile> matches = this.subject
-                .matchFile(this.path, groups, javaLineParser);
+        final Optional<MatchedFile> matches = this.subject.matchFile(this.parsedFile, groups);
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("de.skuzzle.sample.*");
         final ImmutableList<MatchedImport> expected = ImmutableList.of(
-                new MatchedImport(3, "de.skuzzle.sample.Test", expectedMatchedBy),
-                new MatchedImport(6, "de.skuzzle.sample.Test3", expectedMatchedBy));
+                new MatchedImport(0, "de.skuzzle.sample.Test", expectedMatchedBy),
+                new MatchedImport(3, "de.skuzzle.sample.Test3", expectedMatchedBy));
 
         assertThat(matches.get().getMatchedImports()).isEqualTo(expected);
     }
@@ -103,35 +95,14 @@ public class ImportMatcherTest {
                         .withReason("message"))
                 .build();
 
-        final Optional<MatchedFile> matches = this.subject.matchFile(this.path, groups, javaLineParser);
+        final Optional<MatchedFile> matches = this.subject.matchFile(this.parsedFile, groups);
         assertThat(matches).isEmpty();
     }
 
     @Test
-    public void testLeadingEmptyLines() throws Exception {
-        when(this.mockLineSupplier.lines(this.path)).thenReturn(ImmutableList.of(
-                "",
-                "",
-                "package de.skuzzle.test;",
-                "",
-                "import de.skuzzle.sample.Test;").stream());
-
-        final BannedImportGroups groups = BannedImportGroups.builder()
-                .withGroup(BannedImportGroup.builder()
-                        .withBasePackages("de.skuzzle.test.**")
-                        .withBannedImports("de.skuzzle.sample.**"))
-                .build();
-        assertThat(subject.matchFile(path, groups, javaLineParser).get().getMatchedImports()).first()
-                .isEqualTo(new MatchedImport(5,
-                        "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
-    }
-
-    @Test
     public void testLeadingEmptyLinesDefaultPackages() throws Exception {
-        when(this.mockLineSupplier.lines(this.path)).thenReturn(ImmutableList.of(
-                "",
-                "",
-                "import de.skuzzle.sample.Test;").stream());
+        final ParsedFile parsedFile = parsedFile("File", "",
+                "de.skuzzle.sample.Test");
 
         final BannedImportGroups groups = BannedImportGroups.builder()
                 .withGroup(BannedImportGroup.builder()
@@ -139,39 +110,19 @@ public class ImportMatcherTest {
                         .withBannedImports("de.skuzzle.sample.**"))
                 .build();
 
-        assertThat(subject.matchFile(path, groups, javaLineParser).get().getMatchedImports()).first()
-                .isEqualTo(new MatchedImport(3,
-                        "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
-    }
-
-    @Test
-    public void testAbortOnNonImportLine() throws Exception {
-        when(this.mockLineSupplier.lines(this.path)).thenReturn(ImmutableList.of(
-                "package de.skuzzle.test;",
-                "import de.skuzzle.sample.Test;",
-                "public class Foo {",
-                "import de.skuzzle.sample.Test2;").stream());
-
-        final BannedImportGroups groups = BannedImportGroups.builder()
-                .withGroup(BannedImportGroup.builder()
-                        .withBasePackages("**")
-                        .withBannedImports("de.skuzzle.sample.**"))
-                .build();
-
-        assertThat(subject.matchFile(path, groups, javaLineParser).get().getMatchedImports()).first()
-                .isEqualTo(new MatchedImport(2,
+        assertThat(subject.matchFile(parsedFile, groups).get().getMatchedImports()).first()
+                .isEqualTo(new MatchedImport(0,
                         "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
     }
 
     @Test
     public void testExcludeWholeFileByBasePackage() throws Exception {
-        final Optional<MatchedFile> matches = this.subject.matchFile(this.path,
+        final Optional<MatchedFile> matches = this.subject.matchFile(this.parsedFile,
                 BannedImportGroups.builder()
                         .withGroup(BannedImportGroup.builder()
                                 .withBasePackages("de.foo.bar")
                                 .withBannedImports("de.skuzzle.sample.*"))
-                        .build(),
-                javaLineParser);
+                        .build());
         assertThat(matches).isEmpty();
     }
 }

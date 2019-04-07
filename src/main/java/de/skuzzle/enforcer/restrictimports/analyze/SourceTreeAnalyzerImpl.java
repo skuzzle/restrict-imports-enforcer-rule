@@ -1,14 +1,15 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
+import com.google.common.base.Preconditions;
+import de.skuzzle.enforcer.restrictimports.parser.LineSupplier;
+import de.skuzzle.enforcer.restrictimports.parser.SkipCommentsLineSupplier;
+import de.skuzzle.enforcer.restrictimports.parser.SourceFileParser;
+import de.skuzzle.enforcer.restrictimports.parser.SourceLineParser;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -31,6 +32,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
                 }
             });
         });
+        Preconditions.checkState(!parsers.isEmpty(), "No SourceFileParer instances found!");
         this.sourceFileParsers = parsers;
     }
 
@@ -39,15 +41,16 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
         final LineSupplier lineSupplier = new SkipCommentsLineSupplier(settings.getSourceFileCharset());
 
         // TODO: importMatcher should be injected rather than being created here
-        final ImportMatcher importMatcher = new ImportMatcher(lineSupplier);
+        final SourceFileParser fileParser = new SourceFileParser(lineSupplier);
+        final ImportMatcher importMatcher = new ImportMatcher();
 
         final List<MatchedFile> matchedFiles = new ArrayList<>();
 
         final Iterable<Path> rootsIterable = settings.getRootDirectories();
         for (final Path root : rootsIterable) {
             listFiles(root, new SourceFileMatcher())
-                    .map(sourceFile -> importMatcher.matchFile(sourceFile, groups,
-                            sourceFileParsers.get(getFileExtension(sourceFile))))
+                    .map(sourceFile -> fileParser.analyze(sourceFile, sourceFileParsers.get(getFileExtension(sourceFile))))
+                    .map(parsedFile -> importMatcher.matchFile(parsedFile, groups))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .forEach(matchedFiles::add);

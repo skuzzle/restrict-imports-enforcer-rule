@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.analyze;
+package de.skuzzle.enforcer.restrictimports.parser;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +37,8 @@ public interface SourceLineParser {
      * file.
      *
      * @param importLine Line in the source file
+     * @param lineNumber The line number of the import.
      * @return Fully qualified package name that this import represents
      */
-    List<String> parseImport(String importLine);
+    List<ParsedFile.ImportStatement> parseImport(String importLine, int lineNumber);
 }

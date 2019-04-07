@@ -27,7 +27,6 @@ final class PackagePatternImpl implements PackagePattern {
         for (int i = 0; i < parts.length; i++) {
             final String part = parts[i];
             checkCharacters(full, part, i);
-
         }
     }
 

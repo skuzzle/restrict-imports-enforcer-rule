@@ -271,9 +271,9 @@ Overview of all configuration parameters:
 | `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` (deprecated in `0.16.0`, soft-removed in `0.18.0`) |
 | `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` (deprecated in `0.15.0`, soft-removed in `0.16.0`, removed in `0.18.0`) |
 
-_Deprecated_: Setting this property might have no effect but will log a descriptive warning
-_Soft-Removed_: Settings this property will fail the build with a descriptive warning that this property is no longer supported
-_Removed_: The property no longer exists and the plugin behaves as if it never did.
+* _Deprecated_: Setting this property might have no effect but will log a descriptive warning
+* _Soft-Removed_: Settings this property will fail the build with a descriptive warning that this property is no longer supported
+* _Removed_: The property no longer exists and the plugin behaves as if it never did.
 
 ## Changelog
 

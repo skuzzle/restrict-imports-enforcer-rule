@@ -211,17 +211,9 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     @Deprecated
     public final void setCommentLineBufferSize(int commentLineBufferSize) {
-        LOGGER.warn("restrict-imports-enforcer rule: Deprecation warning (since 0.16.0):\n"
+        throw new RuntimeException("restrict-imports-enforcer rule: Deprecation warning (since 0.16.0):\n"
                 + "Setting commentLineBufferSize is no longer necessary, as we now use a dynamic buffer. "
                 + "This property no longer has any effect and will be removed in later versions!");
-    }
-
-    @Deprecated
-    public final void setSourceFileCharset(String sourceFileCharset) {
-        throw new RuntimeException(
-                "restrict-imports-enforcer rule: Deprecation warning (since 0.15.0):\n"
-                        + "Please use maven property 'project.build.sourceEnconding' for specifying the charset. "
-                        + "This plugin's property 'sourceFileCharset' will be removed in later versions!");
     }
 
     public void setFailBuild(boolean failBuild) {

@@ -268,12 +268,17 @@ Overview of all configuration parameters:
 | `reason`                | String                    | no       | empty String                      | `0.8.0`  |
 | `failBuild`             | Boolean                   |          | `true`                            | `0.17.0` |
 | `skip`                  | Boolean                   |          | `false`                           | `0.17.0` |
-| `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` (deprecated in `0.16.0`) |
-| `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` (deprecated in `0.15.0`, removed in `0.16.0`) |
+| `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` (deprecated in `0.16.0`, soft-removed in `0.18.0`) |
+| `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` (deprecated in `0.15.0`, soft-removed in `0.16.0`, removed in `0.18.0`) |
+
+_Deprecated_: Setting this property might have no effect but will log a descriptive warning
+_Soft-Removed_: Settings this property will fail the build with a descriptive warning that this property is no longer supported
+_Removed_: The property no longer exists and the plugin behaves as if it never did.
 
 ## Changelog
 
 ### Version 0.18.0
+* Soft-Removed `commentLineBufferSize`
 * [#31](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/31): Results show whether a match occurred in a test file
 * [#30](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/30): Separate import parsing and banned import analysis
 

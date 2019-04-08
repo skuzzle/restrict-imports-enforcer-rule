@@ -40,6 +40,7 @@ public final class ImportStatement {
         return MoreObjects.toStringHelper(this)
                 .add("import", importName)
                 .add("line", line)
+                .add("static", staticImport)
                 .toString();
     }
 

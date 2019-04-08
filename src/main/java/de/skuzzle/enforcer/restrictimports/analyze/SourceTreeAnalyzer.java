@@ -12,7 +12,7 @@ public interface SourceTreeAnalyzer {
      *
      * @return The analyzer.
      */
-    public static SourceTreeAnalyzer getInstance() {
+    static SourceTreeAnalyzer getInstance() {
         return new SourceTreeAnalyzerImpl();
     }
 

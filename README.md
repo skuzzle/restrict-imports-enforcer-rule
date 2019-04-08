@@ -293,4 +293,4 @@ Overview of all configuration parameters:
 ### Version 0.16.0
 * [#26](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/26): _Deprecate_ `commentLineBufferSize` parameter and replaced with dynamically growing buffer
 * [#25](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/25): Add additional configuration sanity checks
-* [#23](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/23): _Soft-Remove_ deprecated `sourceFileCharset` parameter and always use `${project.build.sourceEncoding}` now
+* [#23](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/23): _Soft-Remove_ `sourceFileCharset` parameter and always use `${project.build.sourceEncoding}` now

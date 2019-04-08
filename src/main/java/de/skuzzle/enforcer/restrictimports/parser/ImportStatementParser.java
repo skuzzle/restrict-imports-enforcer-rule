@@ -1,7 +1,7 @@
 package de.skuzzle.enforcer.restrictimports.parser;
 
 import com.google.common.base.Preconditions;
-import de.skuzzle.enforcer.restrictimports.analyze.RuntimeIOException;
+import de.skuzzle.enforcer.restrictimports.io.RuntimeIOException;
 import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +39,14 @@ public class ImportStatementParser {
         return new ImportStatementParser(new SkipCommentsLineSupplier(charset));
     }
 
+    /**
+     * Parses the given source file using the given {@link LanguageSupport} implementation to recognize import statements.
+     *
+     * @param sourceFilePath The path of the file to parse.
+     * @param lineParser For parsing the import statements.
+     * @return The parsed file.
+     * @throws RuntimeIOException In case reading the file fails.
+     */
     public ParsedFile analyze(Path sourceFilePath, LanguageSupport lineParser) {
         LOGGER.trace("Analyzing {} for imports", sourceFilePath);
 

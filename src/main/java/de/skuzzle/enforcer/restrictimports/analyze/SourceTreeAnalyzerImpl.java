@@ -1,6 +1,7 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
 import com.google.common.base.Preconditions;
+import de.skuzzle.enforcer.restrictimports.io.RuntimeIOException;
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatementParser;
 import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 

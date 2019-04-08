@@ -1,6 +1,6 @@
 package de.skuzzle.enforcer.restrictimports.parser;
 
-import de.skuzzle.enforcer.restrictimports.analyze.RuntimeIOException;
+import de.skuzzle.enforcer.restrictimports.io.RuntimeIOException;
 
 import java.io.BufferedReader;
 import java.io.IOException;

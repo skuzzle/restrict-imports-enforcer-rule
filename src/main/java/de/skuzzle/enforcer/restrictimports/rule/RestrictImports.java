@@ -23,7 +23,7 @@ import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
-import de.skuzzle.enforcer.restrictimports.analyze.RuntimeIOException;
+import de.skuzzle.enforcer.restrictimports.io.RuntimeIOException;
 import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
 import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
 

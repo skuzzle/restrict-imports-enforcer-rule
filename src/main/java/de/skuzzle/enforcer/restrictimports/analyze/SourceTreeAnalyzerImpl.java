@@ -1,7 +1,7 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
 import com.google.common.base.Preconditions;
-import de.skuzzle.enforcer.restrictimports.parser.SourceFileParser;
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatementParser;
 import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
     @Override
     public AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroups groups) {
-        final SourceFileParser fileParser = SourceFileParser.defaultInstance(settings.getSourceFileCharset());
+        final ImportStatementParser fileParser = ImportStatementParser.defaultInstance(settings.getSourceFileCharset());
         final List<MatchedFile> matchedFiles = new ArrayList<>();
 
         final Iterable<Path> rootsIterable = settings.getRootDirectories();

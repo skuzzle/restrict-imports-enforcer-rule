@@ -12,9 +12,12 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
 
-public class SourceFileParser {
+/**
+ * Parses a source file into a {@link ParsedFile} representation.
+ */
+public class ImportStatementParser {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SourceFileParser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImportStatementParser.class);
 
     private final LineSupplier supplier;
 
@@ -22,12 +25,18 @@ public class SourceFileParser {
      * Constructor just for testing purposes.
      * @param supplier The line sources
      */
-    SourceFileParser(LineSupplier supplier) {
+    ImportStatementParser(LineSupplier supplier) {
         this.supplier = supplier;
     }
 
-    public static SourceFileParser defaultInstance(Charset charset) {
-        return new SourceFileParser(new SkipCommentsLineSupplier(charset));
+    /**
+     * Constructs a default instance of the parser which uses the provided charset.
+     *
+     * @param charset The charset to use.
+     * @return The parser instance.
+     */
+    public static ImportStatementParser defaultInstance(Charset charset) {
+        return new ImportStatementParser(new SkipCommentsLineSupplier(charset));
     }
 
     public ParsedFile analyze(Path sourceFilePath, LanguageSupport lineParser) {
@@ -36,15 +45,10 @@ public class SourceFileParser {
         final List<ImportStatement> imports = new ArrayList<>();
 
         try (final Stream<String> lines = this.supplier.lines(sourceFilePath)) {
-
-            final Iterable<String> lineIt = lines.map(String::trim)::iterator;
-
             int row = 1;
-            final String fileName = getFileName(sourceFilePath);
             String fqcn = "";
             String packageName = "";
-
-            for (final Iterator<String> it = lineIt.iterator(); it.hasNext(); ++row) {
+            for (final Iterator<String> it = lines.map(String::trim).iterator(); it.hasNext(); ++row) {
                 final String line = it.next();
                 if (line.isEmpty()) {
                     continue;
@@ -55,6 +59,7 @@ public class SourceFileParser {
                     Preconditions.checkState(packageName.isEmpty(), "found duplicate package statement in '%s'", sourceFilePath);
                     // package ...; statement
 
+                    final String fileName = getFileName(sourceFilePath);
                     // INVARIANT: our own package name occurs in the first non-empty line
                     // of the java source file (after trimming leading comments)
                     packageName = packageDeclaration.get();

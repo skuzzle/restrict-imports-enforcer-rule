@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  *
  * @author Simon Taddiken
  */
-public class SkipCommentsLineSupplier implements LineSupplier {
+class SkipCommentsLineSupplier implements LineSupplier {
 
     private final Charset charset;
 

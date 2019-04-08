@@ -278,6 +278,7 @@ Overview of all configuration parameters:
 ## Changelog
 
 ### Version 0.18.0
+* Removed `sourceFileCharset`
 * Soft-Removed `commentLineBufferSize`
 * [#31](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/31): Results show whether a match occurred in a test file
 * [#30](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/30): Separate import parsing and banned import analysis

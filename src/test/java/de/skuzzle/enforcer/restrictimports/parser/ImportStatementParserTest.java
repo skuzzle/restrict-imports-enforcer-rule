@@ -51,6 +51,14 @@ class ImportStatementParserTest {
     }
 
     @Test
+    void testAnalyzeWithStaticImport() {
+        final ImportStatementParser subject = new ImportStatementParser(lines(
+                "import static de.skuzzle.test;"));
+        final ParsedFile parsedFile = subject.analyze(path, javaLang);
+        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("static de.skuzzle.test", 1));
+    }
+
+    @Test
     void testStopAtClassDeclaration() {
         final ImportStatementParser subject = new ImportStatementParser(lines(
                 "package com.foo.bar;",

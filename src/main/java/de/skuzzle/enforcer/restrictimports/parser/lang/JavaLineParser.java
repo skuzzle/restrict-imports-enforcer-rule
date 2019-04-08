@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.analyze.lang;
+package de.skuzzle.enforcer.restrictimports.parser.lang;
 
 import java.util.List;
 import java.util.Optional;
@@ -10,11 +10,11 @@ import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 import de.skuzzle.enforcer.restrictimports.parser.SourceLineParser;
 
 
-public class KotlinGroovyLineParser implements SourceLineParser {
+public class JavaLineParser implements SourceLineParser {
 
     @Override
     public Set<String> getSupportedFileExtensions() {
-        return ImmutableSet.of("groovy", "kt");
+        return ImmutableSet.of("java");
     }
 
     @Override
@@ -31,12 +31,12 @@ public class KotlinGroovyLineParser implements SourceLineParser {
         if (!isImport(line)) {
             return ImmutableList.of();
         }
-        final String packageWithAlias = extractPackageName(line);
-        return ImmutableList.of(new ParsedFile.ImportStatement(removeAlias(packageWithAlias), lineNumber));
+
+        return ImmutableList.of(new ParsedFile.ImportStatement(extractPackageName(line), lineNumber));
     }
 
     private boolean is(String compare, String line) {
-        return line.startsWith(compare);
+        return line.startsWith(compare) && line.endsWith(";");
     }
 
     private boolean isPackage(String line) {
@@ -48,23 +48,10 @@ public class KotlinGroovyLineParser implements SourceLineParser {
     }
 
     private static String extractPackageName(String line) {
-        // groovy may or may not have a semicolon at the end
         final int spaceIdx = line.indexOf(" ");
         final int semiIdx = line.indexOf(";");
-
-        if (semiIdx >= 0) {
-            return line.substring(spaceIdx, semiIdx).trim();
-        }
-
-        return line.substring(spaceIdx).trim();
+        final String sub = line.substring(spaceIdx, semiIdx);
+        return sub.trim();
     }
 
-    private String removeAlias(String packageWithAlias) {
-        final int asIdx = packageWithAlias.indexOf(" as ");
-        if (asIdx >= 0) {
-            return packageWithAlias.substring(0, asIdx);
-        }
-        // no alias
-        return packageWithAlias;
-    }
 }

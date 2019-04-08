@@ -1,25 +1,18 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import de.skuzzle.enforcer.restrictimports.parser.LineSupplier;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
-
-import de.skuzzle.enforcer.restrictimports.analyze.lang.JavaLineParser;
 
 public class ImportMatcherTest {
 

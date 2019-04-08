@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.analyze.lang;
+package de.skuzzle.enforcer.restrictimports.parser.lang;
 
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 import org.junit.jupiter.api.Test;

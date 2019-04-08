@@ -1,11 +1,9 @@
-package de.skuzzle.enforcer.restrictimports.analyze.lang;
+package de.skuzzle.enforcer.restrictimports.parser.lang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 import org.junit.jupiter.api.Test;
-
-import de.skuzzle.enforcer.restrictimports.analyze.lang.JavaLineParser;
 
 public class JavaLineParserTest {
 

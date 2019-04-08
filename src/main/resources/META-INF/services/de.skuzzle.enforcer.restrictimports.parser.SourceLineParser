@@ -1,2 +1,2 @@
-de.skuzzle.enforcer.restrictimports.analyze.lang.JavaLineParser
-de.skuzzle.enforcer.restrictimports.analyze.lang.KotlinGroovyLineParser
+de.skuzzle.enforcer.restrictimports.parser.lang.JavaLineParser
+de.skuzzle.enforcer.restrictimports.parser.lang.KotlinGroovyLineParser

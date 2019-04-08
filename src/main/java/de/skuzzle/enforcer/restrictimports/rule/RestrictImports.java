@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -64,7 +65,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
             if (analyzeResult.bannedImportsFound()) {
                 final String errorMessage = MatchFormatter.getInstance()
-                        .formatMatches(analyzerSettings.getRootDirectories(), analyzeResult);
+                        .formatMatches(analyzerSettings.getAllDirectories(), analyzeResult);
 
                 if (failBuild) {
                     throw new EnforcerRuleException(errorMessage);
@@ -105,12 +106,16 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     private AnalyzerSettings createAnalyzerSettingsFromPluginConfiguration(
             MavenProject mavenProject) {
-        final Collection<Path> sourceRoots = listSourceRoots(mavenProject)
-                .collect(Collectors.toList());
+        final Collection<Path> srcDirectories = listSourceRoots(mavenProject.getCompileSourceRoots());
+        final Collection<Path> testDirectories = this.includeTestCode
+                ? listSourceRoots(mavenProject.getTestCompileSourceRoots())
+                : Collections.emptyList();
+
         final Charset sourceFileCharset = determineSourceFileCharset(mavenProject);
 
         return AnalyzerSettings.builder()
-                .withRootDirectories(sourceRoots)
+                .withSrcDirectories(srcDirectories)
+                .withTestDirectories(testDirectories)
                 .withSourceFileCharset(sourceFileCharset)
                 .build();
     }
@@ -124,20 +129,12 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
     }
 
     @SuppressWarnings("unchecked")
-    private Stream<Path> listSourceRoots(MavenProject project) {
-        final Stream<String> compileStream = project.getCompileSourceRoots().stream();
-
-        final Stream<String> rootFolders;
-        if (this.includeTestCode) {
-            final Stream<String> testStream = project.getTestCompileSourceRoots().stream();
-            rootFolders = Stream.concat(compileStream, testStream);
-        } else {
-            rootFolders = compileStream;
-        }
-
-        return rootFolders
-                .peek(root -> LOGGER.debug("Including source dir: {}", root))
-                .map(Paths::get);
+    private Collection<Path> listSourceRoots(Collection pathNames) {
+        final Collection<String> pathNamesAsString = (Collection<String>) pathNames;
+        return pathNamesAsString.stream()
+                .peek(pathName -> LOGGER.debug("Including source dir: {}", pathName))
+                .map(Paths::get)
+                .collect(Collectors.toList());
     }
 
     private void checkGroups(boolean condition) {

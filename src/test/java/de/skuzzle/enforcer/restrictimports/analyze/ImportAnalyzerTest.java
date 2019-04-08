@@ -37,7 +37,7 @@ class ImportAnalyzerTest {
         for (int lineNumber = 0; lineNumber < lines.length; ++lineNumber) {
             imports.add(new ImportStatement(lines[lineNumber], lineNumber + 1));
         }
-        return new ParsedFile(path, packageName, fqcn, imports);
+        return new ParsedFile(path, packageName, fqcn, imports, false);
 
     }
 

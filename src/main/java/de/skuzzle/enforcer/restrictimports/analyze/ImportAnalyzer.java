@@ -44,6 +44,6 @@ class ImportAnalyzer {
         if (matches.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(new MatchedFile(sourceFile.getPath(), matches, group));
+        return Optional.of(new MatchedFile(sourceFile.getPath(), sourceFile.isTestFile(), matches, group));
     }
 }

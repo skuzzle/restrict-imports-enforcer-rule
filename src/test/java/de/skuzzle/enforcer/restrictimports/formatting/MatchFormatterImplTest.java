@@ -48,4 +48,34 @@ public class MatchFormatterImplTest {
                 "\tin file: SampleJavaFile.java\n" +
                 "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n");
     }
+
+    @Test
+    public void testFormatWithReasonMatchInTest() throws Exception {
+        final BannedImportGroup group = BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports("java.util.*")
+                .withReason("Some reason")
+                .build();
+
+        final URL resourceDirUrl = getClass().getResource("/SampleJavaFile.java");
+        final File resourceDirFile = new File(resourceDirUrl.toURI());
+        final Path root = resourceDirFile.toPath().getParent();
+        final Path sourceFile = root.resolve("SampleJavaFile.java");
+        final Collection<Path> roots = ImmutableList.of(root);
+
+        final AnalyzeResult analyzeResult = AnalyzeResult.builder()
+                .withMatches(MatchedFile.forSourceFile(sourceFile)
+                        .matchedBy(group)
+                        .isTestFile(true)
+                        .withMatchAt(3, "java.util.ArrayList",
+                                PackagePattern.parse("java.util.*")))
+                .build();
+
+        final String formatted = subject.formatMatches(roots, analyzeResult);
+
+        assertThat(formatted).isEqualTo("\nBanned imports detected:\n\n" +
+                "Reason: Some reason\n" +
+                "\tin file [TEST]: SampleJavaFile.java\n" +
+                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n");
+    }
 }

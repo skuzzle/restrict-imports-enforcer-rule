@@ -19,7 +19,7 @@ public class SourceTreeAnalyzerImplIT {
     private final Path root = fs.getPath("/");
 
     private final AnalyzerSettings settings = AnalyzerSettings.builder()
-            .withRootDirectories(root)
+            .withSrcDirectories(root)
             .build();
 
     @Test
@@ -174,7 +174,7 @@ public class SourceTreeAnalyzerImplIT {
                         "  import    jävä.ütil.ArrayList;");
 
         final AnalyzerSettings localSettings = AnalyzerSettings.builder()
-                .withRootDirectories(this.root)
+                .withSrcDirectories(this.root)
                 .withSourceFileCharset(StandardCharsets.ISO_8859_1)
                 .build();
         final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();

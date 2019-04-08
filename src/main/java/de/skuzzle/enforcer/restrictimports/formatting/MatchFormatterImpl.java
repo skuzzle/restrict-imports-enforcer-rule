@@ -28,7 +28,10 @@ class MatchFormatterImpl implements MatchFormatter {
                 b.append("Reason: ").append(message).append("\n");
             }
             analyzeResult.getFileMatches().forEach(fileMatch -> {
-                b.append("\tin file: ")
+                final String test = fileMatch.isTestFile()
+                        ? " [TEST]"
+                        : "";
+                b.append("\tin file").append(test).append(": ")
                         .append(relativize(roots, fileMatch.getSourceFile()))
                         .append("\n");
                 fileMatch.getMatchedImports().forEach(match -> appendMatch(match, b));

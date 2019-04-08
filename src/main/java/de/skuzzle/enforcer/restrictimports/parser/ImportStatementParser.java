@@ -43,11 +43,12 @@ public class ImportStatementParser {
      * Parses the given source file using the given {@link LanguageSupport} implementation to recognize import statements.
      *
      * @param sourceFilePath The path of the file to parse.
+     * @param testFile Whether the analyzed file is a test file.
      * @param lineParser For parsing the import statements.
      * @return The parsed file.
      * @throws RuntimeIOException In case reading the file fails.
      */
-    public ParsedFile analyze(Path sourceFilePath, LanguageSupport lineParser) {
+    public ParsedFile parse(Path sourceFilePath, boolean testFile, LanguageSupport lineParser) {
         LOGGER.trace("Analyzing {} for imports", sourceFilePath);
 
         final List<ImportStatement> imports = new ArrayList<>();
@@ -85,7 +86,7 @@ public class ImportStatementParser {
                 }
             }
 
-            return new ParsedFile(sourceFilePath, packageName, fqcn, imports);
+            return new ParsedFile(sourceFilePath, packageName, fqcn, imports, testFile);
         } catch (final IOException e) {
             throw new RuntimeIOException(String.format(
                     "Encountered IOException while analyzing %s for banned imports",

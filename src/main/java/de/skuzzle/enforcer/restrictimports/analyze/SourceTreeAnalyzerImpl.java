@@ -33,7 +33,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
                 }
             });
         });
-        Preconditions.checkState(!parsers.isEmpty(), "No SourceFileParer instances found!");
+        Preconditions.checkState(!parsers.isEmpty(), "No SourceFileParser instances found!");
         this.sourceFileParsers = parsers;
     }
 
@@ -42,19 +42,23 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
         final ImportStatementParser fileParser = ImportStatementParser.defaultInstance(settings.getSourceFileCharset());
         final List<MatchedFile> matchedFiles = new ArrayList<>();
 
-        final Iterable<Path> rootsIterable = settings.getRootDirectories();
-        for (final Path root : rootsIterable) {
-            listFiles(root, new SourceFileMatcher())
-                    .map(sourceFile -> fileParser.analyze(sourceFile, sourceFileParsers.get(getFileExtension(sourceFile))))
+        analyzeDirectories(matchedFiles, groups, fileParser, settings.getSrcDirectories(), false);
+        analyzeDirectories(matchedFiles, groups, fileParser, settings.getTestDirectories(), true);
+
+        return AnalyzeResult.builder()
+                .withMatches(matchedFiles)
+                .build();
+    }
+
+    private void analyzeDirectories(List<MatchedFile> matchedFiles, BannedImportGroups groups, ImportStatementParser fileParser,  Iterable<Path> directories, boolean testDirectory) {
+        for (final Path srcDir : directories) {
+            listFiles(srcDir, new SourceFileMatcher())
+                    .map(sourceFile -> fileParser.parse(sourceFile, testDirectory, sourceFileParsers.get(getFileExtension(sourceFile))))
                     .map(parsedFile -> importAnalyzer.matchFile(parsedFile, groups))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .forEach(matchedFiles::add);
         }
-
-        return AnalyzeResult.builder()
-                .withMatches(matchedFiles)
-                .build();
     }
 
     private Stream<Path> listFiles(Path root, Predicate<Path> filter) {

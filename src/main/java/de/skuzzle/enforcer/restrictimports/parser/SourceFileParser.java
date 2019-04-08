@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
@@ -16,8 +17,16 @@ public class SourceFileParser {
 
     private final LineSupplier supplier;
 
-    public SourceFileParser(LineSupplier supplier) {
+    /**
+     * Constructor just for testing purposes.
+     * @param supplier The line sources
+     */
+    SourceFileParser(LineSupplier supplier) {
         this.supplier = supplier;
+    }
+
+    public static SourceFileParser defaultInstance(Charset charset) {
+        return new SourceFileParser(new SkipCommentsLineSupplier(charset));
     }
 
     public ParsedFile analyze(Path sourceFilePath, SourceLineParser lineParser) {

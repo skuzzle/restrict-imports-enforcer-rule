@@ -16,8 +16,10 @@ import java.util.stream.Stream;
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
     private final Map<String, SourceLineParser> sourceFileParsers;
+    private final ImportMatcher importMatcher;
 
     public SourceTreeAnalyzerImpl() {
+        this.importMatcher = new ImportMatcher();
         final ServiceLoader<SourceLineParser> serviceProvider = ServiceLoader.load(SourceLineParser.class);
         final Map<String, SourceLineParser> parsers = new HashMap<>();
         serviceProvider.forEach(parser -> {
@@ -28,7 +30,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
                 if (parsers.put(normalizedExtension, parser) != null) {
                     throw new IllegalStateException(
-                            "There are multiple parsers to handle file extension: " + extension);
+                            "There are multiple parsers to handle file extension: " + normalizedExtension);
                 }
             });
         });
@@ -38,12 +40,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
     @Override
     public AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroups groups) {
-        final LineSupplier lineSupplier = new SkipCommentsLineSupplier(settings.getSourceFileCharset());
-
-        // TODO: importMatcher should be injected rather than being created here
-        final SourceFileParser fileParser = new SourceFileParser(lineSupplier);
-        final ImportMatcher importMatcher = new ImportMatcher();
-
+        final SourceFileParser fileParser = SourceFileParser.defaultInstance(settings.getSourceFileCharset());
         final List<MatchedFile> matchedFiles = new ArrayList<>();
 
         final Iterable<Path> rootsIterable = settings.getRootDirectories();

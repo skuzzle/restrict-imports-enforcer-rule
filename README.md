@@ -23,7 +23,7 @@ information.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>0.17.0</version>
+            <version>0.18.0</version>
         </dependency>
     </dependencies>
     <executions>

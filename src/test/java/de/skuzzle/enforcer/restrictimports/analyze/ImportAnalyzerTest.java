@@ -15,9 +15,9 @@ import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
 
-public class ImportMatcherTest {
+class ImportAnalyzerTest {
 
-    private final ImportMatcher subject = new ImportMatcher();
+    private final ImportAnalyzer subject = new ImportAnalyzer();
 
     private final ParsedFile parsedFile = parsedFile("File", "de.skuzzle.test",
             "de.skuzzle.sample.Test",
@@ -42,7 +42,7 @@ public class ImportMatcherTest {
     }
 
     @Test
-    public void testMatchBannedOnly() throws Exception {
+    void testMatchBannedOnly() throws Exception {
         final BannedImportGroups groups = BannedImportGroups.builder()
                 .withGroup(BannedImportGroup.builder()
                         .withBasePackages("foo.bar", "de.skuzzle.test.*")
@@ -61,7 +61,7 @@ public class ImportMatcherTest {
     }
 
     @Test
-    public void testMatchWithInclude() throws Exception {
+    void testMatchWithInclude() throws Exception {
         final BannedImportGroups groups = BannedImportGroups.builder()
                 .withGroup(BannedImportGroup.builder()
                         .withBasePackages("**")
@@ -80,7 +80,7 @@ public class ImportMatcherTest {
     }
 
     @Test
-    public void testExcludeFile() throws Exception {
+    void testExcludeFile() throws Exception {
         final BannedImportGroups groups = BannedImportGroups.builder()
                 .withGroup(BannedImportGroup.builder()
                         .withBasePackages("**")
@@ -94,7 +94,7 @@ public class ImportMatcherTest {
     }
 
     @Test
-    public void testLeadingEmptyLinesDefaultPackages() throws Exception {
+    void testLeadingEmptyLinesDefaultPackages() throws Exception {
         final ParsedFile parsedFile = parsedFile("File", "",
                 "de.skuzzle.sample.Test");
 
@@ -110,7 +110,7 @@ public class ImportMatcherTest {
     }
 
     @Test
-    public void testExcludeWholeFileByBasePackage() throws Exception {
+    void testExcludeWholeFileByBasePackage() throws Exception {
         final Optional<MatchedFile> matches = this.subject.matchFile(this.parsedFile,
                 BannedImportGroups.builder()
                         .withGroup(BannedImportGroup.builder()

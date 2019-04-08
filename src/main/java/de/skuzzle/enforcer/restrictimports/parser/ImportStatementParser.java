@@ -52,10 +52,11 @@ public class ImportStatementParser {
 
         final List<ImportStatement> imports = new ArrayList<>();
 
+        final String fileName = getFileNameWithoutExtension(sourceFilePath);
         try (final Stream<String> lines = this.supplier.lines(sourceFilePath)) {
             int row = 1;
-            String fqcn = "";
             String packageName = "";
+            String fqcn = fileName;
             for (final Iterator<String> it = lines.map(String::trim).iterator(); it.hasNext(); ++row) {
                 final String line = it.next();
                 if (line.isEmpty()) {
@@ -67,7 +68,6 @@ public class ImportStatementParser {
                     Preconditions.checkState(packageName.isEmpty(), "found duplicate package statement in '%s'", sourceFilePath);
                     // package ...; statement
 
-                    final String fileName = getFileName(sourceFilePath);
                     // INVARIANT: our own package name occurs in the first non-empty line
                     // of the java source file (after trimming leading comments)
                     packageName = packageDeclaration.get();
@@ -99,7 +99,7 @@ public class ImportStatementParser {
                 : packageName + "." + sourceFileName;
     }
 
-    private String getFileName(Path file) {
+    private String getFileNameWithoutExtension(Path file) {
         final String s = file.getFileName().toString();
         final int i = s.lastIndexOf(".");
         return s.substring(0, i);

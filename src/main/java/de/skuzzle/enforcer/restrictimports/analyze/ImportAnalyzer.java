@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Simon Taddiken
  */
-class ImportMatcher {
+class ImportAnalyzer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ImportMatcher.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImportAnalyzer.class);
 
     /**
      * Collects all imports that are banned within the given source file.

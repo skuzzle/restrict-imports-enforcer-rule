@@ -15,10 +15,10 @@ import java.util.stream.Stream;
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
     private final Map<String, LanguageSupport> sourceFileParsers;
-    private final ImportMatcher importMatcher;
+    private final ImportAnalyzer importAnalyzer;
 
-    public SourceTreeAnalyzerImpl() {
-        this.importMatcher = new ImportMatcher();
+    SourceTreeAnalyzerImpl() {
+        this.importAnalyzer = new ImportAnalyzer();
         final ServiceLoader<LanguageSupport> serviceProvider = ServiceLoader.load(LanguageSupport.class);
         final Map<String, LanguageSupport> parsers = new HashMap<>();
         serviceProvider.forEach(parser -> {
@@ -46,7 +46,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
         for (final Path root : rootsIterable) {
             listFiles(root, new SourceFileMatcher())
                     .map(sourceFile -> fileParser.analyze(sourceFile, sourceFileParsers.get(getFileExtension(sourceFile))))
-                    .map(parsedFile -> importMatcher.matchFile(parsedFile, groups))
+                    .map(parsedFile -> importAnalyzer.matchFile(parsedFile, groups))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .forEach(matchedFiles::add);

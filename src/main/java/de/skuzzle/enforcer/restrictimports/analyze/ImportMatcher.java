@@ -1,15 +1,11 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
-import org.checkerframework.checker.nullness.Opt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +36,7 @@ class ImportMatcher {
         }
 
         final List<MatchedImport> matches = new ArrayList<>();
-        for (ParsedFile.ImportStatement importStmt : sourceFile.getImports()) {
+        for (ImportStatement importStmt : sourceFile.getImports()) {
             group.ifImportIsBanned(importStmt.getImportName())
                     .map(bannedImport -> new MatchedImport(importStmt.getLine(), importStmt.getImportName(), bannedImport))
                     .ifPresent(matches::add);

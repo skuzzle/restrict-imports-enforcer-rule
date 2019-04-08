@@ -2,6 +2,7 @@ package de.skuzzle.enforcer.restrictimports.parser;
 
 import com.google.common.base.Preconditions;
 import de.skuzzle.enforcer.restrictimports.analyze.RuntimeIOException;
+import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,10 +30,10 @@ public class SourceFileParser {
         return new SourceFileParser(new SkipCommentsLineSupplier(charset));
     }
 
-    public ParsedFile analyze(Path sourceFilePath, SourceLineParser lineParser) {
+    public ParsedFile analyze(Path sourceFilePath, LanguageSupport lineParser) {
         LOGGER.trace("Analyzing {} for imports", sourceFilePath);
 
-        final List<ParsedFile.ImportStatement> imports = new ArrayList<>();
+        final List<ImportStatement> imports = new ArrayList<>();
 
         try (final Stream<String> lines = this.supplier.lines(sourceFilePath)) {
 
@@ -62,7 +63,7 @@ public class SourceFileParser {
                     continue;
                 }
 
-                final List<ParsedFile.ImportStatement> importDeclarations = lineParser.parseImport(line, row);
+                final List<ImportStatement> importDeclarations = lineParser.parseImport(line, row);
                 imports.addAll(importDeclarations);
                 if (importDeclarations.isEmpty()) {
                     // as we are skipping empty (and comment) lines, by the time we

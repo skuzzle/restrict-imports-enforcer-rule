@@ -1,27 +1,27 @@
 package de.skuzzle.enforcer.restrictimports.parser.lang;
 
-import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class KotlinGroovyLineParserTest {
+public class KotlinGroovyLanguageSupportTest {
 
-    private final KotlinGroovyLineParser subject = new KotlinGroovyLineParser();
+    private final KotlinGroovyLanguageSupport subject = new KotlinGroovyLanguageSupport();
 
     @Test
     public void testValidImport1() {
-        assertThat(subject.parseImport("import java.util.List;", 1)).first().isEqualTo(new ParsedFile.ImportStatement("java.util.List", 1));
+        assertThat(subject.parseImport("import java.util.List;", 1)).first().isEqualTo(new ImportStatement("java.util.List", 1));
     }
 
     @Test
     public void testValidImport2() {
-        assertThat(subject.parseImport("import java.util.List",1)).first().isEqualTo(new ParsedFile.ImportStatement("java.util.List",1));
+        assertThat(subject.parseImport("import java.util.List",1)).first().isEqualTo(new ImportStatement("java.util.List",1));
     }
 
     @Test
     void testAliasedImport() throws Exception {
-        assertThat(subject.parseImport("import java.util.List as NewList",1)).first().isEqualTo(new ParsedFile.ImportStatement("java.util.List",1));
+        assertThat(subject.parseImport("import java.util.List as NewList",1)).first().isEqualTo(new ImportStatement("java.util.List",1));
     }
 
     @Test

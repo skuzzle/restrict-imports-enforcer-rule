@@ -3,6 +3,7 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 import java.util.Objects;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 
 /**
  * Represents a single match of a banned import within a java source file.
@@ -16,6 +17,9 @@ public final class MatchedImport {
     private final PackagePattern matchedBy;
 
     MatchedImport(int importLine, String matchedString, PackagePattern matchedBy) {
+        Preconditions.checkArgument(matchedString != null && !matchedString.isEmpty(), "matched String must not be empty");
+        Preconditions.checkArgument(matchedBy != null, "matchedBy should not be null");
+        Preconditions.checkArgument(importLine > 0, "line numbers should be 1-based and not start at 0");
         this.importLine = importLine;
         this.matchedString = matchedString;
         this.matchedBy = matchedBy;

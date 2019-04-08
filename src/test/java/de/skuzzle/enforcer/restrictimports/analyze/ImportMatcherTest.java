@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 import org.junit.jupiter.api.Test;
 
@@ -31,10 +32,10 @@ public class ImportMatcherTest {
         final Path fileName = mock(Path.class);
         when(path.getFileName()).thenReturn(fileName);
         when(fileName.toString()).thenReturn(className + ".java");
-        final List<ParsedFile.ImportStatement> imports = new ArrayList<>();
+        final List<ImportStatement> imports = new ArrayList<>();
 
         for (int lineNumber = 0; lineNumber < lines.length; ++lineNumber) {
-            imports.add(new ParsedFile.ImportStatement(lines[lineNumber], lineNumber));
+            imports.add(new ImportStatement(lines[lineNumber], lineNumber + 1));
         }
         return new ParsedFile(path, packageName, fqcn, imports);
 
@@ -52,9 +53,9 @@ public class ImportMatcherTest {
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("de.skuzzle.sample.*");
         final ImmutableList<MatchedImport> expected = ImmutableList.of(
-                new MatchedImport(0, "de.skuzzle.sample.Test", expectedMatchedBy),
-                new MatchedImport(2, "de.skuzzle.sample.Test2", expectedMatchedBy),
-                new MatchedImport(3, "de.skuzzle.sample.Test3", expectedMatchedBy));
+                new MatchedImport(1, "de.skuzzle.sample.Test", expectedMatchedBy),
+                new MatchedImport(3, "de.skuzzle.sample.Test2", expectedMatchedBy),
+                new MatchedImport(4, "de.skuzzle.sample.Test3", expectedMatchedBy));
 
         assertThat(matches.get().getMatchedImports()).isEqualTo(expected);
     }
@@ -72,8 +73,8 @@ public class ImportMatcherTest {
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("de.skuzzle.sample.*");
         final ImmutableList<MatchedImport> expected = ImmutableList.of(
-                new MatchedImport(0, "de.skuzzle.sample.Test", expectedMatchedBy),
-                new MatchedImport(3, "de.skuzzle.sample.Test3", expectedMatchedBy));
+                new MatchedImport(1, "de.skuzzle.sample.Test", expectedMatchedBy),
+                new MatchedImport(4, "de.skuzzle.sample.Test3", expectedMatchedBy));
 
         assertThat(matches.get().getMatchedImports()).isEqualTo(expected);
     }
@@ -104,7 +105,7 @@ public class ImportMatcherTest {
                 .build();
 
         assertThat(subject.matchFile(parsedFile, groups).get().getMatchedImports()).first()
-                .isEqualTo(new MatchedImport(0,
+                .isEqualTo(new MatchedImport(1,
                         "de.skuzzle.sample.Test", PackagePattern.parse("de.skuzzle.sample.**")));
     }
 

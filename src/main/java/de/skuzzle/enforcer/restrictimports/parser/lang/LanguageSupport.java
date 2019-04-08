@@ -1,4 +1,6 @@
-package de.skuzzle.enforcer.restrictimports.parser;
+package de.skuzzle.enforcer.restrictimports.parser.lang;
+
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,7 +13,7 @@ import java.util.Set;
  *
  * @author Simon Taddiken
  */
-public interface SourceLineParser {
+public interface LanguageSupport {
 
     /**
      * The set of supported file extensions. Extensions returned here are case insensitive
@@ -40,5 +42,5 @@ public interface SourceLineParser {
      * @param lineNumber The line number of the import.
      * @return Fully qualified package name that this import represents
      */
-    List<ParsedFile.ImportStatement> parseImport(String importLine, int lineNumber);
+    List<ImportStatement> parseImport(String importLine, int lineNumber);
 }

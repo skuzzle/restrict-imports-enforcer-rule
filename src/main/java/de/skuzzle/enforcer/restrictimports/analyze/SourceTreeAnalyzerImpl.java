@@ -1,10 +1,8 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
 import com.google.common.base.Preconditions;
-import de.skuzzle.enforcer.restrictimports.parser.LineSupplier;
-import de.skuzzle.enforcer.restrictimports.parser.SkipCommentsLineSupplier;
 import de.skuzzle.enforcer.restrictimports.parser.SourceFileParser;
-import de.skuzzle.enforcer.restrictimports.parser.SourceLineParser;
+import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,13 +13,13 @@ import java.util.stream.Stream;
 
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
-    private final Map<String, SourceLineParser> sourceFileParsers;
+    private final Map<String, LanguageSupport> sourceFileParsers;
     private final ImportMatcher importMatcher;
 
     public SourceTreeAnalyzerImpl() {
         this.importMatcher = new ImportMatcher();
-        final ServiceLoader<SourceLineParser> serviceProvider = ServiceLoader.load(SourceLineParser.class);
-        final Map<String, SourceLineParser> parsers = new HashMap<>();
+        final ServiceLoader<LanguageSupport> serviceProvider = ServiceLoader.load(LanguageSupport.class);
+        final Map<String, LanguageSupport> parsers = new HashMap<>();
         serviceProvider.forEach(parser -> {
             parser.getSupportedFileExtensions().forEach(extension -> {
                 final String normalizedExtension = extension.startsWith(".")

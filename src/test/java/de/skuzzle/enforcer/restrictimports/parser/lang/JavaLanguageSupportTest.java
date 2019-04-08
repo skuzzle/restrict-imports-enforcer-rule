@@ -2,16 +2,16 @@ package de.skuzzle.enforcer.restrictimports.parser.lang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 import org.junit.jupiter.api.Test;
 
-public class JavaLineParserTest {
+public class JavaLanguageSupportTest {
 
-    private final JavaLineParser subject = new JavaLineParser();
+    private final JavaLanguageSupport subject = new JavaLanguageSupport();
 
     @Test
     public void testValidImport() {
-        assertThat(subject.parseImport("import java.util.List;",1 )).first().isEqualTo(new ParsedFile.ImportStatement("java.util.List",1));
+        assertThat(subject.parseImport("import java.util.List;",1 )).first().isEqualTo(new ImportStatement("java.util.List",1));
     }
 
     @Test

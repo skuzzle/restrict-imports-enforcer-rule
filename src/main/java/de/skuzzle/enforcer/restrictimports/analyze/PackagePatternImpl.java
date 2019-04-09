@@ -35,7 +35,7 @@ final class PackagePatternImpl implements PackagePattern {
 
         if (part.isEmpty()) {
             throw new IllegalArgumentException(String.format("The pattern '%s' contains an empty part", full));
-        } else if ("*".equals(part) || "**".equals(part)) {
+        } else if ("*".equals(part) || "**".equals(part) || "'*'".equals(part)) {
             return;
         } else if (part.contains("*")) {
             throw new IllegalArgumentException(String.format(
@@ -117,6 +117,8 @@ final class PackagePatternImpl implements PackagePattern {
     private static boolean matchParts(String patternPart, String matchPart) {
         if ("*".equals(patternPart) || "**".equals(patternPart)) {
             return true;
+        } else if("'*'".equals(patternPart)) {
+            return matchPart.equals("*");
         }
         return patternPart.equals(matchPart);
     }

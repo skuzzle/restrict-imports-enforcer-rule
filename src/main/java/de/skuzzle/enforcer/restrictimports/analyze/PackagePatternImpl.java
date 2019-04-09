@@ -2,7 +2,6 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 final class PackagePatternImpl implements PackagePattern {
 
@@ -10,7 +9,7 @@ final class PackagePatternImpl implements PackagePattern {
     private final String[] parts;
     private final boolean staticc;
 
-    public PackagePatternImpl(String s) {
+    PackagePatternImpl(String s) {
         this.staticc = s.startsWith(STATIC_PREFIX);
         if (staticc) {
             s = s.substring(STATIC_PREFIX.length());
@@ -128,7 +127,7 @@ final class PackagePatternImpl implements PackagePattern {
         if (staticc) {
             result.append(STATIC_PREFIX);
         }
-        result.append(Arrays.stream(this.parts).collect(Collectors.joining(".")));
+        result.append(String.join(".", this.parts));
         return result.toString();
     }
 
@@ -160,7 +159,7 @@ final class PackagePatternImpl implements PackagePattern {
 
         if (numOfStarThis < numOfStarOther) {
             return true;
-        } else if (numOfStarOther > numOfStarThis) {
+        } else if (numOfStarThis > numOfStarOther) {
             return false;
         }
 

@@ -8,7 +8,12 @@ import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.ServiceLoader;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -40,25 +45,27 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
     @Override
     public AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroups groups) {
         final ImportStatementParser fileParser = ImportStatementParser.defaultInstance(settings.getSourceFileCharset());
-        final List<MatchedFile> matchedFiles = new ArrayList<>();
 
-        analyzeDirectories(matchedFiles, groups, fileParser, settings.getSrcDirectories(), false);
-        analyzeDirectories(matchedFiles, groups, fileParser, settings.getTestDirectories(), true);
+        final Collection<MatchedFile> srcMatches = analyzeDirectories(groups, fileParser, settings.getSrcDirectories());
+        final Collection<MatchedFile> testMatches = analyzeDirectories(groups, fileParser, settings.getTestDirectories());
 
         return AnalyzeResult.builder()
-                .withMatches(matchedFiles)
+                .withMatches(srcMatches)
+                .withMatchesInTestCode(testMatches)
                 .build();
     }
 
-    private void analyzeDirectories(List<MatchedFile> matchedFiles, BannedImportGroups groups, ImportStatementParser fileParser,  Iterable<Path> directories, boolean testDirectory) {
+    private Collection<MatchedFile> analyzeDirectories(BannedImportGroups groups, ImportStatementParser fileParser, Iterable<Path> directories) {
+        final Collection<MatchedFile> matchedFiles = new ArrayList<>();
         for (final Path srcDir : directories) {
             listFiles(srcDir, new SourceFileMatcher())
-                    .map(sourceFile -> fileParser.parse(sourceFile, testDirectory, sourceFileParsers.get(getFileExtension(sourceFile))))
+                    .map(sourceFile -> fileParser.parse(sourceFile, sourceFileParsers.get(getFileExtension(sourceFile))))
                     .map(parsedFile -> importAnalyzer.matchFile(parsedFile, groups))
                     .filter(Optional::isPresent)
                     .map(Optional::get)
                     .forEach(matchedFiles::add);
         }
+        return matchedFiles;
     }
 
     private Stream<Path> listFiles(Path root, Predicate<Path> filter) {

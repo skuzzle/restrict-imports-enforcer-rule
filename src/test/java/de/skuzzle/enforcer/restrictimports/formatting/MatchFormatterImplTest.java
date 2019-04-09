@@ -1,44 +1,75 @@
 package de.skuzzle.enforcer.restrictimports.formatting;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.io.File;
-import java.net.URL;
-import java.nio.file.Path;
-import java.util.Collection;
-
-import org.junit.jupiter.api.Test;
-
 import com.google.common.collect.ImmutableList;
-
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.analyze.MatchedFile;
 import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.util.Collection;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class MatchFormatterImplTest {
 
+    private URL resourceDirUrl;
+    private File resourceDirFile;
+    private Path root;
+    private Path sourceFile;
+    private Collection<Path> roots;
+    private BannedImportGroup group;
+
     private final MatchFormatter subject = MatchFormatter.getInstance();
 
-    @Test
-    public void testFormatWithReason() throws Exception {
-        final BannedImportGroup group = BannedImportGroup.builder()
+    @BeforeEach
+    void setup() throws URISyntaxException {
+        resourceDirUrl = getClass().getResource("/SampleJavaFile.java");
+        resourceDirFile = new File(resourceDirUrl.toURI());
+        root = resourceDirFile.toPath().getParent();
+        sourceFile = root.resolve("SampleJavaFile.java");
+        roots = ImmutableList.of(root);
+        group = BannedImportGroup.builder()
                 .withBasePackages("**")
                 .withBannedImports("java.util.*")
                 .withReason("Some reason")
                 .build();
+    }
 
-        final URL resourceDirUrl = getClass().getResource("/SampleJavaFile.java");
-        final File resourceDirFile = new File(resourceDirUrl.toURI());
-        final Path root = resourceDirFile.toPath().getParent();
-        final Path sourceFile = root.resolve("SampleJavaFile.java");
-        final Collection<Path> roots = ImmutableList.of(root);
-
+    @Test
+    public void testFormatMatchInCompileAndTestCode() throws Exception {
         final AnalyzeResult analyzeResult = AnalyzeResult.builder()
                 .withMatches(MatchedFile.forSourceFile(sourceFile)
                         .matchedBy(group)
-                        .withMatchAt(3, "java.util.ArrayList",
-                                PackagePattern.parse("java.util.*")))
+                        .withMatchAt(3, "java.util.ArrayList", PackagePattern.parse("java.util.*")))
+                .withMatchesInTestCode(MatchedFile.forSourceFile(sourceFile)
+                        .matchedBy(group)
+                        .withMatchAt(3, "java.util.ArrayList", PackagePattern.parse("java.util.*")))
+                .build();
+
+        final String formatted = subject.formatMatches(roots, analyzeResult);
+
+        assertThat(formatted).isEqualTo("\nBanned imports detected:\n\n" +
+                "Reason: Some reason\n" +
+                "\tin file: SampleJavaFile.java\n" +
+                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n" +
+                "\nBanned imports detected in TEST code:\n\n" +
+                "Reason: Some reason\n" +
+                "\tin file: SampleJavaFile.java\n" +
+                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n");
+    }
+
+    @Test
+    public void testFormatMatchInCompileCode() throws Exception {
+        final AnalyzeResult analyzeResult = AnalyzeResult.builder()
+                .withMatches(MatchedFile.forSourceFile(sourceFile)
+                        .matchedBy(group)
+                        .withMatchAt(3, "java.util.ArrayList", PackagePattern.parse("java.util.*")))
                 .build();
 
         final String formatted = subject.formatMatches(roots, analyzeResult);
@@ -50,32 +81,18 @@ public class MatchFormatterImplTest {
     }
 
     @Test
-    public void testFormatWithReasonMatchInTest() throws Exception {
-        final BannedImportGroup group = BannedImportGroup.builder()
-                .withBasePackages("**")
-                .withBannedImports("java.util.*")
-                .withReason("Some reason")
-                .build();
-
-        final URL resourceDirUrl = getClass().getResource("/SampleJavaFile.java");
-        final File resourceDirFile = new File(resourceDirUrl.toURI());
-        final Path root = resourceDirFile.toPath().getParent();
-        final Path sourceFile = root.resolve("SampleJavaFile.java");
-        final Collection<Path> roots = ImmutableList.of(root);
-
+    public void testFormatMatchInTestCode() throws Exception {
         final AnalyzeResult analyzeResult = AnalyzeResult.builder()
-                .withMatches(MatchedFile.forSourceFile(sourceFile)
+                .withMatchesInTestCode(MatchedFile.forSourceFile(sourceFile)
                         .matchedBy(group)
-                        .isTestFile(true)
-                        .withMatchAt(3, "java.util.ArrayList",
-                                PackagePattern.parse("java.util.*")))
+                        .withMatchAt(3, "java.util.ArrayList", PackagePattern.parse("java.util.*")))
                 .build();
 
         final String formatted = subject.formatMatches(roots, analyzeResult);
 
-        assertThat(formatted).isEqualTo("\nBanned imports detected:\n\n" +
+        assertThat(formatted).isEqualTo("\nBanned imports detected in TEST code:\n\n" +
                 "Reason: Some reason\n" +
-                "\tin file [TEST]: SampleJavaFile.java\n" +
+                "\tin file: SampleJavaFile.java\n" +
                 "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n");
     }
 }

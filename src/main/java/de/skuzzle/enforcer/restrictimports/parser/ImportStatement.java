@@ -35,6 +35,13 @@ public final class ImportStatement {
         return importName;
     }
 
+    public String getFqcn() {
+        if (this.staticImport) {
+            return importName.substring(STATIC_IMPORT_PREFIX.length());
+        }
+        return importName;
+    }
+
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)

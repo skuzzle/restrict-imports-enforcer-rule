@@ -1,13 +1,13 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Collects banned import matches from a single source file.
@@ -30,7 +30,7 @@ class ImportAnalyzer {
     public Optional<MatchedFile> matchFile(ParsedFile sourceFile, BannedImportGroups groups) {
         LOGGER.trace("Analyzing {} for banned imports", sourceFile);
 
-        BannedImportGroup group = groups.selectGroupFor(sourceFile.getFqcn()).orElse(null);
+        final BannedImportGroup group = groups.selectGroupFor(sourceFile.getFqcn()).orElse(null);
         if (group == null) {
             return Optional.empty();
         }
@@ -44,6 +44,6 @@ class ImportAnalyzer {
         if (matches.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(new MatchedFile(sourceFile.getPath(), sourceFile.isTestFile(), matches, group));
+        return Optional.of(new MatchedFile(sourceFile.getPath(), matches, group));
     }
 }

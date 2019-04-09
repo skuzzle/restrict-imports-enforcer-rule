@@ -8,11 +8,11 @@ import org.junit.jupiter.api.Test;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class ImportStatementParserTest {
+class ImportStatementParserImplTest {
 
     private final Path path = mock(Path.class);
     private final Path fileName = mock(Path.class);
@@ -30,20 +30,19 @@ class ImportStatementParserTest {
 
     @Test
     void testAnalyzeDefaultPackage() {
-        final ImportStatementParser subject = new ImportStatementParser(lines("import de.skuzzle.test;"));
-        final ParsedFile parsedFile = subject.parse(path,false, javaLang);
-        assertThat(parsedFile.isTestFile()).isFalse();
-        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 1));
+        final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines("import de.skuzzle.test;"));
+        final ParsedFile parsedFile = subject.parse(path, javaLang);
+          assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 1));
         assertThat(parsedFile.getFqcn()).isEqualTo("Filename");
         assertThat(parsedFile.getPath()).isEqualTo(path);
     }
 
     @Test
     void testAnalyzeWithPackageDefinition() {
-        final ImportStatementParser subject = new ImportStatementParser(lines(
+        final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines(
                 "package com.foo.bar;",
                 "import de.skuzzle.test;"));
-        final ParsedFile parsedFile = subject.parse(path,false, javaLang);
+        final ParsedFile parsedFile = subject.parse(path, javaLang);
         assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 2));
         assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
         assertThat(parsedFile.getPath()).isEqualTo(path);
@@ -51,31 +50,23 @@ class ImportStatementParserTest {
 
     @Test
     void testAnalyzeWithStaticImport() {
-        final ImportStatementParser subject = new ImportStatementParser(lines(
+        final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines(
                 "import static de.skuzzle.test;"));
-        final ParsedFile parsedFile = subject.parse(path, false, javaLang);
+        final ParsedFile parsedFile = subject.parse(path, javaLang);
         assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("static de.skuzzle.test", 1));
     }
 
     @Test
-    void testAnalyzeTestFile() {
-        final ImportStatementParser subject = new ImportStatementParser(lines(
-                "import de.skuzzle.test;"));
-        final ParsedFile parsedFile = subject.parse(path, true, javaLang);
-        assertThat(parsedFile.isTestFile()).isTrue();
-    }
-
-    @Test
     void testAnalyzeEmptyFile() {
-        final ImportStatementParser subject = new ImportStatementParser(lines(""));
-        final ParsedFile parsedFile = subject.parse(path, true, javaLang);
+        final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines(""));
+        final ParsedFile parsedFile = subject.parse(path, javaLang);
         assertThat(parsedFile.getFqcn()).isEqualTo("Filename");
         assertThat(parsedFile.getPath()).isEqualTo(path);
     }
 
     @Test
     void testStopAtClassDeclaration() {
-        final ImportStatementParser subject = new ImportStatementParser(lines(
+        final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines(
                 "package com.foo.bar;",
                 "",
                 "import de.skuzzle.test;",
@@ -83,7 +74,7 @@ class ImportStatementParserTest {
                 "",
                 "public class HereStartsAClass {",
                 "}"));
-        final ParsedFile parsedFile = subject.parse(path, false, javaLang);
+        final ParsedFile parsedFile = subject.parse(path, javaLang);
         assertThat(parsedFile.getImports()).containsOnly(
                 new ImportStatement("de.skuzzle.test", 3),
                 new ImportStatement("de.skuzzle.test2", 4));

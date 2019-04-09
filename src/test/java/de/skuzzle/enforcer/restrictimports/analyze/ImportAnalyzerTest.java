@@ -1,19 +1,18 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import com.google.common.collect.ImmutableList;
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
+import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
-import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
-import org.junit.jupiter.api.Test;
-
-import com.google.common.collect.ImmutableList;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 class ImportAnalyzerTest {
 
@@ -37,7 +36,7 @@ class ImportAnalyzerTest {
         for (int lineNumber = 0; lineNumber < lines.length; ++lineNumber) {
             imports.add(new ImportStatement(lines[lineNumber], lineNumber + 1));
         }
-        return new ParsedFile(path, packageName, fqcn, imports, false);
+        return new ParsedFile(path, packageName, fqcn, imports);
 
     }
 

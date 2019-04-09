@@ -15,18 +15,12 @@ public final class ParsedFile {
     private final String declaredPackage;
     private final String fqcn;
     private final Collection<ImportStatement> imports;
-    private final boolean testFile;
 
-    public ParsedFile(Path path, String declaredPackage, String fqcn, Collection<ImportStatement> imports, boolean testFile) {
+    public ParsedFile(Path path, String declaredPackage, String fqcn, Collection<ImportStatement> imports) {
         this.path = path;
         this.declaredPackage = declaredPackage;
         this.fqcn = fqcn;
         this.imports = imports;
-        this.testFile = testFile;
-    }
-
-    public boolean isTestFile() {
-        return testFile;
     }
 
     public Path getPath() {
@@ -48,19 +42,17 @@ public final class ParsedFile {
                 .add("declaredPackage", declaredPackage)
                 .add("fqcn", fqcn)
                 .add("imports", imports)
-                .add("testFile", testFile)
                 .toString();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(path, declaredPackage, fqcn, imports, testFile);
+        return Objects.hash(path, declaredPackage, fqcn, imports);
     }
 
     @Override
     public boolean equals(Object obj) {
         return obj == this || obj instanceof ParsedFile
-                && Objects.equals(testFile, ((ParsedFile) obj).testFile)
                 && Objects.equals(path, ((ParsedFile) obj).path)
                 && Objects.equals(declaredPackage, ((ParsedFile) obj).declaredPackage)
                 && Objects.equals(fqcn, ((ParsedFile) obj).fqcn)

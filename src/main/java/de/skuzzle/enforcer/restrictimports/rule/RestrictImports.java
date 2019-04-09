@@ -1,6 +1,19 @@
 package de.skuzzle.enforcer.restrictimports.rule;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
+import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
+import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
+import de.skuzzle.enforcer.restrictimports.io.RuntimeIOException;
+import org.apache.maven.enforcer.rule.api.EnforcerRule;
+import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
+import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
+import org.apache.maven.project.MavenProject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.nio.charset.Charset;
 import java.nio.file.Path;
@@ -10,23 +23,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import org.apache.maven.enforcer.rule.api.EnforcerRule;
-import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
-import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
-import org.apache.maven.project.MavenProject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
-import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
-import de.skuzzle.enforcer.restrictimports.io.RuntimeIOException;
-import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
-import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * Enforcer rule which restricts the usage of certain packages or classes within a Java
@@ -71,8 +69,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
                     throw new EnforcerRuleException(errorMessage);
                 } else {
                     LOGGER.warn(errorMessage);
-                    LOGGER.warn("\nDetected banned imports will not fail the "
-                            + "build as the 'failBuild' flag is set to false!");
+                    LOGGER.warn("\nDetected banned imports will not fail the build as the 'failBuild' flag is set to false!");
                 }
 
             } else {

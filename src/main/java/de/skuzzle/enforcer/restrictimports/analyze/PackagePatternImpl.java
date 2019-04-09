@@ -78,11 +78,10 @@ final class PackagePatternImpl implements PackagePattern {
     }
 
     private boolean matchesInternal(boolean matchIsStatic, String[] matchParts,
-            boolean partsIsStatic, String[] parts) {
+                                    boolean partsIsStatic, String[] parts) {
         if (matchIsStatic != partsIsStatic) {
             return false;
-        }
-        if (parts.length > matchParts.length) {
+        } else if (parts.length > matchParts.length) {
             // if the pattern is longer than the string to match, match cant be true
             return false;
         }
@@ -117,7 +116,7 @@ final class PackagePatternImpl implements PackagePattern {
     private static boolean matchParts(String patternPart, String matchPart) {
         if ("*".equals(patternPart) || "**".equals(patternPart)) {
             return true;
-        } else if("'*'".equals(patternPart)) {
+        } else if ("'*'".equals(patternPart)) {
             return matchPart.equals("*");
         }
         return patternPart.equals(matchPart);

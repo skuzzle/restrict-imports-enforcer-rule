@@ -15,7 +15,7 @@ public interface ImportStatementParser {
      * @param charset The charset to use.
      * @return The parser instance.
      */
-    static ImportStatementParserImpl defaultInstance(Charset charset) {
+    static ImportStatementParser defaultInstance(Charset charset) {
         return new ImportStatementParserImpl(new SkipCommentsLineSupplier(charset));
     }
 

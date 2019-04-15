@@ -15,11 +15,25 @@ import java.util.Set;
  */
 public interface LanguageSupport {
 
-
+    /**
+     * Returns the {@link LanguageSupport} implementation for the given file
+     * extension.
+     *
+     * @param extension The extension.
+     * @return The {@link LanguageSupport} implementation or an empty optional
+     * if none was found.
+     */
     static Optional<LanguageSupport> getLanguageSupport(String extension) {
         return SupportedLanguageHolder.getLanguageSupport(extension);
     }
 
+    /**
+     * Determines whether there exists a {@link LanguageSupport} implementation for
+     * the given extension.
+     *
+     * @param extension The extension.
+     * @return Whether such implementation exists.
+     */
     static boolean isLanguageSupported(String extension) {
         return SupportedLanguageHolder.isLanguageSupported(extension);
     }

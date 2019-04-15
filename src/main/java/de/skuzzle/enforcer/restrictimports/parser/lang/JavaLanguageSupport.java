@@ -48,6 +48,7 @@ public class JavaLanguageSupport implements LanguageSupport {
                     .substring(IMPORT_STATEMENT.length())
                     .trim();
             imports.add(new ImportStatement(packageOnly, lineNumber));
+
             start = semiIdx + 1;
             semiIdx = trimmed.indexOf(';', start);
         }

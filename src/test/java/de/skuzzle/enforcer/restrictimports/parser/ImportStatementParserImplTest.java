@@ -24,7 +24,7 @@ class ImportStatementParserImplTest {
         when(fileName.toString()).thenReturn("Filename.java");
     }
 
-    private LineSupplier lines(String...lines) {
+    private LineSupplier lines(String... lines) {
         return path -> Arrays.stream(lines);
     }
 
@@ -32,7 +32,7 @@ class ImportStatementParserImplTest {
     void testAnalyzeDefaultPackage() {
         final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines("import de.skuzzle.test;"));
         final ParsedFile parsedFile = subject.parse(path, javaLang);
-          assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 1));
+        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 1));
         assertThat(parsedFile.getFqcn()).isEqualTo("Filename");
         assertThat(parsedFile.getPath()).isEqualTo(path);
     }
@@ -78,6 +78,25 @@ class ImportStatementParserImplTest {
         assertThat(parsedFile.getImports()).containsOnly(
                 new ImportStatement("de.skuzzle.test", 3),
                 new ImportStatement("de.skuzzle.test2", 4));
+        assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
+        assertThat(parsedFile.getPath()).isEqualTo(path);
+    }
+
+    @Test
+    void testLeadingAndTrailingWhitespaces() {
+        final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines(
+                "package com.foo.bar;  ",
+                "",
+                "\t    ",
+                "import de.skuzzle.test;  \t",
+                "import de.skuzzle.test2;    ",
+                "\t\t",
+                "\tpublic class HereStartsAClass {",
+                "}"));
+        final ParsedFile parsedFile = subject.parse(path, javaLang);
+        assertThat(parsedFile.getImports()).containsOnly(
+                new ImportStatement("de.skuzzle.test", 4),
+                new ImportStatement("de.skuzzle.test2", 5));
         assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
         assertThat(parsedFile.getPath()).isEqualTo(path);
     }

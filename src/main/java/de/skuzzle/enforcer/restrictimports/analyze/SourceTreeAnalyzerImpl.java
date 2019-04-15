@@ -1,6 +1,5 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import com.google.common.base.Preconditions;
 import de.skuzzle.enforcer.restrictimports.io.RuntimeIOException;
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatementParser;
 import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
@@ -10,20 +9,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
-    private final Map<String, LanguageSupport> languageSupportMap;
     private final ImportAnalyzer importAnalyzer;
     private final Predicate<Path> supportedFileTypes;
 
     SourceTreeAnalyzerImpl() {
         this.importAnalyzer = new ImportAnalyzer();
-        this.languageSupportMap = LanguageSupport.lookupImplementations();
         this.supportedFileTypes = new SourceFileMatcher();
     }
 
@@ -68,12 +64,11 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
     }
 
     private LanguageSupport getLanguageSupport(Path sourceFile) {
-        final String normalizedExtension = getFileExtension(sourceFile);
-        final LanguageSupport languageSupport = this.languageSupportMap.get(normalizedExtension);
-        Preconditions.checkArgument(languageSupport != null,
-                "Could not find a LanguageSupport implementation for normalized file extension: '%s' (%s)",
-                normalizedExtension, sourceFile);
-        return languageSupport;
+        final String extension = getFileExtension(sourceFile);
+        return LanguageSupport.getLanguageSupport(extension)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(
+                        "Could not find a LanguageSupport implementation for normalized file extension: '%s' (%s)",
+                        extension, sourceFile)));
     }
 
     private boolean isFile(Path path) {
@@ -91,8 +86,8 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
                 return false;
             }
 
-            final String normalizedExtension = getFileExtension(path);
-            return languageSupportMap.containsKey(normalizedExtension);
+            final String extension = getFileExtension(path);
+            return LanguageSupport.isLanguageSupported(extension);
         }
     }
 
@@ -104,7 +99,6 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
             return "";
         }
 
-        final String extension = fileName.substring(index);
-        return LanguageSupport.determineNormalizedExtension(extension);
+        return fileName.substring(index);
     }
 }

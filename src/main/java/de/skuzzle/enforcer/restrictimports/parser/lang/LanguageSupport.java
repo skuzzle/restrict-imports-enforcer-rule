@@ -1,11 +1,8 @@
 package de.skuzzle.enforcer.restrictimports.parser.lang;
 
-import com.google.common.base.Preconditions;
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -18,37 +15,13 @@ import java.util.Set;
  */
 public interface LanguageSupport {
 
-    /**
-     * Looks up the available {@link LanguageSupport} implementations that can be
-     * found using Java's {@link ServiceLoader}
-     *
-     * @return The implementations, mapped by their supported extensions.
-     */
-    static Map<String, LanguageSupport> lookupImplementations() {
-        final ServiceLoader<LanguageSupport> serviceProvider = ServiceLoader.load(LanguageSupport.class);
-        final Map<String, LanguageSupport> implementations = new HashMap<>();
-        serviceProvider.forEach(parser -> parser.getSupportedFileExtensions().forEach(extension -> {
-            final String normalizedExtension = determineNormalizedExtension(extension);
 
-            if (implementations.put(normalizedExtension, parser) != null) {
-                throw new IllegalStateException(
-                        "There are multiple parsers to handle file extension: " + normalizedExtension);
-            }
-        }));
-        Preconditions.checkState(!implementations.isEmpty(), "No LanguageSupport instances found!");
-        return implementations;
+    static Optional<LanguageSupport> getLanguageSupport(String extension) {
+        return SupportedLanguageHolder.getLanguageSupport(extension);
     }
 
-    /**
-     * Returns the normalized extension that can be used to look up a {@link LanguageSupport} from the map returned by {@link #lookupImplementations()}.
-     *
-     * @param extension The extension to normalize.
-     * @return The normalized extension.
-     */
-    static String determineNormalizedExtension(String extension) {
-        return extension.startsWith(".")
-                ? extension.toLowerCase()
-                : "." + extension.toLowerCase();
+    static boolean isLanguageSupported(String extension) {
+        return SupportedLanguageHolder.isLanguageSupported(extension);
     }
 
     /**

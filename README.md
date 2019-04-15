@@ -272,7 +272,7 @@ Overview of all configuration parameters:
 | `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` (deprecated in `0.15.0`, soft-removed in `0.16.0`, removed in `0.18.0`) |
 
 * _Deprecated_: Setting this property might have no effect but will log a descriptive warning
-* _Soft-Removed_: Settings this property will fail the build with a descriptive warning that this property is no longer supported
+* _Soft-Removed_: Setting this property will fail the build with a descriptive warning that this property is no longer supported
 * _Removed_: The property no longer exists and the plugin behaves as if it never did.
 
 ## Changelog
@@ -281,6 +281,7 @@ Overview of all configuration parameters:
 * Fix possible file resource leak while iterating source files
 * _Remove_ `sourceFileCharset`
 * _Soft-Remove_ `commentLineBufferSize`
+* [#34](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/34): Recognize multiple import statements on same line in java sources
 * [#33](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/33): Possibility to forbid wildcard imports
 * [#31](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/31): Results show whether a match occurred in a test file
 * [#30](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/30): Separate import parsing and banned import analysis

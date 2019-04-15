@@ -46,7 +46,7 @@ class SupportedLanguageHolder {
                         throw new IllegalStateException(
                                 "There are multiple parsers to handle file extension: " + normalizedExtension);
                     }
-                    logger.debug("Registered {} for extension {}", normalizedExtension, parser);
+                    logger.debug("Registered {} for extension '{}'", parser, normalizedExtension);
                 }));
         Preconditions.checkState(!implementations.isEmpty(), "No LanguageSupport instances found!");
         return implementations;

@@ -1,16 +1,13 @@
 package de.skuzzle.enforcer.restrictimports.rule;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
-import java.nio.charset.Charset;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
+import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
+import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
+import de.skuzzle.enforcer.restrictimports.io.RuntimeIOException;
 import org.apache.maven.enforcer.rule.api.EnforcerRule;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
@@ -18,14 +15,16 @@ import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
-import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
-import de.skuzzle.enforcer.restrictimports.analyze.RuntimeIOException;
-import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
-import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * Enforcer rule which restricts the usage of certain packages or classes within a Java
@@ -64,14 +63,13 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
             if (analyzeResult.bannedImportsFound()) {
                 final String errorMessage = MatchFormatter.getInstance()
-                        .formatMatches(analyzerSettings.getRootDirectories(), analyzeResult);
+                        .formatMatches(analyzerSettings.getAllDirectories(), analyzeResult);
 
                 if (failBuild) {
                     throw new EnforcerRuleException(errorMessage);
                 } else {
                     LOGGER.warn(errorMessage);
-                    LOGGER.warn("\nDetected banned imports will not fail the "
-                            + "build as the 'failBuild' flag is set to false!");
+                    LOGGER.warn("\nDetected banned imports will not fail the build as the 'failBuild' flag is set to false!");
                 }
 
             } else {
@@ -105,12 +103,16 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     private AnalyzerSettings createAnalyzerSettingsFromPluginConfiguration(
             MavenProject mavenProject) {
-        final Collection<Path> sourceRoots = listSourceRoots(mavenProject)
-                .collect(Collectors.toList());
+        final Collection<Path> srcDirectories = listSourceRoots(mavenProject.getCompileSourceRoots());
+        final Collection<Path> testDirectories = this.includeTestCode
+                ? listSourceRoots(mavenProject.getTestCompileSourceRoots())
+                : Collections.emptyList();
+
         final Charset sourceFileCharset = determineSourceFileCharset(mavenProject);
 
         return AnalyzerSettings.builder()
-                .withRootDirectories(sourceRoots)
+                .withSrcDirectories(srcDirectories)
+                .withTestDirectories(testDirectories)
                 .withSourceFileCharset(sourceFileCharset)
                 .build();
     }
@@ -124,20 +126,12 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
     }
 
     @SuppressWarnings("unchecked")
-    private Stream<Path> listSourceRoots(MavenProject project) {
-        final Stream<String> compileStream = project.getCompileSourceRoots().stream();
-
-        final Stream<String> rootFolders;
-        if (this.includeTestCode) {
-            final Stream<String> testStream = project.getTestCompileSourceRoots().stream();
-            rootFolders = Stream.concat(compileStream, testStream);
-        } else {
-            rootFolders = compileStream;
-        }
-
-        return rootFolders
-                .peek(root -> LOGGER.debug("Including source dir: {}", root))
-                .map(Paths::get);
+    private Collection<Path> listSourceRoots(Collection pathNames) {
+        final Collection<String> pathNamesAsString = (Collection<String>) pathNames;
+        return pathNamesAsString.stream()
+                .peek(pathName -> LOGGER.debug("Including source dir: {}", pathName))
+                .map(Paths::get)
+                .collect(Collectors.toList());
     }
 
     private void checkGroups(boolean condition) {
@@ -214,17 +208,9 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     @Deprecated
     public final void setCommentLineBufferSize(int commentLineBufferSize) {
-        LOGGER.warn("restrict-imports-enforcer rule: Deprecation warning (since 0.16.0):\n"
+        throw new RuntimeException("restrict-imports-enforcer rule: Deprecation warning (since 0.16.0):\n"
                 + "Setting commentLineBufferSize is no longer necessary, as we now use a dynamic buffer. "
                 + "This property no longer has any effect and will be removed in later versions!");
-    }
-
-    @Deprecated
-    public final void setSourceFileCharset(String sourceFileCharset) {
-        throw new RuntimeException(
-                "restrict-imports-enforcer rule: Deprecation warning (since 0.15.0):\n"
-                        + "Please use maven property 'project.build.sourceEnconding' for specifying the charset. "
-                        + "This plugin's property 'sourceFileCharset' will be removed in later versions!");
     }
 
     public void setFailBuild(boolean failBuild) {

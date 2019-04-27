@@ -1,4 +1,6 @@
-package de.skuzzle.enforcer.restrictimports.analyze;
+package de.skuzzle.enforcer.restrictimports.parser;
+
+import de.skuzzle.enforcer.restrictimports.io.RuntimeIOException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,7 +30,10 @@ class SkipCommentsLineSupplier implements LineSupplier {
         final Reader skipComments = new TransientCommentReader(fromFile, true);
 
         final BufferedReader lineReader = new BufferedReader(skipComments);
-        return lineReader.lines().onClose(() -> close(lineReader));
+        return lineReader.lines()
+                .onClose(() -> close(lineReader))
+                .onClose(() -> close(skipComments))
+                .onClose(() -> close(fromFile));
     }
 
     private void close(Reader reader) {

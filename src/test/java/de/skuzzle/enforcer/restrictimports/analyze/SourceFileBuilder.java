@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-class SourceFileBuilder {
+public class SourceFileBuilder {
 
     private final FileSystem mockFileSystem;
     private Path file;

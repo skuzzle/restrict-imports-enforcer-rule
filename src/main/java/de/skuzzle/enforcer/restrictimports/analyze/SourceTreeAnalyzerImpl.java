@@ -1,66 +1,54 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
+import de.skuzzle.enforcer.restrictimports.io.RuntimeIOException;
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatementParser;
+import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 import java.util.Optional;
-import java.util.ServiceLoader;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import com.google.common.base.Preconditions;
-
-import de.skuzzle.enforcer.restrictimports.analyze.lang.SourceLineParser;
-
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
-    private final Map<String, SourceLineParser> sourceFileParsers;
+    private final ImportAnalyzer importAnalyzer;
+    private final Predicate<Path> supportedFileTypes;
 
-    public SourceTreeAnalyzerImpl() {
-        final ServiceLoader<SourceLineParser> serviceProvider = ServiceLoader.load(SourceLineParser.class);
-        final Map<String, SourceLineParser> parsers = new HashMap<>();
-        serviceProvider.forEach(parser -> {
-            parser.getSupportedFileExtensions().forEach(extension -> {
-                final String normalizedExtension = extension.startsWith(".")
-                        ? extension.toLowerCase()
-                        : "." + extension.toLowerCase();
-
-                if (parsers.put(normalizedExtension, parser) != null) {
-                    throw new IllegalStateException(
-                            "There are multiple parsers to handle file extension: " + extension);
-                }
-            });
-        });
-        Preconditions.checkState(!parsers.isEmpty(), "No SourceLineParser implemenations found");
-        this.sourceFileParsers = parsers;
+    SourceTreeAnalyzerImpl() {
+        this.importAnalyzer = new ImportAnalyzer();
+        this.supportedFileTypes = new SourceFileMatcher();
     }
 
     @Override
     public AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroups groups) {
-        final LineSupplier lineSupplier = new SkipCommentsLineSupplier(settings.getSourceFileCharset());
+        final ImportStatementParser fileParser = ImportStatementParser.defaultInstance(settings.getSourceFileCharset());
 
-        // TODO: importMatcher should be injected rather than being created here
-        final ImportMatcher importMatcher = new ImportMatcher(lineSupplier);
-
-        final List<MatchedFile> matchedFiles = new ArrayList<>();
-
-        final Iterable<Path> rootsIterable = settings.getRootDirectories();
-        for (final Path root : rootsIterable) {
-            listFiles(root, new SourceFileMatcher())
-                    .map(sourceFile -> importMatcher.matchFile(sourceFile, groups,
-                            sourceFileParsers.get(getFileExtension(sourceFile))))
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .forEach(matchedFiles::add);
-        }
+        final Collection<MatchedFile> srcMatches = analyzeDirectories(groups, fileParser, settings.getSrcDirectories());
+        final Collection<MatchedFile> testMatches = analyzeDirectories(groups, fileParser, settings.getTestDirectories());
 
         return AnalyzeResult.builder()
-                .withMatches(matchedFiles)
+                .withMatches(srcMatches)
+                .withMatchesInTestCode(testMatches)
                 .build();
+    }
+
+    private Collection<MatchedFile> analyzeDirectories(BannedImportGroups groups, ImportStatementParser fileParser, Iterable<Path> directories) {
+        final Collection<MatchedFile> matchedFiles = new ArrayList<>();
+        for (final Path srcDir : directories) {
+            try (Stream<Path> sourceFiles = listFiles(srcDir, supportedFileTypes)) {
+                sourceFiles
+                        .map(sourceFile -> fileParser.parse(sourceFile, getLanguageSupport(sourceFile)))
+                        .map(parsedFile -> importAnalyzer.matchFile(parsedFile, groups))
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .forEach(matchedFiles::add);
+            }
+        }
+        return matchedFiles;
     }
 
     private Stream<Path> listFiles(Path root, Predicate<Path> filter) {
@@ -75,10 +63,21 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
         }
     }
 
+    private LanguageSupport getLanguageSupport(Path sourceFile) {
+        final String extension = getFileExtension(sourceFile);
+        return LanguageSupport.getLanguageSupport(extension)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(
+                        "Could not find a LanguageSupport implementation for normalized file extension: '%s' (%s)",
+                        extension, sourceFile)));
+    }
+
     private boolean isFile(Path path) {
         return !Files.isDirectory(path);
     }
 
+    /**
+     * Predicate that matches source files for which a {@link LanguageSupport} implementation is known.
+     */
     private class SourceFileMatcher implements Predicate<Path> {
 
         @Override
@@ -88,23 +87,18 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
             }
 
             final String extension = getFileExtension(path);
-
-            if (extension == null) {
-                return false;
-            }
-
-            return sourceFileParsers.containsKey(extension.toLowerCase());
+            return LanguageSupport.isLanguageSupported(extension);
         }
     }
 
     private String getFileExtension(Path path) {
-        final String lowerCaseFileName = path.getFileName().toString().toLowerCase();
-        final int index = lowerCaseFileName.lastIndexOf(".");
+        final String fileName = path.getFileName().toString();
+        final int index = fileName.lastIndexOf(".");
 
         if (index == -1) {
-            return null;
+            return "";
         }
 
-        return lowerCaseFileName.substring(index);
+        return fileName.substring(index);
     }
 }

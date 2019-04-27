@@ -11,7 +11,7 @@
 
 	<groupId>de.skuzzle.enforcer</groupId>
 	<artifactId>restrict-imports-enforcer-rule</artifactId>
-	<version>0.17.0</version>
+	<version>0.18.0</version>
 	<packaging>jar</packaging>
 
 	<name>Restrict Imports Enforcer Rule</name>
@@ -33,7 +33,7 @@
 
 	<scm>
 		<developerConnection>scm:git:https://github.com/skuzzle/${github.name}.git</developerConnection>
-		<tag>v0.17.0</tag>
+		<tag>v0.18.0</tag>
 	</scm>
 
 	<dependencies>

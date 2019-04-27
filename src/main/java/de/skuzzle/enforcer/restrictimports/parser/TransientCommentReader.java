@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.analyze;
+package de.skuzzle.enforcer.restrictimports.parser;
 
 import java.io.IOException;
 import java.io.Reader;

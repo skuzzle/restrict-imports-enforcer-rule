@@ -1,28 +1,27 @@
-package de.skuzzle.enforcer.restrictimports.analyze.lang;
+package de.skuzzle.enforcer.restrictimports.parser.lang;
+
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.junit.jupiter.api.Test;
+public class JavaLanguageSupportTest {
 
-import de.skuzzle.enforcer.restrictimports.analyze.lang.JavaLineParser;
-
-public class JavaLineParserTest {
-
-    private final JavaLineParser subject = new JavaLineParser();
+    private final JavaLanguageSupport subject = new JavaLanguageSupport();
 
     @Test
     public void testValidImport() {
-        assertThat(subject.parseImport("import java.util.List;")).first().isEqualTo("java.util.List");
+        assertThat(subject.parseImport("import java.util.List;", 1)).first().isEqualTo(new ImportStatement("java.util.List", 1));
     }
 
     @Test
     public void testInvalidImport1() {
-        assertThat(subject.parseImport("import java.util.List")).isEmpty();
+        assertThat(subject.parseImport("import java.util.List", 1)).isEmpty();
     }
 
     @Test
     public void testInvalidImport2() {
-        assertThat(subject.parseImport("importjava.util.List;")).isEmpty();
+        assertThat(subject.parseImport("importjava.util.List;", 1)).isEmpty();
     }
 
     @Test
@@ -48,5 +47,12 @@ public class JavaLineParserTest {
     @Test
     public void testInvalidPackageParse3() {
         assertThat(subject.parsePackage("")).isNotPresent();
+    }
+
+    @Test
+    void testMultipleImportsInSameLine() {
+        assertThat(subject.parseImport("import java.util.List; import java.util.Collection;", 1)).containsOnly(
+                new ImportStatement("java.util.List", 1),
+                new ImportStatement("java.util.Collection", 1));
     }
 }

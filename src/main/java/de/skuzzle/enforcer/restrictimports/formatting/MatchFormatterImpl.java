@@ -1,15 +1,14 @@
 package de.skuzzle.enforcer.restrictimports.formatting;
 
-import java.nio.file.Path;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.analyze.MatchedFile;
 import de.skuzzle.enforcer.restrictimports.analyze.MatchedImport;
+
+import java.nio.file.Path;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 class MatchFormatterImpl implements MatchFormatter {
 
@@ -17,25 +16,37 @@ class MatchFormatterImpl implements MatchFormatter {
 
     @Override
     public String formatMatches(Collection<Path> roots, AnalyzeResult analyzeResult) {
-        final StringBuilder b = new StringBuilder("\nBanned imports detected:\n\n");
+        final StringBuilder b = new StringBuilder();
 
-        final Map<BannedImportGroup, List<MatchedFile>> matchesByGroup = analyzeResult.getFileMatches().stream()
-                .collect(Collectors.groupingBy(MatchedFile::getMatchedBy));
+        if (analyzeResult.bannedImportsInCompileCode()) {
+            b.append("\nBanned imports detected:\n\n");
 
+            final Map<BannedImportGroup, List<MatchedFile>> srcMatchesByGroup = analyzeResult.srcMatchesByGroup();
+            formatGroupedMatches(roots, b, srcMatchesByGroup);
+        }
+
+        if (analyzeResult.bannedImportsInTestCode()) {
+            b.append("\nBanned imports detected in TEST code:\n\n");
+            final Map<BannedImportGroup, List<MatchedFile>> testMatchesByGroup = analyzeResult.testMatchesByGroup();
+            formatGroupedMatches(roots, b, testMatchesByGroup);
+        }
+
+        return b.toString();
+    }
+
+    private void formatGroupedMatches(Collection<Path> roots, StringBuilder b, Map<BannedImportGroup, List<MatchedFile>> matchesByGroup) {
         matchesByGroup.forEach((group, matches) -> {
             final String message = group.getReason();
             if (message != null && !message.isEmpty()) {
                 b.append("Reason: ").append(message).append("\n");
             }
-            analyzeResult.getFileMatches().forEach(fileMatch -> {
-                b.append("\tin file: ")
+            matches.forEach(fileMatch -> {
+                b.append("\tin file").append(": ")
                         .append(relativize(roots, fileMatch.getSourceFile()))
                         .append("\n");
                 fileMatch.getMatchedImports().forEach(match -> appendMatch(match, b));
             });
         });
-
-        return b.toString();
     }
 
     private static Path relativize(Collection<Path> roots, Path path) {

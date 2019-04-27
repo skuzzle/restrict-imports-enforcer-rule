@@ -2,7 +2,6 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 final class PackagePatternImpl implements PackagePattern {
 
@@ -10,7 +9,7 @@ final class PackagePatternImpl implements PackagePattern {
     private final String[] parts;
     private final boolean staticc;
 
-    public PackagePatternImpl(String s) {
+    PackagePatternImpl(String s) {
         this.staticc = s.startsWith(STATIC_PREFIX);
         if (staticc) {
             s = s.substring(STATIC_PREFIX.length());
@@ -27,7 +26,6 @@ final class PackagePatternImpl implements PackagePattern {
         for (int i = 0; i < parts.length; i++) {
             final String part = parts[i];
             checkCharacters(full, part, i);
-
         }
     }
 
@@ -36,7 +34,7 @@ final class PackagePatternImpl implements PackagePattern {
 
         if (part.isEmpty()) {
             throw new IllegalArgumentException(String.format("The pattern '%s' contains an empty part", full));
-        } else if ("*".equals(part) || "**".equals(part)) {
+        } else if ("*".equals(part) || "**".equals(part) || "'*'".equals(part)) {
             return;
         } else if (part.contains("*")) {
             throw new IllegalArgumentException(String.format(
@@ -79,11 +77,10 @@ final class PackagePatternImpl implements PackagePattern {
     }
 
     private boolean matchesInternal(boolean matchIsStatic, String[] matchParts,
-            boolean partsIsStatic, String[] parts) {
+                                    boolean partsIsStatic, String[] parts) {
         if (matchIsStatic != partsIsStatic) {
             return false;
-        }
-        if (parts.length > matchParts.length) {
+        } else if (parts.length > matchParts.length) {
             // if the pattern is longer than the string to match, match cant be true
             return false;
         }
@@ -118,6 +115,8 @@ final class PackagePatternImpl implements PackagePattern {
     private static boolean matchParts(String patternPart, String matchPart) {
         if ("*".equals(patternPart) || "**".equals(patternPart)) {
             return true;
+        } else if ("'*'".equals(patternPart)) {
+            return matchPart.equals("*");
         }
         return patternPart.equals(matchPart);
     }
@@ -128,7 +127,7 @@ final class PackagePatternImpl implements PackagePattern {
         if (staticc) {
             result.append(STATIC_PREFIX);
         }
-        result.append(Arrays.stream(this.parts).collect(Collectors.joining(".")));
+        result.append(String.join(".", this.parts));
         return result.toString();
     }
 
@@ -160,7 +159,7 @@ final class PackagePatternImpl implements PackagePattern {
 
         if (numOfStarThis < numOfStarOther) {
             return true;
-        } else if (numOfStarOther > numOfStarThis) {
+        } else if (numOfStarThis > numOfStarOther) {
             return false;
         }
 

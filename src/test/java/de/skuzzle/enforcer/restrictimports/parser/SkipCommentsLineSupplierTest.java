@@ -1,6 +1,9 @@
-package de.skuzzle.enforcer.restrictimports.analyze;
+package de.skuzzle.enforcer.restrictimports.parser;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import com.google.common.jimfs.Configuration;
+import com.google.common.jimfs.Jimfs;
+import de.skuzzle.enforcer.restrictimports.analyze.SourceFileBuilder;
+import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
@@ -8,10 +11,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Test;
-
-import com.google.common.jimfs.Configuration;
-import com.google.common.jimfs.Jimfs;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class SkipCommentsLineSupplierTest {
 

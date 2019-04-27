@@ -2,11 +2,7 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.nio.charset.Charset;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import com.google.common.base.MoreObjects;
 
@@ -18,12 +14,15 @@ import com.google.common.base.MoreObjects;
 public final class AnalyzerSettings {
 
     private final Charset sourceFileCharset;
-    private final Collection<Path> rootDirectories;
+    private final Collection<Path> srcDirectories;
+    private final Collection<Path> testDirectories;
 
     private AnalyzerSettings(Charset sourceFileCharset,
-            Collection<Path> rootDirectories) {
+            Collection<Path> srcDirectories,
+            Collection<Path> testDirectories) {
         this.sourceFileCharset = sourceFileCharset;
-        this.rootDirectories = rootDirectories;
+        this.srcDirectories = srcDirectories;
+        this.testDirectories = testDirectories;
     }
 
     public static Builder builder() {
@@ -34,46 +33,75 @@ public final class AnalyzerSettings {
         return this.sourceFileCharset;
     }
 
-    public Collection<Path> getRootDirectories() {
-        return this.rootDirectories;
+    public Collection<Path> getSrcDirectories() {
+        return this.srcDirectories;
+    }
+
+    public Collection<Path> getTestDirectories() {
+        return testDirectories;
+    }
+
+    /**
+     * Returns the union of {@link #getSrcDirectories()} and getTestDirectories.
+     *
+     * @return All source directories that are subject to analysis.
+     */
+    public Collection<Path> getAllDirectories() {
+        final Set<Path> result = new HashSet<>(srcDirectories.size() + testDirectories.size());
+        result.addAll(srcDirectories);
+        result.addAll(testDirectories);
+        return result;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(sourceFileCharset, rootDirectories);
+        return Objects.hash(sourceFileCharset, srcDirectories, testDirectories);
     }
 
     @Override
     public boolean equals(Object obj) {
         return obj == this || obj instanceof AnalyzerSettings
                 && Objects.equals(sourceFileCharset, ((AnalyzerSettings) obj).sourceFileCharset)
-                && Objects.equals(rootDirectories, ((AnalyzerSettings) obj).rootDirectories);
+                && Objects.equals(srcDirectories, ((AnalyzerSettings) obj).srcDirectories)
+        && Objects.equals(testDirectories, ((AnalyzerSettings) obj).testDirectories);
     }
 
     @Override
     public String toString() {
         return MoreObjects.toStringHelper(this)
                 .add("sourceFileCharset", sourceFileCharset)
-                .add("rootDirectories", rootDirectories)
+                .add("srcDirectories", srcDirectories)
+                .add("testDirectories",testDirectories)
                 .toString();
     }
 
     public static final class Builder {
 
-        private final List<Path> rootDirectories = new ArrayList<>();
+        private final List<Path> srcDirectories = new ArrayList<>();
+        private final List<Path> testDirectories = new ArrayList<>();
         private Charset sourceFileCharset = Charset.defaultCharset();
 
         private Builder() {
             // hidden
         }
 
-        public Builder withRootDirectories(Collection<Path> rootDirectories) {
-            this.rootDirectories.addAll(rootDirectories);
+        public Builder withSrcDirectories(Collection<Path> srcDirectories) {
+            this.srcDirectories.addAll(srcDirectories);
             return this;
         }
 
-        public Builder withRootDirectories(Path... rootDirectories) {
-            this.rootDirectories.addAll(Arrays.asList(rootDirectories));
+        public Builder withSrcDirectories(Path... srcDirectories) {
+            this.srcDirectories.addAll(Arrays.asList(srcDirectories));
+            return this;
+        }
+
+        public Builder withTestDirectories(Collection<Path> testDirectories) {
+            this.testDirectories.addAll(testDirectories);
+            return this;
+        }
+
+        public Builder withTestDirectories(Path...testDirectories) {
+            this.testDirectories.addAll(Arrays.asList(testDirectories));
             return this;
         }
 
@@ -83,7 +111,7 @@ public final class AnalyzerSettings {
         }
 
         public AnalyzerSettings build() {
-            return new AnalyzerSettings(sourceFileCharset, rootDirectories);
+            return new AnalyzerSettings(sourceFileCharset, srcDirectories, testDirectories);
         }
     }
 }

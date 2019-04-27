@@ -1,13 +1,26 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+import org.junit.jupiter.api.Test;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-import org.junit.jupiter.api.Test;
-
-import nl.jqno.equalsverifier.EqualsVerifier;
-
 public class PackagePatternImplTest {
+
+    @Test
+    void testMatchLiteralAsterisk() {
+        final PackagePattern pattern = PackagePattern.parse("java.util.'*'");
+        assertThat(pattern.matches("java.util.*")).isTrue();
+        assertThat(pattern.matches("java.util.ArrayList")).isFalse();
+    }
+
+    @Test
+    void testMatchLiteralAsteriskWithWildCard() {
+        final PackagePattern pattern = PackagePattern.parse("**.'*'");
+        assertThat(pattern.matches("java.util.*")).isTrue();
+        assertThat(pattern.matches("java.util.ArrayList")).isFalse();
+    }
 
     @Test
     public void testNull() throws Exception {

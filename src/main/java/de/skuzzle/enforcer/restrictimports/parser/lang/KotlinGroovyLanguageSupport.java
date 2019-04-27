@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.analyze.lang;
+package de.skuzzle.enforcer.restrictimports.parser.lang;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,8 +6,10 @@ import java.util.Set;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 
-public class KotlinGroovyLineParser implements SourceLineParser {
+
+public class KotlinGroovyLanguageSupport implements LanguageSupport {
 
     @Override
     public Set<String> getSupportedFileExtensions() {
@@ -24,12 +26,12 @@ public class KotlinGroovyLineParser implements SourceLineParser {
     }
 
     @Override
-    public List<String> parseImport(String line) {
+    public List<ImportStatement> parseImport(String line, int lineNumber) {
         if (!isImport(line)) {
             return ImmutableList.of();
         }
         final String packageWithAlias = extractPackageName(line);
-        return ImmutableList.of(removeAlias(packageWithAlias));
+        return ImmutableList.of(new ImportStatement(removeAlias(packageWithAlias), lineNumber));
     }
 
     private boolean is(String compare, String line) {

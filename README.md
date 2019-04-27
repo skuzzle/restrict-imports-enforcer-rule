@@ -23,7 +23,7 @@ information.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>0.17.0</version>
+            <version>0.18.0</version>
         </dependency>
     </dependencies>
     <executions>
@@ -268,10 +268,23 @@ Overview of all configuration parameters:
 | `reason`                | String                    | no       | empty String                      | `0.8.0`  |
 | `failBuild`             | Boolean                   |          | `true`                            | `0.17.0` |
 | `skip`                  | Boolean                   |          | `false`                           | `0.17.0` |
-| `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` (deprecated in `0.16.0`) |
-| `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` (deprecated in `0.15.0`, removed in `0.16.0`) |
+| `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` (deprecated in `0.16.0`, soft-removed in `0.18.0`) |
+| `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` (deprecated in `0.15.0`, soft-removed in `0.16.0`, removed in `0.18.0`) |
+
+* _Deprecated_: Setting this property might have no effect but will log a descriptive warning
+* _Soft-Removed_: Setting this property will fail the build with a descriptive warning that this property is no longer supported
+* _Removed_: The property no longer exists and the plugin behaves as if it never did.
 
 ## Changelog
+
+### Version 0.18.0
+* Fix possible file resource leak while iterating source files
+* _Remove_ `sourceFileCharset`
+* _Soft-Remove_ `commentLineBufferSize`
+* [#34](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/34): Recognize multiple import statements on same line in java sources
+* [#33](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/33): Possibility to forbid wildcard imports
+* [#31](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/31): Results show whether a match occurred in a test file
+* [#30](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/30): Separate import parsing and banned import analysis
 
 ### Version 0.17.0
 * [#29](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/29): SPI for `SourceLineParser` implementations
@@ -281,6 +294,6 @@ Overview of all configuration parameters:
 * Add [contribution guide lines](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/master/CONTRIBUTING.md)
 
 ### Version 0.16.0
-* [#26](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/26): Deprecated `commentLineBufferSize` parameter
+* [#26](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/26): _Deprecate_ `commentLineBufferSize` parameter and replaced with dynamically growing buffer
 * [#25](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/25): Add additional configuration sanity checks
-* [#23](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/23): Removed deprecated `sourceFileCharset` parameter
+* [#23](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/23): _Soft-Remove_ `sourceFileCharset` parameter and always use `${project.build.sourceEncoding}` now

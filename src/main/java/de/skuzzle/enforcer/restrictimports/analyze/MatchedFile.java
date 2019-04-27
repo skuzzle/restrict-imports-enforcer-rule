@@ -1,15 +1,15 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
-
 /**
- * Holds the matches that were found within a single java source file. Instances can be
+ * Holds the matches that were found within a single source file. Instances can be
  * constructed using {@link #forSourceFile(Path)}.
  *
  * @author Simon Taddiken
@@ -92,6 +92,7 @@ public final class MatchedFile {
         private BannedImportGroup matchedBy;
 
         private Builder(Path sourceFile) {
+            Preconditions.checkArgument(sourceFile != null, "sourceFile must not be null");
             this.sourceFile = sourceFile;
         }
 
@@ -128,7 +129,6 @@ public final class MatchedFile {
          * @return The instance.
          */
         public MatchedFile build() {
-            Preconditions.checkArgument(sourceFile != null, "sourceFile must not be null");
             Preconditions.checkArgument(matchedBy != null, "matchedBy must not be null for MatchedFile %s", sourceFile);
             return new MatchedFile(sourceFile, matchedImports, matchedBy);
         }

@@ -1,0 +1,2 @@
+de.skuzzle.enforcer.restrictimports.parser.lang.JavaLanguageSupport
+de.skuzzle.enforcer.restrictimports.parser.lang.KotlinGroovyLanguageSupport

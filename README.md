@@ -117,7 +117,6 @@ Rule groups add another level of refining which imports will be matched. You can
 the `bannedImport(s)`, `allowedImport(s)` and `basePackage(s)` tags and specify multiple 
 of this groups within a single enforcer rule. 
 
-(example stolen from #6)
 ```xml
 <configuration>
     <rules>
@@ -152,7 +151,7 @@ of this groups within a single enforcer rule.
 When analysing a source file, the plugin filters all groups where the group's 
 `basePackage` matches the source file's package name. In case multiple groups are 
 matching, only the group with the _most specific_ base package is retained and the others 
-are ignored for this file.
+are ignored for this file. Have a look at [this](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/develop/src/test/java/de/skuzzle/enforcer/restrictimports/analyze/PackagePatternSpecifityTest.java#L34) file to have a glance at how _specificity_ works.
 
 
 ## Static imports

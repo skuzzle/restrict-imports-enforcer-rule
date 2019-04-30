@@ -206,13 +206,6 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         this.includeTestCode = includeTestCode;
     }
 
-    @Deprecated
-    public final void setCommentLineBufferSize(int commentLineBufferSize) {
-        throw new RuntimeException("restrict-imports-enforcer rule: Deprecation warning (since 0.16.0):\n"
-                + "Setting commentLineBufferSize is no longer necessary, as we now use a dynamic buffer. "
-                + "This property no longer has any effect and will be removed in later versions!");
-    }
-
     public void setFailBuild(boolean failBuild) {
         this.failBuild = failBuild;
     }

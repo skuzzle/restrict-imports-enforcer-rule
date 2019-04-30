@@ -267,7 +267,7 @@ Overview of all configuration parameters:
 | `reason`                | String                    | no       | empty String                      | `0.8.0`  |
 | `failBuild`             | Boolean                   |          | `true`                            | `0.17.0` |
 | `skip`                  | Boolean                   |          | `false`                           | `0.17.0` |
-| `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` (deprecated in `0.16.0`, soft-removed in `0.18.0`) |
+| `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` (deprecated in `0.16.0`, soft-removed in `0.18.0`, removed in `0.19.0`) |
 | `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` (deprecated in `0.15.0`, soft-removed in `0.16.0`, removed in `0.18.0`) |
 
 * _Deprecated_: Setting this property might have no effect but will log a descriptive warning
@@ -275,6 +275,9 @@ Overview of all configuration parameters:
 * _Removed_: The property no longer exists and the plugin behaves as if it never did.
 
 ## Changelog
+
+### Version 0.19.0
+* _Remove_ `commentLineBufferSize`
 
 ### Version 0.18.0
 * Fix possible file resource leak while iterating source files

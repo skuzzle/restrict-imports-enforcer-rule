@@ -1,10 +1,10 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * Pattern class to match java style package and class names using wild card operators.
@@ -20,7 +20,7 @@ public interface PackagePattern extends Comparable<PackagePattern> {
      * @param patternStrings The Strings to parse.
      * @return A list of parsed package patterns.
      */
-    public static List<PackagePattern> parseAll(Collection<String> patternStrings) {
+    static List<PackagePattern> parseAll(Collection<String> patternStrings) {
         checkArgument(patternStrings != null);
         return patternStrings.stream()
                 .map(PackagePattern::parse)
@@ -33,7 +33,7 @@ public interface PackagePattern extends Comparable<PackagePattern> {
      * @param patternString The String to parse.
      * @return The parsed package pattern.
      */
-    public static PackagePattern parse(String patternString) {
+    static PackagePattern parse(String patternString) {
         checkArgument(patternString != null);
         return new PackagePatternImpl(patternString);
     }

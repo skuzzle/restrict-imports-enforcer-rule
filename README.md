@@ -124,7 +124,7 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
 </configuration>
 ```
 
-## Rule groups (beta, since 0.13.0)
+## Rule groups
 (*Note:* This is a beta feature and not thoroughly tested. Syntax and behavior 
 changes in upcoming versions are likely)
 

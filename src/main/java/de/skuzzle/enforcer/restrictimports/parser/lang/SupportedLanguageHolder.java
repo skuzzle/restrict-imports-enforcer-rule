@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ServiceLoader;
 
+/**
+ * Helper class to list available {@link LanguageSupport} implementations.
+ */
 class SupportedLanguageHolder {
 
     private static final Logger logger = LoggerFactory.getLogger(SupportedLanguageHolder.class);

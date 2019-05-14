@@ -50,6 +50,21 @@ information.
 </plugin>
 ```
 
+# Contents
+* Usage
+  * [Includes and Excludes](#includes-and-excludes)
+  * [Rule groups](#rule-groups)
+  * [Static imports](#static-imports)
+  * [Test code](#test-code)
+  * [Skipping](#skipping)
+  * [Package patterns](#package-patterns)
+* [Limitation](#limitation)
+  * [Syntactical](#syntactical-limitation)
+  * [Conceptual](#conceptual-limitation)
+* [Configuration options](#configuration-options)
+* [Changelog](#changelog)
+
+
 ## Includes and Excludes
 To refine the classes that are banned you may use the `allowedImports` tag in addition to 
 the `bannedImports` tag. For example you can exclude a whole sub package using a wildcard

@@ -5,7 +5,7 @@
 
 # restrict-imports-enforcer-rule
 Maven enforcer rule that bans certain imports. Keep your code base clean and free from 
-usage of unwanted classes!
+usage of unwanted classes! [More](#rationale)
 - [x] Java
 - [x] Kotlin (since 0.15)
 - [x] Groovy (since 0.15)

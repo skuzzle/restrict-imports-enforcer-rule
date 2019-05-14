@@ -52,6 +52,7 @@ information.
 ```
 
 # Contents
+* [Rationale](#rationale)
 * Usage
   * [Includes and Excludes](#includes-and-excludes)
   * [Rule groups](#rule-groups)
@@ -65,6 +66,19 @@ information.
 * [Configuration options](#configuration-options)
 * [Changelog](#changelog)
 
+## Rationale
+Grown code bases often have a huge number of dependencies. That leads to a lot of clutter in their 
+compile time classpath. My favorite example here is logging frameworks: every java project
+of decent size likely has numerous classes named `Logger` available on the classpath and your 
+favorite IDE happily lists them all for auto completion. How should someone new to
+the project know which `Logger` to use? You certainly do not want to mix logging frameworks in your 
+code base. 
+
+Another example is to force your developers to only use AssertJ assertions instead of JUnit or TestNG 
+assertions.
+
+Using this enforcer rule you have fine grained control over which classes are allowed to be used in your
+application without having to exclude whole artifacts from your classpath.
 
 ## Includes and Excludes
 To refine the classes that are banned you may use the `allowedImports` tag in addition to 

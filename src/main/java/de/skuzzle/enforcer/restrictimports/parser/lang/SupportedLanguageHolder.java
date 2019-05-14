@@ -13,11 +13,7 @@ class SupportedLanguageHolder {
 
     private static final Logger logger = LoggerFactory.getLogger(SupportedLanguageHolder.class);
 
-    static final Map<String, LanguageSupport> supportedLanguages;
-
-    static {
-        supportedLanguages = lookupImplementations();
-    }
+    static final Map<String, LanguageSupport> supportedLanguages= lookupImplementations();
 
     static Optional<LanguageSupport> getLanguageSupport(String extension) {
         final String normalizedExtension = determineNormalizedExtension(extension);

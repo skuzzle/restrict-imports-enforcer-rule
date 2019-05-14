@@ -36,7 +36,7 @@ public class JavaLanguageSupport implements LanguageSupport {
         }
 
         // There can be multiple import statements within te same line, so
-        // we simply split then at their ';'
+        // we simply split them at their ';'
         final String trimmed = line.trim();
         int start = 0;
         int semiIdx = trimmed.indexOf(';');

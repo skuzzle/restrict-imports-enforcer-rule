@@ -28,6 +28,11 @@ public final class ImportStatement {
         this.staticImport = importName.startsWith(STATIC_IMPORT_PREFIX);
     }
 
+    /**
+     * The physical line within the source file in which the import has occurred. Number is always 1-based!
+     *
+     * @return The line number of the matched imports.
+     */
     public int getLine() {
         return line;
     }

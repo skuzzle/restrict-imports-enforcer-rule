@@ -13,6 +13,7 @@ import java.util.Set;
 public class KotlinGroovyLanguageSupport implements LanguageSupport {
 
     private static final String IMPORT_STATEMENT = "import ";
+    private static final String PACKAGE_STATEMENT = "package ";
 
     @Override
     public Set<String> getSupportedFileExtensions() {
@@ -68,11 +69,11 @@ public class KotlinGroovyLanguageSupport implements LanguageSupport {
     }
 
     private boolean isPackage(String line) {
-        return is("package ", line);
+        return is(PACKAGE_STATEMENT, line);
     }
 
     private boolean isImport(String line) {
-        return is("import ", line);
+        return is(IMPORT_STATEMENT, line);
     }
 
     private static String extractPackageName(String line) {

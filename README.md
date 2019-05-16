@@ -132,7 +132,7 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
             <allowedImports>
                 <allowedImport>java.util.logging.Handler</allowedImport>
                 <allowedImport>what.ever.IsCool</allowedImport>
-            <allowedImports>
+            </allowedImports>
             <!-- ... -->
         </restrictImports>
     </rules>
@@ -307,6 +307,7 @@ Overview of all configuration parameters:
 ## Changelog
 
 ### Version 0.19.0
+* [#35](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/35): Recognize multiple import statements on same line in groovy sources 
 * _Remove_ `commentLineBufferSize`
 
 ### Version 0.18.0

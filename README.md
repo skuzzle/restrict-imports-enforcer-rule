@@ -77,7 +77,7 @@ code base.
 Another example is to force your developers to only use AssertJ assertions instead of JUnit or TestNG 
 assertions.
 
-Using this enforcer rule you have fine grained control over which classes are allowed to be used in your
+Using this enforcer rule gives you fine grained control over which classes are allowed to be used in your
 application without having to exclude whole artifacts from your classpath.
 
 ## Includes and Excludes
@@ -153,6 +153,7 @@ of this groups within a single enforcer rule.
         <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
             <groups>
                 <group>
+                    <reason>Persistence classes must only be used from within .persistence package</reason>
                     <basePackage>**</basePackage>
                     <bannedImports>
                         <bannedImport>javax.persistence.EntityManager</bannedImport>

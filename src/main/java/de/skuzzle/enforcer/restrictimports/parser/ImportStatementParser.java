@@ -26,7 +26,6 @@ public interface ImportStatementParser {
      * @param sourceFilePath  The path of the file to parse.
      * @param languageSupport For parsing the import statements.
      * @return The parsed file.
-     * @throws de.skuzzle.enforcer.restrictimports.io.RuntimeIOException In case reading the file fails.
      */
     ParsedFile parse(Path sourceFilePath, LanguageSupport languageSupport);
 }

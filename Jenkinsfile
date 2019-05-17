@@ -8,7 +8,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'mvn clean package -DargLine="-Xmx300m"'
+        sh 'mvn clean package'
       }
     }
     stage('javadoc') {

@@ -1,10 +1,11 @@
-[![Build Status](https://travis-ci.org/skuzzle/restrict-imports-enforcer-rule.svg?branch=master)](https://travis-ci.org/skuzzle/restrict-imports-enforcer-rule) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.skuzzle.enforcer/restrict-imports-enforcer-rule/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.skuzzle.enforcer/restrict-imports-enforcer-rule)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.skuzzle.enforcer/restrict-imports-enforcer-rule/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.skuzzle.enforcer/restrict-imports-enforcer-rule)
+[![Build Status](https://travis-ci.org/skuzzle/restrict-imports-enforcer-rule.svg?branch=master)](https://travis-ci.org/skuzzle/restrict-imports-enforcer-rule) 
 [![Coverage Status](https://coveralls.io/repos/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master&service=github)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 
 
 # restrict-imports-enforcer-rule
 Maven enforcer rule that bans certain imports. Keep your code base clean and free from 
-usage of unwanted classes!
+usage of unwanted classes! [More](#rationale)
 - [x] Java
 - [x] Kotlin (since 0.15)
 - [x] Groovy (since 0.15)
@@ -49,6 +50,35 @@ information.
     </executions>
 </plugin>
 ```
+
+# Contents
+* [Rationale](#rationale)
+* Usage
+  * [Includes and Excludes](#includes-and-excludes)
+  * [Rule groups](#rule-groups)
+  * [Static imports](#static-imports)
+  * [Test code](#test-code)
+  * [Skipping](#skipping)
+  * [Package patterns](#package-patterns)
+* [Limitation](#limitation)
+  * [Syntactical](#syntactical-limitation)
+  * [Conceptual](#conceptual-limitation)
+* [Configuration options](#configuration-options)
+* [Changelog](#changelog)
+
+## Rationale
+Grown code bases often have a huge number of dependencies. That leads to a lot of clutter in their 
+compile time classpath. My favorite example here is logging frameworks: every java project
+of decent size likely has numerous classes named `Logger` available on the classpath and your 
+favorite IDE happily lists them all for auto completion. How should someone new to
+the project know which `Logger` to use? You certainly do not want to mix logging frameworks in your 
+code base. 
+
+Another example is to force your developers to only use AssertJ assertions instead of JUnit or TestNG 
+assertions.
+
+Using this enforcer rule gives you fine grained control over which classes are allowed to be used in your
+application without having to exclude whole artifacts from your classpath.
 
 ## Includes and Excludes
 To refine the classes that are banned you may use the `allowedImports` tag in addition to 
@@ -102,14 +132,14 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
             <allowedImports>
                 <allowedImport>java.util.logging.Handler</allowedImport>
                 <allowedImport>what.ever.IsCool</allowedImport>
-            <allowedImports>
+            </allowedImports>
             <!-- ... -->
         </restrictImports>
     </rules>
 </configuration>
 ```
 
-## Rule groups (beta, since 0.13.0)
+## Rule groups
 (*Note:* This is a beta feature and not thoroughly tested. Syntax and behavior 
 changes in upcoming versions are likely)
 
@@ -117,13 +147,13 @@ Rule groups add another level of refining which imports will be matched. You can
 the `bannedImport(s)`, `allowedImport(s)` and `basePackage(s)` tags and specify multiple 
 of this groups within a single enforcer rule. 
 
-(example stolen from #6)
 ```xml
 <configuration>
     <rules>
         <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
             <groups>
                 <group>
+                    <reason>Persistence classes must only be used from within .persistence package</reason>
                     <basePackage>**</basePackage>
                     <bannedImports>
                         <bannedImport>javax.persistence.EntityManager</bannedImport>
@@ -152,7 +182,7 @@ of this groups within a single enforcer rule.
 When analysing a source file, the plugin filters all groups where the group's 
 `basePackage` matches the source file's package name. In case multiple groups are 
 matching, only the group with the _most specific_ base package is retained and the others 
-are ignored for this file.
+are ignored for this file. Have a look at [this](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/develop/src/test/java/de/skuzzle/enforcer/restrictimports/analyze/PackagePatternSpecifityTest.java#L34) file to have a glance at how _specificity_ works.
 
 
 ## Static imports
@@ -268,7 +298,7 @@ Overview of all configuration parameters:
 | `reason`                | String                    | no       | empty String                      | `0.8.0`  |
 | `failBuild`             | Boolean                   |          | `true`                            | `0.17.0` |
 | `skip`                  | Boolean                   |          | `false`                           | `0.17.0` |
-| `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` (deprecated in `0.16.0`, soft-removed in `0.18.0`) |
+| `commentLineBufferSize` | Integer                   | no       | 128                               | `0.11.0` (deprecated in `0.16.0`, soft-removed in `0.18.0`, removed in `0.19.0`) |
 | `sourceFileCharset`     | String                    | no       | `${project.build.sourceEncoding}` | `0.11.0` (deprecated in `0.15.0`, soft-removed in `0.16.0`, removed in `0.18.0`) |
 
 * _Deprecated_: Setting this property might have no effect but will log a descriptive warning
@@ -276,6 +306,10 @@ Overview of all configuration parameters:
 * _Removed_: The property no longer exists and the plugin behaves as if it never did.
 
 ## Changelog
+
+### Version 0.19.0
+* [#35](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/35): Recognize multiple import statements on same line in groovy sources 
+* _Remove_ `commentLineBufferSize`
 
 ### Version 0.18.0
 * Fix possible file resource leak while iterating source files

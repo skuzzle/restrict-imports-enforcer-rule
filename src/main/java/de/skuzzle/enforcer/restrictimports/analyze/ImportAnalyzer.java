@@ -27,13 +27,15 @@ class ImportAnalyzer {
      * @return a {@link MatchedFile} holds information about the found matches. Returns an
      *         empty optional if no matches were found.
      */
-    public Optional<MatchedFile> matchFile(ParsedFile sourceFile, BannedImportGroups groups) {
+    Optional<MatchedFile> matchFile(ParsedFile sourceFile, BannedImportGroups groups) {
         LOGGER.trace("Analyzing {} for banned imports", sourceFile);
 
         final BannedImportGroup group = groups.selectGroupFor(sourceFile.getFqcn()).orElse(null);
         if (group == null) {
+            LOGGER.trace("No rule group matched {}", sourceFile);
             return Optional.empty();
         }
+        LOGGER.trace("Selected {} for {}", group, sourceFile);
 
         final List<MatchedImport> matches = new ArrayList<>();
         for (ImportStatement importStmt : sourceFile.getImports()) {
@@ -44,6 +46,8 @@ class ImportAnalyzer {
         if (matches.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(new MatchedFile(sourceFile.getPath(), matches, group));
+        final MatchedFile matchedFile = new MatchedFile(sourceFile.getPath(), matches, group);
+        LOGGER.debug("Found banned import matches: {}", matchedFile);
+        return Optional.of(matchedFile);
     }
 }

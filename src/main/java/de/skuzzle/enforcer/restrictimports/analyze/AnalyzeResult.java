@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Final result of analyzing the code base for banned imports.
+ */
 public final class AnalyzeResult {
 
     private final List<MatchedFile> srcMatches;

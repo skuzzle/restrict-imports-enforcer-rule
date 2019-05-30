@@ -25,6 +25,27 @@ public class KotlinGroovyLanguageSupportTest {
     }
 
     @Test
+    void testMultipleImportsInSameLine() {
+        assertThat(subject.parseImport("import java.util.List; import java.util.Collection;", 1)).containsOnly(
+                new ImportStatement("java.util.List", 1),
+                new ImportStatement("java.util.Collection", 1));
+    }
+
+    @Test
+    void testMultipleImportsInSameLineWithAlias() {
+        assertThat(subject.parseImport("import java.util.List as Set; import java.util.Collection;", 1)).containsOnly(
+                new ImportStatement("java.util.List", 1),
+                new ImportStatement("java.util.Collection", 1));
+    }
+
+    @Test
+    void testMultipleImportsInSameLineWithAliasNoSemicolonAtEnd() {
+        assertThat(subject.parseImport("import java.util.List as Set; import java.util.Collection", 2)).containsOnly(
+                new ImportStatement("java.util.List", 2),
+                new ImportStatement("java.util.Collection", 2));
+    }
+
+    @Test
     public void testInvalidImport2() {
         assertThat(subject.parseImport("importjava.util.List",1)).isEmpty();
     }

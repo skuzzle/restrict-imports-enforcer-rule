@@ -1,8 +1,8 @@
 pipeline {
   agent {
     docker {
-      image 'maven:3.6-jdk-8'
-      args '-v $HOME/.m2:/root/.m2 -u 0:0  -e MAVEN_OPTS="-Xmx300m"'
+      image 'maven:3.6.1-jdk-8'
+      args '-v $HOME/.m2:/root/.m2 -m 3g -e MAVEN_OPTS="-Xmx300m"'
     }
   }
   stages {

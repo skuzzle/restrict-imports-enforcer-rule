@@ -1,9 +1,9 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import java.util.Objects;
-
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
+
+import java.util.Objects;
 
 /**
  * Represents a single match of a banned import within a java source file.
@@ -25,6 +25,11 @@ public final class MatchedImport {
         this.matchedBy = matchedBy;
     }
 
+    /**
+     * The physical line within the source file in which the import has been matched. Number is always 1-based!
+     *
+     * @return The line number of the matched imports.
+     */
     public int getImportLine() {
         return this.importLine;
     }

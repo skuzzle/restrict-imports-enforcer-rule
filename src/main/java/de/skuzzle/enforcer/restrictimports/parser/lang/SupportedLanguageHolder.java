@@ -9,15 +9,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ServiceLoader;
 
+/**
+ * Helper class to list available {@link LanguageSupport} implementations.
+ */
 class SupportedLanguageHolder {
 
     private static final Logger logger = LoggerFactory.getLogger(SupportedLanguageHolder.class);
 
-    static final Map<String, LanguageSupport> supportedLanguages;
-
-    static {
-        supportedLanguages = lookupImplementations();
-    }
+    static final Map<String, LanguageSupport> supportedLanguages= lookupImplementations();
 
     static Optional<LanguageSupport> getLanguageSupport(String extension) {
         final String normalizedExtension = determineNormalizedExtension(extension);

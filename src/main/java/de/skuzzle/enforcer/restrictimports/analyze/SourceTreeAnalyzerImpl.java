@@ -2,6 +2,7 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 
 import de.skuzzle.enforcer.restrictimports.io.RuntimeIOException;
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatementParser;
+import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -41,14 +43,22 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
         for (final Path srcDir : directories) {
             try (Stream<Path> sourceFiles = listFiles(srcDir, supportedFileTypes)) {
                 sourceFiles
-                        .map(sourceFile -> fileParser.parse(sourceFile, getLanguageSupport(sourceFile)))
-                        .map(parsedFile -> importAnalyzer.matchFile(parsedFile, groups))
+                        .map(parseFileUsing(fileParser))
+                        .map(analyzeAgainst(groups))
                         .filter(Optional::isPresent)
                         .map(Optional::get)
                         .forEach(matchedFiles::add);
             }
         }
         return matchedFiles;
+    }
+
+    private Function<Path, ParsedFile> parseFileUsing(ImportStatementParser parser) {
+        return sourceFile -> parser.parse(sourceFile, getLanguageSupport(sourceFile));
+    }
+
+    private Function<ParsedFile, Optional<MatchedFile>> analyzeAgainst(BannedImportGroups groups) {
+        return parsedFile -> importAnalyzer.matchFile(parsedFile, groups);
     }
 
     private Stream<Path> listFiles(Path root, Predicate<Path> filter) {

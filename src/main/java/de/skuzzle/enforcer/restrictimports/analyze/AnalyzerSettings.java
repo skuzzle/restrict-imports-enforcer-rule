@@ -1,10 +1,16 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
+import com.google.common.base.MoreObjects;
+
 import java.nio.charset.Charset;
 import java.nio.file.Path;
-import java.util.*;
-
-import com.google.common.base.MoreObjects;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Defines context information for the {@link SourceTreeAnalyzer}.
@@ -63,7 +69,7 @@ public final class AnalyzerSettings {
         return obj == this || obj instanceof AnalyzerSettings
                 && Objects.equals(sourceFileCharset, ((AnalyzerSettings) obj).sourceFileCharset)
                 && Objects.equals(srcDirectories, ((AnalyzerSettings) obj).srcDirectories)
-        && Objects.equals(testDirectories, ((AnalyzerSettings) obj).testDirectories);
+                && Objects.equals(testDirectories, ((AnalyzerSettings) obj).testDirectories);
     }
 
     @Override

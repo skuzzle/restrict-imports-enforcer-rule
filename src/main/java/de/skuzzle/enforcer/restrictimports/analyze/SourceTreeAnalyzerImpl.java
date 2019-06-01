@@ -1,11 +1,11 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import de.skuzzle.enforcer.restrictimports.io.RuntimeIOException;
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatementParser;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -69,7 +69,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
             return Files.find(root, Integer.MAX_VALUE, (path, bfa) -> filter.test(path));
         } catch (final IOException e) {
-            throw new RuntimeIOException("Encountered IOException while listing files of " + root, e);
+            throw new UncheckedIOException("Encountered IOException while listing files of " + root, e);
         }
     }
 

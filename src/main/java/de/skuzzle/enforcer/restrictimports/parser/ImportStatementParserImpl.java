@@ -1,12 +1,12 @@
 package de.skuzzle.enforcer.restrictimports.parser;
 
 import com.google.common.base.Preconditions;
-import de.skuzzle.enforcer.restrictimports.io.RuntimeIOException;
 import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -76,7 +76,7 @@ class ImportStatementParserImpl implements ImportStatementParser {
 
             return new ParsedFile(sourceFilePath, packageName, fqcn, imports);
         } catch (final IOException e) {
-            throw new RuntimeIOException(String.format(
+            throw new UncheckedIOException(String.format(
                     "Encountered IOException while analyzing %s for banned imports",
                     sourceFilePath), e);
         }

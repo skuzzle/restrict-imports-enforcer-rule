@@ -1,10 +1,9 @@
 package de.skuzzle.enforcer.restrictimports.parser;
 
-import de.skuzzle.enforcer.restrictimports.io.RuntimeIOException;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -40,7 +39,7 @@ class SkipCommentsLineSupplier implements LineSupplier {
         try {
             reader.close();
         } catch (final IOException e) {
-            throw new RuntimeIOException("Error while closing reader", e);
+            throw new UncheckedIOException("Error while closing reader", e);
         }
     }
 }

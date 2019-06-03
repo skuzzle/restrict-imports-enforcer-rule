@@ -7,7 +7,6 @@ import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
 import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
 import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
-import de.skuzzle.enforcer.restrictimports.io.RuntimeIOException;
 import org.apache.maven.enforcer.rule.api.EnforcerRule;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
@@ -15,6 +14,7 @@ import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -75,7 +75,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
             } else {
                 LOGGER.debug("No banned imports found");
             }
-        } catch (final RuntimeIOException e) {
+        } catch (final UncheckedIOException e) {
             throw new EnforcerRuleException(e.getMessage(), e);
         } catch (final BannedImportDefinitionException e) {
             throw new EnforcerRuleException("RestrictImports rule configuration error: " + e.getMessage(), e);

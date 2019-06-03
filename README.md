@@ -306,6 +306,8 @@ Overview of all configuration parameters:
 * _Removed_: The property no longer exists and the plugin behaves as if it never did.
 
 ## Changelog
+### Version 1.0.1
+* [#37](https://github.com/skuzzle/restrict-imports-enforcer-rule/pull/37): Fix version incompatibility
 
 ### Version 1.0.0
 * [#35](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/35): Recognize multiple import statements on same line in groovy sources 

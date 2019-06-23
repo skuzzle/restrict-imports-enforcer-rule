@@ -1,14 +1,14 @@
 package de.skuzzle.enforcer.restrictimports.parser.lang;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 
 public class JavaLanguageSupport implements LanguageSupport {
 
@@ -35,7 +35,7 @@ public class JavaLanguageSupport implements LanguageSupport {
             return ImmutableList.of();
         }
 
-        // There can be multiple import statements within te same line, so
+        // There can be multiple import statements within the same line, so
         // we simply split them at their ';'
         final String trimmed = line.trim();
         int start = 0;
@@ -43,11 +43,12 @@ public class JavaLanguageSupport implements LanguageSupport {
         final List<ImportStatement> imports = new ArrayList<>();
         while (semiIdx > 0) {
             final String importStatement = trimmed.substring(start, semiIdx);
-            final String packageOnly = importStatement
+            final String importName = importStatement
                     .trim()
                     .substring(IMPORT_STATEMENT.length())
                     .trim();
-            imports.add(new ImportStatement(packageOnly, lineNumber));
+
+            imports.add(new ImportStatement(importName, lineNumber));
 
             start = semiIdx + 1;
             semiIdx = trimmed.indexOf(';', start);

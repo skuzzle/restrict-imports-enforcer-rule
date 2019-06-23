@@ -1,14 +1,14 @@
 package de.skuzzle.enforcer.restrictimports.parser.lang;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 
 public class KotlinGroovyLanguageSupport implements LanguageSupport {
 
@@ -35,7 +35,7 @@ public class KotlinGroovyLanguageSupport implements LanguageSupport {
             return ImmutableList.of();
         }
 
-        // There can be multiple import statements within te same line, so
+        // There can be multiple import statements within the same line, so
         // we simply split them at their ';'
         final String trimmed = line.trim();
         int start = 0;
@@ -47,19 +47,23 @@ public class KotlinGroovyLanguageSupport implements LanguageSupport {
                     .trim()
                     .substring(IMPORT_STATEMENT.length())
                     .trim();
-            imports.add(new ImportStatement(removeAlias(packageOnly), lineNumber));
+
+            final String importName = removeAlias(packageOnly);
+            imports.add(new ImportStatement(importName, lineNumber));
 
             start = semiIdx + 1;
             semiIdx = trimmed.indexOf(';', start);
 
-            // the statement must not necessarily end in semicolon, so make sure we consume the line until the end
+            // the statement must not necessarily end in semicolon, so make sure we
+            // consume the line until the end
             if (semiIdx < 0) {
                 semiIdx = trimmed.length();
             }
         }
         // lines do not necessarily end in semicolons
         if (semiIdx < 0) {
-            imports.add(new ImportStatement(removeAlias(extractPackageName(line)), lineNumber));
+            final String importName = removeAlias(extractPackageName(line));
+            imports.add(new ImportStatement(importName, lineNumber));
         }
         return imports;
     }

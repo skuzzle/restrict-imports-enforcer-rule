@@ -1,14 +1,14 @@
 package de.skuzzle.enforcer.restrictimports.formatting;
 
-import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.analyze.MatchedFile;
-import de.skuzzle.enforcer.restrictimports.analyze.MatchedImport;
-
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.analyze.MatchedFile;
+import de.skuzzle.enforcer.restrictimports.analyze.MatchedImport;
 
 class MatchFormatterImpl implements MatchFormatter {
 
@@ -31,10 +31,14 @@ class MatchFormatterImpl implements MatchFormatter {
             formatGroupedMatches(roots, b, testMatchesByGroup);
         }
 
+        final long seconds = analyzeResult.getDuration() / 1000;
+        b.append("\n\nAnalysis took ").append(seconds).append(" seconds");
+
         return b.toString();
     }
 
-    private void formatGroupedMatches(Collection<Path> roots, StringBuilder b, Map<BannedImportGroup, List<MatchedFile>> matchesByGroup) {
+    private void formatGroupedMatches(Collection<Path> roots, StringBuilder b,
+            Map<BannedImportGroup, List<MatchedFile>> matchesByGroup) {
         matchesByGroup.forEach((group, matches) -> {
             final String message = group.getReason();
             if (message != null && !message.isEmpty()) {

@@ -1,12 +1,6 @@
 package de.skuzzle.enforcer.restrictimports.formatting;
 
-import com.google.common.collect.ImmutableList;
-import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.analyze.MatchedFile;
-import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.net.URISyntaxException;
@@ -14,7 +8,15 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collection;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.google.common.collect.ImmutableList;
+
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.analyze.MatchedFile;
+import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 
 public class MatchFormatterImplTest {
 
@@ -44,6 +46,7 @@ public class MatchFormatterImplTest {
     @Test
     public void testFormatMatchInCompileAndTestCode() throws Exception {
         final AnalyzeResult analyzeResult = AnalyzeResult.builder()
+                .withDuration(5000)
                 .withMatches(MatchedFile.forSourceFile(sourceFile)
                         .matchedBy(group)
                         .withMatchAt(3, "java.util.ArrayList", PackagePattern.parse("java.util.*")))
@@ -61,12 +64,14 @@ public class MatchFormatterImplTest {
                 "\nBanned imports detected in TEST code:\n\n" +
                 "Reason: Some reason\n" +
                 "\tin file: SampleJavaFile.java\n" +
-                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n");
+                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n\n\n" +
+                "Analysis took 5 seconds");
     }
 
     @Test
     public void testFormatMatchInCompileCode() throws Exception {
         final AnalyzeResult analyzeResult = AnalyzeResult.builder()
+                .withDuration(5000)
                 .withMatches(MatchedFile.forSourceFile(sourceFile)
                         .matchedBy(group)
                         .withMatchAt(3, "java.util.ArrayList", PackagePattern.parse("java.util.*")))
@@ -77,12 +82,14 @@ public class MatchFormatterImplTest {
         assertThat(formatted).isEqualTo("\nBanned imports detected:\n\n" +
                 "Reason: Some reason\n" +
                 "\tin file: SampleJavaFile.java\n" +
-                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n");
+                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n\n\n" +
+                "Analysis took 5 seconds");
     }
 
     @Test
     public void testFormatMatchInTestCode() throws Exception {
         final AnalyzeResult analyzeResult = AnalyzeResult.builder()
+                .withDuration(5000)
                 .withMatchesInTestCode(MatchedFile.forSourceFile(sourceFile)
                         .matchedBy(group)
                         .withMatchAt(3, "java.util.ArrayList", PackagePattern.parse("java.util.*")))
@@ -93,6 +100,7 @@ public class MatchFormatterImplTest {
         assertThat(formatted).isEqualTo("\nBanned imports detected in TEST code:\n\n" +
                 "Reason: Some reason\n" +
                 "\tin file: SampleJavaFile.java\n" +
-                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n");
+                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n\n\n" +
+                "Analysis took 5 seconds");
     }
 }

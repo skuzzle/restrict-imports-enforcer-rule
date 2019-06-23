@@ -1,7 +1,5 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import com.google.common.base.MoreObjects;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,6 +8,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.google.common.base.MoreObjects;
+
 /**
  * Final result of analyzing the code base for banned imports.
  */
@@ -17,10 +17,12 @@ public final class AnalyzeResult {
 
     private final List<MatchedFile> srcMatches;
     private final List<MatchedFile> testMatches;
+    private final long duration;
 
-    private AnalyzeResult(List<MatchedFile> srcMatches, List<MatchedFile> testMatches) {
+    private AnalyzeResult(List<MatchedFile> srcMatches, List<MatchedFile> testMatches, long duration) {
         this.srcMatches = srcMatches;
         this.testMatches = testMatches;
+        this.duration = duration;
     }
 
     public static Builder builder() {
@@ -28,8 +30,7 @@ public final class AnalyzeResult {
     }
 
     /**
-     * Contains all the matches that were found within the analyzed compile
-     * source files.
+     * Contains all the matches that were found within the analyzed compile source files.
      *
      * @return The list of found banned imports.
      */
@@ -38,7 +39,8 @@ public final class AnalyzeResult {
     }
 
     /**
-     * Returns the matches that occurred in compile source files grouped by their {@link BannedImportGroup}
+     * Returns the matches that occurred in compile source files grouped by their
+     * {@link BannedImportGroup}
      *
      * @return The matches grouped by {@link BannedImportGroup}
      */
@@ -48,8 +50,7 @@ public final class AnalyzeResult {
     }
 
     /**
-     * Contains all the matches that were found within the analyzed test source
-     * files.
+     * Contains all the matches that were found within the analyzed test source files.
      *
      * @return The list of found banned imports.
      */
@@ -58,7 +59,8 @@ public final class AnalyzeResult {
     }
 
     /**
-     * Returns the matches that occurred in test source files grouped by their {@link BannedImportGroup}
+     * Returns the matches that occurred in test source files grouped by their
+     * {@link BannedImportGroup}
      *
      * @return The matches grouped by {@link BannedImportGroup}
      */
@@ -68,8 +70,8 @@ public final class AnalyzeResult {
     }
 
     /**
-     * Returns whether at least one banned import has been found within the
-     * analyzed compile OR test source files.
+     * Returns whether at least one banned import has been found within the analyzed
+     * compile OR test source files.
      *
      * @return Whether a banned import has been found.
      */
@@ -78,8 +80,8 @@ public final class AnalyzeResult {
     }
 
     /**
-     * Returns whether at least one banned import has been found within the
-     * analyzed compile source code.
+     * Returns whether at least one banned import has been found within the analyzed
+     * compile source code.
      *
      * @return Whether a banned import has been found.
      */
@@ -88,13 +90,22 @@ public final class AnalyzeResult {
     }
 
     /**
-     * Returns whether at least one banned import has been found within the
-     * analyzed test source code.
+     * Returns whether at least one banned import has been found within the analyzed test
+     * source code.
      *
      * @return Whether a banned import has been found.
      */
     public boolean bannedImportsInTestCode() {
         return !testMatches.isEmpty();
+    }
+
+    /**
+     * How long the analysis took, in ms.
+     *
+     * @return Analysis duration in ms.
+     */
+    public long getDuration() {
+        return this.duration;
     }
 
     @Override
@@ -114,12 +125,14 @@ public final class AnalyzeResult {
         return MoreObjects.toStringHelper(this)
                 .add("srcMatches", this.srcMatches)
                 .add("testMatches", this.testMatches)
+                .add("duration", duration)
                 .toString();
     }
 
     public static class Builder {
         private final List<MatchedFile> srcMatches = new ArrayList<>();
         private final List<MatchedFile> testMatches = new ArrayList<>();
+        private long duration;
 
         private Builder() {
             // hidden
@@ -147,8 +160,13 @@ public final class AnalyzeResult {
             return this;
         }
 
+        public Builder withDuration(long duration) {
+            this.duration = duration;
+            return this;
+        }
+
         public AnalyzeResult build() {
-            return new AnalyzeResult(srcMatches, testMatches);
+            return new AnalyzeResult(srcMatches, testMatches, duration);
         }
     }
 }

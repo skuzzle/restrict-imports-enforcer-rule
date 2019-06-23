@@ -1,9 +1,5 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import de.skuzzle.enforcer.restrictimports.parser.ImportStatementParser;
-import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
-import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -14,6 +10,10 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatementParser;
+import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
+import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
@@ -27,18 +27,24 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
     @Override
     public AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroups groups) {
+        final long start = System.currentTimeMillis();
         final ImportStatementParser fileParser = ImportStatementParser.defaultInstance(settings.getSourceFileCharset());
 
         final Collection<MatchedFile> srcMatches = analyzeDirectories(groups, fileParser, settings.getSrcDirectories());
-        final Collection<MatchedFile> testMatches = analyzeDirectories(groups, fileParser, settings.getTestDirectories());
+        final Collection<MatchedFile> testMatches = analyzeDirectories(groups, fileParser,
+                settings.getTestDirectories());
 
+        final long stop = System.currentTimeMillis();
+        final long duration = stop - start;
         return AnalyzeResult.builder()
                 .withMatches(srcMatches)
                 .withMatchesInTestCode(testMatches)
+                .withDuration(duration)
                 .build();
     }
 
-    private Collection<MatchedFile> analyzeDirectories(BannedImportGroups groups, ImportStatementParser fileParser, Iterable<Path> directories) {
+    private Collection<MatchedFile> analyzeDirectories(BannedImportGroups groups, ImportStatementParser fileParser,
+            Iterable<Path> directories) {
         final Collection<MatchedFile> matchedFiles = new ArrayList<>();
         for (final Path srcDir : directories) {
             try (Stream<Path> sourceFiles = listFiles(srcDir, supportedFileTypes)) {
@@ -86,7 +92,8 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
     }
 
     /**
-     * Predicate that matches source files for which a {@link LanguageSupport} implementation is known.
+     * Predicate that matches source files for which a {@link LanguageSupport}
+     * implementation is known.
      */
     private class SourceFileMatcher implements Predicate<Path> {
 

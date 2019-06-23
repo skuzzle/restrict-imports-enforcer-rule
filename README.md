@@ -308,6 +308,7 @@ Overview of all configuration parameters:
 ## Changelog
 ### Version 1.0.1
 * [#37](https://github.com/skuzzle/restrict-imports-enforcer-rule/pull/37): Fix version incompatibility
+* Display analysis duration
 
 ### Version 1.0.0
 * [#35](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/35): Recognize multiple import statements on same line in groovy sources 

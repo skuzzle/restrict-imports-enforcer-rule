@@ -64,6 +64,7 @@ information.
   * [Syntactical](#syntactical-limitation)
   * [Conceptual](#conceptual-limitation)
 * [Configuration options](#configuration-options)
+* [Versioning and Compatibility](#versioning-and-compatibility)
 * [Changelog](#changelog)
 
 ## Rationale
@@ -304,6 +305,15 @@ Overview of all configuration parameters:
 * _Deprecated_: Setting this property might have no effect but will log a descriptive warning
 * _Soft-Removed_: Setting this property will fail the build with a descriptive warning that this property is no longer supported
 * _Removed_: The property no longer exists and the plugin behaves as if it never did.
+
+## Versioning and Compatibility
+This project adheres to version 2 of the [semantic version specification](http://semver.org).
+
+You can always safely update the _minor_ and the _patch_ version of the rule's dependency entry within a pom.xml without 
+breaking your build. Interface or behavioral changes will only ever be introduced with a new _major_ version.
+
+This artifact is (currently) not meant to be used as standalone dependency. Thus breaking code changes might occur 
+even between two different patch versions!
 
 ## Changelog
 ### Version 1.0.1

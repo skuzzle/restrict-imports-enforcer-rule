@@ -1,18 +1,6 @@
 package de.skuzzle.enforcer.restrictimports.rule;
 
-import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
-import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
-import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
-import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
-import org.apache.maven.enforcer.rule.api.EnforcerRule;
-import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
-import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
-import org.apache.maven.project.MavenProject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.google.common.base.Preconditions.checkArgument;
 
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
@@ -24,7 +12,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import org.apache.maven.enforcer.rule.api.EnforcerRule;
+import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
+import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
+import org.apache.maven.project.MavenProject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
+import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
+import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
 
 /**
  * Enforcer rule which restricts the usage of certain packages or classes within a Java
@@ -69,7 +70,8 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
                     throw new EnforcerRuleException(errorMessage);
                 } else {
                     LOGGER.warn(errorMessage);
-                    LOGGER.warn("\nDetected banned imports will not fail the build as the 'failBuild' flag is set to false!");
+                    LOGGER.warn(
+                            "\nDetected banned imports will not fail the build as the 'failBuild' flag is set to false!");
                 }
 
             } else {
@@ -125,9 +127,9 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         return Charset.defaultCharset();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private Collection<Path> listSourceRoots(Collection pathNames) {
-        final Collection<String> pathNamesAsString = (Collection<String>) pathNames;
+        final Collection<String> pathNamesAsString = pathNames;
         return pathNamesAsString.stream()
                 .peek(pathName -> LOGGER.debug("Including source dir: {}", pathName))
                 .map(Paths::get)

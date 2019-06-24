@@ -64,8 +64,8 @@ public class MatchFormatterImplTest {
                 "\nBanned imports detected in TEST code:\n\n" +
                 "Reason: Some reason\n" +
                 "\tin file: SampleJavaFile.java\n" +
-                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n\n\n" +
-                "Analysis took 5 seconds");
+                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n\n" +
+                "Analysis took 5 seconds\n");
     }
 
     @Test
@@ -82,8 +82,8 @@ public class MatchFormatterImplTest {
         assertThat(formatted).isEqualTo("\nBanned imports detected:\n\n" +
                 "Reason: Some reason\n" +
                 "\tin file: SampleJavaFile.java\n" +
-                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n\n\n" +
-                "Analysis took 5 seconds");
+                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n\n" +
+                "Analysis took 5 seconds\n");
     }
 
     @Test
@@ -100,7 +100,7 @@ public class MatchFormatterImplTest {
         assertThat(formatted).isEqualTo("\nBanned imports detected in TEST code:\n\n" +
                 "Reason: Some reason\n" +
                 "\tin file: SampleJavaFile.java\n" +
-                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n\n\n" +
-                "Analysis took 5 seconds");
+                "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n\n" +
+                "Analysis took 5 seconds\n");
     }
 }

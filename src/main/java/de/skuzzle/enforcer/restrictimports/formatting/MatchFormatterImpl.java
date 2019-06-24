@@ -32,7 +32,7 @@ class MatchFormatterImpl implements MatchFormatter {
         }
 
         final long seconds = analyzeResult.getDuration() / 1000;
-        b.append("\n\nAnalysis took ").append(seconds).append(" seconds");
+        b.append("\nAnalysis took ").append(seconds).append(" seconds\n");
 
         return b.toString();
     }

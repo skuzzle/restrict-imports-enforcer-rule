@@ -1,11 +1,12 @@
 jdk:
   - oraclejdk8
   - oraclejdk9
+  - oraclejdk11
   
 language: java
 
 script:
-  - mvn clean verify
+  - mvn clean package
   
 after_success:
   - mvn clean verify jacoco:report jacoco:report-integration coveralls:report

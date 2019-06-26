@@ -1,9 +1,10 @@
 package de.skuzzle.enforcer.restrictimports.parser.lang;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -37,35 +38,15 @@ public class KotlinGroovyLanguageSupport implements LanguageSupport {
 
         // There can be multiple import statements within the same line, so
         // we simply split them at their ';'
-        final String trimmed = line.trim();
-        int start = 0;
-        int semiIdx = trimmed.indexOf(';');
-        final List<ImportStatement> imports = new ArrayList<>();
-        while (start < trimmed.length() && semiIdx >= 0) {
-            final String importStatement = trimmed.substring(start, semiIdx);
-            final String packageOnly = importStatement
-                    .trim()
-                    .substring(IMPORT_STATEMENT.length())
-                    .trim();
-
-            final String importName = removeAlias(packageOnly);
-            imports.add(new ImportStatement(importName, lineNumber));
-
-            start = semiIdx + 1;
-            semiIdx = trimmed.indexOf(';', start);
-
-            // the statement must not necessarily end in semicolon, so make sure we
-            // consume the line until the end
-            if (semiIdx < 0) {
-                semiIdx = trimmed.length();
-            }
-        }
-        // lines do not necessarily end in semicolons
-        if (semiIdx < 0) {
-            final String importName = removeAlias(extractPackageName(line));
-            imports.add(new ImportStatement(importName, lineNumber));
-        }
-        return imports;
+		final String[] parts = line.split(";");
+		return Arrays.stream(parts)
+				.map(String::trim)
+				.filter(s -> !s.isEmpty())
+				.map(s -> s.substring(IMPORT_STATEMENT.length()))
+				.map(String::trim)
+				.map(this::removeAlias)
+				.map(importName -> new ImportStatement(importName, lineNumber))
+				.collect(Collectors.toList());
     }
 
     private boolean is(String compare, String line) {

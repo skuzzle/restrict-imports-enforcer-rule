@@ -77,7 +77,7 @@ final class PackagePatternImpl implements PackagePattern {
     }
 
     private boolean matchesInternal(boolean matchIsStatic, String[] matchParts,
-                                    boolean partsIsStatic, String[] parts) {
+            boolean partsIsStatic, String[] parts) {
         if (matchIsStatic != partsIsStatic) {
             return false;
         } else if (parts.length > matchParts.length) {

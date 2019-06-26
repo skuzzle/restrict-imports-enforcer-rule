@@ -46,7 +46,8 @@ class ImportStatementParserImpl implements ImportStatementParser {
             for (final Iterator<String> it = lines.map(String::trim).iterator(); it.hasNext(); ++row) {
                 final String line = it.next();
 
-                // Implementation note: We check for empty lines here (instead of in LineSupplier implementation)
+                // Implementation note: We check for empty lines here (instead of in
+                // LineSupplier implementation)
                 // so that we are able to keep track of correct line numbers.
                 if (line.isEmpty()) {
                     continue;
@@ -54,7 +55,8 @@ class ImportStatementParserImpl implements ImportStatementParser {
 
                 final Optional<String> packageDeclaration = languageSupport.parsePackage(line);
                 if (packageDeclaration.isPresent()) {
-                    Preconditions.checkState(packageName.isEmpty(), "found duplicate package statement in '%s'", sourceFilePath);
+                    Preconditions.checkState(packageName.isEmpty(), "found duplicate package statement in '%s'",
+                            sourceFilePath);
                     // package ...; statement
 
                     // INVARIANT: our own package name occurs in the first non-empty line

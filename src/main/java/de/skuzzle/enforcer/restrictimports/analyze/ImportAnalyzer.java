@@ -40,7 +40,8 @@ class ImportAnalyzer {
         final List<MatchedImport> matches = new ArrayList<>();
         for (ImportStatement importStmt : sourceFile.getImports()) {
             group.ifImportIsBanned(importStmt.getImportName())
-                    .map(bannedImport -> new MatchedImport(importStmt.getLine(), importStmt.getImportName(), bannedImport))
+                    .map(bannedImport -> new MatchedImport(importStmt.getLine(), importStmt.getImportName(),
+                            bannedImport))
                     .ifPresent(matches::add);
         }
         if (matches.isEmpty()) {

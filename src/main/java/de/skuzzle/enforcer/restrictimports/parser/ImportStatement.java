@@ -20,7 +20,8 @@ public final class ImportStatement {
         Preconditions.checkArgument(importName != null && !importName.isEmpty(), "importName must not be empty");
         Preconditions.checkArgument(!importName.startsWith("import "),
                 "importName should be the raw package name without 'import ' prefix but was: '%s'", importName);
-        Preconditions.checkArgument(importName.trim().equals(importName), "importName has leading or trailing spaces: '%s'", importName);
+        Preconditions.checkArgument(importName.trim().equals(importName),
+                "importName has leading or trailing spaces: '%s'", importName);
         Preconditions.checkArgument(line > 0, "line numbers should be 1-based and not start at 0");
 
         this.importName = importName;
@@ -29,7 +30,8 @@ public final class ImportStatement {
     }
 
     /**
-     * The physical line within the source file in which the import has occurred. Number is always 1-based!
+     * The physical line within the source file in which the import has occurred. Number
+     * is always 1-based!
      *
      * @return The line number of the matched imports.
      */

@@ -16,7 +16,7 @@ class SupportedLanguageHolder {
 
     private static final Logger logger = LoggerFactory.getLogger(SupportedLanguageHolder.class);
 
-    static final Map<String, LanguageSupport> supportedLanguages= lookupImplementations();
+    static final Map<String, LanguageSupport> supportedLanguages = lookupImplementations();
 
     static Optional<LanguageSupport> getLanguageSupport(String extension) {
         final String normalizedExtension = determineNormalizedExtension(extension);
@@ -29,8 +29,8 @@ class SupportedLanguageHolder {
     }
 
     /**
-     * Looks up the available {@link LanguageSupport} implementations that can be
-     * found using Java's {@link ServiceLoader}
+     * Looks up the available {@link LanguageSupport} implementations that can be found
+     * using Java's {@link ServiceLoader}
      *
      * @return The implementations, mapped by their supported extensions.
      */

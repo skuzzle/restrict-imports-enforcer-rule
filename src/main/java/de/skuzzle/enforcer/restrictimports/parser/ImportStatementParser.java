@@ -20,10 +20,10 @@ public interface ImportStatementParser {
     }
 
     /**
-     * Parses the given source file using the given {@link LanguageSupport}
-     * implementation to recognize import statements.
+     * Parses the given source file using the given {@link LanguageSupport} implementation
+     * to recognize import statements.
      *
-     * @param sourceFilePath  The path of the file to parse.
+     * @param sourceFilePath The path of the file to parse.
      * @param languageSupport For parsing the import statements.
      * @return The parsed file.
      */

@@ -38,15 +38,15 @@ public class KotlinGroovyLanguageSupport implements LanguageSupport {
 
         // There can be multiple import statements within the same line, so
         // we simply split them at their ';'
-		final String[] parts = line.split(";");
-		return Arrays.stream(parts)
-				.map(String::trim)
-				.filter(s -> !s.isEmpty())
-				.map(s -> s.substring(IMPORT_STATEMENT.length()))
-				.map(String::trim)
-				.map(this::removeAlias)
-				.map(importName -> new ImportStatement(importName, lineNumber))
-				.collect(Collectors.toList());
+        final String[] parts = line.split(";");
+        return Arrays.stream(parts)
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(s -> s.substring(IMPORT_STATEMENT.length()))
+                .map(String::trim)
+                .map(this::removeAlias)
+                .map(importName -> new ImportStatement(importName, lineNumber))
+                .collect(Collectors.toList());
     }
 
     private boolean is(String compare, String line) {

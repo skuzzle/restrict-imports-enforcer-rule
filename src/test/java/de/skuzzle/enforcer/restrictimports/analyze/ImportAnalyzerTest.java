@@ -47,7 +47,7 @@ class ImportAnalyzerTest {
                         .withBasePackages("foo.bar", "de.skuzzle.test.*")
                         .withBannedImports("de.skuzzle.sample.*"))
                 .build();
-           final Optional<MatchedFile> matches = this.subject.matchFile(parsedFile, groups);
+        final Optional<MatchedFile> matches = this.subject.matchFile(parsedFile, groups);
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("de.skuzzle.sample.*");

@@ -77,7 +77,7 @@ public final class AnalyzerSettings {
         return MoreObjects.toStringHelper(this)
                 .add("sourceFileCharset", sourceFileCharset)
                 .add("srcDirectories", srcDirectories)
-                .add("testDirectories",testDirectories)
+                .add("testDirectories", testDirectories)
                 .toString();
     }
 
@@ -106,7 +106,7 @@ public final class AnalyzerSettings {
             return this;
         }
 
-        public Builder withTestDirectories(Path...testDirectories) {
+        public Builder withTestDirectories(Path... testDirectories) {
             this.testDirectories.addAll(Arrays.asList(testDirectories));
             return this;
         }

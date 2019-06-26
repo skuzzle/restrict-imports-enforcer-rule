@@ -17,7 +17,8 @@ public final class MatchedImport {
     private final PackagePattern matchedBy;
 
     MatchedImport(int importLine, String matchedString, PackagePattern matchedBy) {
-        Preconditions.checkArgument(matchedString != null && !matchedString.isEmpty(), "matched String must not be empty");
+        Preconditions.checkArgument(matchedString != null && !matchedString.isEmpty(),
+                "matched String must not be empty");
         Preconditions.checkArgument(matchedBy != null, "matchedBy should not be null");
         Preconditions.checkArgument(importLine > 0, "line numbers should be 1-based and not start at 0");
         this.importLine = importLine;
@@ -26,7 +27,8 @@ public final class MatchedImport {
     }
 
     /**
-     * The physical line within the source file in which the import has been matched. Number is always 1-based!
+     * The physical line within the source file in which the import has been matched.
+     * Number is always 1-based!
      *
      * @return The line number of the matched imports.
      */

@@ -307,6 +307,7 @@ Overview of all configuration parameters:
 
 ## Changelog
 ### Version 1.0.1
+* [#39](https://github.com/skuzzle/restrict-imports-enforcer-rule/pull/39): Handle double semicolon after import statement
 * [#37](https://github.com/skuzzle/restrict-imports-enforcer-rule/pull/37): Fix version incompatibility
 * Display analysis duration
 

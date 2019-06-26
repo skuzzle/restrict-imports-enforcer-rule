@@ -1,11 +1,15 @@
+language: java
 jdk:
   - oraclejdk8
   - oraclejdk9
-  
-language: java
+  - oraclejdk11 
 
+cache:
+  directories:
+  - $HOME/.m2
+  
 script:
-  - mvn clean verify
+  - mvn -B clean package 
   
 after_success:
-  - mvn clean verify jacoco:report jacoco:report-integration coveralls:report
+  - mvn -B clean verify jacoco:report jacoco:report-integration coveralls:report

@@ -69,4 +69,17 @@ public class KotlinGroovyLanguageSupportTest {
     public void testInvalidPackageParse2() {
         assertThat(subject.parsePackage("")).isNotPresent();
     }
+    
+    @Test
+	void testDanglingSemicolonSingleImport() throws Exception {
+        assertThat(subject.parseImport("import java.util.List; ;;", 1)).containsOnly(
+                new ImportStatement("java.util.List", 1));
+	}
+    
+    @Test
+	void testDanglingSemicolonMultipleImports() throws Exception {
+        assertThat(subject.parseImport("import java.util.List;import java.util.Collection;;", 1)).containsOnly(
+                new ImportStatement("java.util.List", 1),
+                new ImportStatement("java.util.Collection", 1));
+	}
 }

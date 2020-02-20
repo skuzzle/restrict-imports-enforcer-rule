@@ -84,6 +84,8 @@ public class BannedImportGroupDefinition {
         checkArgument(this.bannedImports.isEmpty(),
                 "Configuration error: you should either specify a single banned import using <bannedImport> or multiple "
                         + "banned imports using <bannedImports> but not both");
+        checkArgument(this.bannedImport == null,
+                "If you want to specify multiple banned imports you have to wrap them in a <bannedImports> tag");
         this.bannedImport = PackagePattern.parse(bannedImport);
     }
 
@@ -101,6 +103,8 @@ public class BannedImportGroupDefinition {
         checkArgument(this.allowedImports.isEmpty(),
                 "Configuration error: you should either specify a single allowed import using <allowedImport> or multiple "
                         + "allowed imports using <allowedImports> but not both");
+        checkArgument(this.allowedImport == null,
+                "If you want to specify multiple allowed imports you have to wrap them in a <allowedImports> tag");
         this.allowedImport = PackagePattern.parse(allowedImport);
     }
 
@@ -115,6 +119,8 @@ public class BannedImportGroupDefinition {
         checkArgument(this.exclusions.isEmpty(),
                 "Configuration error: you should either specify a single exclusion using <exclusion> or multiple "
                         + "exclusions using <exclusions> but not both");
+        checkArgument(this.exclusion == null,
+                "If you want to specify multiple exclusions you have to wrap them in a <exclusions> tag");
         this.exclusion = PackagePattern.parse(exclusion);
     }
 

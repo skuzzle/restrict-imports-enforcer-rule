@@ -83,6 +83,27 @@ public class RestrictImportsTest {
     }
 
     @Test
+    void testConsistentConfigurationSetMultipleBannedImportWithoutGroupingTag() throws Exception {
+        this.subject.setBannedImport("foo.com.**");
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> this.subject.setBannedImport("foo2.com.**"));
+    }
+
+    @Test
+    void testConsistentConfigurationSetMultipleAllowedImportWithoutGroupingTag() throws Exception {
+        this.subject.setAllowedImport("foo.com.**");
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> this.subject.setAllowedImport("foo2.com.**"));
+    }
+
+    @Test
+    void testConsistentConfigurationSetMultipleExclusionstWithoutGroupingTag() throws Exception {
+        this.subject.setExclusion("foo.com.**");
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> this.subject.setExclusion("foo2.com.**"));
+    }
+
+    @Test
     void testConsistentConfigurationSpecifyGroupsLast() throws Exception {
         this.subject.setBannedImport("**");
         final BannedImportGroupDefinition group1 = new BannedImportGroupDefinition();

@@ -308,12 +308,17 @@ Overview of all configuration parameters:
 This project adheres to version 2 of the [semantic version specification](http://semver.org).
 
 You can always safely update the _minor_ and the _patch_ version of the rule's dependency entry within a pom.xml without 
-breaking your build. Interface or behavioral changes will only ever be introduced with a new _major_ version.
+breaking your build. Interface or behavioral changes will only ever be introduced with a new _major_ version. Changes
+that break previous plugin configurations that were wrong in the first place may also be introduced with 
+a _minor_ version change!
 
 This artifact is (currently) not meant to be used as standalone dependency. Thus breaking code changes might occur 
 even between two different patch versions!
 
 ## Changelog
+### Version 1.1.0
+* [42](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/42): Add some more configuration consistency checks
+* Update section about _Versioning and Compatibility_
 ### Version 1.0.1
 * [#39](https://github.com/skuzzle/restrict-imports-enforcer-rule/pull/39): Handle double semicolon after import statement
 * [#37](https://github.com/skuzzle/restrict-imports-enforcer-rule/pull/37): Fix version incompatibility

@@ -24,7 +24,7 @@ information.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>1.0.1</version>
+            <version>1.1.0</version>
         </dependency>
     </dependencies>
     <executions>
@@ -319,6 +319,7 @@ even between two different patch versions!
 ### Version 1.1.0
 * [42](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/42): Add some more configuration consistency checks
 * Update section about _Versioning and Compatibility_
+
 ### Version 1.0.1
 * [#39](https://github.com/skuzzle/restrict-imports-enforcer-rule/pull/39): Handle double semicolon after import statement
 * [#37](https://github.com/skuzzle/restrict-imports-enforcer-rule/pull/37): Fix version incompatibility

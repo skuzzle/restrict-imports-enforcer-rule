@@ -7,7 +7,7 @@ pipeline {
   }
   environment {
     GPG_SECRET = credentials('gpg_password')
-    GITHUB = credentials('github')
+    GITHUB = credentials('Github-Username-Pw')
   }
   stages {
     stage ('Set Git Information') {

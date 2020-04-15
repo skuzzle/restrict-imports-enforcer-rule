@@ -1,10 +1,5 @@
 package de.skuzzle.enforcer.restrictimports.parser;
 
-import com.google.common.base.Preconditions;
-import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Path;
@@ -13,6 +8,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
+
+import de.skuzzle.enforcer.restrictimports.io.FileExtension;
+import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 
 /**
  * Parses a source file into a {@link ParsedFile} representation.
@@ -32,10 +35,19 @@ class ImportStatementParserImpl implements ImportStatementParser {
         this.supplier = supplier;
     }
 
+    private LanguageSupport getLanguageSupport(Path sourceFilePath) {
+        final String sourceFileExtension = FileExtension.fromPath(sourceFilePath);
+        return LanguageSupport.getLanguageSupport(sourceFileExtension)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(
+                        "Could not find a LanguageSupport implementation for normalized file extension: '%s' (%s)",
+                        sourceFileExtension, sourceFilePath)));
+    }
+
     @Override
-    public ParsedFile parse(Path sourceFilePath, LanguageSupport languageSupport) {
+    public ParsedFile parse(Path sourceFilePath) {
         LOGGER.trace("Analyzing {} for imports", sourceFilePath);
 
+        final LanguageSupport languageSupport = getLanguageSupport(sourceFilePath);
         final List<ImportStatement> imports = new ArrayList<>();
 
         final String fileName = getFileNameWithoutExtension(sourceFilePath);

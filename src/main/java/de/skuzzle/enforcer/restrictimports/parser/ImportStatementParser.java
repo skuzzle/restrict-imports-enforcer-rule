@@ -1,9 +1,9 @@
 package de.skuzzle.enforcer.restrictimports.parser;
 
-import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
-
 import java.nio.charset.Charset;
 import java.nio.file.Path;
+
+import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 
 /**
  * For parsing a source file into a {@link ParsedFile}.
@@ -24,8 +24,7 @@ public interface ImportStatementParser {
      * to recognize import statements.
      *
      * @param sourceFilePath The path of the file to parse.
-     * @param languageSupport For parsing the import statements.
      * @return The parsed file.
      */
-    ParsedFile parse(Path sourceFilePath, LanguageSupport languageSupport);
+    ParsedFile parse(Path sourceFilePath);
 }

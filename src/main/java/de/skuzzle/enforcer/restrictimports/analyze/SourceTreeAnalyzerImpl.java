@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import de.skuzzle.enforcer.restrictimports.io.FileExtension;
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatementParser;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
@@ -60,7 +61,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
     }
 
     private Function<Path, ParsedFile> parseFileUsing(ImportStatementParser parser) {
-        return sourceFile -> parser.parse(sourceFile, getLanguageSupport(sourceFile));
+        return parser::parse;
     }
 
     private Function<ParsedFile, Optional<MatchedFile>> analyzeAgainst(BannedImportGroups groups) {
@@ -79,14 +80,6 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
         }
     }
 
-    private LanguageSupport getLanguageSupport(Path sourceFile) {
-        final String extension = getFileExtension(sourceFile);
-        return LanguageSupport.getLanguageSupport(extension)
-                .orElseThrow(() -> new IllegalArgumentException(String.format(
-                        "Could not find a LanguageSupport implementation for normalized file extension: '%s' (%s)",
-                        extension, sourceFile)));
-    }
-
     private boolean isFile(Path path) {
         return !Files.isDirectory(path);
     }
@@ -103,19 +96,8 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
                 return false;
             }
 
-            final String extension = getFileExtension(path);
+            final String extension = FileExtension.fromPath(path);
             return LanguageSupport.isLanguageSupported(extension);
         }
-    }
-
-    private String getFileExtension(Path path) {
-        final String fileName = path.getFileName().toString();
-        final int index = fileName.lastIndexOf(".");
-
-        if (index == -1) {
-            return "";
-        }
-
-        return fileName.substring(index);
     }
 }

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import de.skuzzle.enforcer.restrictimports.parser.TransientCommentReader;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.io.CharStreams;

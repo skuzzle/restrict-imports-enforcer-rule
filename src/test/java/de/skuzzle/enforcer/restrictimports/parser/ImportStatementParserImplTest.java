@@ -80,6 +80,24 @@ class ImportStatementParserImplTest {
     }
 
     @Test
+    void testStopAtClassDeclarationWithAnnotations() {
+        final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines(
+                "package com.foo.bar;",
+                "",
+                "import de.skuzzle.test;",
+                "import de.skuzzle.test2;",
+                "@Deprecated",
+                "public class HereStartsAClass {",
+                "}"));
+        final ParsedFile parsedFile = subject.parse(path);
+        assertThat(parsedFile.getImports()).containsOnly(
+                new ImportStatement("de.skuzzle.test", 3),
+                new ImportStatement("de.skuzzle.test2", 4));
+        assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
+        assertThat(parsedFile.getPath()).isEqualTo(path);
+    }
+
+    @Test
     void testLeadingAndTrailingWhitespaces() {
         final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines(
                 "package com.foo.bar;  ",

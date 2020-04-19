@@ -20,7 +20,7 @@ import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 /**
  * Parses a source file into a {@link ParsedFile} representation.
  */
-class ImportStatementParserImpl implements ImportStatementParser {
+final class ImportStatementParserImpl implements ImportStatementParser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImportStatementParserImpl.class);
 

@@ -1,18 +1,20 @@
 package de.skuzzle.enforcer.restrictimports.parser.lang;
 
-import com.google.common.base.Preconditions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ServiceLoader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Preconditions;
+
 /**
- * Helper class to list available {@link LanguageSupport} implementations.
+ * Helper class to list available {@link LanguageSupport} implementations from
+ * {@link ServiceLoader}.
  */
-class SupportedLanguageHolder {
+final class SupportedLanguageHolder {
 
     private static final Logger logger = LoggerFactory.getLogger(SupportedLanguageHolder.class);
 

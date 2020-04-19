@@ -241,11 +241,12 @@ If you want banned import analysis but without breaking your build you can set
 
 ## Package Patterns
 
-Package patterns are matched case sensitively part by part. There are two supported 
-wildcard operators:
+Package patterns are dot separated strings that can be compared case sensitively part by part. Every part must adhere to
+the java identifier rules with the exception of a some special literals:  
 
 1. `*` matches every package part but exactly one.
 2. `**` matches multiple package parts but at least one.
+3'. `'*'` matches a literal `*` in an import statement.
 
 The pattern `java.util.*` matches `java.util.ArrayList` but not `java.util.regex.Pattern`.
 

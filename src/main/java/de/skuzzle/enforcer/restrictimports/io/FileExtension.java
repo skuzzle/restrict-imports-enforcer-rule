@@ -10,7 +10,7 @@ import java.nio.file.Path;
  */
 public final class FileExtension {
 
-    public FileExtension() {
+    private FileExtension() {
         // hidden
     }
 

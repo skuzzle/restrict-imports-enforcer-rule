@@ -11,7 +11,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import de.skuzzle.enforcer.restrictimports.io.FileExtension;
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatementParser;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
@@ -23,7 +22,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
     SourceTreeAnalyzerImpl() {
         this.importAnalyzer = new ImportAnalyzer();
-        this.supportedFileTypes = new SourceFileMatcher();
+        this.supportedFileTypes = LanguageSupport::isLanguageSupported;
     }
 
     @Override
@@ -50,7 +49,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
         for (final Path srcDir : directories) {
             try (Stream<Path> sourceFiles = listFiles(srcDir, supportedFileTypes)) {
                 sourceFiles
-                        .map(parseFileUsing(fileParser))
+                        .map(fileParser::parse)
                         .map(analyzeAgainst(groups))
                         .filter(Optional::isPresent)
                         .map(Optional::get)
@@ -58,10 +57,6 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
             }
         }
         return matchedFiles;
-    }
-
-    private Function<Path, ParsedFile> parseFileUsing(ImportStatementParser parser) {
-        return parser::parse;
     }
 
     private Function<ParsedFile, Optional<MatchedFile>> analyzeAgainst(BannedImportGroups groups) {
@@ -80,24 +75,4 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
         }
     }
 
-    private boolean isFile(Path path) {
-        return !Files.isDirectory(path);
-    }
-
-    /**
-     * Predicate that matches source files for which a {@link LanguageSupport}
-     * implementation is known.
-     */
-    private class SourceFileMatcher implements Predicate<Path> {
-
-        @Override
-        public boolean test(Path path) {
-            if (!isFile(path)) {
-                return false;
-            }
-
-            final String extension = FileExtension.fromPath(path);
-            return LanguageSupport.isLanguageSupported(extension);
-        }
-    }
 }

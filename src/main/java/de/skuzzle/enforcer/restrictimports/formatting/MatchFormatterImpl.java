@@ -40,10 +40,7 @@ class MatchFormatterImpl implements MatchFormatter {
     private void formatGroupedMatches(Collection<Path> roots, StringBuilder b,
             Map<BannedImportGroup, List<MatchedFile>> matchesByGroup) {
         matchesByGroup.forEach((group, matches) -> {
-            final String message = group.getReason();
-            if (message != null && !message.isEmpty()) {
-                b.append("Reason: ").append(message).append("\n");
-            }
+            group.getReason().ifPresent(reason -> b.append("Reason: ").append(reason).append("\n"));
             matches.forEach(fileMatch -> {
                 b.append("\tin file").append(": ")
                         .append(relativize(roots, fileMatch.getSourceFile()))

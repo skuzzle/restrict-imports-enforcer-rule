@@ -148,4 +148,10 @@ public class TransientCommentReaderTest {
                 "/** Weird block comment ///**//**/import de.skuzzle.sample.Test5;//de.skuzzle.sample.TestIgnored");
         assertThat(result).isEqualTo("import de.skuzzle.sample.Test5;");
     }
+
+    @Test
+    void testUnreadEos() throws Exception {
+        final String result = readString("/");
+        assertThat(result).isEqualTo("/");
+    }
 }

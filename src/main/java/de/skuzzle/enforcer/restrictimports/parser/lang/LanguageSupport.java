@@ -1,11 +1,14 @@
 package de.skuzzle.enforcer.restrictimports.parser.lang;
 
-import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
-
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
+
+import de.skuzzle.enforcer.restrictimports.io.FileExtension;
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 
 /**
  * SPI for plugging in import statement recognition for different languages.
@@ -35,6 +38,18 @@ public interface LanguageSupport {
      */
     static boolean isLanguageSupported(String extension) {
         return SupportedLanguageHolder.isLanguageSupported(extension);
+    }
+
+    /**
+     * Determines whether there exists a {@link LanguageSupport} implementation for the
+     * given path.
+     *
+     * @param path The path to a file.
+     * @return Whether such implementation exists.
+     * @since 1.1.0
+     */
+    static boolean isLanguageSupported(Path path) {
+        return !Files.isDirectory(path) && isLanguageSupported(FileExtension.fromPath(path));
     }
 
     /**

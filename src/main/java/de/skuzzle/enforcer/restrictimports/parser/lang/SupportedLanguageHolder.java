@@ -18,6 +18,8 @@ final class SupportedLanguageHolder {
 
     private static final Logger logger = LoggerFactory.getLogger(SupportedLanguageHolder.class);
 
+    // maps from normalized extension to LanguageSupport instance
+    // normalized extensions are all lower case and have a leading '.'
     static final Map<String, LanguageSupport> supportedLanguages = lookupImplementations();
 
     static Optional<LanguageSupport> getLanguageSupport(String extension) {

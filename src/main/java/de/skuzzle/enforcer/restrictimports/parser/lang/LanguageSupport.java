@@ -1,5 +1,7 @@
 package de.skuzzle.enforcer.restrictimports.parser.lang;
 
+import static com.google.common.io.Files.getFileExtension;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -7,7 +9,6 @@ import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
 
-import de.skuzzle.enforcer.restrictimports.io.FileExtension;
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 
 /**
@@ -25,19 +26,13 @@ public interface LanguageSupport {
      * @return The {@link LanguageSupport} implementation or an empty optional if none was
      *         found.
      */
-    static Optional<LanguageSupport> getLanguageSupport(String extension) {
-        return SupportedLanguageHolder.getLanguageSupport(extension);
-    }
-
-    /**
-     * Determines whether there exists a {@link LanguageSupport} implementation for the
-     * given extension.
-     *
-     * @param extension The extension.
-     * @return Whether such implementation exists.
-     */
-    static boolean isLanguageSupported(String extension) {
-        return SupportedLanguageHolder.isLanguageSupported(extension);
+    static LanguageSupport getLanguageSupport(Path path) {
+        final Path filename = path.getFileName();
+        final String extension = getFileExtension(filename.toString());
+        return SupportedLanguageHolder.getLanguageSupport(extension)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(
+                        "Could not find a LanguageSupport implementation for normalized file extension: '%s' (%s)",
+                        extension, path)));
     }
 
     /**
@@ -49,7 +44,9 @@ public interface LanguageSupport {
      * @since 1.1.0
      */
     static boolean isLanguageSupported(Path path) {
-        return !Files.isDirectory(path) && isLanguageSupported(FileExtension.fromPath(path));
+        final Path filename = path.getFileName();
+        return !Files.isDirectory(path)
+                && SupportedLanguageHolder.isLanguageSupported(getFileExtension(filename.toString()));
     }
 
     /**

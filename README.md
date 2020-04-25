@@ -298,8 +298,9 @@ Overview of all configuration parameters:
 | `exclusion(s)`          | (List of) package pattern | no       | empty list                        |          |
 | `includeTestCode`       | Boolean                   | no       | `false`                           | `0.7.0`  |
 | `reason`                | String                    | no       | empty String                      | `0.8.0`  |
-| `failBuild`             | Boolean                   |          | `true`                            | `0.17.0` |
-| `skip`                  | Boolean                   |          | `false`                           | `0.17.0` |
+| `failBuild`             | Boolean                   | no       | `true`                            | `0.17.0` |
+| `skip`                  | Boolean                   | no       | `false`                           | `0.17.0` |
+| `includeCompileCode`    | Boolean                   | no       | `true`                            | `1.2.0` |
 
 * _Deprecated_: Setting this property might have no effect but will log a descriptive warning
 * _Soft-Removed_: Setting this property will fail the build with a descriptive warning that this property is no longer supported
@@ -317,6 +318,9 @@ This artifact is (currently) not meant to be used as standalone dependency. Thus
 even between two different patch versions!
 
 ## Changelog
+### Version 1.2.0
+* [43](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/43): Allow to run on test code only
+
 ### Version 1.1.0
 * [42](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/42): Add some more configuration consistency checks
 * Update section about _Versioning and Compatibility_

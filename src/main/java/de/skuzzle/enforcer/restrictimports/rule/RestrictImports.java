@@ -35,8 +35,12 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RestrictImports.class);
 
+    private final SourceTreeAnalyzer analyzer = SourceTreeAnalyzer.getInstance();
+    private final MatchFormatter matchFormatter = MatchFormatter.getInstance();
+
     private List<BannedImportGroupDefinition> groups = new ArrayList<>();
 
+    private boolean includeCompileCode = true;
     private boolean includeTestCode = false;
     private boolean failBuild = true;
     private boolean skip = false;
@@ -53,17 +57,17 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
             LOGGER.debug("Checking for banned imports");
 
-            final BannedImportGroups groups = assembleGroups();
+            final BannedImportGroups groups = createGroupsFromPluginConfiguration();
             LOGGER.debug("Banned import groups:\n{}", groups);
 
             final AnalyzerSettings analyzerSettings = createAnalyzerSettingsFromPluginConfiguration(project);
             LOGGER.debug("Analyzer settings:\n{}", analyzerSettings);
 
-            final AnalyzeResult analyzeResult = SourceTreeAnalyzer.getInstance().analyze(analyzerSettings, groups);
+            final AnalyzeResult analyzeResult = analyzer.analyze(analyzerSettings, groups);
             LOGGER.debug("Analyzer result:\n{}", analyzeResult);
 
             if (analyzeResult.bannedImportsFound()) {
-                final String errorMessage = MatchFormatter.getInstance()
+                final String errorMessage = matchFormatter
                         .formatMatches(analyzerSettings.getAllDirectories(), analyzeResult);
 
                 if (failBuild) {
@@ -88,7 +92,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         }
     }
 
-    private BannedImportGroups assembleGroups() {
+    private BannedImportGroups createGroupsFromPluginConfiguration() {
         if (!this.groups.isEmpty()) {
             final List<BannedImportGroup> bannedImportGroups = this.groups.stream()
                     .map(BannedImportGroupDefinition::createGroupFromPluginConfiguration)
@@ -105,7 +109,12 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     private AnalyzerSettings createAnalyzerSettingsFromPluginConfiguration(
             MavenProject mavenProject) {
-        final Collection<Path> srcDirectories = listSourceRoots(mavenProject.getCompileSourceRoots());
+        if (!(includeCompileCode || includeTestCode)) {
+            throw new IllegalArgumentException("Configuration error: No sources were included");
+        }
+        final Collection<Path> srcDirectories = this.includeCompileCode
+                ? listSourceRoots(mavenProject.getCompileSourceRoots())
+                : Collections.emptyList();
         final Collection<Path> testDirectories = this.includeTestCode
                 ? listSourceRoots(mavenProject.getTestCompileSourceRoots())
                 : Collections.emptyList();
@@ -202,6 +211,10 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         checkGroups(!this.hasInput());
         checkArgument(groups != null && !groups.isEmpty(), "Groups may not be empty");
         this.groups = groups;
+    }
+
+    public final void setIncludeCompileCode(boolean includeCompileCode) {
+        this.includeCompileCode = includeCompileCode;
     }
 
     public final void setIncludeTestCode(boolean includeTestCode) {

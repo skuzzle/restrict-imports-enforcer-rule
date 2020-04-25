@@ -55,6 +55,16 @@ public class RestrictImportsTest {
     }
 
     @Test
+    void testConsistentConfigurationExcludeTestCodeAndCompileCode() throws Exception {
+        this.subject.setIncludeCompileCode(false);
+        this.subject.setIncludeTestCode(false);
+        assertThatExceptionOfType(EnforcerRuleException.class)
+                .isThrownBy(() -> {
+                    subject.execute(helper);
+                });
+    }
+
+    @Test
     void testExcludedByBasePackage() throws Exception {
         this.subject.setBasePackage("foo.bar");
         this.subject.setBannedImports(Collections.singletonList("java.util.**"));
@@ -199,4 +209,5 @@ public class RestrictImportsTest {
         this.subject.setAllowedImports(Arrays.asList("java.util.ArrayList"));
         subject.execute(helper);
     }
+
 }

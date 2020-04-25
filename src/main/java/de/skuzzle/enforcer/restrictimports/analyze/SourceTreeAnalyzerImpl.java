@@ -28,7 +28,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
     @Override
     public AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroups groups) {
         final long start = System.currentTimeMillis();
-        final ImportStatementParser fileParser = ImportStatementParser.defaultInstance(settings.getSourceFileCharset());
+        final ImportStatementParser fileParser = ImportStatementParser.forCharset(settings.getSourceFileCharset());
 
         final Collection<MatchedFile> srcMatches = analyzeDirectories(groups, fileParser, settings.getSrcDirectories());
         final Collection<MatchedFile> testMatches = analyzeDirectories(groups, fileParser,

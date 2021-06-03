@@ -9,7 +9,7 @@
 
     <groupId>de.skuzzle.enforcer</groupId>
     <artifactId>restrict-imports-enforcer-rule</artifactId>
-    <version>1.2.1-SNAPSHOT</version>
+    <version>1.2.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Restrict Imports Enforcer Rule</name>

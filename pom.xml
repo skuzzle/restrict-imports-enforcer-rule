@@ -21,7 +21,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.release>8</maven.compiler.release>
-        
+
         <version.enforcer-api>3.0.0-M3</version.enforcer-api>
         <version.maven>2.2.1</version.maven>
         <version.junit>5.7.2</version.junit>
@@ -31,9 +31,9 @@
         <version.guava>30.1.1-jre</version.guava>
         <version.mockito>2.21.0</version.mockito>
         <version.jimfs>1.1</version.jimfs>
-        
+
         <version.invoker-plugin>3.1.0</version.invoker-plugin>
-        
+
         <site.name>restrict-imports-enforcer-rule</site.name>
         <github.name>restrict-imports-enforcer-rule</github.name>
     </properties>
@@ -155,6 +155,27 @@
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <outputDirectory>${basedir}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>readme/</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>com.amashchenko.maven.plugin</groupId>
                 <artifactId>gitflow-maven-plugin</artifactId>

@@ -20,7 +20,7 @@
         <coveralls.skip>false</coveralls.skip>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.release></maven.compiler.release>
+        <maven.compiler.release>8</maven.compiler.release>
         
         <version.api>3.0.0-M2</version.api>
         <version.maven>2.2.1</version.maven>

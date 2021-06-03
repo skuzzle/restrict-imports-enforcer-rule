@@ -19,12 +19,12 @@ information.
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-enforcer-plugin</artifactId>
-    <version>3.0.0-M3</version>
+    <version>${version.enforcer-api}</version>
     <dependencies>
         <dependency>
-            <groupId>de.skuzzle.enforcer</groupId>
-            <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>1.2.0</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>${project.artifactId}</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     <executions>
@@ -355,4 +355,4 @@ even between two different patch versions!
 ### Version 0.16.0
 * [#26](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/26): _Deprecate_ `commentLineBufferSize` parameter and replaced with dynamically growing buffer
 * [#25](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/25): Add additional configuration sanity checks
-* [#23](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/23): _Soft-Remove_ `sourceFileCharset` parameter and always use `UTF-8` now
+* [#23](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/23): _Soft-Remove_ `sourceFileCharset` parameter and always use `${project.build.sourceEncoding}` now

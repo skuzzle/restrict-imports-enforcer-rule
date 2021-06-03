@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import de.skuzzle.enforcer.restrictimports.parser.TransientCommentReader;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.io.CharStreams;
@@ -148,5 +147,11 @@ public class TransientCommentReaderTest {
         final String result = readString(
                 "/** Weird block comment ///**//**/import de.skuzzle.sample.Test5;//de.skuzzle.sample.TestIgnored");
         assertThat(result).isEqualTo("import de.skuzzle.sample.Test5;");
+    }
+
+    @Test
+    void testUnreadEos() throws Exception {
+        final String result = readString("/");
+        assertThat(result).isEqualTo("/");
     }
 }

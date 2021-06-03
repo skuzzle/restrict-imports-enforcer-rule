@@ -1,10 +1,11 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import nl.jqno.equalsverifier.EqualsVerifier;
-import org.junit.jupiter.api.Test;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+
+import org.junit.jupiter.api.Test;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 public class PackagePatternImplTest {
 
@@ -108,7 +109,7 @@ public class PackagePatternImplTest {
 
     @Test
     public void testVerifyEquals() throws Exception {
-        EqualsVerifier.forClass(PackagePatternImpl.class).verify();
+        EqualsVerifier.forClass(PackagePattern.class).verify();
     }
 
     @Test

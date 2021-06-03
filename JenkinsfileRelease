@@ -1,29 +1,56 @@
 pipeline {
   agent {
     docker {
-      image 'maven:3.6-jdk-8'
+      image 'maven:3.6-jdk-11'
       args '-v /home/jenkins/.m2:/var/maven/.m2 -v /home/jenkins/.gnupg:/.gnupg -e MAVEN_CONFIG=/var/maven/.m2 -e MAVEN_OPTS=-Duser.home=/var/maven'
     }
   }
   environment {
     GPG_SECRET = credentials('gpg_password')
     GITHUB = credentials('Github-Username-Pw')
+    GIT_ASKPASS='./.git-askpass'
   }
   stages {
-    stage ('Set Git Information') {
-        steps {
-            sh 'git config --local user.email "simon.taddiken@gmail.com"'
-            sh 'git config --local user.name "Simon Taddiken"'
+    stage ('Ensure dev branch') {
+      when {
+        expression {
+            return env.BRANCH_NAME != 'develop';
         }
-    }
-    stage('Prepare') {
+      }
       steps {
-        sh 'mvn -B release:prepare -Dpassword=${GITHUB_PSW} -Dusername=${GITHUB_USR}'
+        error("Releasing is only possible from develop branch")
       }
     }
-    stage('Perform') {
+    stage ('Set Git Information') {
       steps {
-        sh 'mvn -B release:perform -Darguments="-Dgpg.passphrase=${GPG_SECRET} -Dpassword=${GITHUB_PSW} -Dusername=${GITHUB_USR}"'
+        sh 'echo \'echo \$GITHUB_PSW\' > ./.git-askpass'
+        sh 'chmod +x ./.git-askpass'
+        sh 'git config url."https://api@github.com/".insteadOf "https://github.com/"'
+        sh 'git config url."https://ssh@github.com/".insteadOf "ssh://git@github.com/"'
+        sh 'git config url."https://git@github.com/".insteadOf "git@github.com:"'
+        sh 'git config user.email "build@taddiken.online"'
+        sh 'git config user.name "Jenkins"'
+      }
+    }
+    stage('Create release branch') {
+      steps {
+        sh 'mvn -B -Prelease gitflow:release-start'
+      }
+    }
+    stage('Verify release') {
+      steps {
+        sh 'mvn -B -Prelease -Dgpg.passphrase=${GPG_SECRET} verify'
+      }
+    }
+    stage('Update readme') {
+      steps {
+        sh 'git add README.md'
+        sh 'git commit -m "Update README"'
+      }
+    }
+    stage('Perform release') {
+      steps {
+        sh 'mvn -B gitflow:release-finish -DargLine="-Prelease -B -Dgpg.passphrase=${GPG_SECRET}"'
       }
     }
   }

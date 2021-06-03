@@ -22,13 +22,13 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
     SourceTreeAnalyzerImpl() {
         this.importAnalyzer = new ImportAnalyzer();
-        this.supportedFileTypes = new SourceFileMatcher();
+        this.supportedFileTypes = LanguageSupport::isLanguageSupported;
     }
 
     @Override
     public AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroups groups) {
         final long start = System.currentTimeMillis();
-        final ImportStatementParser fileParser = ImportStatementParser.defaultInstance(settings.getSourceFileCharset());
+        final ImportStatementParser fileParser = ImportStatementParser.forCharset(settings.getSourceFileCharset());
 
         final Collection<MatchedFile> srcMatches = analyzeDirectories(groups, fileParser, settings.getSrcDirectories());
         final Collection<MatchedFile> testMatches = analyzeDirectories(groups, fileParser,
@@ -49,7 +49,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
         for (final Path srcDir : directories) {
             try (Stream<Path> sourceFiles = listFiles(srcDir, supportedFileTypes)) {
                 sourceFiles
-                        .map(parseFileUsing(fileParser))
+                        .map(fileParser::parse)
                         .map(analyzeAgainst(groups))
                         .filter(Optional::isPresent)
                         .map(Optional::get)
@@ -57,10 +57,6 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
             }
         }
         return matchedFiles;
-    }
-
-    private Function<Path, ParsedFile> parseFileUsing(ImportStatementParser parser) {
-        return sourceFile -> parser.parse(sourceFile, getLanguageSupport(sourceFile));
     }
 
     private Function<ParsedFile, Optional<MatchedFile>> analyzeAgainst(BannedImportGroups groups) {
@@ -79,43 +75,4 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
         }
     }
 
-    private LanguageSupport getLanguageSupport(Path sourceFile) {
-        final String extension = getFileExtension(sourceFile);
-        return LanguageSupport.getLanguageSupport(extension)
-                .orElseThrow(() -> new IllegalArgumentException(String.format(
-                        "Could not find a LanguageSupport implementation for normalized file extension: '%s' (%s)",
-                        extension, sourceFile)));
-    }
-
-    private boolean isFile(Path path) {
-        return !Files.isDirectory(path);
-    }
-
-    /**
-     * Predicate that matches source files for which a {@link LanguageSupport}
-     * implementation is known.
-     */
-    private class SourceFileMatcher implements Predicate<Path> {
-
-        @Override
-        public boolean test(Path path) {
-            if (!isFile(path)) {
-                return false;
-            }
-
-            final String extension = getFileExtension(path);
-            return LanguageSupport.isLanguageSupported(extension);
-        }
-    }
-
-    private String getFileExtension(Path path) {
-        final String fileName = path.getFileName().toString();
-        final int index = fileName.lastIndexOf(".");
-
-        if (index == -1) {
-            return "";
-        }
-
-        return fileName.substring(index);
-    }
 }

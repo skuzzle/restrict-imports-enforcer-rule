@@ -80,8 +80,8 @@ public final class BannedImportGroup {
                 .anyMatch(pattern -> pattern.matches(packageName));
     }
 
-    public String getReason() {
-        return this.reason;
+    public Optional<String> getReason() {
+        return Optional.ofNullable(this.reason).filter(s -> !s.isEmpty());
     }
 
     @Override

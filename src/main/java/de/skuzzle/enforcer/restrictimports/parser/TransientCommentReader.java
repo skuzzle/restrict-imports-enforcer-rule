@@ -90,6 +90,7 @@ class TransientCommentReader extends Reader {
     }
 
     private int skipBlockComment() throws IOException {
+        // consumed so far: /*
         int skippedLines = 0;
         while (!this.eos) {
             int next = saveRead();

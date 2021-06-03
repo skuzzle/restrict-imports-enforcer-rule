@@ -1,11 +1,15 @@
 package de.skuzzle.enforcer.restrictimports.parser.lang;
 
-import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
+import static com.google.common.io.Files.getFileExtension;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.Set;
+
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 
 /**
  * SPI for plugging in import statement recognition for different languages.
@@ -16,25 +20,33 @@ import java.util.Set;
 public interface LanguageSupport {
 
     /**
-     * Returns the {@link LanguageSupport} implementation for the given file extension.
+     * Returns the {@link LanguageSupport} implementation for the given file.
      *
-     * @param extension The extension.
+     * @param path The path to a file.
      * @return The {@link LanguageSupport} implementation or an empty optional if none was
      *         found.
      */
-    static Optional<LanguageSupport> getLanguageSupport(String extension) {
-        return SupportedLanguageHolder.getLanguageSupport(extension);
+    static LanguageSupport getLanguageSupport(Path path) {
+        final Path filename = path.getFileName();
+        final String extension = getFileExtension(filename.toString());
+        return SupportedLanguageHolder.getLanguageSupport(extension)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(
+                        "Could not find a LanguageSupport implementation for normalized file extension: '%s' (%s)",
+                        extension, path)));
     }
 
     /**
      * Determines whether there exists a {@link LanguageSupport} implementation for the
-     * given extension.
+     * given path.
      *
-     * @param extension The extension.
+     * @param path The path to a file.
      * @return Whether such implementation exists.
+     * @since 1.1.0
      */
-    static boolean isLanguageSupported(String extension) {
-        return SupportedLanguageHolder.isLanguageSupported(extension);
+    static boolean isLanguageSupported(Path path) {
+        final Path filename = path.getFileName();
+        return !Files.isDirectory(path)
+                && SupportedLanguageHolder.isLanguageSupported(getFileExtension(filename.toString()));
     }
 
     /**

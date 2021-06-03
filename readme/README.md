@@ -24,7 +24,7 @@ information.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>1.1.0</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
     <executions>
@@ -318,7 +318,9 @@ This artifact is (currently) not meant to be used as standalone dependency. Thus
 even between two different patch versions!
 
 ## Changelog
+
 ### Version 1.2.0
+* [44](https://github.com/skuzzle/restrict-imports-enforcer-rule/pull/44): Bump guava to `30.1.1-jre`
 * [43](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/43): Allow to run on test code only
 
 ### Version 1.1.0

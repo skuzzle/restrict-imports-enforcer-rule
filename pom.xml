@@ -22,7 +22,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.release>8</maven.compiler.release>
         
-        <version.api>3.0.0-M2</version.api>
+        <version.enforcer-api>3.0.0-M3</version.enforcer-api>
         <version.maven>2.2.1</version.maven>
         <version.junit>5.7.2</version.junit>
         <version.assertj>3.10.0</version.assertj>
@@ -31,6 +31,8 @@
         <version.guava>30.1.1-jre</version.guava>
         <version.mockito>2.21.0</version.mockito>
         <version.jimfs>1.1</version.jimfs>
+        
+        <version.invoker-plugin>3.1.0</version.invoker-plugin>
         
         <site.name>restrict-imports-enforcer-rule</site.name>
         <github.name>restrict-imports-enforcer-rule</github.name>
@@ -63,7 +65,7 @@
             <dependency>
                 <groupId>org.apache.maven.enforcer</groupId>
                 <artifactId>enforcer-api</artifactId>
-                <version>${version.api}</version>
+                <version>${version.enforcer-api}</version>
             </dependency>
 
             <dependency>
@@ -127,6 +129,11 @@
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
@@ -164,7 +171,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-invoker-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>${version.invoker-plugin}</version>
                 <configuration>
                     <showErrors>true</showErrors>
                     <streamLogs>false</streamLogs>

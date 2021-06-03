@@ -20,9 +20,9 @@ import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 public interface LanguageSupport {
 
     /**
-     * Returns the {@link LanguageSupport} implementation for the given file extension.
+     * Returns the {@link LanguageSupport} implementation for the given file.
      *
-     * @param extension The extension.
+     * @param path The path to a file.
      * @return The {@link LanguageSupport} implementation or an empty optional if none was
      *         found.
      */

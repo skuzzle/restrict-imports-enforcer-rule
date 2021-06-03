@@ -1,13 +1,14 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
-import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
+import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 
 /**
  * Collects banned import matches from a single source file.
@@ -30,7 +31,8 @@ class ImportAnalyzer {
     Optional<MatchedFile> matchFile(ParsedFile sourceFile, BannedImportGroups groups) {
         LOGGER.trace("Analyzing {} for banned imports", sourceFile);
 
-        final BannedImportGroup group = groups.selectGroupFor(sourceFile.getFqcn()).orElse(null);
+        final BannedImportGroup group = groups.selectGroupFor(sourceFile.getFqcn())
+                .orElse(null);
         if (group == null) {
             LOGGER.trace("No rule group matched {}", sourceFile);
             return Optional.empty();
@@ -38,7 +40,7 @@ class ImportAnalyzer {
         LOGGER.trace("Selected {} for {}", group, sourceFile);
 
         final List<MatchedImport> matches = new ArrayList<>();
-        for (ImportStatement importStmt : sourceFile.getImports()) {
+        for (final ImportStatement importStmt : sourceFile.getImports()) {
             group.ifImportIsBanned(importStmt.getImportName())
                     .map(bannedImport -> new MatchedImport(importStmt.getLine(), importStmt.getImportName(),
                             bannedImport))

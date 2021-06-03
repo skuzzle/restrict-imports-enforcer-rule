@@ -20,7 +20,8 @@
         <coveralls.skip>false</coveralls.skip>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
-
+        <maven.compiler.release></maven.compiler.release>
+        
         <version.api>3.0.0-M2</version.api>
         <version.maven>2.2.1</version.maven>
         <version.junit>5.7.2</version.junit>
@@ -30,6 +31,7 @@
         <version.guava>30.1.1-jre</version.guava>
         <version.mockito>2.21.0</version.mockito>
         <version.jimfs>1.1</version.jimfs>
+        
         <site.name>restrict-imports-enforcer-rule</site.name>
         <github.name>restrict-imports-enforcer-rule</github.name>
     </properties>
@@ -105,11 +107,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.jimfs</groupId>
-            <artifactId>jimfs</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.enforcer</groupId>

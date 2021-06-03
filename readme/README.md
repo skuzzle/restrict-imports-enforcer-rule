@@ -22,8 +22,8 @@ information.
     <version>${version.enforcer-api}</version>
     <dependencies>
         <dependency>
-            <groupId>de.skuzzle.enforcer</groupId>
-            <artifactId>restrict-imports-enforcer-rule</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>${project.artifactId}</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

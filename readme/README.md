@@ -19,7 +19,7 @@ information.
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-enforcer-plugin</artifactId>
-    <version>3.0.0-M2</version>
+    <version>${version.enforcer-api}</version>
     <dependencies>
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>

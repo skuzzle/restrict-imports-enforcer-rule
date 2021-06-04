@@ -100,7 +100,7 @@ operator and then include some concrete classes:
 It is possible to exclude certain source files from being affected by the bans at 
 all. You can use `basePackage` to specify a package pattern of classes that are affected 
 by the rule. You may then exclude some classes to refine the matches using the
-`excludedClasses` tag. It is also possible to specify multiple base packages.
+`exclusion` tag. It is also possible to specify multiple base packages.
 
 ```xml
 <configuration>
@@ -134,6 +134,10 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
                 <allowedImport>java.util.logging.Handler</allowedImport>
                 <allowedImport>what.ever.IsCool</allowedImport>
             </allowedImports>
+            <exclusions>
+                <exclusion>com.your.domain.treat.special.*</exclusion>
+                <exclusion>com.your.domain.treat.special.too.*</exclusion>
+            </exclusions>
             <!-- ... -->
         </restrictImports>
     </rules>

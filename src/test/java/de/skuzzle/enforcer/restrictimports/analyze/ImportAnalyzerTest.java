@@ -84,7 +84,7 @@ class ImportAnalyzerTest {
                 .withGroup(BannedImportGroup.builder()
                         .withBasePackages("**")
                         .withBannedImports("foo")
-                        .withExcludedClasses("de.skuzzle.test.File")
+                        .withExclusions("de.skuzzle.test.File")
                         .withReason("message"))
                 .build();
 

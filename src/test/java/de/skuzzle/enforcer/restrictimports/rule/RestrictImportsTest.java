@@ -5,11 +5,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
@@ -19,6 +21,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class RestrictImportsTest {
+
+    private static final List<String> SOURCE_ROOTS = Arrays.asList("/src/main/java",
+              "/target/generated-sources/main/java/");
 
     private final EnforcerRuleHelper helper = mock(EnforcerRuleHelper.class);
     private final Log log = mock(Log.class);
@@ -31,12 +36,12 @@ public class RestrictImportsTest {
         when(this.helper.getLog()).thenReturn(this.log);
         when(this.helper.evaluate("${project}")).thenReturn(this.mavenProject);
 
-        final URL url = getClass().getResource("/SampleJavaFile.java");
-        final File f = new File(url.toURI());
-        final Path path = f.toPath().getParent();
         when(this.mavenProject.getProperties()).thenReturn(new Properties());
-        when(this.mavenProject.getCompileSourceRoots())
-                .thenReturn(Collections.singletonList(path.toString()));
+
+        final List<String> paths = SOURCE_ROOTS.stream()
+                    .map(this::absolutePath)
+                    .collect(Collectors.toList());
+        when(this.mavenProject.getCompileSourceRoots()).thenReturn(paths);
     }
 
     @Test
@@ -46,12 +51,31 @@ public class RestrictImportsTest {
     }
 
     @Test
-    void testRestrictFailure() throws Exception {
+    void testRestrictFailure() {
         this.subject.setBannedImports(Collections.singletonList("java.util.**"));
         assertThatExceptionOfType(EnforcerRuleException.class)
-                .isThrownBy(() -> {
-                    this.subject.execute(this.helper);
-                });
+                .isThrownBy(() -> this.subject.execute(this.helper));
+    }
+
+    @Test
+    void testRestrictFailureForFileUnderGeneratedSources() {
+        this.subject.setBannedImports(Collections.singletonList("java.io.**"));
+        assertThatExceptionOfType(EnforcerRuleException.class)
+                .isThrownBy(() -> this.subject.execute(this.helper));
+    }
+    
+    @Test
+    void testRestrictImportsNoFailureForFileUnderExcludedSourceRoot() throws Exception {
+        this.subject.setExcludedSourceRoot(absolutePath(SOURCE_ROOTS.get(1)));
+        this.subject.setBannedImports(Collections.singletonList("java.io.**"));
+        this.subject.execute(this.helper);
+    }
+
+    @Test
+    void testRestrictImportsNoFailureForFileUnderExcludedSourceRoots() throws Exception {
+        this.subject.setExcludedSourceRoots(Collections.singletonList(absolutePath(SOURCE_ROOTS.get(1))));
+        this.subject.setBannedImports(Collections.singletonList("java.io.**"));
+        this.subject.execute(this.helper);
     }
 
     @Test
@@ -210,4 +234,26 @@ public class RestrictImportsTest {
         subject.execute(helper);
     }
 
+    @Test
+    void testConsistentConfigurationExcludedSourceRoot1() {
+        this.subject.setExcludedSourceRoot("/foo");
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> this.subject.setExcludedSourceRoots(Arrays.asList("/foo", "/bar")));
+    }
+
+    @Test
+    void testConsistentConfigurationExcludedSourceRoot2() {
+        this.subject.setExcludedSourceRoots(Arrays.asList("/foo", "/bar"));
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> this.subject.setExcludedSourceRoot("/foo"));
+    }
+
+    private String absolutePath(String path) {
+        final URL url = getClass().getResource(path);
+        try {
+            return new File(url.toURI()).toPath().toString();
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

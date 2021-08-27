@@ -49,9 +49,6 @@
                             <allowedImports>
                                 <allowedImport>java.util.ArrayList</allowedImport>
                             </allowedImports>
-                            <excludedSourceRoot>
-                                ${project.basedir}/target/generated-sources/main/java
-                            </excludedSourceRoot>
                         </restrictImports>
                     </rules>
                 </configuration>

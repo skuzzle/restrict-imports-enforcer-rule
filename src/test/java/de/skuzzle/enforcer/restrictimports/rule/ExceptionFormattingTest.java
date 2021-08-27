@@ -30,7 +30,7 @@ public class ExceptionFormattingTest {
         when(this.helper.getLog()).thenReturn(this.log);
         when(this.helper.evaluate("${project}")).thenReturn(this.mavenProject);
 
-        final URL url = getClass().getResource("/SampleJavaFile.java");
+        final URL url = getClass().getResource("/src/main/java/SampleJavaFile.java");
         final File f = new File(url.toURI());
         final Path path = f.toPath().getParent();
         when(this.mavenProject.getProperties()).thenReturn(new Properties());

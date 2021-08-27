@@ -58,6 +58,7 @@ information.
   * [Static imports](#static-imports)
   * [Test code](#test-code)
   * [Skipping](#skipping)
+  * [Exclude source roots](#exclude-source-roots)
   * [Package patterns](#package-patterns)
 * [Limitation](#limitation)
   * [Syntactical](#syntactical-limitation)
@@ -241,6 +242,25 @@ If you want banned import analysis but without breaking your build you can set
     </rules>
 </configuration>
 ```
+## Exclude source roots
+By default, all source roots reported by Maven is subject to the banned import checks, which for example includes but
+is not limited to `${project.basedir}/src/main/java`, `${project.basedir}/src/test/java`,
+`${project.basedir}/target/generated-sources/main/java` and
+`${project.basedir}/target/generated-test-sources/main/java`. You can exclude source roots using the
+`excludedSourceRoot(s)` option. Note that absolute path is required.
+```xml
+<configuration>
+    <rules>
+        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+            <excludedSourceRoots>
+                <excludedSourceRoot>${project.basedir}/target/generated-sources/main/java</excludedSourceRoot>
+                <excludedSourceRoot>${project.basedir}/target/generated-test-sources/main/java</excludedSourceRoot>
+            </excludedSourceRoots>
+            <!-- ... -->
+        </restrictImports>
+    </rules>
+</configuration>
+```
 
 ## Package Patterns
 
@@ -303,7 +323,8 @@ Overview of all configuration parameters:
 | `reason`                | String                    | no       | empty String                      | `0.8.0`  |
 | `failBuild`             | Boolean                   | no       | `true`                            | `0.17.0` |
 | `skip`                  | Boolean                   | no       | `false`                           | `0.17.0` |
-| `includeCompileCode`    | Boolean                   | no       | `true`                            | `1.2.0` |
+| `includeCompileCode`    | Boolean                   | no       | `true`                            | `1.2.0`  |
+| `excludedSourceRoot(s)` | (List of) source root     | no       | empty list                        | `1.3.0`  |
 
 * _Deprecated_: Setting this property might have no effect but will log a descriptive warning
 * _Soft-Removed_: Setting this property will fail the build with a descriptive warning that this property is no longer supported

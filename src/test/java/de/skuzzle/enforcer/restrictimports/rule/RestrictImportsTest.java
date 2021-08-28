@@ -66,14 +66,14 @@ public class RestrictImportsTest {
     
     @Test
     void testRestrictImportsNoFailureForFileUnderExcludedSourceRoot() throws Exception {
-        this.subject.setExcludedSourceRoot(absolutePath(SOURCE_ROOTS.get(1)));
+        this.subject.setExcludedSourceRoot(new File(absolutePath(SOURCE_ROOTS.get(1))));
         this.subject.setBannedImports(Collections.singletonList("java.io.**"));
         this.subject.execute(this.helper);
     }
 
     @Test
     void testRestrictImportsNoFailureForFileUnderExcludedSourceRoots() throws Exception {
-        this.subject.setExcludedSourceRoots(Collections.singletonList(absolutePath(SOURCE_ROOTS.get(1))));
+        this.subject.setExcludedSourceRoots(Collections.singletonList(new File(absolutePath(SOURCE_ROOTS.get(1)))));
         this.subject.setBannedImports(Collections.singletonList("java.io.**"));
         this.subject.execute(this.helper);
     }
@@ -236,16 +236,17 @@ public class RestrictImportsTest {
 
     @Test
     void testConsistentConfigurationExcludedSourceRoot1() {
-        this.subject.setExcludedSourceRoot("/foo");
+        this.subject.setExcludedSourceRoot(new File("foo"));
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> this.subject.setExcludedSourceRoots(Arrays.asList("/foo", "/bar")));
+                .isThrownBy(() ->
+                        this.subject.setExcludedSourceRoots(Arrays.asList(new File("/foo"), new File("/bar"))));
     }
 
     @Test
     void testConsistentConfigurationExcludedSourceRoot2() {
-        this.subject.setExcludedSourceRoots(Arrays.asList("/foo", "/bar"));
+        this.subject.setExcludedSourceRoots(Arrays.asList(new File("/foo"), new File("/bar")));
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> this.subject.setExcludedSourceRoot("/foo"));
+                .isThrownBy(() -> this.subject.setExcludedSourceRoot(new File("/foo")));
     }
 
     private String absolutePath(String path) {

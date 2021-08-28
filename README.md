@@ -244,17 +244,17 @@ If you want banned import analysis but without breaking your build you can set
 ```
 ## Exclude source roots
 By default, all source roots reported by Maven is subject to the banned import checks, which for example includes but
-is not limited to `/Users/honnix/Developer/github/restrict-imports-enforcer-rule/src/main/java`, `/Users/honnix/Developer/github/restrict-imports-enforcer-rule/src/test/java`,
-`/Users/honnix/Developer/github/restrict-imports-enforcer-rule/target/generated-sources/main/java` and
-`/Users/honnix/Developer/github/restrict-imports-enforcer-rule/target/generated-test-sources/main/java`. You can exclude source roots using the
-`excludedSourceRoot(s)` option. Note that absolute path is required.
+is not limited to `${project.basedir}/src/main/java`, `${project.basedir}/src/test/java`,
+`${project.build.directory}/generated-sources/main/java` and
+`${project.build.directory}/generated-test-sources/main/java`. You can exclude source root(s) using the
+`excludedSourceRoot(s)` option, either absolute or relative path.
 ```xml
 <configuration>
     <rules>
         <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
             <excludedSourceRoots>
-                <excludedSourceRoot>/Users/honnix/Developer/github/restrict-imports-enforcer-rule/target/generated-sources/main/java</excludedSourceRoot>
-                <excludedSourceRoot>/Users/honnix/Developer/github/restrict-imports-enforcer-rule/target/generated-test-sources/main/java</excludedSourceRoot>
+                <excludedSourceRoot>${project.build.directory}/generated-sources/main/java</excludedSourceRoot>
+                <excludedSourceRoot>target/generated-test-sources/main/java</excludedSourceRoot>
             </excludedSourceRoots>
             <!-- ... -->
         </restrictImports>
@@ -324,7 +324,7 @@ Overview of all configuration parameters:
 | `failBuild`             | Boolean                   | no       | `true`                            | `0.17.0` |
 | `skip`                  | Boolean                   | no       | `false`                           | `0.17.0` |
 | `includeCompileCode`    | Boolean                   | no       | `true`                            | `1.2.0`  |
-| `excludedSourceRoot(s)` | (List of) source root     | no       | empty list                        | `1.3.0`  |
+| `excludedSourceRoot(s)` | (List of) java.io.File    | no       | empty list                        | `1.3.0`  |
 
 * _Deprecated_: Setting this property might have no effect but will log a descriptive warning
 * _Soft-Removed_: Setting this property will fail the build with a descriptive warning that this property is no longer supported

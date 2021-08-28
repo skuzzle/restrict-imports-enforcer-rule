@@ -21,7 +21,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${project.basedir}/target/generated-sources/main/java</source>
+                                <source>${project.build.directory}/generated-sources/main/java</source>
                             </sources>
                         </configuration>
                     </execution>
@@ -49,9 +49,7 @@
                             <allowedImports>
                                 <allowedImport>java.util.ArrayList</allowedImport>
                             </allowedImports>
-                            <excludedSourceRoot>
-                                ${project.basedir}/target/generated-sources/main/java
-                            </excludedSourceRoot>
+                            <excludedSourceRoot>target/generated-sources/main/java</excludedSourceRoot>
                         </restrictImports>
                     </rules>
                 </configuration>

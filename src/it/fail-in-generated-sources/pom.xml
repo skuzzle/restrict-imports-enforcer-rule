@@ -21,7 +21,7 @@
                         </goals>
                         <configuration>
                             <sources>
-                                <source>${project.basedir}/target/generated-sources/main/java</source>
+                                <source>${project.build.directory}/generated-sources/main/java</source>
                             </sources>
                         </configuration>
                     </execution>

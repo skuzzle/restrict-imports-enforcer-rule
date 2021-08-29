@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 public class RestrictImportsTest {
 
     private static final List<String> SOURCE_ROOTS = Arrays.asList("/src/main/java",
-              "/target/generated-sources/main/java/");
+            "/target/generated-sources/main/java/");
 
     private final EnforcerRuleHelper helper = mock(EnforcerRuleHelper.class);
     private final Log log = mock(Log.class);
@@ -39,8 +39,8 @@ public class RestrictImportsTest {
         when(this.mavenProject.getProperties()).thenReturn(new Properties());
 
         final List<String> paths = SOURCE_ROOTS.stream()
-                    .map(this::absolutePath)
-                    .collect(Collectors.toList());
+                .map(this::absolutePath)
+                .collect(Collectors.toList());
         when(this.mavenProject.getCompileSourceRoots()).thenReturn(paths);
     }
 
@@ -63,7 +63,7 @@ public class RestrictImportsTest {
         assertThatExceptionOfType(EnforcerRuleException.class)
                 .isThrownBy(() -> this.subject.execute(this.helper));
     }
-    
+
     @Test
     void testRestrictImportsNoFailureForFileUnderExcludedSourceRoot() throws Exception {
         this.subject.setExcludedSourceRoot(new File(absolutePath(SOURCE_ROOTS.get(1))));
@@ -238,8 +238,8 @@ public class RestrictImportsTest {
     void testConsistentConfigurationExcludedSourceRoot1() {
         this.subject.setExcludedSourceRoot(new File("foo"));
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() ->
-                        this.subject.setExcludedSourceRoots(Arrays.asList(new File("/foo"), new File("/bar"))));
+                .isThrownBy(
+                        () -> this.subject.setExcludedSourceRoots(Arrays.asList(new File("/foo"), new File("/bar"))));
     }
 
     @Test

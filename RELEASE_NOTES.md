@@ -6,7 +6,6 @@ Maven Central coordinates for this release:
 <dependency>
     <groupId>de.skuzzle.enforcer</groupId>
     <artifactId>restrict-imports-enforcer-rule</artifactId>
-    <version>1.3.0</version>
-    <scope>test</scope>
+    <version>1.3.1-SNAPSHOT</version>
 </dependency>
 ```

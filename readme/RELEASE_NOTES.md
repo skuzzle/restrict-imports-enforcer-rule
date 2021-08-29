@@ -7,6 +7,5 @@ Maven Central coordinates for this release:
     <groupId>${project.groupId}</groupId>
     <artifactId>${project.artifactId}</artifactId>
     <version>${project.version}</version>
-    <scope>test</scope>
 </dependency>
 ```

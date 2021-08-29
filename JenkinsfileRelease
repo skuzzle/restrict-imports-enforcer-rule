@@ -45,8 +45,8 @@ pipeline {
     }
     stage('Update readme') {
       steps {
-        sh 'git add README.md'
-        sh 'git commit -m "Update README"'
+        sh 'git add README.md RELEASE_NOTES.md'
+        sh 'git commit -m "Update README and RELEASE_NOTES"'
       }
     }
     stage('Perform release') {

@@ -192,6 +192,20 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>com.ragedunicorn.tools.maven</groupId>
+                <artifactId>github-release-maven-plugin</artifactId>
+                <version>1.0.2</version>
+                <configuration>
+                    <owner>skuzzle</owner>
+                    <repository>${github.name}</repository>
+                    <authToken>${github.release-token}</authToken>
+                    <tagName>v${project.version}</tagName>
+                    <name>${project.version}</name>
+                    <targetCommitish>master</targetCommitish>
+                    <releaseNotes>RELEASE_NOTES.md</releaseNotes>
+                </configuration>
+            </plugin>
+            <plugin>
                 <artifactId>maven-invoker-plugin</artifactId>
                 <version>${version.invoker-plugin}</version>
                 <configuration>

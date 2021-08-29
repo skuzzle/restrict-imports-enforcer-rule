@@ -8,6 +8,7 @@ pipeline {
   environment {
     GPG_SECRET = credentials('gpg_password')
     GITHUB = credentials('Github-Username-Pw')
+    GITHUB_RELEASE_TOKEN = credentials('github_registry_release')
     GIT_ASKPASS='./.git-askpass'
   }
   stages {
@@ -50,7 +51,13 @@ pipeline {
     }
     stage('Perform release') {
       steps {
-        sh 'mvn -B gitflow:release-finish -DargLine="-Prelease -B -Dgpg.passphrase=${GPG_SECRET}"'
+        sh "mvn -B gitflow:release-finish -DargLine=\"-Prelease -B -Dgpg.passphrase=${GPG_SECRET} -DskipTests\""
+      }
+    }
+    stage('Create GitHub release') {
+      steps {
+        sh 'git checkout main'
+        sh "mvn -B github-release:github-release -Dgithub.release-token=${GITHUB_RELEASE_TOKEN}"
       }
     }
   }

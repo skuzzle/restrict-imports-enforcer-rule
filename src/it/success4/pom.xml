@@ -23,6 +23,7 @@
                 <configuration>
                     <rules>
                         <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+                            <excludedSourceRoot>${project.basedir}/target/generated-sources/main/java</excludedSourceRoot>
                             <basePackages>
                                 <basePackage>de.skuzzle.test.**</basePackage>
                                 <basePackage>de.skuzzle.enforcer.**</basePackage>

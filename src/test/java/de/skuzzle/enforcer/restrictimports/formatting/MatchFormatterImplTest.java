@@ -31,10 +31,10 @@ public class MatchFormatterImplTest {
 
     @BeforeEach
     void setup() throws URISyntaxException {
-        resourceDirUrl = getClass().getResource("/SampleJavaFile.java");
+        resourceDirUrl = getClass().getResource("/src/main/java/SampleJavaFile.java");
         resourceDirFile = new File(resourceDirUrl.toURI());
         root = resourceDirFile.toPath().getParent();
-        sourceFile = root.resolve("SampleJavaFile.java");
+        sourceFile = root.resolve("src/main/java/SampleJavaFile.java");
         roots = ImmutableList.of(root);
         group = BannedImportGroup.builder()
                 .withBasePackages("**")
@@ -59,11 +59,11 @@ public class MatchFormatterImplTest {
 
         assertThat(formatted).isEqualTo("\nBanned imports detected:\n\n" +
                 "Reason: Some reason\n" +
-                "\tin file: SampleJavaFile.java\n" +
+                "\tin file: src/main/java/SampleJavaFile.java\n" +
                 "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n" +
                 "\nBanned imports detected in TEST code:\n\n" +
                 "Reason: Some reason\n" +
-                "\tin file: SampleJavaFile.java\n" +
+                "\tin file: src/main/java/SampleJavaFile.java\n" +
                 "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n\n" +
                 "Analysis took 5 seconds\n");
     }
@@ -81,7 +81,7 @@ public class MatchFormatterImplTest {
 
         assertThat(formatted).isEqualTo("\nBanned imports detected:\n\n" +
                 "Reason: Some reason\n" +
-                "\tin file: SampleJavaFile.java\n" +
+                "\tin file: src/main/java/SampleJavaFile.java\n" +
                 "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n\n" +
                 "Analysis took 5 seconds\n");
     }
@@ -99,7 +99,7 @@ public class MatchFormatterImplTest {
 
         assertThat(formatted).isEqualTo("\nBanned imports detected in TEST code:\n\n" +
                 "Reason: Some reason\n" +
-                "\tin file: SampleJavaFile.java\n" +
+                "\tin file: src/main/java/SampleJavaFile.java\n" +
                 "\t\tjava.util.ArrayList (Line: 3, Matched by: java.util.*)\n\n" +
                 "Analysis took 5 seconds\n");
     }

@@ -1,5 +1,4 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.skuzzle.enforcer/restrict-imports-enforcer-rule/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.skuzzle.enforcer/restrict-imports-enforcer-rule)
-[![Build Status](https://travis-ci.org/skuzzle/restrict-imports-enforcer-rule.svg?branch=master)](https://travis-ci.org/skuzzle/restrict-imports-enforcer-rule) 
 [![Coverage Status](https://coveralls.io/repos/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master&service=github)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
@@ -24,7 +23,7 @@ information.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>1.2.0</version>
+            <version>1.2.1-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <executions>
@@ -59,6 +58,7 @@ information.
   * [Static imports](#static-imports)
   * [Test code](#test-code)
   * [Skipping](#skipping)
+  * [Exclude source roots](#exclude-source-roots)
   * [Package patterns](#package-patterns)
 * [Limitation](#limitation)
   * [Syntactical](#syntactical-limitation)
@@ -100,7 +100,7 @@ operator and then include some concrete classes:
 It is possible to exclude certain source files from being affected by the bans at 
 all. You can use `basePackage` to specify a package pattern of classes that are affected 
 by the rule. You may then exclude some classes to refine the matches using the
-`excludedClasses` tag. It is also possible to specify multiple base packages.
+`exclusion` tag. It is also possible to specify multiple base packages.
 
 ```xml
 <configuration>
@@ -134,6 +134,10 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
                 <allowedImport>java.util.logging.Handler</allowedImport>
                 <allowedImport>what.ever.IsCool</allowedImport>
             </allowedImports>
+            <exclusions>
+                <exclusion>com.your.domain.treat.special.*</exclusion>
+                <exclusion>com.your.domain.treat.special.too.*</exclusion>
+            </exclusions>
             <!-- ... -->
         </restrictImports>
     </rules>
@@ -238,6 +242,25 @@ If you want banned import analysis but without breaking your build you can set
     </rules>
 </configuration>
 ```
+## Exclude source roots
+By default, all source roots reported by Maven is subject to the banned import checks, which for example includes but
+is not limited to `${project.basedir}/src/main/java`, `${project.basedir}/src/test/java`,
+`${project.build.directory}/generated-sources/main/java` and
+`${project.build.directory}/generated-test-sources/main/java`. You can exclude source root(s) using the
+`excludedSourceRoot(s)` option, either absolute or relative path.
+```xml
+<configuration>
+    <rules>
+        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+            <excludedSourceRoots>
+                <excludedSourceRoot>${project.build.directory}/generated-sources/main/java</excludedSourceRoot>
+                <excludedSourceRoot>target/generated-test-sources/main/java</excludedSourceRoot>
+            </excludedSourceRoots>
+            <!-- ... -->
+        </restrictImports>
+    </rules>
+</configuration>
+```
 
 ## Package Patterns
 
@@ -300,7 +323,8 @@ Overview of all configuration parameters:
 | `reason`                | String                    | no       | empty String                      | `0.8.0`  |
 | `failBuild`             | Boolean                   | no       | `true`                            | `0.17.0` |
 | `skip`                  | Boolean                   | no       | `false`                           | `0.17.0` |
-| `includeCompileCode`    | Boolean                   | no       | `true`                            | `1.2.0` |
+| `includeCompileCode`    | Boolean                   | no       | `true`                            | `1.2.0`  |
+| `excludedSourceRoot(s)` | (List of) java.io.File    | no       | empty list                        | `1.3.0`  |
 
 * _Deprecated_: Setting this property might have no effect but will log a descriptive warning
 * _Soft-Removed_: Setting this property will fail the build with a descriptive warning that this property is no longer supported

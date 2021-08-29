@@ -2,6 +2,7 @@ package de.skuzzle.enforcer.restrictimports.rule;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.io.File;
 import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
@@ -42,6 +43,8 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     private boolean includeCompileCode = true;
     private boolean includeTestCode = false;
+    private File excludedSourceRoot = null;
+    private List<File> excludedSourceRoots = new ArrayList<>();
     private boolean failBuild = true;
     private boolean skip = false;
 
@@ -112,11 +115,13 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         if (!(includeCompileCode || includeTestCode)) {
             throw new IllegalArgumentException("Configuration error: No sources were included");
         }
+
+        final List<Path> excludedSourceRootsAbsolutePaths = excludedSourceRootsAbsolutePaths();
         final Collection<Path> srcDirectories = this.includeCompileCode
-                ? listSourceRoots(mavenProject.getCompileSourceRoots())
+                ? listSourceRoots(mavenProject.getCompileSourceRoots(), excludedSourceRootsAbsolutePaths)
                 : Collections.emptyList();
         final Collection<Path> testDirectories = this.includeTestCode
-                ? listSourceRoots(mavenProject.getTestCompileSourceRoots())
+                ? listSourceRoots(mavenProject.getTestCompileSourceRoots(), excludedSourceRootsAbsolutePaths)
                 : Collections.emptyList();
 
         final Charset sourceFileCharset = determineSourceFileCharset(mavenProject);
@@ -128,6 +133,14 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
                 .build();
     }
 
+    private List<Path> excludedSourceRootsAbsolutePaths() {
+        final List<File> excludedSourceRoots = excludedSourceRoot != null
+                ? Collections.singletonList(excludedSourceRoot)
+                : this.excludedSourceRoots;
+        return excludedSourceRoots.stream().map(sourceRoot ->
+                sourceRoot.getAbsoluteFile().toPath()).collect(Collectors.toList());
+    }
+
     private Charset determineSourceFileCharset(MavenProject mavenProject) {
         final String mavenCharsetName = (String) mavenProject.getProperties().get("project.build.sourceEncoding");
         if (mavenCharsetName != null) {
@@ -137,12 +150,22 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    private Collection<Path> listSourceRoots(Collection pathNames) {
+    private Collection<Path> listSourceRoots(Collection pathNames, Collection<Path> excludedSourceRootsAbsolutePaths) {
         final Collection<String> pathNamesAsString = pathNames;
         return pathNamesAsString.stream()
                 .peek(pathName -> LOGGER.debug("Including source dir: {}", pathName))
                 .map(Paths::get)
+                .filter(path -> include(path, excludedSourceRootsAbsolutePaths))
                 .collect(Collectors.toList());
+    }
+
+    private boolean include(Path path, Collection<Path> excludedSourceRootsAbsolutePaths) {
+      final boolean exclude = excludedSourceRootsAbsolutePaths.contains(path);
+      if (exclude) {
+          LOGGER.debug("Excluding source dir: {} according to excludedSourceRoots", path);
+          return false;
+      }
+      return true;
     }
 
     private void checkGroups(boolean condition) {
@@ -219,6 +242,22 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     public final void setIncludeTestCode(boolean includeTestCode) {
         this.includeTestCode = includeTestCode;
+    }
+
+    public final void setExcludedSourceRoot(File excludedSourceRoot) {
+        checkArgument(this.excludedSourceRoots.isEmpty(),
+            "Configuration error: you should either specify a single excluded source root using <excludedSourceRoot> or multiple "
+                + "excluded source roots using <excludedSourceRoots> but not both");
+        checkArgument(this.excludedSourceRoot == null,
+            "If you want to specify multiple excluded source root you have to wrap them in a <excludedSourceRoots> tag");
+        this.excludedSourceRoot = excludedSourceRoot;
+    }
+
+    public final void setExcludedSourceRoots(List<File> excludedSourceRoots) {
+        checkArgument(this.excludedSourceRoot == null,
+            "Configuration error: you should either specify a single excluded source root using <excludedSourceRoot> or multiple "
+                + "excluded source roots using <excludedSourceRoots> but not both");
+        this.excludedSourceRoots = excludedSourceRoots;
     }
 
     public void setFailBuild(boolean failBuild) {

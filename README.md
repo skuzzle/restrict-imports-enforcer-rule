@@ -23,7 +23,7 @@ information.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
+            <version>1.3.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <executions>
@@ -342,6 +342,9 @@ This artifact is (currently) not meant to be used as standalone dependency. Thus
 even between two different patch versions!
 
 ## Changelog
+
+### Version 1.3.0
+* [47](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/47): Allow to exclude source roots
 
 ### Version 1.2.0
 * [44](https://github.com/skuzzle/restrict-imports-enforcer-rule/pull/44): Bump guava to `30.1.1-jre`

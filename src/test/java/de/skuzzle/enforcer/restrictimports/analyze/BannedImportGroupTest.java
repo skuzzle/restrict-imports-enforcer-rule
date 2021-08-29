@@ -46,7 +46,7 @@ public class BannedImportGroupTest {
         assertThatExceptionOfType(BannedImportDefinitionException.class)
                 .isThrownBy(() -> BannedImportGroup.builder()
                         .withBannedImports("any.thing")
-                        .withExcludedClasses("java.util.**", "java.util.text.**")
+                        .withExclusions("java.util.**", "java.util.text.**")
                         .build())
                 .withMessageContaining("There are ambiguous exclusion definitions: java.util.**, java.util.text.**");
     }
@@ -89,7 +89,7 @@ public class BannedImportGroupTest {
                 .isThrownBy(() -> BannedImportGroup.builder()
                         .withBasePackages("de.skuzzle.**")
                         .withBannedImports("foo.bar")
-                        .withExcludedClasses("de.not.skuzzle.**")
+                        .withExclusions("de.not.skuzzle.**")
                         .build())
                 .withMessageContaining("The exclusion pattern 'de.not.skuzzle.**'");
     }
@@ -110,7 +110,7 @@ public class BannedImportGroupTest {
                 .isThrownBy(() -> BannedImportGroup.builder()
                         .withBasePackages("de.skuzzle.**")
                         .withBannedImports("foo.bar")
-                        .withExcludedClasses("static de.skuzzle.Foo")
+                        .withExclusions("static de.skuzzle.Foo")
                         .build())
                 .withMessageContaining("Exclusions must not be static");
     }

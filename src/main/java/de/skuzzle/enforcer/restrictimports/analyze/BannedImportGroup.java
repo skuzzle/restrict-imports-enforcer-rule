@@ -20,18 +20,18 @@ public final class BannedImportGroup {
     private final List<PackagePattern> basePackages;
     private final List<PackagePattern> bannedImports;
     private final List<PackagePattern> allowedImports;
-    private final List<PackagePattern> excludedClasses;
+    private final List<PackagePattern> exclusions;
     private final String reason;
 
     private BannedImportGroup(List<PackagePattern> basePackages,
             List<PackagePattern> bannedImports,
             List<PackagePattern> allowedImports,
-            List<PackagePattern> excludedClasses,
+            List<PackagePattern> exclusions,
             String reason) {
         this.basePackages = basePackages;
         this.bannedImports = bannedImports;
         this.allowedImports = allowedImports;
-        this.excludedClasses = excludedClasses;
+        this.exclusions = exclusions;
         this.reason = reason;
     }
 
@@ -66,12 +66,12 @@ public final class BannedImportGroup {
         return matchesAnyPattern(importName, allowedImports);
     }
 
-    public List<PackagePattern> getExcludedClasses() {
-        return this.excludedClasses;
+    public List<PackagePattern> getExclusions() {
+        return this.exclusions;
     }
 
     public boolean exclusionMatches(String fqcn) {
-        return matchesAnyPattern(fqcn, excludedClasses);
+        return matchesAnyPattern(fqcn, exclusions);
     }
 
     private boolean matchesAnyPattern(String packageName,
@@ -86,7 +86,7 @@ public final class BannedImportGroup {
 
     @Override
     public int hashCode() {
-        return Objects.hash(basePackages, bannedImports, allowedImports, excludedClasses, reason);
+        return Objects.hash(basePackages, bannedImports, allowedImports, exclusions, reason);
     }
 
     @Override
@@ -95,7 +95,7 @@ public final class BannedImportGroup {
                 && Objects.equals(basePackages, ((BannedImportGroup) obj).basePackages)
                 && Objects.equals(bannedImports, ((BannedImportGroup) obj).bannedImports)
                 && Objects.equals(allowedImports, ((BannedImportGroup) obj).allowedImports)
-                && Objects.equals(excludedClasses, ((BannedImportGroup) obj).excludedClasses)
+                && Objects.equals(exclusions, ((BannedImportGroup) obj).exclusions)
                 && Objects.equals(reason, ((BannedImportGroup) obj).reason);
     }
 
@@ -105,7 +105,7 @@ public final class BannedImportGroup {
                 .add("basePackages", this.basePackages)
                 .add("bannedImports", this.bannedImports)
                 .add("allowedImports", this.allowedImports)
-                .add("excludedClasses", this.excludedClasses)
+                .add("exclusions", this.exclusions)
                 .add("reason", this.reason)
                 .toString();
     }
@@ -114,7 +114,7 @@ public final class BannedImportGroup {
         private List<PackagePattern> basePackages = ImmutableList.of();
         private List<PackagePattern> bannedImports = ImmutableList.of();
         private List<PackagePattern> allowedImports = ImmutableList.of();
-        private List<PackagePattern> excludedClasses = ImmutableList.of();
+        private List<PackagePattern> exclusions = ImmutableList.of();
         private String reason;
 
         private Builder() {
@@ -150,14 +150,14 @@ public final class BannedImportGroup {
                     PackagePattern.parseAll(Arrays.asList(allowedImports)));
         }
 
-        public Builder withExcludedClasses(List<PackagePattern> excludedClasses) {
-            this.excludedClasses = excludedClasses;
+        public Builder withExclusions(List<PackagePattern> exclusions) {
+            this.exclusions = exclusions;
             return this;
         }
 
-        public Builder withExcludedClasses(String... excludedClasses) {
-            return withExcludedClasses(
-                    PackagePattern.parseAll(Arrays.asList(excludedClasses)));
+        public Builder withExclusions(String... exclusions) {
+            return withExclusions(
+                    PackagePattern.parseAll(Arrays.asList(exclusions)));
         }
 
         public Builder withReason(String reason) {
@@ -175,7 +175,7 @@ public final class BannedImportGroup {
         public BannedImportGroup build() {
             final BannedImportGroup group = new BannedImportGroup(basePackages,
                     bannedImports, allowedImports,
-                    excludedClasses, reason);
+                    exclusions, reason);
             checkGroupConsistency(group);
             return group;
         }
@@ -193,7 +193,7 @@ public final class BannedImportGroup {
             checkAmbiguous(group.getBasePackages(), "base package");
             checkAmbiguous(group.getBannedImports(), "banned import");
             checkAmbiguous(group.getAllowedImports(), "allowed import");
-            checkAmbiguous(group.getExcludedClasses(), "exclusion");
+            checkAmbiguous(group.getExclusions(), "exclusion");
         }
 
         private void checkAmbiguous(Collection<PackagePattern> patterns, String errorTemplate) {
@@ -214,7 +214,7 @@ public final class BannedImportGroup {
         }
 
         private void checkExclusionNotStatic(BannedImportGroup group) {
-            if (group.getExcludedClasses().stream().anyMatch(PackagePattern::isStatic)) {
+            if (group.getExclusions().stream().anyMatch(PackagePattern::isStatic)) {
                 throw new BannedImportDefinitionException("Exclusions must not be static");
             }
         }
@@ -238,7 +238,7 @@ public final class BannedImportGroup {
         }
 
         private void exclusionsMustMatchBasePattern(BannedImportGroup group) {
-            for (final PackagePattern excludedClass : group.getExcludedClasses()) {
+            for (final PackagePattern excludedClass : group.getExclusions()) {
                 final boolean matches = group.getBasePackages().stream()
                         .anyMatch(basePackage -> basePackage.matches(excludedClass));
                 if (!matches) {

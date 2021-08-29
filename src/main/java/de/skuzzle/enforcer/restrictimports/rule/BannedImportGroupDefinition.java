@@ -32,7 +32,7 @@ public class BannedImportGroupDefinition {
                 .withBasePackages(assembleList(this.basePackage, this.basePackages))
                 .withBannedImports(assembleList(this.bannedImport, this.bannedImports))
                 .withAllowedImports(assembleList(this.allowedImport, this.allowedImports))
-                .withExcludedClasses(assembleList(this.exclusion, this.exclusions))
+                .withExclusions(assembleList(this.exclusion, this.exclusions))
                 .withReason(reason)
                 .build();
     }

@@ -285,7 +285,7 @@ public class SourceTreeAnalyzerImplIT {
                 BannedImportGroups.builder().withGroup(BannedImportGroup.builder()
                         .withBasePackages("de.skuzzle.*")
                         .withBannedImports("java.util.ArrayList")
-                        .withExcludedClasses("de.skuzzle.Sample"))
+                        .withExclusions("de.skuzzle.Sample"))
                         .build());
 
         assertThat(analyzeResult.bannedImportsFound()).isFalse();
@@ -359,7 +359,7 @@ public class SourceTreeAnalyzerImplIT {
                 .withGroup(BannedImportGroup.builder()
                         .withBasePackages("de.skuzzle.**")
                         .withBannedImports("com.sun.**")
-                        .withExcludedClasses("de.skuzzle.Sample"))
+                        .withExclusions("de.skuzzle.Sample"))
                 .build();
 
         final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();

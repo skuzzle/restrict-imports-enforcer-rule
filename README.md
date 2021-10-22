@@ -21,7 +21,7 @@ information.
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-enforcer-plugin</artifactId>
-    <version>3.0.0-M3</version>
+    <version>3.0.0</version>
     <dependencies>
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
@@ -38,12 +38,12 @@ information.
             </goals>
             <configuration>
                 <rules>
-                    <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+                    <RestrictImports>
                         <!-- Define an explanatory reason why these imports are prohibited -->
                         <reason>Use SLF4j for logging</reason>
                         <!-- Specify a single pattern to be banned -->
                         <bannedImport>java.util.logging.**</bannedImport>
-                    </restrictImports>
+                    </RestrictImports>
         
                     <!-- You could have another rule instance here for restricting further imports -->
                 </rules>

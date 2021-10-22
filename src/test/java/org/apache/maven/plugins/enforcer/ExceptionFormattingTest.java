@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.rule;
+package org.apache.maven.plugins.enforcer;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
@@ -16,6 +16,8 @@ import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import de.skuzzle.enforcer.restrictimports.rule.RestrictImports;
 
 public class ExceptionFormattingTest {
 

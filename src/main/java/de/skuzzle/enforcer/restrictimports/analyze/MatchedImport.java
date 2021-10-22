@@ -1,9 +1,9 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
+import java.util.Objects;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-
-import java.util.Objects;
 
 /**
  * Represents a single match of a banned import within a java source file.

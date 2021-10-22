@@ -1,9 +1,10 @@
 package de.skuzzle.enforcer.restrictimports.parser.lang;
 
-import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 
 public class KotlinGroovyLanguageSupportTest {
 

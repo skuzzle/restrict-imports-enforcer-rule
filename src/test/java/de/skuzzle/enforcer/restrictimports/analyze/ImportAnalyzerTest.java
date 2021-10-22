@@ -1,18 +1,20 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import com.google.common.collect.ImmutableList;
-import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
-import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.jupiter.api.Test;
+
+import com.google.common.collect.ImmutableList;
+
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
+import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 
 class ImportAnalyzerTest {
 

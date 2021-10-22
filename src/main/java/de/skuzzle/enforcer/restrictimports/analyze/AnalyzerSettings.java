@@ -1,7 +1,5 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import com.google.common.base.MoreObjects;
-
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -11,6 +9,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import com.google.common.base.MoreObjects;
 
 /**
  * Defines context information for the {@link SourceTreeAnalyzer}.

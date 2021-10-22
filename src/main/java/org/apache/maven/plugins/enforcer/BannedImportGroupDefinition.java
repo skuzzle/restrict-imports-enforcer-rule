@@ -1,4 +1,4 @@
-package de.skuzzle.enforcer.restrictimports.rule;
+package org.apache.maven.plugins.enforcer;
 
 import static com.google.common.base.Preconditions.checkArgument;
 

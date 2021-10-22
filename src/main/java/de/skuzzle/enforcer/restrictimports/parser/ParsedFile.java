@@ -1,10 +1,10 @@
 package de.skuzzle.enforcer.restrictimports.parser;
 
-import com.google.common.base.MoreObjects;
-
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Objects;
+
+import com.google.common.base.MoreObjects;
 
 /**
  * Represents a source file that has been parsed for import statements.

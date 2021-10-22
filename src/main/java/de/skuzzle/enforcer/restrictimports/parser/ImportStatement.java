@@ -1,9 +1,9 @@
 package de.skuzzle.enforcer.restrictimports.parser;
 
+import java.util.Objects;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
-
-import java.util.Objects;
 
 /**
  * Represents an import statement that has been discovered while parsing a source file.

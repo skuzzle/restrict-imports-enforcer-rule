@@ -1,12 +1,12 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
-
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Preconditions;
 
 /**
  * Holds the matches that were found within a single source file. Instances can be

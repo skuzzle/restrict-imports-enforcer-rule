@@ -87,7 +87,7 @@ application without having to exclude whole artifacts from your classpath.
 ## Includes and Excludes
 To refine the classes that are banned you may use the `allowedImports` tag in addition to 
 the `bannedImports` tag. For example you can exclude a whole sub package using a wildcard
-operator and then include some concrete classes:
+operator but still allow some concrete classes:
 
 ```xml
 <configuration>
@@ -187,11 +187,15 @@ of this groups within a single enforcer rule.
 </configuration>
 ```
 
+
 When analysing a source file, the plugin filters all groups where the group's 
 `basePackage` matches the source file's package name. In case multiple groups are 
 matching, only the group with the _most specific_ base package is retained and the others 
 are ignored for this file. Have a look at [this](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/develop/src/test/java/de/skuzzle/enforcer/restrictimports/analyze/PackagePatternSpecifityTest.java#L34) file to have a glance at how _specificity_ works.
 
+In the above example, the first group is chosen by default (as by `basePackage=**`) unless a class is matched by the
+more specific `basePackage` of the second group. In that case, only the definitions from the second group apply to this 
+class.
 
 ## Static imports
 Matching static imports is also possible but the `static ` prefix must be explicitly mentioned:

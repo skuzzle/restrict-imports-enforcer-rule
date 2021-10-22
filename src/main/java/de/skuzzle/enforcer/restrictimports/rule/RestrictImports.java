@@ -17,9 +17,10 @@ public class RestrictImports extends org.apache.maven.plugins.enforcer.RestrictI
     public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException {
         LOGGER.warn(
                 "You are using a deprecated declaration of the RestrictImports enforcer rule (Deprecated since 1.4.0). "
-                        + "If you declared the rule in your POM file like this: "
+                        + "Instead of "
                         + "<restrictImports implementation=\"de.skuzzle.enforcer.restrictimports.rule.RestrictImports\"> you "
-                        + "can now simplify this to just <RestrictImports>");
+                        + "can now simplify the decalration to just <RestrictImports>. The deprecated declaration "
+                        + "format will be removed with the next major release (2.x.x)");
         super.execute(helper);
     }
 

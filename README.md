@@ -44,7 +44,7 @@ information.
                         <!-- Specify a single pattern to be banned -->
                         <bannedImport>java.util.logging.**</bannedImport>
                     </RestrictImports>
-        
+
                     <!-- You could have another rule instance here for restricting further imports -->
                 </rules>
             </configuration>

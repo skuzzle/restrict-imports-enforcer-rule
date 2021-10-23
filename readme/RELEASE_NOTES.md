@@ -9,6 +9,10 @@
 in favor of `<RestrictImports>`. Using the deprecated declaration will print a warning during the build. The deprecated 
 declaration format will be removed with the next major release, that is `2.x.x`
 
+### Otherwise Noteworthy
+* Removed the changelog from the main README. Notable changes for each release are attached to each GitHub release. 
+Existing release notes are contained in `CHANGELOG_LEGACY.md` file.
+
 Maven Central coordinates for this release:
 
 ```xml

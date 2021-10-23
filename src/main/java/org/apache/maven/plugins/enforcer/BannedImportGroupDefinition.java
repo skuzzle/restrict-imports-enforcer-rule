@@ -1,6 +1,6 @@
 package org.apache.maven.plugins.enforcer;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static de.skuzzle.enforcer.restrictimports.util.Preconditions.checkArgument;
 
 import java.util.ArrayList;
 import java.util.Collections;

@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.util.Collection;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.ImmutableList;
@@ -19,7 +18,6 @@ import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.analyze.MatchedFile;
 import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 
-@Disabled
 public class MatchFormatterImplTest {
 
     private URL resourceDirUrl;

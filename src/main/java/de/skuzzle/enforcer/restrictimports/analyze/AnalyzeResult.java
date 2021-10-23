@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import com.google.common.base.MoreObjects;
+import de.skuzzle.enforcer.restrictimports.util.StringRepresentation;
 
 /**
  * Final result of analyzing the code base for banned imports.
@@ -122,7 +122,7 @@ public final class AnalyzeResult {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
+        return StringRepresentation.ofInstance(this)
                 .add("srcMatches", this.srcMatches)
                 .add("testMatches", this.testMatches)
                 .add("duration", duration)

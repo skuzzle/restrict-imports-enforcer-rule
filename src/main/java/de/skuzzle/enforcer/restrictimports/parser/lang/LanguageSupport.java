@@ -1,7 +1,5 @@
 package de.skuzzle.enforcer.restrictimports.parser.lang;
 
-import static com.google.common.io.Files.getFileExtension;
-
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -27,8 +25,7 @@ public interface LanguageSupport {
      *         found.
      */
     static LanguageSupport getLanguageSupport(Path path) {
-        final Path filename = path.getFileName();
-        final String extension = getFileExtension(filename.toString());
+        final String extension = FileExtension.fromPath(path);
         return SupportedLanguageHolder.getLanguageSupport(extension)
                 .orElseThrow(() -> new IllegalArgumentException(String.format(
                         "Could not find a LanguageSupport implementation for normalized file extension: '%s' (%s)",
@@ -46,7 +43,7 @@ public interface LanguageSupport {
     static boolean isLanguageSupported(Path path) {
         final Path filename = path.getFileName();
         return !Files.isDirectory(path)
-                && SupportedLanguageHolder.isLanguageSupported(getFileExtension(filename.toString()));
+                && SupportedLanguageHolder.isLanguageSupported(FileExtension.fromPath(filename));
     }
 
     /**

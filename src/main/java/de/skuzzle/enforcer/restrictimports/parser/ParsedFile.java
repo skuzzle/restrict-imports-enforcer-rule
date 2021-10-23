@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Objects;
 
-import com.google.common.base.MoreObjects;
+import de.skuzzle.enforcer.restrictimports.util.StringRepresentation;
 
 /**
  * Represents a source file that has been parsed for import statements.
@@ -37,7 +37,7 @@ public final class ParsedFile {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
+        return StringRepresentation.ofInstance(this)
                 .add("path", path)
                 .add("declaredPackage", declaredPackage)
                 .add("fqcn", fqcn)

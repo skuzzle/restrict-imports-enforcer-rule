@@ -1,13 +1,11 @@
 package de.skuzzle.enforcer.restrictimports.parser.lang;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 
@@ -18,7 +16,7 @@ public class JavaLanguageSupport implements LanguageSupport {
 
     @Override
     public Set<String> getSupportedFileExtensions() {
-        return ImmutableSet.of("java");
+        return Collections.singleton("java");
     }
 
     @Override
@@ -33,7 +31,7 @@ public class JavaLanguageSupport implements LanguageSupport {
     @Override
     public List<ImportStatement> parseImport(String line, int lineNumber) {
         if (!isImport(line)) {
-            return ImmutableList.of();
+            return Collections.emptyList();
         }
 
         // There can be multiple import statements within the same line, so

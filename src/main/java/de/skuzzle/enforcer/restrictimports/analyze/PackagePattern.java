@@ -1,12 +1,12 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import de.skuzzle.enforcer.restrictimports.util.Preconditions;
 
 /**
  * Pattern class to match java style package and class names using wild card operators.
@@ -37,7 +37,7 @@ public final class PackagePattern implements Comparable<PackagePattern> {
      * @return A list of parsed package patterns.
      */
     public static List<PackagePattern> parseAll(Collection<String> patternStrings) {
-        checkArgument(patternStrings != null);
+        Preconditions.checkArgument(patternStrings != null);
         return patternStrings.stream()
                 .map(PackagePattern::parse)
                 .collect(Collectors.toList());
@@ -50,7 +50,7 @@ public final class PackagePattern implements Comparable<PackagePattern> {
      * @return The parsed package pattern.
      */
     public static PackagePattern parse(String patternString) {
-        checkArgument(patternString != null);
+        Preconditions.checkArgument(patternString != null);
         return new PackagePattern(patternString);
     }
 

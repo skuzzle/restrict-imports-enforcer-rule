@@ -2,8 +2,8 @@ package de.skuzzle.enforcer.restrictimports.parser;
 
 import java.util.Objects;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
+import de.skuzzle.enforcer.restrictimports.util.Preconditions;
+import de.skuzzle.enforcer.restrictimports.util.StringRepresentation;
 
 /**
  * Represents an import statement that has been discovered while parsing a source file.
@@ -52,7 +52,7 @@ public final class ImportStatement {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
+        return StringRepresentation.ofInstance(this)
                 .add("import", importName)
                 .add("line", line)
                 .add("static", staticImport)

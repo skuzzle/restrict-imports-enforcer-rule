@@ -28,7 +28,6 @@
         <version.assertj>3.13.2</version.assertj>
         <version.equals-verifier>3.7.2</version.equals-verifier>
         <version.slf4j>1.7.25</version.slf4j>
-        <version.guava>30.1.1-jre</version.guava>
         <version.mockito>2.21.0</version.mockito>
         <version.jimfs>1.1</version.jimfs>
 
@@ -85,11 +84,6 @@
                 <version>${version.equals-verifier}</version>
             </dependency>
             <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>guava</artifactId>
-                <version>${version.guava}</version>
-            </dependency>
-            <dependency>
                 <groupId>com.google.jimfs</groupId>
                 <artifactId>jimfs</artifactId>
                 <version>${version.jimfs}</version>
@@ -106,10 +100,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.enforcer</groupId>

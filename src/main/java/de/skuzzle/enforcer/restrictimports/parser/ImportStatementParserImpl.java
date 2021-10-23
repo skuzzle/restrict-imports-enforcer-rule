@@ -12,9 +12,8 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-
 import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
+import de.skuzzle.enforcer.restrictimports.util.Preconditions;
 
 /**
  * Parses a source file into a {@link ParsedFile} representation.

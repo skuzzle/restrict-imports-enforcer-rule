@@ -10,6 +10,7 @@ in favor of `<RestrictImports>`. Using the deprecated declaration will print a w
 declaration format will be removed with the next major release, that is `2.x.x`
 
 ### Otherwise Noteworthy
+* [#38](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/38) Removed Guava dependency altogether.
 * Removed the changelog from the main README. Notable changes for each release are attached to each GitHub release. 
 Existing release notes are contained in `CHANGELOG_LEGACY.md` file.
 

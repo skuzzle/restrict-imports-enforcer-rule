@@ -2,12 +2,12 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.collect.ImmutableList;
+import de.skuzzle.enforcer.restrictimports.util.StringRepresentation;
 
 /**
  * Holds the user configured information of what imports should be banned including all
@@ -101,7 +101,7 @@ public final class BannedImportGroup {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
+        return StringRepresentation.ofInstance(this)
                 .add("basePackages", this.basePackages)
                 .add("bannedImports", this.bannedImports)
                 .add("allowedImports", this.allowedImports)
@@ -111,10 +111,10 @@ public final class BannedImportGroup {
     }
 
     public static class Builder {
-        private List<PackagePattern> basePackages = ImmutableList.of();
-        private List<PackagePattern> bannedImports = ImmutableList.of();
-        private List<PackagePattern> allowedImports = ImmutableList.of();
-        private List<PackagePattern> exclusions = ImmutableList.of();
+        private List<PackagePattern> basePackages = Collections.emptyList();
+        private List<PackagePattern> bannedImports = Collections.emptyList();
+        private List<PackagePattern> allowedImports = Collections.emptyList();
+        private List<PackagePattern> exclusions = Collections.emptyList();
         private String reason;
 
         private Builder() {

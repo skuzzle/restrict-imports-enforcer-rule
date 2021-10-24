@@ -56,7 +56,7 @@ pipeline {
     }
     stage('Create GitHub release') {
       steps {
-        sh 'git checkout main'
+        sh 'git checkout master'
         sh "mvn -B github-release:github-release -Dgithub.release-token=${GITHUB_RELEASE_TOKEN}"
       }
     }

@@ -1,9 +1,9 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import com.google.common.base.MoreObjects;
-import com.google.common.base.Preconditions;
-
 import java.util.Objects;
+
+import de.skuzzle.enforcer.restrictimports.util.Preconditions;
+import de.skuzzle.enforcer.restrictimports.util.StringRepresentation;
 
 /**
  * Represents a single match of a banned import within a java source file.
@@ -59,7 +59,7 @@ public final class MatchedImport {
 
     @Override
     public String toString() {
-        return MoreObjects.toStringHelper(this)
+        return StringRepresentation.ofInstance(this)
                 .add("importLine", this.importLine)
                 .add("matchedString", matchedString)
                 .add("matchedBy", matchedBy)

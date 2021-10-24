@@ -1,5 +1,8 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/de.skuzzle.enforcer/restrict-imports-enforcer-rule/badge.svg)](https://maven-badges.herokuapp.com/maven-central/de.skuzzle.enforcer/restrict-imports-enforcer-rule)
-[![Coverage Status](https://coveralls.io/repos/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master&service=github)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
+<!-- This file is auto generated during release from readme/README.md -->
+
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=1.4.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/1.4.0/jar)
+[![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=1.4.0&color=orange)](http://www.javadoc.io/doc/de.skuzzle.enforcer/restrict-imports-enforcer-rule/1.4.0)
+[![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=main)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
 # restrict-imports-enforcer-rule
@@ -18,12 +21,12 @@ information.
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-enforcer-plugin</artifactId>
-    <version>3.0.0-M3</version>
+    <version>3.0.0</version>
     <dependencies>
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>1.3.0</version>
+            <version>1.4.0</version>
         </dependency>
     </dependencies>
     <executions>
@@ -35,13 +38,13 @@ information.
             </goals>
             <configuration>
                 <rules>
-                    <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+                    <RestrictImports>
                         <!-- Define an explanatory reason why these imports are prohibited -->
                         <reason>Use SLF4j for logging</reason>
                         <!-- Specify a single pattern to be banned -->
                         <bannedImport>java.util.logging.**</bannedImport>
-                    </restrictImports>
-        
+                    </RestrictImports>
+
                     <!-- You could have another rule instance here for restricting further imports -->
                 </rules>
             </configuration>
@@ -65,7 +68,6 @@ information.
   * [Conceptual](#conceptual-limitation)
 * [Configuration options](#configuration-options)
 * [Versioning and Compatibility](#versioning-and-compatibility)
-* [Changelog](#changelog)
 
 ## Rationale
 Grown code bases often have a huge number of dependencies. That leads to a lot of clutter in their 
@@ -84,7 +86,7 @@ application without having to exclude whole artifacts from your classpath.
 ## Includes and Excludes
 To refine the classes that are banned you may use the `allowedImports` tag in addition to 
 the `bannedImports` tag. For example you can exclude a whole sub package using a wildcard
-operator and then include some concrete classes:
+operator but still allow some concrete classes:
 
 ```xml
 <configuration>
@@ -184,11 +186,15 @@ of this groups within a single enforcer rule.
 </configuration>
 ```
 
+
 When analysing a source file, the plugin filters all groups where the group's 
 `basePackage` matches the source file's package name. In case multiple groups are 
 matching, only the group with the _most specific_ base package is retained and the others 
 are ignored for this file. Have a look at [this](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/develop/src/test/java/de/skuzzle/enforcer/restrictimports/analyze/PackagePatternSpecifityTest.java#L34) file to have a glance at how _specificity_ works.
 
+In the above example, the first group is chosen by default (as by `basePackage=**`) unless a class is matched by the
+more specific `basePackage` of the second group. In that case, only the definitions from the second group apply to this 
+class.
 
 ## Static imports
 Matching static imports is also possible but the `static ` prefix must be explicitly mentioned:
@@ -340,46 +346,3 @@ a _minor_ version change!
 
 This artifact is (currently) not meant to be used as standalone dependency. Thus breaking code changes might occur 
 even between two different patch versions!
-
-## Changelog
-
-### Version 1.3.0
-* [47](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/47): Allow to exclude source roots
-
-### Version 1.2.0
-* [44](https://github.com/skuzzle/restrict-imports-enforcer-rule/pull/44): Bump guava to `30.1.1-jre`
-* [43](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/43): Allow to run on test code only
-
-### Version 1.1.0
-* [42](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/42): Add some more configuration consistency checks
-* Update section about _Versioning and Compatibility_
-
-### Version 1.0.1
-* [#39](https://github.com/skuzzle/restrict-imports-enforcer-rule/pull/39): Handle double semicolon after import statement
-* [#37](https://github.com/skuzzle/restrict-imports-enforcer-rule/pull/37): Fix version incompatibility
-* Display analysis duration
-
-### Version 1.0.0
-* [#35](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/35): Recognize multiple import statements on same line in groovy sources 
-* _Remove_ `commentLineBufferSize`
-
-### Version 0.18.0
-* Fix possible file resource leak while iterating source files
-* _Remove_ `sourceFileCharset`
-* _Soft-Remove_ `commentLineBufferSize`
-* [#34](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/34): Recognize multiple import statements on same line in java sources
-* [#33](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/33): Possibility to forbid wildcard imports
-* [#31](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/31): Results show whether a match occurred in a test file
-* [#30](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/30): Separate import parsing and banned import analysis
-
-### Version 0.17.0
-* [#29](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/29): SPI for `SourceLineParser` implementations
-* [#27](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/27): Introduce `failBuild` and `skip` options
-* Fix mysterious case where `"*` would be recognized as the beginning of a block comment
-* Introduce changelog to readme
-* Add [contribution guide lines](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/master/CONTRIBUTING.md)
-
-### Version 0.16.0
-* [#26](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/26): _Deprecate_ `commentLineBufferSize` parameter and replaced with dynamically growing buffer
-* [#25](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/25): Add additional configuration sanity checks
-* [#23](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/23): _Soft-Remove_ `sourceFileCharset` parameter and always use `UTF-8` now

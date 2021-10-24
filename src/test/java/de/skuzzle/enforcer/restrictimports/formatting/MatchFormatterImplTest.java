@@ -7,11 +7,10 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import com.google.common.collect.ImmutableList;
 
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
@@ -35,7 +34,7 @@ public class MatchFormatterImplTest {
         resourceDirFile = new File(resourceDirUrl.toURI());
         root = resourceDirFile.toPath().getParent();
         sourceFile = root.resolve("src/main/java/SampleJavaFile.java");
-        roots = ImmutableList.of(root);
+        roots = Collections.singletonList(root);
         group = BannedImportGroup.builder()
                 .withBasePackages("**")
                 .withBannedImports("java.util.*")

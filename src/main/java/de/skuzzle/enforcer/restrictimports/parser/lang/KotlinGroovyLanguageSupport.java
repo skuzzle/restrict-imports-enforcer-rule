@@ -1,13 +1,12 @@
 package de.skuzzle.enforcer.restrictimports.parser.lang;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
 
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 
@@ -15,10 +14,12 @@ public class KotlinGroovyLanguageSupport implements LanguageSupport {
 
     private static final String IMPORT_STATEMENT = "import ";
     private static final String PACKAGE_STATEMENT = "package ";
+    private static final Set<String> EXTENSIONS = Collections
+            .unmodifiableSet(new HashSet<>(Arrays.asList("groovy", "kt")));
 
     @Override
     public Set<String> getSupportedFileExtensions() {
-        return ImmutableSet.of("groovy", "kt");
+        return EXTENSIONS;
     }
 
     @Override
@@ -33,7 +34,7 @@ public class KotlinGroovyLanguageSupport implements LanguageSupport {
     @Override
     public List<ImportStatement> parseImport(String line, int lineNumber) {
         if (!isImport(line)) {
-            return ImmutableList.of();
+            return Collections.emptyList();
         }
 
         // There can be multiple import statements within the same line, so

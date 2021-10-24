@@ -8,7 +8,7 @@ import java.util.ServiceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
+import de.skuzzle.enforcer.restrictimports.util.Preconditions;
 
 /**
  * Helper class to list available {@link LanguageSupport} implementations from

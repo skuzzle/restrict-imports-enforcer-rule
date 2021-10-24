@@ -14,7 +14,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>3.0.0-M1</version>
+                <version>3.0.0</version>
                 <dependencies>
                     <dependency>
                         <!--suppress MavenModelInspection --><groupId>@project.groupId@</groupId>
@@ -24,13 +24,13 @@
                 </dependencies>
                 <configuration>
                     <rules>
-                        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+                        <RestrictImports>
                             <basePackage>**</basePackage>
                             <reason>These classes should not be used!</reason>
                             <bannedImports>
                                 <bannedImport>java.util.*</bannedImport>
                             </bannedImports>
-                        </restrictImports>
+                        </RestrictImports>
                     </rules>
                 </configuration>
             </plugin>

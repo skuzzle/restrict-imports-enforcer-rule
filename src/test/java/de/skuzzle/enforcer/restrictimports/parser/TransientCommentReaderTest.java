@@ -8,13 +8,18 @@ import java.io.StringReader;
 
 import org.junit.jupiter.api.Test;
 
-import com.google.common.io.CharStreams;
-
 public class TransientCommentReaderTest {
 
     private String readString(String in) {
         try (final Reader r = new TransientCommentReader(new StringReader(in), true)) {
-            return CharStreams.toString(r);
+            final StringBuilder b = new StringBuilder();
+            final char[] buffer = new char[2048];
+            int i = r.read(buffer);
+            while (i >= 0) {
+                b.append(buffer, 0, i);
+                i = r.read(buffer);
+            }
+            return b.toString();
         } catch (final IOException e) {
             throw new RuntimeException(e);
         }

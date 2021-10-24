@@ -6,12 +6,11 @@ import static org.mockito.Mockito.when;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
-
-import com.google.common.collect.ImmutableList;
 
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
@@ -53,7 +52,7 @@ class ImportAnalyzerTest {
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("de.skuzzle.sample.*");
-        final ImmutableList<MatchedImport> expected = ImmutableList.of(
+        final List<MatchedImport> expected = Arrays.asList(
                 new MatchedImport(1, "de.skuzzle.sample.Test", expectedMatchedBy),
                 new MatchedImport(3, "de.skuzzle.sample.Test2", expectedMatchedBy),
                 new MatchedImport(4, "de.skuzzle.sample.Test3", expectedMatchedBy));
@@ -73,7 +72,7 @@ class ImportAnalyzerTest {
 
         final PackagePattern expectedMatchedBy = PackagePattern
                 .parse("de.skuzzle.sample.*");
-        final ImmutableList<MatchedImport> expected = ImmutableList.of(
+        final List<MatchedImport> expected = Arrays.asList(
                 new MatchedImport(1, "de.skuzzle.sample.Test", expectedMatchedBy),
                 new MatchedImport(4, "de.skuzzle.sample.Test3", expectedMatchedBy));
 

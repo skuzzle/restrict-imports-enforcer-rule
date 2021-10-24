@@ -28,8 +28,8 @@
         <version.assertj>3.13.2</version.assertj>
         <version.equals-verifier>3.7.2</version.equals-verifier>
         <version.slf4j>1.7.25</version.slf4j>
-        <version.mockito>2.21.0</version.mockito>
-        <version.jimfs>1.1</version.jimfs>
+        <version.mockito>4.0.0</version.mockito>
+        <version.jimfs>1.2</version.jimfs>
 
         <version.resources-plugin>3.2.0</version.resources-plugin>
         <version.invoker-plugin>3.1.0</version.invoker-plugin>

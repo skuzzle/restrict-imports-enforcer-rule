@@ -5,14 +5,14 @@
 * Build and test against `enforcer-api:3.0.0` (coming from `3.0.0-M1`) 
 
 ### Deprecations
-* Deprecated declaration as `<restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">` 
-in favor of `<RestrictImports>`. Using the deprecated declaration will print a warning during the build. The deprecated 
-declaration format will be removed with the next major release, that is `2.x.x`
+* Deprecated full qualified declaration as `<restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">` 
+in favor of just `<RestrictImports>`. Using the deprecated declaration will print a warning during the build. The 
+deprecated declaration format will be removed with the next major release, that is `2.x.x`
 
 ### Otherwise Noteworthy
 * [#38](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/38) Removed Guava dependency altogether.
-* Removed the changelog from the main README. Notable changes for each release are attached to each GitHub release. 
-Existing release notes are contained in `CHANGELOG_LEGACY.md` file.
+* Removed the changelog from the main README. Notable changes for each release are now attached directly to each GitHub 
+release. Existing release notes up to version `1.3.0` can still be found in `CHANGELOG_LEGACY.md` file.
 
 Maven Central coordinates for this release:
 

@@ -91,10 +91,10 @@ operator but still allow some concrete classes:
 ```xml
 <configuration>
     <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+        <RestrictImports>
             <bannedImport>java.util.logging.**</bannedImport>
             <allowedImport>java.util.logging.Handler</allowedImport>
-        </restrictImports>
+        </RestrictImports>
     </rules>
 </configuration>
 ```
@@ -107,7 +107,7 @@ by the rule. You may then exclude some classes to refine the matches using the
 ```xml
 <configuration>
     <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+        <RestrictImports>
             <basePackages>
                 <basePackage>com.your.domain.**</basePackage>
                 <basePackage>com.your.company.**</basePackage>
@@ -116,7 +116,7 @@ by the rule. You may then exclude some classes to refine the matches using the
             <allowedImport>java.util.logging.Handler</allowedImport>
             <!-- The following packages will not be checked for banned imports -->
             <exclusion>com.your.domain.treat.special.*</exclusion>
-        </restrictImports>
+        </RestrictImports>
     </rules>
 </configuration>
 ```
@@ -127,7 +127,7 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
 ```xml
 <configuration>
     <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+        <RestrictImports>
             <bannedImports>
                 <bannedImport>java.util.logging.**</bannedImport>
                 <bannedImport>what.ever.**</bannedImport>
@@ -141,7 +141,7 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
                 <exclusion>com.your.domain.treat.special.too.*</exclusion>
             </exclusions>
             <!-- ... -->
-        </restrictImports>
+        </RestrictImports>
     </rules>
 </configuration>
 ```
@@ -157,7 +157,7 @@ of this groups within a single enforcer rule.
 ```xml
 <configuration>
     <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+        <RestrictImports>
             <groups>
                 <group>
                     <reason>Persistence classes must only be used from within .persistence package</reason>
@@ -181,7 +181,7 @@ of this groups within a single enforcer rule.
                     </bannedImports>
                 </group>
             </groups>
-        </restrictImports>
+        </RestrictImports>
     </rules>
 </configuration>
 ```
@@ -201,9 +201,9 @@ Matching static imports is also possible but the `static ` prefix must be explic
 ```xml
 <configuration>
     <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+        <RestrictImports>
             <bannedImport>static org.junit.Assert.*</bannedImport>
-        </restrictImports>
+        </RestrictImports>
     </rules>
 </configuration>
 ```
@@ -215,10 +215,10 @@ of test code using the `includeTestCode` option.
 ```xml
 <configuration>
     <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+        <RestrictImports>
             <includeTestCode>true</includeTestCode>
             <!-- ... -->
-        </restrictImports>
+        </RestrictImports>
     </rules>
 </configuration>
 ```
@@ -229,10 +229,10 @@ instance.
 ```xml
 <configuration>
     <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+        <RestrictImports>
             <skip>true</skip>
             <!-- ... -->
-        </restrictImports>
+        </RestrictImports>
     </rules>
 </configuration>
 ```
@@ -241,10 +241,10 @@ If you want banned import analysis but without breaking your build you can set
 ```xml
 <configuration>
     <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+        <RestrictImports>
             <failBuild>false</failBuild>
             <!-- ... -->
-        </restrictImports>
+        </RestrictImports>
     </rules>
 </configuration>
 ```
@@ -257,13 +257,13 @@ is not limited to `\${project.basedir}/src/main/java`, `\${project.basedir}/src/
 ```xml
 <configuration>
     <rules>
-        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+        <RestrictImports>
             <excludedSourceRoots>
                 <excludedSourceRoot>\${project.build.directory}/generated-sources/main/java</excludedSourceRoot>
                 <excludedSourceRoot>target/generated-test-sources/main/java</excludedSourceRoot>
             </excludedSourceRoots>
             <!-- ... -->
-        </restrictImports>
+        </RestrictImports>
     </rules>
 </configuration>
 ```

@@ -337,17 +337,17 @@ Overview of all configuration parameters:
 | `includeCompileCode`    | Boolean                   | no       | `true`                            | `1.2.0`  |
 | `excludedSourceRoot(s)` | (List of) java.io.File    | no       | empty list                        | `1.3.0`  |
 
-* _Deprecated_: Setting this property might have no effect but will log a descriptive warning
-* _Soft-Removed_: Setting this property will fail the build with a descriptive warning that this property is no longer supported
-* _Removed_: The property no longer exists and the plugin behaves as if it never did.
-
-## Versioning and Compatibility
-This project adheres to version 2 of the [semantic version specification](http://semver.org).
+## Versioning, Deprecations and Compatibility
+This project adheres to version 2 of the [semantic version specification](http://semver.org) with regards to the 
+plugin's configuration syntax and analysis semantics.
 
 You can always safely update the _minor_ and the _patch_ version of the rule's dependency entry within a pom.xml without 
-breaking your build. Interface or behavioral changes will only ever be introduced with a new _major_ version. Changes
-that break previous plugin configurations that were wrong in the first place may also be introduced with 
-a _minor_ version change!
+breaking your build. Breaking interface or behavioral changes will only ever be introduced with a new _major_ version. 
 
-This artifact is (currently) not meant to be used as standalone dependency. Thus breaking code changes might occur 
-even between two different patch versions!
+When deprecating/removing functionality, we use the following terminology:
+* _Deprecated_: Using this feature still works, but will log a descriptive deprecation warning
+* _Soft-Removed_: Using this feature will fail the build with a descriptive warning that this feature is no longer supported
+* _Removed_: The feature no longer exists and the plugin behaves as if it never did.
+
+This artifact is not meant to be used as standalone dependency. Thus its actual implementation is not covered by 
+semantic versioning.

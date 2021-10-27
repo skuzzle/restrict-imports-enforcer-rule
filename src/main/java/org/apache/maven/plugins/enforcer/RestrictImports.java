@@ -280,7 +280,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         final Object failBuildProperty = evaluator.evaluate("${" + FAIL_BUILD_PROPERTY_NAME + "}");
         if (failBuildProperty != null) {
             LOGGER.warn(
-                    "'{}={}' has been passed and takes precedence over 'failBuild={}' configuration in the pom file",
+                    "'{}={}' has been passed which takes precedence over 'failBuild={}' configuration in the pom file",
                     FAIL_BUILD_PROPERTY_NAME, failBuildProperty, this.failBuild);
             return "true".equalsIgnoreCase(failBuildProperty.toString());
         }
@@ -295,7 +295,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         final Object skipProperty = evaluator.evaluate("${" + SKIP_PROPERTY_NAME + "}");
         if (skipProperty != null) {
             LOGGER.warn(
-                    "'{}={}' has been passed and takes precedence over 'skip={}' configuration in the pom file",
+                    "'{}={}' has been passed which takes precedence over 'skip={}' configuration in the pom file",
                     SKIP_PROPERTY_NAME, skipProperty, this.skip);
             return "true".equalsIgnoreCase(skipProperty.toString());
         }

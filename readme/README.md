@@ -248,6 +248,11 @@ If you want banned import analysis but without breaking your build you can set
     </rules>
 </configuration>
 ```
+
+You can also pass these parameters as property to the maven build using `-Drestrictimports.skip` resp. 
+`-Drestrictimports.failBuild`. When passed as property, the property's value takes precedence over what has been
+configured in the pom file.
+
 ## Exclude source roots
 By default, all source roots reported by Maven is subject to the banned import checks, which for example includes but
 is not limited to `\${project.basedir}/src/main/java`, `\${project.basedir}/src/test/java`,

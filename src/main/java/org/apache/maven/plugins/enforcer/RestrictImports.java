@@ -19,6 +19,8 @@ import org.apache.maven.enforcer.rule.api.EnforcerRule2;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.project.MavenProject;
+import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
+import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +39,9 @@ import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
 public class RestrictImports extends BannedImportGroupDefinition implements EnforcerRule, EnforcerRule2 {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RestrictImports.class);
+
+    private static final String SKIP_PROPERTY_NAME = "restrictimports.skip";
+    private static final String FAIL_BUILD_PROPERTY_NAME = "restrictimports.failBuild";
 
     private final SourceTreeAnalyzer analyzer = SourceTreeAnalyzer.getInstance();
     private final MatchFormatter matchFormatter = MatchFormatter.getInstance();
@@ -59,12 +64,12 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     @Override
     public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException {
-        if (skip) {
-            LOGGER.info("restrict-imports-enforcer rule is skipped");
-            return;
-        }
-
         try {
+            if (isSkip(helper)) {
+                LOGGER.info("restrict-imports-enforcer rule is skipped");
+                return;
+            }
+
             final MavenProject project = (MavenProject) helper.evaluate("${project}");
 
             LOGGER.debug("Checking for banned imports");
@@ -82,7 +87,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
                 final String errorMessage = matchFormatter
                         .formatMatches(analyzerSettings.getAllDirectories(), analyzeResult);
 
-                if (failBuild) {
+                if (isFailBuild(helper)) {
                     throw new EnforcerRuleException(errorMessage);
                 } else {
                     LOGGER.warn(errorMessage);
@@ -273,8 +278,30 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         this.failBuild = failBuild;
     }
 
+    private boolean isFailBuild(ExpressionEvaluator evaluator) throws ExpressionEvaluationException {
+        final Object failBuildProperty = evaluator.evaluate("${" + FAIL_BUILD_PROPERTY_NAME + "}");
+        if (failBuildProperty != null) {
+            LOGGER.warn(
+                    "'{}={}' has been passed and takes precedence over 'failBuild={}' configuration in the pom file",
+                    FAIL_BUILD_PROPERTY_NAME, failBuildProperty, this.failBuild);
+            return "true".equalsIgnoreCase(failBuildProperty.toString());
+        }
+        return this.failBuild;
+    }
+
     public void setSkip(boolean skip) {
         this.skip = skip;
+    }
+
+    private boolean isSkip(ExpressionEvaluator evaluator) throws ExpressionEvaluationException {
+        final Object skipProperty = evaluator.evaluate("${" + SKIP_PROPERTY_NAME + "}");
+        if (skipProperty != null) {
+            LOGGER.warn(
+                    "'{}={}' has been passed and takes precedence over 'skip={}' configuration in the pom file",
+                    SKIP_PROPERTY_NAME, skipProperty, this.skip);
+            return "true".equalsIgnoreCase(skipProperty.toString());
+        }
+        return this.skip;
     }
 
     @Override

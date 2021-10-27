@@ -2,7 +2,7 @@
 
 [![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=1.4.1-SNAPSHOT&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/1.4.1-SNAPSHOT/jar)
 [![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=1.4.1-SNAPSHOT&color=orange)](http://www.javadoc.io/doc/de.skuzzle.enforcer/restrict-imports-enforcer-rule/1.4.1-SNAPSHOT)
-[![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=main)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
 # restrict-imports-enforcer-rule
@@ -248,6 +248,11 @@ If you want banned import analysis but without breaking your build you can set
     </rules>
 </configuration>
 ```
+
+You can also pass these parameters as property to the maven build using `-Drestrictimports.skip` resp. 
+`-Drestrictimports.failBuild`. When passed as property, the property's value takes precedence over what has been
+configured in the pom file.
+
 ## Exclude source roots
 By default, all source roots reported by Maven is subject to the banned import checks, which for example includes but
 is not limited to `${project.basedir}/src/main/java`, `${project.basedir}/src/test/java`,

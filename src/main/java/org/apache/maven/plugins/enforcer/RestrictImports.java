@@ -19,8 +19,6 @@ import org.apache.maven.enforcer.rule.api.EnforcerRule2;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
-import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -278,7 +276,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         this.failBuild = failBuild;
     }
 
-    private boolean isFailBuild(ExpressionEvaluator evaluator) throws ExpressionEvaluationException {
+    private boolean isFailBuild(EnforcerRuleHelper evaluator) throws Exception {
         final Object failBuildProperty = evaluator.evaluate("${" + FAIL_BUILD_PROPERTY_NAME + "}");
         if (failBuildProperty != null) {
             LOGGER.warn(
@@ -293,7 +291,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         this.skip = skip;
     }
 
-    private boolean isSkip(ExpressionEvaluator evaluator) throws ExpressionEvaluationException {
+    private boolean isSkip(EnforcerRuleHelper evaluator) throws Exception {
         final Object skipProperty = evaluator.evaluate("${" + SKIP_PROPERTY_NAME + "}");
         if (skipProperty != null) {
             LOGGER.warn(

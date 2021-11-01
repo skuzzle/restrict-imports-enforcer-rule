@@ -210,13 +210,13 @@ Matching static imports is also possible but the `static ` prefix must be explic
 Inclusions and exclusion will work identically.
 
 ## Test code
-By default, test code is not subject to the banned import checks. You can enable analysis
-of test code using the `includeTestCode` option.
+By default, test code is also subject to the banned import checks (this is new since version `2.0.0`). You can disable 
+analysis of test code using the `includeTestCode` option.
 ```xml
 <configuration>
     <rules>
         <RestrictImports>
-            <includeTestCode>true</includeTestCode>
+            <includeTestCode>false</includeTestCode>
             <!-- ... -->
         </RestrictImports>
     </rules>

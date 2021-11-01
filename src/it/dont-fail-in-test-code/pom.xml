@@ -24,6 +24,7 @@
                     <rules>
                         <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
                             <basePackage>**</basePackage>
+                            <includeTestCode>false</includeTestCode>
                             <bannedImports>
                                 <bannedImport>java.util.*</bannedImport>
                             </bannedImports>

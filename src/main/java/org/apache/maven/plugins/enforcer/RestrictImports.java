@@ -47,7 +47,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
     private List<BannedImportGroupDefinition> groups = new ArrayList<>();
 
     private boolean includeCompileCode = true;
-    private boolean includeTestCode = false;
+    private boolean includeTestCode = true;
     private File excludedSourceRoot = null;
     private List<File> excludedSourceRoots = new ArrayList<>();
     private boolean failBuild = true;

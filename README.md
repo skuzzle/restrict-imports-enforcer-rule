@@ -62,6 +62,7 @@ information.
   * [Test code](#test-code)
   * [Skipping](#skipping)
   * [Exclude source roots](#exclude-source-roots)
+  * [Parallel analysis](#parallel-analysis)
   * [Package patterns](#package-patterns)
 * [Limitation](#limitation)
   * [Syntactical](#syntactical-limitation)
@@ -147,9 +148,6 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
 ```
 
 ## Rule groups
-(*Note:* This is a beta feature and not thoroughly tested. Syntax and behavior 
-changes in upcoming versions are likely)
-
 Rule groups add another level of refining which imports will be matched. You can group
 the `bannedImport(s)`, `allowedImport(s)` and `basePackage(s)` tags and specify multiple 
 of this groups within a single enforcer rule. 
@@ -272,6 +270,24 @@ is not limited to `${project.basedir}/src/main/java`, `${project.basedir}/src/te
     </rules>
 </configuration>
 ```
+
+## Parallel Analysis
+(*Note:* This is a beta feature and not thoroughly tested. Syntax and behavior 
+changes in upcoming versions are likely)
+
+We support basic parallelization of the analysis. This is disabled by default but can be enabled either in the pom file
+using the `<parallel>` option or by passing `-Drestrictimports.parallel` to the maven build.
+```xml
+<configuration>
+    <rules>
+        <RestrictImports>
+            <parallel>false</parallel>
+            <!-- ... -->
+        </RestrictImports>
+    </rules>
+</configuration>
+```
+
 
 ## Package Patterns
 

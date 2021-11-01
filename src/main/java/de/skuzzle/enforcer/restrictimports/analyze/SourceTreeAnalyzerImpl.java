@@ -4,18 +4,25 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatementParser;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SourceTreeAnalyzerImpl.class);
 
     private final ImportAnalyzer importAnalyzer;
     private final Predicate<Path> supportedFileTypes;
@@ -30,9 +37,16 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
         final long start = System.currentTimeMillis();
         final ImportStatementParser fileParser = ImportStatementParser.forCharset(settings.getSourceFileCharset());
 
-        final Collection<MatchedFile> srcMatches = analyzeDirectories(groups, fileParser, settings.getSrcDirectories());
+        if (settings.isParallel()) {
+            LOGGER.warn("EXPERIMENTAL FEATURE enabled. You have enabled parallel analysis which is marked as "
+                    + "experimental. Please be aware that experimental features might get removed. "
+                    + "Please share your feedback!");
+        }
+
+        final Collection<MatchedFile> srcMatches = analyzeDirectories(groups, fileParser,
+                settings.getSrcDirectories(), settings.isParallel());
         final Collection<MatchedFile> testMatches = analyzeDirectories(groups, fileParser,
-                settings.getTestDirectories());
+                settings.getTestDirectories(), settings.isParallel());
 
         final long stop = System.currentTimeMillis();
         final long duration = stop - start;
@@ -44,19 +58,31 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
     }
 
     private Collection<MatchedFile> analyzeDirectories(BannedImportGroups groups, ImportStatementParser fileParser,
-            Iterable<Path> directories) {
-        final Collection<MatchedFile> matchedFiles = new ArrayList<>();
-        for (final Path srcDir : directories) {
-            try (Stream<Path> sourceFiles = listFiles(srcDir, supportedFileTypes)) {
-                sourceFiles
-                        .map(fileParser::parse)
-                        .map(analyzeAgainst(groups))
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .forEach(matchedFiles::add);
-            }
+            Iterable<Path> directories, boolean parallel) {
+        return StreamSupport.stream(directories.spliterator(), parallel)
+                .flatMap(srcDir -> analyzeDirectory(groups, fileParser, srcDir, parallel))
+                .collect(Collectors.toList());
+    }
+
+    private Stream<MatchedFile> analyzeDirectory(BannedImportGroups groups, ImportStatementParser fileParser,
+            Path srcDir, boolean parallel) {
+
+        try (Stream<Path> sourceFiles = parallelize(listFiles(srcDir, supportedFileTypes), parallel)) {
+            final List<MatchedFile> matches = sourceFiles
+                    .map(fileParser::parse)
+                    .map(analyzeAgainst(groups))
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .collect(Collectors.toList());
+
+            return parallelize(matches.stream(), parallel);
         }
-        return matchedFiles;
+    }
+
+    private <T> Stream<T> parallelize(Stream<T> stream, boolean parallel) {
+        return parallel
+                ? stream.parallel()
+                : stream;
     }
 
     private Function<ParsedFile, Optional<MatchedFile>> analyzeAgainst(BannedImportGroups groups) {

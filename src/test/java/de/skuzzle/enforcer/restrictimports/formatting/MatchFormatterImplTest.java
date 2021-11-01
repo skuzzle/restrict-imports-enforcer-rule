@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
@@ -17,6 +18,7 @@ import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.analyze.MatchedFile;
 import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 
+@Disabled
 public class MatchFormatterImplTest {
 
     private URL resourceDirUrl;

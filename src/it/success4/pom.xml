@@ -23,6 +23,7 @@
                 <configuration>
                     <rules>
                         <RestrictImports>
+                            <parallel>true</parallel>
                             <excludedSourceRoot>${project.basedir}/target/generated-sources/main/java</excludedSourceRoot>
                             <basePackages>
                                 <basePackage>de.skuzzle.test.**</basePackage>

@@ -22,13 +22,15 @@ public final class AnalyzerSettings {
     private final Charset sourceFileCharset;
     private final Collection<Path> srcDirectories;
     private final Collection<Path> testDirectories;
+    private final boolean parallel;
 
     private AnalyzerSettings(Charset sourceFileCharset,
             Collection<Path> srcDirectories,
-            Collection<Path> testDirectories) {
+            Collection<Path> testDirectories, boolean parallel) {
         this.sourceFileCharset = sourceFileCharset;
         this.srcDirectories = srcDirectories;
         this.testDirectories = testDirectories;
+        this.parallel = parallel;
     }
 
     public static Builder builder() {
@@ -47,6 +49,10 @@ public final class AnalyzerSettings {
         return testDirectories;
     }
 
+    public boolean isParallel() {
+        return this.parallel;
+    }
+
     /**
      * Returns the union of {@link #getSrcDirectories()} and getTestDirectories.
      *
@@ -61,7 +67,7 @@ public final class AnalyzerSettings {
 
     @Override
     public int hashCode() {
-        return Objects.hash(sourceFileCharset, srcDirectories, testDirectories);
+        return Objects.hash(sourceFileCharset, srcDirectories, testDirectories, parallel);
     }
 
     @Override
@@ -69,7 +75,8 @@ public final class AnalyzerSettings {
         return obj == this || obj instanceof AnalyzerSettings
                 && Objects.equals(sourceFileCharset, ((AnalyzerSettings) obj).sourceFileCharset)
                 && Objects.equals(srcDirectories, ((AnalyzerSettings) obj).srcDirectories)
-                && Objects.equals(testDirectories, ((AnalyzerSettings) obj).testDirectories);
+                && Objects.equals(testDirectories, ((AnalyzerSettings) obj).testDirectories)
+                && parallel == ((AnalyzerSettings) obj).parallel;
     }
 
     @Override
@@ -78,6 +85,7 @@ public final class AnalyzerSettings {
                 .add("sourceFileCharset", sourceFileCharset)
                 .add("srcDirectories", srcDirectories)
                 .add("testDirectories", testDirectories)
+                .add("parallel", parallel)
                 .toString();
     }
 
@@ -86,6 +94,7 @@ public final class AnalyzerSettings {
         private final List<Path> srcDirectories = new ArrayList<>();
         private final List<Path> testDirectories = new ArrayList<>();
         private Charset sourceFileCharset = Charset.defaultCharset();
+        private boolean parallel = false;
 
         private Builder() {
             // hidden
@@ -116,8 +125,13 @@ public final class AnalyzerSettings {
             return this;
         }
 
+        public Builder enableParallelAnalysis(boolean parallel) {
+            this.parallel = parallel;
+            return this;
+        }
+
         public AnalyzerSettings build() {
-            return new AnalyzerSettings(sourceFileCharset, srcDirectories, testDirectories);
+            return new AnalyzerSettings(sourceFileCharset, srcDirectories, testDirectories, parallel);
         }
     }
 }

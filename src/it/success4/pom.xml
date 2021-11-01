@@ -22,7 +22,7 @@
                 </dependencies>
                 <configuration>
                     <rules>
-                        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+                        <RestrictImports>
                             <excludedSourceRoot>${project.basedir}/target/generated-sources/main/java</excludedSourceRoot>
                             <basePackages>
                                 <basePackage>de.skuzzle.test.**</basePackage>
@@ -34,7 +34,7 @@
                             <allowedImports>
                                 <allowedImport>java.util.ArrayList</allowedImport>
                             </allowedImports>
-                        </restrictImports>
+                        </RestrictImports>
                     </rules>
                 </configuration>
             </plugin>

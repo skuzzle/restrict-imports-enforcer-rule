@@ -22,7 +22,7 @@
                 </dependencies>
                 <configuration>
                     <rules>
-                        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+                        <RestrictImports>
                             <basePackages>
                                 <basePackage>com.foo.**</basePackage>
                                 <basePackage>de.skuzzle.**</basePackage>
@@ -30,7 +30,7 @@
                             <bannedImports>
                                 <bannedImport>java.util.*</bannedImport>
                             </bannedImports>
-                        </restrictImports>
+                        </RestrictImports>
                     </rules>
                 </configuration>
             </plugin>

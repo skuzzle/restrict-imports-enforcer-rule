@@ -17,8 +17,6 @@ import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.skuzzle.enforcer.restrictimports.rule.RestrictImports;
-
 public class ExceptionFormattingTest {
 
     private final EnforcerRuleHelper helper = mock(EnforcerRuleHelper.class);

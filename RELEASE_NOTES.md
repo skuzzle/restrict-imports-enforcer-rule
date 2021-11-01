@@ -6,6 +6,8 @@
 ### Changes
 * [#28](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/28) When analyzing, include test code by default.
 * [#49](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/49) Simplify and formalize _"pattern specificy"_.
+* *BREAKING* Declaration variant no longer supported: <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports"> (deprecated since `0.12.0`)
+* *BREAKING* Declaration variant no longer supported: <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports"> (deprecated since `1.4.0`)
 
 
 Maven Central coordinates for this release:

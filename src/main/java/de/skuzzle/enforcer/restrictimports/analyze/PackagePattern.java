@@ -94,18 +94,15 @@ public final class PackagePattern implements Comparable<PackagePattern> {
      * Tests whether the given package pattern is matched by this package pattern
      * instance.
      *
-     * @param packagePattern The package pattern to match against this pattern.
+     * @param otherPackagePattern The package pattern to match against this pattern.
      * @return Whether the pattern matches this pattern.
      * @since 0.8.0
      */
-    public boolean matches(PackagePattern packagePattern) {
-        if (packagePattern == this) {
+    public boolean matches(PackagePattern otherPackagePattern) {
+        if (otherPackagePattern == this) {
             return true;
-        } else if (packagePattern instanceof PackagePattern) {
-            final PackagePattern ppi = packagePattern;
-            return matchesInternal(ppi.staticc, ppi.parts, this.staticc, this.parts);
         }
-        return matches(packagePattern.toString());
+        return matchesInternal(otherPackagePattern.staticc, otherPackagePattern.parts, this.staticc, this.parts);
     }
 
     /**
@@ -180,48 +177,29 @@ public final class PackagePattern implements Comparable<PackagePattern> {
 
     @Override
     public int compareTo(PackagePattern other) {
-        if (isMoreSpecificThan(other)) {
+        final int commonParts = Math.min(parts.length, other.parts.length);
+        for (int i = 0; i < commonParts; ++i) {
+            final String thisPart = this.parts[i];
+            final String otherPart = other.parts[i];
+
+            if (!thisPart.equals(otherPart)) {
+                // mismatching parts, so we found a specificy difference
+                final int leftSpecificy = specificyOf(thisPart);
+                final int rightSpecificy = specificyOf(otherPart);
+                return Integer.compare(leftSpecificy, rightSpecificy);
+            }
+        }
+        // all parts are equal up to here, so the longer the more specific
+        return Integer.compare(parts.length, other.parts.length);
+    }
+
+    private int specificyOf(String part) {
+        if (part.equals("**")) {
+            return 0;
+        } else if (part.equals("*")) {
             return 1;
-        } else if (other.isMoreSpecificThan(this)) {
-            return -1;
         }
-        return 0;
-    }
-
-    private boolean isMoreSpecificThan(PackagePattern other) {
-
-        final int numOfStarStarThis = count("**", this.parts);
-        final int numOfStarStarOther = count("**", other.parts);
-
-        if (numOfStarStarThis < numOfStarStarOther) {
-            return true;
-        } else if (numOfStarStarThis > numOfStarStarOther) {
-            return false;
-        }
-
-        final int numOfStarThis = count("*", this.parts);
-        final int numOfStarOther = count("*", other.parts);
-
-        if (numOfStarThis < numOfStarOther) {
-            return true;
-        } else if (numOfStarThis > numOfStarOther) {
-            return false;
-        }
-
-        final String thisLastPart = parts[this.parts.length - 1];
-        final String otherLastPart = other.parts[other.parts.length - 1];
-
-        if (thisLastPart.equals("**")) {
-            return this.parts.length > other.parts.length;
-        } else if (thisLastPart.equals("*")) {
-            return otherLastPart.equals("**");
-        }
-
-        return parts.length > other.parts.length;
-    }
-
-    private int count(String s, String[] arr) {
-        return (int) Arrays.stream(arr).filter(s::equals).count();
+        return 2;
     }
 
     /**

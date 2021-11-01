@@ -39,12 +39,14 @@ public class PackagePatternSpecifityTest {
             expect("de").toBeMoreSpecificThan("*"),
             expect("de").toBeMoreSpecificThan("**"),
             expect("de.xyz").toBeMoreSpecificThan("de.*"),
+
             expect("de.xyz").toBeMoreSpecificThan("de"),
+
             expect("de.*.xyz.*").toBeMoreSpecificThan("de.**.xyz.*"),
             expect("de.*.xyz.*").toBeMoreSpecificThan("de.**.xyz.**"),
-            expect("de.**.xyz.*").toBeMoreSpecificThan("de.*.xyz.**"),
             expect("de.*.xyz.de").toBeMoreSpecificThan("de.**.xyz.de"),
-            expect("de.**.xyz.*.foo").toBeMoreSpecificThan("de.*.xyz.**.*"),
+            expect("de.*.xyz.**.*").toBeMoreSpecificThan("de.**.xyz.*.foo"),
+            expect("com.foo.bar.**.abc.de").toBeMoreSpecificThan("com.foo.**.bar.abc.de"),
             expect("*.xyz").toBeMoreSpecificThan("**.xyz"));
 
     @TestFactory

@@ -3,6 +3,9 @@
 ### Features
 * [#50](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/50) Introduce `-Drestrictimports.skip` and `-Drestrictimports.failBuild` command line options.
 
+### Changes
+* [#49](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/49) Simplify and formalize _"pattern specificy"_.
+
 
 Maven Central coordinates for this release:
 

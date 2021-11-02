@@ -1,6 +1,7 @@
 package de.skuzzle.enforcer.restrictimports.formatting;
 
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -31,10 +32,20 @@ class MatchFormatterImpl implements MatchFormatter {
             formatGroupedMatches(roots, b, testMatchesByGroup);
         }
 
-        final long seconds = analyzeResult.getDuration() / 1000;
-        b.append("\nAnalysis took ").append(seconds).append(" seconds\n");
+        final Duration duration = analyzeResult.duration();
+        b.append("\nAnalysis of ")
+                .append(pluralize(analyzeResult.analysedFiles(), " file"))
+                .append(" took ")
+                .append(DurationFormat.formatDuration(duration))
+                .append("\n");
 
         return b.toString();
+    }
+
+    private static String pluralize(long value, String singular) {
+        return value == 1
+                ? value + singular
+                : value + singular + "s";
     }
 
     private void formatGroupedMatches(Collection<Path> roots, StringBuilder b,
@@ -61,7 +72,7 @@ class MatchFormatterImpl implements MatchFormatter {
     private void appendMatch(MatchedImport match, StringBuilder b) {
         b.append("\t\t")
                 .append(match.getMatchedString())
-                .append(" (Line: ")
+                .append(" \t\t(Line: ")
                 .append(match.getImportLine())
                 .append(", Matched by: ")
                 .append(match.getMatchedBy())

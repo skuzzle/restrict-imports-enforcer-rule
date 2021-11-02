@@ -1,5 +1,6 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,12 +18,15 @@ public final class AnalyzeResult {
 
     private final List<MatchedFile> srcMatches;
     private final List<MatchedFile> testMatches;
-    private final long duration;
+    private final Duration duration;
+    private final int analysedFiles;
 
-    private AnalyzeResult(List<MatchedFile> srcMatches, List<MatchedFile> testMatches, long duration) {
+    private AnalyzeResult(List<MatchedFile> srcMatches, List<MatchedFile> testMatches, long duration,
+            int analysedFiles) {
         this.srcMatches = srcMatches;
         this.testMatches = testMatches;
-        this.duration = duration;
+        this.duration = Duration.ofMillis(duration);
+        this.analysedFiles = analysedFiles;
     }
 
     public static Builder builder() {
@@ -104,8 +108,17 @@ public final class AnalyzeResult {
      *
      * @return Analysis duration in ms.
      */
-    public long getDuration() {
+    public Duration duration() {
         return this.duration;
+    }
+
+    /**
+     * The number of files that have been analysed.
+     *
+     * @return Number of files.
+     */
+    public int analysedFiles() {
+        return this.analysedFiles;
     }
 
     @Override
@@ -133,6 +146,7 @@ public final class AnalyzeResult {
         private final List<MatchedFile> srcMatches = new ArrayList<>();
         private final List<MatchedFile> testMatches = new ArrayList<>();
         private long duration;
+        private int analysedFiles;
 
         private Builder() {
             // hidden
@@ -165,8 +179,14 @@ public final class AnalyzeResult {
             return this;
         }
 
-        public AnalyzeResult build() {
-            return new AnalyzeResult(srcMatches, testMatches, duration);
+        public Builder withAnalysedFileCount(int analysedFiles) {
+            this.analysedFiles = analysedFiles;
+            return this;
         }
+
+        public AnalyzeResult build() {
+            return new AnalyzeResult(srcMatches, testMatches, duration, analysedFiles);
+        }
+
     }
 }

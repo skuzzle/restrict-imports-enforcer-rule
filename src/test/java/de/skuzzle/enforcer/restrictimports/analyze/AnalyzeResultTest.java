@@ -8,6 +8,6 @@ public class AnalyzeResultTest {
 
     @Test
     public void testEquals() throws Exception {
-        EqualsVerifier.forClass(AnalyzeResult.class).withIgnoredFields("duration").verify();
+        EqualsVerifier.forClass(AnalyzeResult.class).withIgnoredFields("duration", "analysedFiles").verify();
     }
 }

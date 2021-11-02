@@ -8,10 +8,12 @@ according to the changes mentioned below. Please carefully read the _changes_ se
 * [#49](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/49) Simplify and formalize _"pattern specificy"_.
 * Declaration variant no longer supported: `<restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">` (deprecated since `0.12.0`).
 * Declaration variant no longer supported: `<restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">` (deprecated since `1.4.0`).
+* Improve formatting of the analysis result.
 
 ### Features
 * [#50](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/50) Introduce `-Drestrictimports.skip` and `-Drestrictimports.failBuild` command line options.
-* Added `<parallel>` option to run the whole analysis in parallel (Experimental feature, feedback welcome).
+* Added `<parallel>` (`-Drestrictimports.parallel`) option to run the whole analysis in parallel (Experimental feature, feedback welcome).
+
 
 
 Maven Central coordinates for this release:

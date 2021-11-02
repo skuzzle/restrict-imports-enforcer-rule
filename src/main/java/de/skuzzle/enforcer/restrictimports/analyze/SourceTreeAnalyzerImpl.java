@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -43,10 +45,11 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
                     + "Please share your feedback!");
         }
 
+        final ThreadSafeCounter counter = new ThreadSafeCounter();
         final Collection<MatchedFile> srcMatches = analyzeDirectories(groups, fileParser,
-                settings.getSrcDirectories(), settings.isParallel());
+                settings.getSrcDirectories(), settings.isParallel(), counter);
         final Collection<MatchedFile> testMatches = analyzeDirectories(groups, fileParser,
-                settings.getTestDirectories(), settings.isParallel());
+                settings.getTestDirectories(), settings.isParallel(), counter);
 
         final long stop = System.currentTimeMillis();
         final long duration = stop - start;
@@ -54,21 +57,23 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
                 .withMatches(srcMatches)
                 .withMatchesInTestCode(testMatches)
                 .withDuration(duration)
+                .withAnalysedFileCount(counter.count())
                 .build();
     }
 
     private Collection<MatchedFile> analyzeDirectories(BannedImportGroups groups, ImportStatementParser fileParser,
-            Iterable<Path> directories, boolean parallel) {
+            Iterable<Path> directories, boolean parallel, ThreadSafeCounter counter) {
         return StreamSupport.stream(directories.spliterator(), parallel)
-                .flatMap(srcDir -> analyzeDirectory(groups, fileParser, srcDir, parallel))
+                .flatMap(srcDir -> analyzeDirectory(groups, fileParser, srcDir, parallel, counter))
                 .collect(Collectors.toList());
     }
 
     private Stream<MatchedFile> analyzeDirectory(BannedImportGroups groups, ImportStatementParser fileParser,
-            Path srcDir, boolean parallel) {
+            Path srcDir, boolean parallel, ThreadSafeCounter counter) {
 
         try (Stream<Path> sourceFiles = parallelize(listFiles(srcDir, supportedFileTypes), parallel)) {
             final List<MatchedFile> matches = sourceFiles
+                    .peek(counter)
                     .map(fileParser::parse)
                     .map(analyzeAgainst(groups))
                     .filter(Optional::isPresent)
@@ -99,6 +104,20 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
         } catch (final IOException e) {
             throw new UncheckedIOException("Encountered IOException while listing files of " + root, e);
         }
+    }
+
+    private static class ThreadSafeCounter implements Consumer<Object> {
+        private final AtomicInteger counter = new AtomicInteger();
+
+        @Override
+        public void accept(Object t) {
+            counter.incrementAndGet();
+        }
+
+        public int count() {
+            return counter.get();
+        }
+
     }
 
 }

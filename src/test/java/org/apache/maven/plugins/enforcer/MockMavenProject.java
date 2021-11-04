@@ -13,7 +13,6 @@ import java.util.Properties;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import org.codehaus.plexus.component.configurator.expression.ExpressionEvaluationException;
 
 public class MockMavenProject {
     private final EnforcerRuleHelper enforcerRuleHelper = mock(EnforcerRuleHelper.class);
@@ -53,7 +52,7 @@ public class MockMavenProject {
     public MockMavenProject withExpression(String expression, Object result) {
         try {
             when(enforcerRuleHelper.evaluate(expression)).thenReturn(result);
-        } catch (final ExpressionEvaluationException e) {
+        } catch (final Exception e) {
             throw new IllegalStateException(e);
         }
         return this;

@@ -10,6 +10,7 @@ import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.analyze.MatchedFile;
 import de.skuzzle.enforcer.restrictimports.analyze.MatchedImport;
+import de.skuzzle.enforcer.restrictimports.util.Preconditions;
 
 class MatchFormatterImpl implements MatchFormatter {
 
@@ -50,15 +51,29 @@ class MatchFormatterImpl implements MatchFormatter {
 
     private void formatGroupedMatches(Collection<Path> roots, StringBuilder b,
             Map<BannedImportGroup, List<MatchedFile>> matchesByGroup) {
+
+        final int longestMatchedString = longestMatch(matchesByGroup.values());
+
         matchesByGroup.forEach((group, matches) -> {
             group.getReason().ifPresent(reason -> b.append("Reason: ").append(reason).append("\n"));
             matches.forEach(fileMatch -> {
                 b.append("\tin file").append(": ")
                         .append(relativize(roots, fileMatch.getSourceFile()))
                         .append("\n");
-                fileMatch.getMatchedImports().forEach(match -> appendMatch(match, b));
+                fileMatch.getMatchedImports().forEach(match -> appendMatch(match, longestMatchedString, b));
             });
         });
+    }
+
+    private int longestMatch(Collection<? extends Collection<MatchedFile>> files) {
+        return files.stream()
+                .flatMap(Collection::stream)
+                .map(MatchedFile::getMatchedImports)
+                .flatMap(Collection::stream)
+                .map(MatchedImport::getMatchedString)
+                .mapToInt(String::length)
+                .max()
+                .orElse(1);
     }
 
     private static Path relativize(Collection<Path> roots, Path path) {
@@ -69,14 +84,26 @@ class MatchFormatterImpl implements MatchFormatter {
                 .orElse(path);
     }
 
-    private void appendMatch(MatchedImport match, StringBuilder b) {
+    private void appendMatch(MatchedImport match, int longestMatchedString, StringBuilder b) {
         b.append("\t\t")
-                .append(match.getMatchedString())
-                .append(" \t\t(Line: ")
+                .append(padRight(match.getMatchedString(), longestMatchedString))
+                .append(" \t(Line: ")
                 .append(match.getImportLine())
                 .append(", Matched by: ")
                 .append(match.getMatchedBy())
                 .append(")\n");
+    }
+
+    private String padRight(String original, int intendedLength) {
+        Preconditions.checkArgument(original.length() <= intendedLength);
+        final int diff = intendedLength - original.length();
+        final StringBuilder builder = new StringBuilder(intendedLength)
+                .append(original);
+
+        for (int i = 0; i < diff; ++i) {
+            builder.append(" ");
+        }
+        return builder.toString();
     }
 
 }

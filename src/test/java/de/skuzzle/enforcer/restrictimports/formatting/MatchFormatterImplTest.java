@@ -35,7 +35,8 @@ public class MatchFormatterImplTest {
                         .withMatchAt(3, "java.util.ArrayList", PackagePattern.parse("java.util.*")))
                 .withMatchesInTestCode(MatchedFile.forSourceFile(sourceFile)
                         .matchedBy(group)
-                        .withMatchAt(3, "java.util.ArrayList", PackagePattern.parse("java.util.*")))
+                        .withMatchAt(3, "java.util.ArrayList", PackagePattern.parse("java.util.*"))
+                        .withMatchAt(4, "java.util.Date", PackagePattern.parse("java.util.*")))
                 .withAnalysedFileCount(2)
                 .build();
 
@@ -44,11 +45,12 @@ public class MatchFormatterImplTest {
         assertThat(formatted).isEqualTo("\nBanned imports detected:\n\n" +
                 "Reason: Some reason\n" +
                 "\tin file: SampleJavaFile.java\n" +
-                "\t\tjava.util.ArrayList \t\t(Line: 3, Matched by: java.util.*)\n" +
+                "\t\tjava.util.ArrayList \t(Line: 3, Matched by: java.util.*)\n" +
                 "\nBanned imports detected in TEST code:\n\n" +
                 "Reason: Some reason\n" +
                 "\tin file: SampleJavaFile.java\n" +
-                "\t\tjava.util.ArrayList \t\t(Line: 3, Matched by: java.util.*)\n\n" +
+                "\t\tjava.util.ArrayList \t(Line: 3, Matched by: java.util.*)\n" +
+                "\t\tjava.util.Date      \t(Line: 4, Matched by: java.util.*)\n\n" +
                 "Analysis of 2 files took 5 seconds\n");
     }
 
@@ -67,7 +69,7 @@ public class MatchFormatterImplTest {
         assertThat(formatted).isEqualTo("\nBanned imports detected:\n\n" +
                 "Reason: Some reason\n" +
                 "\tin file: SampleJavaFile.java\n" +
-                "\t\tjava.util.ArrayList \t\t(Line: 3, Matched by: java.util.*)\n\n" +
+                "\t\tjava.util.ArrayList \t(Line: 3, Matched by: java.util.*)\n\n" +
                 "Analysis of 2 files took 5 seconds\n");
     }
 
@@ -86,7 +88,7 @@ public class MatchFormatterImplTest {
         assertThat(formatted).isEqualTo("\nBanned imports detected in TEST code:\n\n" +
                 "Reason: Some reason\n" +
                 "\tin file: SampleJavaFile.java\n" +
-                "\t\tjava.util.ArrayList \t\t(Line: 3, Matched by: java.util.*)\n\n" +
+                "\t\tjava.util.ArrayList \t(Line: 3, Matched by: java.util.*)\n\n" +
                 "Analysis of 1 file took 5 seconds\n");
     }
 }

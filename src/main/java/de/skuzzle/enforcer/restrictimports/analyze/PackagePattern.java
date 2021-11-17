@@ -133,7 +133,7 @@ public final class PackagePattern implements Comparable<PackagePattern> {
         int matchIndex = 0;
         for (; patternIndex < parts.length
                 && matchIndex < matchParts.length; ++patternIndex) {
-            final String patternPart = this.parts[patternIndex];
+            final String patternPart = parts[patternIndex];
             final String matchPart = matchParts[matchIndex];
 
             if ("**".equals(patternPart)) {

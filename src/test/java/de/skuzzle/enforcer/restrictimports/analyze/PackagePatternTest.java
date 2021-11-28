@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-public class PackagePatternImplTest {
+public class PackagePatternTest {
 
     @Test
     void testMatchLiteralAsterisk() {

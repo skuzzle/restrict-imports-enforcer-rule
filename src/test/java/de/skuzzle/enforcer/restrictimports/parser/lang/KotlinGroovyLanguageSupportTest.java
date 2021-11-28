@@ -13,40 +13,40 @@ public class KotlinGroovyLanguageSupportTest {
     @Test
     public void testValidImport1() {
         assertThat(subject.parseImport("import java.util.List;", 1)).first()
-                .isEqualTo(new ImportStatement("java.util.List", 1));
+                .isEqualTo(new ImportStatement("java.util.List", 1, false));
     }
 
     @Test
     public void testValidImport2() {
         assertThat(subject.parseImport("import java.util.List", 1)).first()
-                .isEqualTo(new ImportStatement("java.util.List", 1));
+                .isEqualTo(new ImportStatement("java.util.List", 1, false));
     }
 
     @Test
     void testAliasedImport() throws Exception {
         assertThat(subject.parseImport("import java.util.List as NewList", 1)).first()
-                .isEqualTo(new ImportStatement("java.util.List", 1));
+                .isEqualTo(new ImportStatement("java.util.List", 1, false));
     }
 
     @Test
     void testMultipleImportsInSameLine() {
         assertThat(subject.parseImport("import java.util.List; import java.util.Collection;", 1)).containsOnly(
-                new ImportStatement("java.util.List", 1),
-                new ImportStatement("java.util.Collection", 1));
+                new ImportStatement("java.util.List", 1, false),
+                new ImportStatement("java.util.Collection", 1, false));
     }
 
     @Test
     void testMultipleImportsInSameLineWithAlias() {
         assertThat(subject.parseImport("import java.util.List as Set; import java.util.Collection;", 1)).containsOnly(
-                new ImportStatement("java.util.List", 1),
-                new ImportStatement("java.util.Collection", 1));
+                new ImportStatement("java.util.List", 1, false),
+                new ImportStatement("java.util.Collection", 1, false));
     }
 
     @Test
     void testMultipleImportsInSameLineWithAliasNoSemicolonAtEnd() {
         assertThat(subject.parseImport("import java.util.List as Set; import java.util.Collection", 2)).containsOnly(
-                new ImportStatement("java.util.List", 2),
-                new ImportStatement("java.util.Collection", 2));
+                new ImportStatement("java.util.List", 2, false),
+                new ImportStatement("java.util.Collection", 2, false));
     }
 
     @Test
@@ -77,13 +77,13 @@ public class KotlinGroovyLanguageSupportTest {
     @Test
     void testDanglingSemicolonSingleImport() throws Exception {
         assertThat(subject.parseImport("import java.util.List; ;;", 1)).containsOnly(
-                new ImportStatement("java.util.List", 1));
+                new ImportStatement("java.util.List", 1, false));
     }
 
     @Test
     void testDanglingSemicolonMultipleImports() throws Exception {
         assertThat(subject.parseImport("import java.util.List;import java.util.Collection;;", 1)).containsOnly(
-                new ImportStatement("java.util.List", 1),
-                new ImportStatement("java.util.Collection", 1));
+                new ImportStatement("java.util.List", 1, false),
+                new ImportStatement("java.util.Collection", 1, false));
     }
 }

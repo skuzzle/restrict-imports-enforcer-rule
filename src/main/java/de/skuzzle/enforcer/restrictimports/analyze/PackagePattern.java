@@ -4,9 +4,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import de.skuzzle.enforcer.restrictimports.util.Preconditions;
+import de.skuzzle.enforcer.restrictimports.util.Whitespaces;
 
 /**
  * Pattern class to match java style package and class names using wild card operators.
@@ -15,18 +18,77 @@ import de.skuzzle.enforcer.restrictimports.util.Preconditions;
  */
 public final class PackagePattern implements Comparable<PackagePattern> {
 
-    private static final String STATIC_PREFIX = "static ";
+    private static final String STATIC_PREFIX = "static";
+
     private final String[] parts;
     private final boolean staticc;
 
     private PackagePattern(String s) {
-        this.staticc = s.startsWith(STATIC_PREFIX);
-        if (staticc) {
-            s = s.substring(STATIC_PREFIX.length());
+        final ParseResult parsed = ParseResult.parse(s);
+        this.staticc = parsed.staticc;
+        this.parts = parsed.parts;
+        checkParts(s, this.parts);
+    }
+
+    private static class ParseResult {
+        private static final Pattern STATIC_PREFIX_PATTERN = Pattern.compile("^" + STATIC_PREFIX + "\\s+");
+
+        private final String[] parts;
+        private final boolean staticc;
+
+        private ParseResult(String[] parts, boolean staticc) {
+            this.parts = parts;
+            this.staticc = staticc;
         }
 
-        this.parts = s.split("\\.");
-        checkParts(s, this.parts);
+        static ParseResult parse(String s) {
+            String trimmed = Whitespaces.trimAll(s);
+            final Matcher matcher = STATIC_PREFIX_PATTERN.matcher(trimmed);
+            final boolean staticc = matcher.find();
+            if (staticc) {
+                trimmed = trimmed.substring(matcher.end());
+            }
+            final String[] parts = trimmed.split("\\.");
+            return new ParseResult(parts, staticc);
+        }
+    }
+
+    private void checkParts(String original, String[] parts) {
+        if (original.startsWith(".") || original.endsWith(".")) {
+            throw new IllegalArgumentException(String.format("The pattern '%s' contains an empty part", original));
+        }
+        for (int i = 0; i < parts.length; i++) {
+            final String part = parts[i];
+            checkCharacters(original, part, i);
+        }
+    }
+
+    private void checkCharacters(String original, String part, int partIndex) {
+        final char[] chars = part.toCharArray();
+
+        if (part.isEmpty()) {
+            throw new IllegalArgumentException(String.format("The pattern '%s' contains an empty part", original));
+        } else if ("*".equals(part) || "**".equals(part) || "'*'".equals(part)) {
+            return;
+        } else if (part.contains("*")) {
+            throw new IllegalArgumentException(String.format(
+                    "The pattern '%s' contains a part which mixes wildcards and normal characters", original));
+        } else if (partIndex == 0 && "static".equals(part)) {
+            return;
+        } else if (!Character.isJavaIdentifierStart(chars[0])) {
+            throw new IllegalArgumentException(String.format(
+                    "The pattern '%s' contains a non-identifier character '%s' (0x%s)", original, chars[0],
+                    Integer.toHexString(chars[0])));
+        }
+
+        for (int i = 1; i < chars.length; i++) {
+            final char c = chars[i];
+            if (!Character.isJavaIdentifierPart(c)) {
+                throw new IllegalArgumentException(String.format(
+                        "The pattern '%s' contains a non-identifier character '%s' (0x%s)", original, chars[i],
+                        Integer.toHexString(chars[i])));
+            }
+        }
     }
 
     /**
@@ -54,42 +116,6 @@ public final class PackagePattern implements Comparable<PackagePattern> {
         return new PackagePattern(patternString);
     }
 
-    private void checkParts(String full, String[] parts) {
-        if (full.startsWith(".") || full.endsWith(".")) {
-            throw new IllegalArgumentException(String.format("The pattern '%s' contains an empty part", full));
-        }
-        for (int i = 0; i < parts.length; i++) {
-            final String part = parts[i];
-            checkCharacters(full, part, i);
-        }
-    }
-
-    private void checkCharacters(String full, String part, int partIndex) {
-        final char[] chars = part.toCharArray();
-
-        if (part.isEmpty()) {
-            throw new IllegalArgumentException(String.format("The pattern '%s' contains an empty part", full));
-        } else if ("*".equals(part) || "**".equals(part) || "'*'".equals(part)) {
-            return;
-        } else if (part.contains("*")) {
-            throw new IllegalArgumentException(String.format(
-                    "The pattern '%s' contains a part which mixes wildcards and normal characters", full));
-        } else if (partIndex == 0 && "static".equals(part)) {
-            return;
-        } else if (!Character.isJavaIdentifierStart(chars[0])) {
-            throw new IllegalArgumentException(String.format(
-                    "The pattern '%s' contains a non-identifier character '%s'", full, chars[0]));
-        }
-
-        for (int i = 1; i < chars.length; i++) {
-            final char c = chars[i];
-            if (!Character.isJavaIdentifierPart(c)) {
-                throw new IllegalArgumentException(String.format(
-                        "The pattern '%s' contains a non-identifier character '%s'", full, chars[i]));
-            }
-        }
-    }
-
     /**
      * Tests whether the given package pattern is matched by this package pattern
      * instance.
@@ -112,12 +138,8 @@ public final class PackagePattern implements Comparable<PackagePattern> {
      * @return Whether the name matches this pattern.
      */
     public boolean matches(String packageName) {
-        final boolean matchIsStatic = packageName.startsWith(STATIC_PREFIX);
-        if (matchIsStatic) {
-            packageName = packageName.substring(STATIC_PREFIX.length());
-        }
-        final String[] matchParts = packageName.split("\\.");
-        return matchesInternal(matchIsStatic, matchParts, this.staticc, this.parts);
+        final ParseResult parsed = ParseResult.parse(packageName);
+        return matchesInternal(parsed.staticc, parsed.parts, this.staticc, this.parts);
     }
 
     private boolean matchesInternal(boolean matchIsStatic, String[] matchParts,
@@ -169,7 +191,7 @@ public final class PackagePattern implements Comparable<PackagePattern> {
     public String toString() {
         final StringBuilder result = new StringBuilder();
         if (staticc) {
-            result.append(STATIC_PREFIX);
+            result.append(STATIC_PREFIX + " ");
         }
         result.append(String.join(".", this.parts));
         return result.toString();

@@ -3,6 +3,9 @@
 This is a new major release. Upgrading the version _might_ break your build if you don't adjust your configuration 
 according to the changes mentioned below. Please carefully read the _changes_ section when you are upgrading from `1.x.x`.
 
+### Bug fixes
+* [#52](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/52) Whitespaces in plugin configuration and source files are handled more gracefully.
+
 ### Changes
 * [#28](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/28) Test code is always analyzed unless `<includeTestCode>` option is configured `false`.
 * [#49](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/49) Simplify and formalize _"pattern specificy"_.

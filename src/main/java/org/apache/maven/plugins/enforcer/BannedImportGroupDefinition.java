@@ -11,19 +11,19 @@ import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 
 public class BannedImportGroupDefinition {
 
-    private static final PackagePattern DEFAULT_BASE_PACKAGE = PackagePattern.parse("**");
+    private static final String DEFAULT_BASE_PACKAGE = "**";
 
-    private PackagePattern basePackage = DEFAULT_BASE_PACKAGE;
-    private List<PackagePattern> basePackages = new ArrayList<>();
+    private String basePackage = DEFAULT_BASE_PACKAGE;
+    private List<String> basePackages = new ArrayList<>();
 
-    private PackagePattern bannedImport = null;
-    private List<PackagePattern> bannedImports = new ArrayList<>();
+    private String bannedImport = null;
+    private List<String> bannedImports = new ArrayList<>();
 
-    private PackagePattern allowedImport = null;
-    private List<PackagePattern> allowedImports = new ArrayList<>();
+    private String allowedImport = null;
+    private List<String> allowedImports = new ArrayList<>();
 
-    private PackagePattern exclusion = null;
-    private List<PackagePattern> exclusions = new ArrayList<>();
+    private String exclusion = null;
+    private List<String> exclusions = new ArrayList<>();
 
     private String reason;
 
@@ -54,12 +54,12 @@ public class BannedImportGroupDefinition {
                 || !exclusions.isEmpty();
     }
 
-    private List<PackagePattern> assembleList(PackagePattern single,
-            List<PackagePattern> multi) {
+    private List<PackagePattern> assembleList(String single,
+            List<String> multi) {
         if (single == null) {
-            return multi;
+            return PackagePattern.parseAll(multi);
         } else {
-            return Collections.singletonList(single);
+            return Collections.singletonList(PackagePattern.parse(single));
         }
     }
 
@@ -67,7 +67,7 @@ public class BannedImportGroupDefinition {
         checkArgument(this.basePackages.isEmpty(),
                 "Configuration error: you should either specify a single base package using <basePackage> or multiple "
                         + "base packages using <basePackages> but not both");
-        this.basePackage = PackagePattern.parse(basePackage);
+        this.basePackage = PackagePattern.parse(basePackage).toString();
     }
 
     public void setBasePackages(List<String> basePackages) {
@@ -77,7 +77,8 @@ public class BannedImportGroupDefinition {
         checkArgument(basePackages != null && !basePackages.isEmpty(),
                 "bannedPackages must not be empty");
         this.basePackage = null;
-        this.basePackages = PackagePattern.parseAll(basePackages);
+        this.basePackages = basePackages;
+        ;
     }
 
     public void setBannedImport(String bannedImport) {
@@ -86,7 +87,8 @@ public class BannedImportGroupDefinition {
                         + "banned imports using <bannedImports> but not both");
         checkArgument(this.bannedImport == null,
                 "If you want to specify multiple banned imports you have to wrap them in a <bannedImports> tag");
-        this.bannedImport = PackagePattern.parse(bannedImport);
+        this.bannedImport = PackagePattern.parse(bannedImport).toString();
+        ;
     }
 
     public void setBannedImports(List<String> bannedPackages) {
@@ -96,7 +98,7 @@ public class BannedImportGroupDefinition {
         checkArgument(bannedPackages != null && !bannedPackages.isEmpty(),
                 "bannedPackages must not be empty");
         this.bannedImport = null;
-        this.bannedImports = PackagePattern.parseAll(bannedPackages);
+        this.bannedImports = bannedPackages;
     }
 
     public void setAllowedImport(String allowedImport) {
@@ -105,14 +107,14 @@ public class BannedImportGroupDefinition {
                         + "allowed imports using <allowedImports> but not both");
         checkArgument(this.allowedImport == null,
                 "If you want to specify multiple allowed imports you have to wrap them in a <allowedImports> tag");
-        this.allowedImport = PackagePattern.parse(allowedImport);
+        this.allowedImport = PackagePattern.parse(allowedImport).toString();
     }
 
     public void setAllowedImports(List<String> allowedImports) {
         checkArgument(this.allowedImport == null,
                 "Configuration error: you should either specify a single allowed import using <allowedImport> or multiple "
                         + "allowed imports using <allowedImports> but not both");
-        this.allowedImports = PackagePattern.parseAll(allowedImports);
+        this.allowedImports = allowedImports;
     }
 
     public void setExclusion(String exclusion) {
@@ -121,14 +123,14 @@ public class BannedImportGroupDefinition {
                         + "exclusions using <exclusions> but not both");
         checkArgument(this.exclusion == null,
                 "If you want to specify multiple exclusions you have to wrap them in a <exclusions> tag");
-        this.exclusion = PackagePattern.parse(exclusion);
+        this.exclusion = PackagePattern.parse(exclusion).toString();
     }
 
     public void setExclusions(List<String> exclusions) {
         checkArgument(this.exclusion == null,
                 "Configuration error: you should either specify a single exclusion using <exclusion> or multiple "
                         + "exclusions using <exclusions> but not both");
-        this.exclusions = PackagePattern.parseAll(exclusions);
+        this.exclusions = exclusions;
     }
 
     public void setReason(String reason) {

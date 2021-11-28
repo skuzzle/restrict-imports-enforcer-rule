@@ -242,6 +242,18 @@ public class PackagePatternTest {
     }
 
     @Test
+    public void testStaticImportWithWildWhitespaces() throws Exception {
+        assertThat(PackagePattern.parse("\n   \tstatic   \t  \n \r    com.foo.bar.*\t   ")
+                .matches("       static \r  \t com.foo.bar.Test   \n       ")).isTrue();
+    }
+
+    @Test
+    public void testRealPackageNameStartswithStatic() throws Exception {
+        final PackagePattern pattern = PackagePattern.parse("staticc.foo.Bar");
+        assertThat(pattern.toString()).isEqualTo("staticc.foo.Bar");
+    }
+
+    @Test
     public void testParseEmptyString() throws Exception {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> PackagePattern.parse(""));

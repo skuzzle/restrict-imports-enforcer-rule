@@ -10,23 +10,25 @@ import de.skuzzle.enforcer.restrictimports.util.StringRepresentation;
  */
 public final class ImportStatement {
 
-    private static final String STATIC_IMPORT_PREFIX = "static ";
-
+    private static final String IMPORT_PREFIX = "import ";
+    private static final String STATIC_PREFIX = "static ";
     private final String importName;
     private final int line;
     private final boolean staticImport;
 
-    public ImportStatement(String importName, int line) {
+    public ImportStatement(String importName, int line, boolean staticImport) {
         Preconditions.checkArgument(importName != null && !importName.isEmpty(), "importName must not be empty");
-        Preconditions.checkArgument(!importName.startsWith("import "),
+        Preconditions.checkArgument(!importName.startsWith(IMPORT_PREFIX),
                 "importName should be the raw package name without 'import ' prefix but was: '%s'", importName);
+        Preconditions.checkArgument(!importName.startsWith(STATIC_PREFIX),
+                "importName should be the raw package name without 'static ' prefix but was: '%s'", importName);
         Preconditions.checkArgument(importName.trim().equals(importName),
                 "importName has leading or trailing spaces: '%s'", importName);
         Preconditions.checkArgument(line > 0, "line numbers should be 1-based and not start at 0");
 
         this.importName = importName;
         this.line = line;
-        this.staticImport = importName.startsWith(STATIC_IMPORT_PREFIX);
+        this.staticImport = staticImport;
     }
 
     /**
@@ -39,14 +41,20 @@ public final class ImportStatement {
         return line;
     }
 
+    /**
+     * Returns the import name including the 'static ' prefix if this represents a static
+     * import.
+     *
+     * @return The full import name.
+     */
     public String getImportName() {
+        if (staticImport) {
+            return STATIC_PREFIX + importName;
+        }
         return importName;
     }
 
     public String getFqcn() {
-        if (this.staticImport) {
-            return importName.substring(STATIC_IMPORT_PREFIX.length());
-        }
         return importName;
     }
 

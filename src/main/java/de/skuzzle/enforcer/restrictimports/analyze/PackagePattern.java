@@ -175,8 +175,8 @@ public final class PackagePattern implements Comparable<PackagePattern> {
     }
 
     private boolean matchesInternal(boolean matchIsStatic, String[] matchParts,
-            boolean patternIsStatic, String[] patternParts, boolean staticAgnostic) {
-        if (!staticAgnostic && matchIsStatic != patternIsStatic) {
+            boolean patternIsStatic, String[] patternParts, boolean ignoreStatic) {
+        if (!ignoreStatic && matchIsStatic != patternIsStatic) {
             return false;
         } else if (patternParts.length > matchParts.length) {
             // if the pattern is longer than the string to match, match cant be true

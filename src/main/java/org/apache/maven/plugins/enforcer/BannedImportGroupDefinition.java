@@ -33,12 +33,12 @@ public class BannedImportGroupDefinition {
 
     private String reason;
 
-    public BannedImportGroup createGroupFromPluginConfiguration(boolean staticAgnostic) {
+    public BannedImportGroup createGroupFromPluginConfiguration(boolean ignoreStatic) {
         return BannedImportGroup.builder()
-                .withBasePackages(assembleList(staticAgnostic, this.basePackage, this.basePackages))
-                .withBannedImports(assembleList(staticAgnostic, this.bannedImport, this.bannedImports))
-                .withAllowedImports(assembleList(staticAgnostic, this.allowedImport, this.allowedImports))
-                .withExclusions(assembleList(staticAgnostic, this.exclusion, this.exclusions))
+                .withBasePackages(assembleList(ignoreStatic, this.basePackage, this.basePackages))
+                .withBannedImports(assembleList(ignoreStatic, this.bannedImport, this.bannedImports))
+                .withAllowedImports(assembleList(ignoreStatic, this.allowedImport, this.allowedImports))
+                .withExclusions(assembleList(ignoreStatic, this.exclusion, this.exclusions))
                 .withReason(reason)
                 .build();
     }

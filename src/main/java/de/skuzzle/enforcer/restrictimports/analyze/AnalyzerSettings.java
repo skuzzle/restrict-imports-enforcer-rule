@@ -23,16 +23,14 @@ public final class AnalyzerSettings {
     private final Collection<Path> srcDirectories;
     private final Collection<Path> testDirectories;
     private final boolean parallel;
-    private final boolean staticAgnostic;
 
     private AnalyzerSettings(Charset sourceFileCharset,
             Collection<Path> srcDirectories,
-            Collection<Path> testDirectories, boolean parallel, boolean explicitStatic) {
+            Collection<Path> testDirectories, boolean parallel) {
         this.sourceFileCharset = sourceFileCharset;
         this.srcDirectories = srcDirectories;
         this.testDirectories = testDirectories;
         this.parallel = parallel;
-        this.staticAgnostic = explicitStatic;
     }
 
     public static Builder builder() {
@@ -55,10 +53,6 @@ public final class AnalyzerSettings {
         return this.parallel;
     }
 
-    public boolean isStaticAgnostic() {
-        return this.staticAgnostic;
-    }
-
     /**
      * Returns the union of {@link #getSrcDirectories()} and getTestDirectories.
      *
@@ -73,7 +67,7 @@ public final class AnalyzerSettings {
 
     @Override
     public int hashCode() {
-        return Objects.hash(sourceFileCharset, srcDirectories, testDirectories, parallel, staticAgnostic);
+        return Objects.hash(sourceFileCharset, srcDirectories, testDirectories, parallel);
     }
 
     @Override
@@ -82,8 +76,7 @@ public final class AnalyzerSettings {
                 && Objects.equals(sourceFileCharset, ((AnalyzerSettings) obj).sourceFileCharset)
                 && Objects.equals(srcDirectories, ((AnalyzerSettings) obj).srcDirectories)
                 && Objects.equals(testDirectories, ((AnalyzerSettings) obj).testDirectories)
-                && parallel == ((AnalyzerSettings) obj).parallel
-                && staticAgnostic == ((AnalyzerSettings) obj).staticAgnostic;
+                && parallel == ((AnalyzerSettings) obj).parallel;
     }
 
     @Override
@@ -93,7 +86,6 @@ public final class AnalyzerSettings {
                 .add("srcDirectories", srcDirectories)
                 .add("testDirectories", testDirectories)
                 .add("parallel", parallel)
-                .add("staticAgnostic", staticAgnostic)
                 .toString();
     }
 
@@ -103,7 +95,6 @@ public final class AnalyzerSettings {
         private final List<Path> testDirectories = new ArrayList<>();
         private Charset sourceFileCharset = Charset.defaultCharset();
         private boolean parallel = false;
-        private boolean staticAgnostic = false;
 
         private Builder() {
             // hidden
@@ -139,13 +130,8 @@ public final class AnalyzerSettings {
             return this;
         }
 
-        public Builder setStaticAgnostic(boolean staticAgnostic) {
-            this.staticAgnostic = staticAgnostic;
-            return this;
-        }
-
         public AnalyzerSettings build() {
-            return new AnalyzerSettings(sourceFileCharset, srcDirectories, testDirectories, parallel, staticAgnostic);
+            return new AnalyzerSettings(sourceFileCharset, srcDirectories, testDirectories, parallel);
         }
     }
 }

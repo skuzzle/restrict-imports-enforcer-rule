@@ -53,6 +53,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
     private boolean failBuild = true;
     private boolean skip = false;
     private boolean parallel = false;
+    private boolean includeStaticImports = true;
 
     @Override
     public EnforcerLevel getLevel() {
@@ -109,13 +110,13 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
     private BannedImportGroups createGroupsFromPluginConfiguration() {
         if (!this.groups.isEmpty()) {
             final List<BannedImportGroup> bannedImportGroups = this.groups.stream()
-                    .map(BannedImportGroupDefinition::createGroupFromPluginConfiguration)
+                    .map(group -> group.createGroupFromPluginConfiguration(includeStaticImports))
                     .collect(Collectors.toList());
             return BannedImportGroups.builder()
                     .withGroups(bannedImportGroups)
                     .build();
         }
-        final BannedImportGroup singleGroup = createGroupFromPluginConfiguration();
+        final BannedImportGroup singleGroup = createGroupFromPluginConfiguration(includeStaticImports);
         return BannedImportGroups.builder()
                 .withGroup(singleGroup)
                 .build();
@@ -317,6 +318,10 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
             return "true".equalsIgnoreCase(parallelProperty.toString());
         }
         return this.parallel;
+    }
+
+    public void setIncludeStaticImports(boolean includeStaticImports) {
+        this.includeStaticImports = includeStaticImports;
     }
 
     @Override

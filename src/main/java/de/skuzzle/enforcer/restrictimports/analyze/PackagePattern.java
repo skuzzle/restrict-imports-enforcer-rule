@@ -22,9 +22,11 @@ public final class PackagePattern implements Comparable<PackagePattern> {
 
     private final String[] parts;
     private final boolean staticc;
+    private final boolean ignoreStatic;
 
-    private PackagePattern(String s) {
+    private PackagePattern(String s, boolean ignoreStatic) {
         final ParseResult parsed = ParseResult.parse(s);
+        this.ignoreStatic = ignoreStatic;
         this.staticc = parsed.staticc;
         this.parts = parsed.parts;
         checkParts(s, this.parts);
@@ -97,11 +99,26 @@ public final class PackagePattern implements Comparable<PackagePattern> {
      *
      * @param patternStrings The Strings to parse.
      * @return A list of parsed package patterns.
+     * @deprecated Use {@link #parseAll(Collection, boolean)} instead.
      */
+    @Deprecated
     public static List<PackagePattern> parseAll(Collection<String> patternStrings) {
+        return parseAll(patternStrings, false);
+    }
+
+    /**
+     * Parses each string of the given collection into a {@link PackagePattern} and
+     * returns them in a list.
+     *
+     * @param patternStrings The Strings to parse.
+     * @param ignoreStatic If true, the parsed patterns match both static and non-static
+     *            import strings.
+     * @return A list of parsed package patterns.
+     */
+    public static List<PackagePattern> parseAll(Collection<String> patternStrings, boolean ignoreStatic) {
         Preconditions.checkArgument(patternStrings != null);
         return patternStrings.stream()
-                .map(PackagePattern::parse)
+                .map(pattern -> parse(pattern, ignoreStatic))
                 .collect(Collectors.toList());
     }
 
@@ -110,10 +127,24 @@ public final class PackagePattern implements Comparable<PackagePattern> {
      *
      * @param patternString The String to parse.
      * @return The parsed package pattern.
+     * @deprecated Use {@link #parse(String, boolean)} instead.
      */
+    @Deprecated
     public static PackagePattern parse(String patternString) {
+        return parse(patternString, false);
+    }
+
+    /**
+     * Parses the given String into a {@link PackagePattern}.
+     *
+     * @param patternString The String to parse.
+     * @param ignoreStatic If true, this pattern matches both static and non-static import
+     *            strings.
+     * @return The parsed package pattern.
+     */
+    public static PackagePattern parse(String patternString, boolean ignoreStatic) {
         Preconditions.checkArgument(patternString != null);
-        return new PackagePattern(patternString);
+        return new PackagePattern(patternString, ignoreStatic);
     }
 
     /**
@@ -128,7 +159,8 @@ public final class PackagePattern implements Comparable<PackagePattern> {
         if (otherPackagePattern == this) {
             return true;
         }
-        return matchesInternal(otherPackagePattern.staticc, otherPackagePattern.parts, this.staticc, this.parts);
+        return matchesInternal(otherPackagePattern.staticc, otherPackagePattern.parts,
+                this.staticc, this.parts, this.ignoreStatic);
     }
 
     /**
@@ -139,28 +171,28 @@ public final class PackagePattern implements Comparable<PackagePattern> {
      */
     public boolean matches(String packageName) {
         final ParseResult parsed = ParseResult.parse(packageName);
-        return matchesInternal(parsed.staticc, parsed.parts, this.staticc, this.parts);
+        return matchesInternal(parsed.staticc, parsed.parts, this.staticc, this.parts, this.ignoreStatic);
     }
 
     private boolean matchesInternal(boolean matchIsStatic, String[] matchParts,
-            boolean partsIsStatic, String[] parts) {
-        if (matchIsStatic != partsIsStatic) {
+            boolean patternIsStatic, String[] patternParts, boolean staticAgnostic) {
+        if (!staticAgnostic && matchIsStatic != patternIsStatic) {
             return false;
-        } else if (parts.length > matchParts.length) {
+        } else if (patternParts.length > matchParts.length) {
             // if the pattern is longer than the string to match, match cant be true
             return false;
         }
 
         int patternIndex = 0;
         int matchIndex = 0;
-        for (; patternIndex < parts.length
+        for (; patternIndex < patternParts.length
                 && matchIndex < matchParts.length; ++patternIndex) {
-            final String patternPart = parts[patternIndex];
+            final String patternPart = patternParts[patternIndex];
             final String matchPart = matchParts[matchIndex];
 
             if ("**".equals(patternPart)) {
-                if (patternIndex + 1 < parts.length) {
-                    final String nextPatternPart = parts[patternIndex + 1];
+                if (patternIndex + 1 < patternParts.length) {
+                    final String nextPatternPart = patternParts[patternIndex + 1];
                     while (matchIndex < matchParts.length
                             && !matchParts(nextPatternPart, matchParts[matchIndex])) {
                         ++matchIndex;
@@ -175,7 +207,7 @@ public final class PackagePattern implements Comparable<PackagePattern> {
             }
         }
 
-        return patternIndex == parts.length && matchIndex == matchParts.length;
+        return patternIndex == patternParts.length && matchIndex == matchParts.length;
     }
 
     private static boolean matchParts(String patternPart, String matchPart) {
@@ -236,13 +268,14 @@ public final class PackagePattern implements Comparable<PackagePattern> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(Arrays.hashCode(parts), staticc);
+        return Objects.hash(Arrays.hashCode(parts), staticc, ignoreStatic);
     }
 
     @Override
     public boolean equals(Object obj) {
         return obj == this || obj instanceof PackagePattern
                 && this.staticc == ((PackagePattern) obj).staticc
+                && this.ignoreStatic == ((PackagePattern) obj).ignoreStatic
                 && Arrays.equals(this.parts, ((PackagePattern) obj).parts);
     }
 }

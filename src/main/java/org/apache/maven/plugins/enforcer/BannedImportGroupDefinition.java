@@ -11,7 +11,13 @@ import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 
 public class BannedImportGroupDefinition {
 
-    private static final String DEFAULT_BASE_PACKAGE = "**";
+    // for the consistency check we need to distinguish the static default '**' from an
+    // explicitly configured '**', this
+    // only works by comparing with '=='. As the static String '**' would be interned by
+    // the compiler, we
+    // need to explicitly wrap it in a new instance here (at least for the test to be
+    // happy, might still work 'in production').
+    private static final String DEFAULT_BASE_PACKAGE = new String("**");
 
     private String basePackage = DEFAULT_BASE_PACKAGE;
     private List<String> basePackages = new ArrayList<>();
@@ -27,12 +33,12 @@ public class BannedImportGroupDefinition {
 
     private String reason;
 
-    public BannedImportGroup createGroupFromPluginConfiguration() {
+    public BannedImportGroup createGroupFromPluginConfiguration(boolean staticAgnostic) {
         return BannedImportGroup.builder()
-                .withBasePackages(assembleList(this.basePackage, this.basePackages))
-                .withBannedImports(assembleList(this.bannedImport, this.bannedImports))
-                .withAllowedImports(assembleList(this.allowedImport, this.allowedImports))
-                .withExclusions(assembleList(this.exclusion, this.exclusions))
+                .withBasePackages(assembleList(staticAgnostic, this.basePackage, this.basePackages))
+                .withBannedImports(assembleList(staticAgnostic, this.bannedImport, this.bannedImports))
+                .withAllowedImports(assembleList(staticAgnostic, this.allowedImport, this.allowedImports))
+                .withExclusions(assembleList(staticAgnostic, this.exclusion, this.exclusions))
                 .withReason(reason)
                 .build();
     }
@@ -54,12 +60,12 @@ public class BannedImportGroupDefinition {
                 || !exclusions.isEmpty();
     }
 
-    private List<PackagePattern> assembleList(String single,
+    private List<PackagePattern> assembleList(boolean staticAgnostic, String single,
             List<String> multi) {
         if (single == null) {
-            return PackagePattern.parseAll(multi);
+            return PackagePattern.parseAll(multi, staticAgnostic);
         } else {
-            return Collections.singletonList(PackagePattern.parse(single));
+            return Collections.singletonList(PackagePattern.parse(single, staticAgnostic));
         }
     }
 
@@ -67,7 +73,7 @@ public class BannedImportGroupDefinition {
         checkArgument(this.basePackages.isEmpty(),
                 "Configuration error: you should either specify a single base package using <basePackage> or multiple "
                         + "base packages using <basePackages> but not both");
-        this.basePackage = PackagePattern.parse(basePackage).toString();
+        this.basePackage = basePackage;
     }
 
     public void setBasePackages(List<String> basePackages) {
@@ -78,7 +84,6 @@ public class BannedImportGroupDefinition {
                 "bannedPackages must not be empty");
         this.basePackage = null;
         this.basePackages = basePackages;
-        ;
     }
 
     public void setBannedImport(String bannedImport) {
@@ -87,8 +92,7 @@ public class BannedImportGroupDefinition {
                         + "banned imports using <bannedImports> but not both");
         checkArgument(this.bannedImport == null,
                 "If you want to specify multiple banned imports you have to wrap them in a <bannedImports> tag");
-        this.bannedImport = PackagePattern.parse(bannedImport).toString();
-        ;
+        this.bannedImport = bannedImport;
     }
 
     public void setBannedImports(List<String> bannedPackages) {
@@ -107,7 +111,7 @@ public class BannedImportGroupDefinition {
                         + "allowed imports using <allowedImports> but not both");
         checkArgument(this.allowedImport == null,
                 "If you want to specify multiple allowed imports you have to wrap them in a <allowedImports> tag");
-        this.allowedImport = PackagePattern.parse(allowedImport).toString();
+        this.allowedImport = allowedImport;
     }
 
     public void setAllowedImports(List<String> allowedImports) {
@@ -123,7 +127,7 @@ public class BannedImportGroupDefinition {
                         + "exclusions using <exclusions> but not both");
         checkArgument(this.exclusion == null,
                 "If you want to specify multiple exclusions you have to wrap them in a <exclusions> tag");
-        this.exclusion = PackagePattern.parse(exclusion).toString();
+        this.exclusion = exclusion;
     }
 
     public void setExclusions(List<String> exclusions) {

@@ -195,17 +195,21 @@ more specific `basePackage` of the second group. In that case, only the definiti
 class.
 
 ## Static imports
-Matching static imports is also possible but the `static ` prefix must be explicitly mentioned:
+_Note: Behavior has been changed since version `2.0.0`_
+
+By default, all defined package patterns will automatically match a respective static import. You can revert to the 
+"old" (pre version 2.0.0) behavior, where `static` must be explicitly mentioned in the package pattern, by setting the 
+flag `includeStaticImports`:
 ```xml
 <configuration>
     <rules>
         <RestrictImports>
+            <includeStaticImports>false</includeStaticImports>
             <bannedImport>static org.junit.Assert.*</bannedImport>
         </RestrictImports>
     </rules>
 </configuration>
 ```
-Inclusions and exclusion will work identically.
 
 ## Test code
 By default, test code is also subject to the banned import checks (this is new since version `2.0.0`). You can disable 
@@ -352,6 +356,7 @@ Overview of all configuration parameters:
 | `skip`                  | Boolean                   | no       | `false`                           | `0.17.0` |
 | `includeCompileCode`    | Boolean                   | no       | `true`                            | `1.2.0`  |
 | `excludedSourceRoot(s)` | (List of) java.io.File    | no       | empty list                        | `1.3.0`  |
+| `includeStaticImports`  | Boolean                   | no       | `true`                            | `2.0.0`  |
 
 ## Versioning, Deprecations and Compatibility
 This project adheres to version 2 of the [semantic version specification](http://semver.org) with regards to the 

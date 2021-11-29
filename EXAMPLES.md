@@ -12,6 +12,11 @@ pattern.
 ```xml
 <restrictImports>
     <reason>Don't use static imports</reason>
+    <!-- 
+        This flag is required since version 2.0.0. 
+        Otherwise the pattern 'static **' would be semantically equivalent to '**' and thus forbid every single import.
+    -->
+    <includeStaticImports>false</includeStaticImports>
     <bannedImport>static **</bannedImport>
 </RestrictImports>
 ```

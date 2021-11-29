@@ -60,12 +60,12 @@ public class BannedImportGroupDefinition {
                 || !exclusions.isEmpty();
     }
 
-    private List<PackagePattern> assembleList(boolean staticAgnostic, String single,
+    private List<PackagePattern> assembleList(boolean ignoreStatic, String single,
             List<String> multi) {
         if (single == null) {
-            return PackagePattern.parseAll(multi, staticAgnostic);
+            return PackagePattern.parseAll(multi, ignoreStatic);
         } else {
-            return Collections.singletonList(PackagePattern.parse(single, staticAgnostic));
+            return Collections.singletonList(PackagePattern.parse(single, ignoreStatic));
         }
     }
 

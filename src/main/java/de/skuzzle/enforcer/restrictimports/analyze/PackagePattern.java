@@ -143,24 +143,27 @@ public final class PackagePattern implements Comparable<PackagePattern> {
     }
 
     private boolean matchesInternal(boolean matchIsStatic, String[] matchParts,
-            boolean partsIsStatic, String[] parts) {
-        if (matchIsStatic != partsIsStatic) {
+            boolean patternIsStatic, String[] patternParts) {
+        if (patternIsStatic && !matchIsStatic) {
+            // 'static' is only taken into account when it is explicitly mentioned in the
+            // pattern. Otherwise, the pattern will match 'static' and non-static
+            // packages.
             return false;
-        } else if (parts.length > matchParts.length) {
+        } else if (patternParts.length > matchParts.length) {
             // if the pattern is longer than the string to match, match cant be true
             return false;
         }
 
         int patternIndex = 0;
         int matchIndex = 0;
-        for (; patternIndex < parts.length
+        for (; patternIndex < patternParts.length
                 && matchIndex < matchParts.length; ++patternIndex) {
-            final String patternPart = parts[patternIndex];
+            final String patternPart = patternParts[patternIndex];
             final String matchPart = matchParts[matchIndex];
 
             if ("**".equals(patternPart)) {
-                if (patternIndex + 1 < parts.length) {
-                    final String nextPatternPart = parts[patternIndex + 1];
+                if (patternIndex + 1 < patternParts.length) {
+                    final String nextPatternPart = patternParts[patternIndex + 1];
                     while (matchIndex < matchParts.length
                             && !matchParts(nextPatternPart, matchParts[matchIndex])) {
                         ++matchIndex;
@@ -175,7 +178,7 @@ public final class PackagePattern implements Comparable<PackagePattern> {
             }
         }
 
-        return patternIndex == parts.length && matchIndex == matchParts.length;
+        return patternIndex == patternParts.length && matchIndex == matchParts.length;
     }
 
     private static boolean matchParts(String patternPart, String matchPart) {

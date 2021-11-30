@@ -195,7 +195,11 @@ more specific `basePackage` of the second group. In that case, only the definiti
 class.
 
 ## Static imports
-Matching static imports is also possible but the `static ` prefix must be explicitly mentioned:
+(*Note:* Behavior has been changed in version 2.0.0)
+
+Every package pattern also automatically matches `static` imports. However, it is possible to explicitly mention the
+`static` keyword in the pattern. In that case, the pattern will only match a resp. static import.
+
 ```xml
 <configuration>
     <rules>

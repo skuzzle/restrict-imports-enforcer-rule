@@ -9,6 +9,7 @@ according to the changes mentioned below. Please carefully read the _changes_ se
 ### Changes
 * [#28](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/28) Test code is always analyzed unless `<includeTestCode>` option is configured `false`.
 * [#49](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/49) Simplify and formalize _"pattern specificy"_.
+* [#53](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/53) Package patterns now implicitly match static imports.
 * Declaration variant no longer supported: `<restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">` (deprecated since `0.12.0`).
 * Declaration variant no longer supported: `<restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">` (deprecated since `1.4.0`).
 * Improve formatting of the analysis result.

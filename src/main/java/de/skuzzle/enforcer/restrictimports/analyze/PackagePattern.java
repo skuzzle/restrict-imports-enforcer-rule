@@ -142,7 +142,7 @@ public final class PackagePattern implements Comparable<PackagePattern> {
         return matchesInternal(parsed.staticc, parsed.parts, this.staticc, this.parts);
     }
 
-    private boolean matchesInternal(boolean matchIsStatic, String[] matchParts,
+    private static boolean matchesInternal(boolean matchIsStatic, String[] matchParts,
             boolean patternIsStatic, String[] patternParts) {
         if (patternIsStatic && !matchIsStatic) {
             // 'static' is only taken into account when it is explicitly mentioned in the

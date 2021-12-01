@@ -209,9 +209,9 @@ public final class PackagePattern implements Comparable<PackagePattern> {
 
             if (!thisPart.equals(otherPart)) {
                 // mismatching parts, so we found a specificity difference
-                final int leftSpecificy = specificityOf(thisPart);
-                final int rightSpecificy = specificityOf(otherPart);
-                return Integer.compare(leftSpecificy, rightSpecificy);
+                final int leftSpecificity = specificityOf(thisPart);
+                final int rightSpecificity = specificityOf(otherPart);
+                return Integer.compare(leftSpecificity, rightSpecificity);
             }
         }
         // all parts are equal up to here, so the longer the more specific

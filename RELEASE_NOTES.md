@@ -1,18 +1,25 @@
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=1.4.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/1.4.0/jar) [![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=1.4.0&color=orange)](http://www.javadoc.io/doc/de.skuzzle.enforcer/restrict-imports-enforcer-rule/1.4.0)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.0.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.0.0/jar) [![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=2.0.0&color=orange)](http://www.javadoc.io/doc/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.0.0)
+
+This is a new major release. Upgrading the version _might_ break your build if you don't adjust your configuration 
+according to the changes mentioned below. Please carefully read the _changes_ section when you are upgrading from `1.x.y`.
+
+### Changes
+(_Note:_ Review carefully, as those might break your existing build when updating from version `1.x.y`)
+ 
+* [#28](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/28) Test code is always analyzed unless `<includeTestCode>` option is configured `false`.
+* [#49](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/49) Simplify and formalize _"pattern specificity"_.
+* [#53](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/53) Package patterns now implicitly match static imports.
+* Declaration variant no longer supported: `<restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">` (deprecated since `0.12.0`).
+* Declaration variant no longer supported: `<restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">` (deprecated since `1.4.0`).
 
 ### Features
-* Allow simple declaration as rule via `<RestrictImports>` instead of requiring fully qualified class name.
-* Build and test against `enforcer-api:3.0.0` (coming from `3.0.0-M1`) 
+* [#50](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/50) Introduce `-Drestrictimports.skip` and `-Drestrictimports.failBuild` command line options.
+* Added `<parallel>` (`-Drestrictimports.parallel`) option to run the whole analysis in parallel (Experimental feature, feedback welcome).
+* Improve formatting of the analysis result.
 
-### Deprecations
-* Deprecated full qualified declaration as `<restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">` 
-in favor of just `<RestrictImports>`. Using the deprecated declaration will print a warning during the build. The 
-deprecated declaration format will be removed with the next major release, that is `2.x.x`
+### Bug fixes
+* [#52](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/52) Whitespaces in plugin configuration and source files are handled more gracefully.
 
-### Otherwise Noteworthy
-* [#38](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/38) Removed Guava dependency altogether.
-* Removed the changelog from the main README. Notable changes for each release are now attached directly to each GitHub 
-release. Existing release notes up to version `1.3.0` can still be found in `CHANGELOG_LEGACY.md` file.
 
 Maven Central coordinates for this release:
 
@@ -20,6 +27,6 @@ Maven Central coordinates for this release:
 <dependency>
     <groupId>de.skuzzle.enforcer</groupId>
     <artifactId>restrict-imports-enforcer-rule</artifactId>
-    <version>1.4.0</version>
+    <version>2.0.0</version>
 </dependency>
 ```

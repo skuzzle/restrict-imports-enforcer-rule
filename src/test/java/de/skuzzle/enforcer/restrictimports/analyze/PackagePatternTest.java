@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-public class PackagePatternImplTest {
+public class PackagePatternTest {
 
     @Test
     void testMatchLiteralAsterisk() {
@@ -239,6 +239,24 @@ public class PackagePatternImplTest {
     public void testStaticImport() throws Exception {
         assertThat(PackagePattern.parse("static com.foo.bar.*")
                 .matches("static com.foo.bar.Test")).isTrue();
+    }
+
+    @Test
+    public void testImplicitStaticImport() throws Exception {
+        assertThat(PackagePattern.parse("com.foo.bar.*")
+                .matches("static com.foo.bar.Test")).isTrue();
+    }
+
+    @Test
+    public void testStaticImportWithWildWhitespaces() throws Exception {
+        assertThat(PackagePattern.parse("\n   \tstatic   \t  \n \r    com.foo.bar.*\t   ")
+                .matches("       static \r  \t com.foo.bar.Test   \n       ")).isTrue();
+    }
+
+    @Test
+    public void testRealPackageNameStartswithStatic() throws Exception {
+        final PackagePattern pattern = PackagePattern.parse("staticc.foo.Bar");
+        assertThat(pattern.toString()).isEqualTo("staticc.foo.Bar");
     }
 
     @Test

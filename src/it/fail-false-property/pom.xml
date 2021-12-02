@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.skuzzle.enforcer.it</groupId>
-    <artifactId>success1</artifactId>
+    <artifactId>fail1</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Banned Import found</name>
 
@@ -22,10 +22,14 @@
                 </dependencies>
                 <configuration>
                     <rules>
-                        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
-                            <bannedImport>java.util.*</bannedImport>
-                            <exclusion>de.skuzzle.**</exclusion>
-                        </restrictImports>
+                        <RestrictImports>
+                            <basePackage>**</basePackage>
+                            <reason>These classes should not be used!</reason>
+                            <failBuild>true</failBuild>
+                            <bannedImports>
+                                <bannedImport>java.util.*</bannedImport>
+                            </bannedImports>
+                        </RestrictImports>
                     </rules>
                 </configuration>
             </plugin>

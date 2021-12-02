@@ -22,14 +22,14 @@
                 </dependencies>
                 <configuration>
                     <rules>
-                        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+                        <RestrictImports>
                             <basePackage>**</basePackage>
                             <reason>These classes should not be used!</reason>
                             <skip>true</skip>
                             <bannedImports>
                                 <bannedImport>java.util.*</bannedImport>
                             </bannedImports>
-                        </restrictImports>
+                        </RestrictImports>
                     </rules>
                 </configuration>
             </plugin>

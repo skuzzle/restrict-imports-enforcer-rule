@@ -4,9 +4,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import de.skuzzle.enforcer.restrictimports.util.Preconditions;
+import de.skuzzle.enforcer.restrictimports.util.Whitespaces;
 
 /**
  * Pattern class to match java style package and class names using wild card operators.
@@ -15,18 +18,77 @@ import de.skuzzle.enforcer.restrictimports.util.Preconditions;
  */
 public final class PackagePattern implements Comparable<PackagePattern> {
 
-    private static final String STATIC_PREFIX = "static ";
+    private static final String STATIC_PREFIX = "static";
+
     private final String[] parts;
     private final boolean staticc;
 
     private PackagePattern(String s) {
-        this.staticc = s.startsWith(STATIC_PREFIX);
-        if (staticc) {
-            s = s.substring(STATIC_PREFIX.length());
+        final ParseResult parsed = ParseResult.parse(s);
+        this.staticc = parsed.staticc;
+        this.parts = parsed.parts;
+        checkParts(s, this.parts);
+    }
+
+    private static class ParseResult {
+        private static final Pattern STATIC_PREFIX_PATTERN = Pattern.compile("^" + STATIC_PREFIX + "\\s+");
+
+        private final String[] parts;
+        private final boolean staticc;
+
+        private ParseResult(String[] parts, boolean staticc) {
+            this.parts = parts;
+            this.staticc = staticc;
         }
 
-        this.parts = s.split("\\.");
-        checkParts(s, this.parts);
+        static ParseResult parse(String s) {
+            String trimmed = Whitespaces.trimAll(s);
+            final Matcher matcher = STATIC_PREFIX_PATTERN.matcher(trimmed);
+            final boolean staticc = matcher.find();
+            if (staticc) {
+                trimmed = trimmed.substring(matcher.end());
+            }
+            final String[] parts = trimmed.split("\\.");
+            return new ParseResult(parts, staticc);
+        }
+    }
+
+    private void checkParts(String original, String[] parts) {
+        if (original.startsWith(".") || original.endsWith(".")) {
+            throw new IllegalArgumentException(String.format("The pattern '%s' contains an empty part", original));
+        }
+        for (int i = 0; i < parts.length; i++) {
+            final String part = parts[i];
+            checkCharacters(original, part, i);
+        }
+    }
+
+    private void checkCharacters(String original, String part, int partIndex) {
+        final char[] chars = part.toCharArray();
+
+        if (part.isEmpty()) {
+            throw new IllegalArgumentException(String.format("The pattern '%s' contains an empty part", original));
+        } else if ("*".equals(part) || "**".equals(part) || "'*'".equals(part)) {
+            return;
+        } else if (part.contains("*")) {
+            throw new IllegalArgumentException(String.format(
+                    "The pattern '%s' contains a part which mixes wildcards and normal characters", original));
+        } else if (partIndex == 0 && "static".equals(part)) {
+            return;
+        } else if (!Character.isJavaIdentifierStart(chars[0])) {
+            throw new IllegalArgumentException(String.format(
+                    "The pattern '%s' contains a non-identifier character '%s' (0x%s)", original, chars[0],
+                    Integer.toHexString(chars[0])));
+        }
+
+        for (int i = 1; i < chars.length; i++) {
+            final char c = chars[i];
+            if (!Character.isJavaIdentifierPart(c)) {
+                throw new IllegalArgumentException(String.format(
+                        "The pattern '%s' contains a non-identifier character '%s' (0x%s)", original, chars[i],
+                        Integer.toHexString(chars[i])));
+            }
+        }
     }
 
     /**
@@ -54,58 +116,19 @@ public final class PackagePattern implements Comparable<PackagePattern> {
         return new PackagePattern(patternString);
     }
 
-    private void checkParts(String full, String[] parts) {
-        if (full.startsWith(".") || full.endsWith(".")) {
-            throw new IllegalArgumentException(String.format("The pattern '%s' contains an empty part", full));
-        }
-        for (int i = 0; i < parts.length; i++) {
-            final String part = parts[i];
-            checkCharacters(full, part, i);
-        }
-    }
-
-    private void checkCharacters(String full, String part, int partIndex) {
-        final char[] chars = part.toCharArray();
-
-        if (part.isEmpty()) {
-            throw new IllegalArgumentException(String.format("The pattern '%s' contains an empty part", full));
-        } else if ("*".equals(part) || "**".equals(part) || "'*'".equals(part)) {
-            return;
-        } else if (part.contains("*")) {
-            throw new IllegalArgumentException(String.format(
-                    "The pattern '%s' contains a part which mixes wildcards and normal characters", full));
-        } else if (partIndex == 0 && "static".equals(part)) {
-            return;
-        } else if (!Character.isJavaIdentifierStart(chars[0])) {
-            throw new IllegalArgumentException(String.format(
-                    "The pattern '%s' contains a non-identifier character '%s'", full, chars[0]));
-        }
-
-        for (int i = 1; i < chars.length; i++) {
-            final char c = chars[i];
-            if (!Character.isJavaIdentifierPart(c)) {
-                throw new IllegalArgumentException(String.format(
-                        "The pattern '%s' contains a non-identifier character '%s'", full, chars[i]));
-            }
-        }
-    }
-
     /**
      * Tests whether the given package pattern is matched by this package pattern
      * instance.
      *
-     * @param packagePattern The package pattern to match against this pattern.
+     * @param otherPackagePattern The package pattern to match against this pattern.
      * @return Whether the pattern matches this pattern.
      * @since 0.8.0
      */
-    public boolean matches(PackagePattern packagePattern) {
-        if (packagePattern == this) {
+    public boolean matches(PackagePattern otherPackagePattern) {
+        if (otherPackagePattern == this) {
             return true;
-        } else if (packagePattern instanceof PackagePattern) {
-            final PackagePattern ppi = packagePattern;
-            return matchesInternal(ppi.staticc, ppi.parts, this.staticc, this.parts);
         }
-        return matches(packagePattern.toString());
+        return matchesInternal(otherPackagePattern.staticc, otherPackagePattern.parts, this.staticc, this.parts);
     }
 
     /**
@@ -115,33 +138,32 @@ public final class PackagePattern implements Comparable<PackagePattern> {
      * @return Whether the name matches this pattern.
      */
     public boolean matches(String packageName) {
-        final boolean matchIsStatic = packageName.startsWith(STATIC_PREFIX);
-        if (matchIsStatic) {
-            packageName = packageName.substring(STATIC_PREFIX.length());
-        }
-        final String[] matchParts = packageName.split("\\.");
-        return matchesInternal(matchIsStatic, matchParts, this.staticc, this.parts);
+        final ParseResult parsed = ParseResult.parse(packageName);
+        return matchesInternal(parsed.staticc, parsed.parts, this.staticc, this.parts);
     }
 
-    private boolean matchesInternal(boolean matchIsStatic, String[] matchParts,
-            boolean partsIsStatic, String[] parts) {
-        if (matchIsStatic != partsIsStatic) {
+    private static boolean matchesInternal(boolean matchIsStatic, String[] matchParts,
+            boolean patternIsStatic, String[] patternParts) {
+        if (patternIsStatic && !matchIsStatic) {
+            // 'static' is only taken into account when it is explicitly mentioned in the
+            // pattern. Otherwise, the pattern will match 'static' and non-static
+            // packages.
             return false;
-        } else if (parts.length > matchParts.length) {
+        } else if (patternParts.length > matchParts.length) {
             // if the pattern is longer than the string to match, match cant be true
             return false;
         }
 
         int patternIndex = 0;
         int matchIndex = 0;
-        for (; patternIndex < parts.length
+        for (; patternIndex < patternParts.length
                 && matchIndex < matchParts.length; ++patternIndex) {
-            final String patternPart = this.parts[patternIndex];
+            final String patternPart = patternParts[patternIndex];
             final String matchPart = matchParts[matchIndex];
 
             if ("**".equals(patternPart)) {
-                if (patternIndex + 1 < parts.length) {
-                    final String nextPatternPart = parts[patternIndex + 1];
+                if (patternIndex + 1 < patternParts.length) {
+                    final String nextPatternPart = patternParts[patternIndex + 1];
                     while (matchIndex < matchParts.length
                             && !matchParts(nextPatternPart, matchParts[matchIndex])) {
                         ++matchIndex;
@@ -156,7 +178,7 @@ public final class PackagePattern implements Comparable<PackagePattern> {
             }
         }
 
-        return patternIndex == parts.length && matchIndex == matchParts.length;
+        return patternIndex == patternParts.length && matchIndex == matchParts.length;
     }
 
     private static boolean matchParts(String patternPart, String matchPart) {
@@ -172,7 +194,7 @@ public final class PackagePattern implements Comparable<PackagePattern> {
     public String toString() {
         final StringBuilder result = new StringBuilder();
         if (staticc) {
-            result.append(STATIC_PREFIX);
+            result.append(STATIC_PREFIX + " ");
         }
         result.append(String.join(".", this.parts));
         return result.toString();
@@ -180,48 +202,29 @@ public final class PackagePattern implements Comparable<PackagePattern> {
 
     @Override
     public int compareTo(PackagePattern other) {
-        if (isMoreSpecificThan(other)) {
+        final int commonParts = Math.min(parts.length, other.parts.length);
+        for (int i = 0; i < commonParts; ++i) {
+            final String thisPart = this.parts[i];
+            final String otherPart = other.parts[i];
+
+            if (!thisPart.equals(otherPart)) {
+                // mismatching parts, so we found a specificity difference
+                final int leftSpecificity = specificityOf(thisPart);
+                final int rightSpecificity = specificityOf(otherPart);
+                return Integer.compare(leftSpecificity, rightSpecificity);
+            }
+        }
+        // all parts are equal up to here, so the longer the more specific
+        return Integer.compare(parts.length, other.parts.length);
+    }
+
+    private int specificityOf(String part) {
+        if (part.equals("**")) {
+            return 0;
+        } else if (part.equals("*")) {
             return 1;
-        } else if (other.isMoreSpecificThan(this)) {
-            return -1;
         }
-        return 0;
-    }
-
-    private boolean isMoreSpecificThan(PackagePattern other) {
-
-        final int numOfStarStarThis = count("**", this.parts);
-        final int numOfStarStarOther = count("**", other.parts);
-
-        if (numOfStarStarThis < numOfStarStarOther) {
-            return true;
-        } else if (numOfStarStarThis > numOfStarStarOther) {
-            return false;
-        }
-
-        final int numOfStarThis = count("*", this.parts);
-        final int numOfStarOther = count("*", other.parts);
-
-        if (numOfStarThis < numOfStarOther) {
-            return true;
-        } else if (numOfStarThis > numOfStarOther) {
-            return false;
-        }
-
-        final String thisLastPart = parts[this.parts.length - 1];
-        final String otherLastPart = other.parts[other.parts.length - 1];
-
-        if (thisLastPart.equals("**")) {
-            return this.parts.length > other.parts.length;
-        } else if (thisLastPart.equals("*")) {
-            return otherLastPart.equals("**");
-        }
-
-        return parts.length > other.parts.length;
-    }
-
-    private int count(String s, String[] arr) {
-        return (int) Arrays.stream(arr).filter(s::equals).count();
+        return 2;
     }
 
     /**

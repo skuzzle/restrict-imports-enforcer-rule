@@ -1,7 +1,7 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=1.4.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/1.4.0/jar)
-[![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=1.4.0&color=orange)](http://www.javadoc.io/doc/de.skuzzle.enforcer/restrict-imports-enforcer-rule/1.4.0)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.0.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.0.0/jar)
+[![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=2.0.0&color=orange)](http://www.javadoc.io/doc/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.0.0)
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
@@ -26,7 +26,7 @@ information.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>1.4.0</version>
+            <version>2.0.0</version>
         </dependency>
     </dependencies>
     <executions>
@@ -62,6 +62,7 @@ information.
   * [Test code](#test-code)
   * [Skipping](#skipping)
   * [Exclude source roots](#exclude-source-roots)
+  * [Parallel analysis](#parallel-analysis)
   * [Package patterns](#package-patterns)
 * [Limitation](#limitation)
   * [Syntactical](#syntactical-limitation)
@@ -147,9 +148,6 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
 ```
 
 ## Rule groups
-(*Note:* This is a beta feature and not thoroughly tested. Syntax and behavior 
-changes in upcoming versions are likely)
-
 Rule groups add another level of refining which imports will be matched. You can group
 the `bannedImport(s)`, `allowedImport(s)` and `basePackage(s)` tags and specify multiple 
 of this groups within a single enforcer rule. 
@@ -197,7 +195,11 @@ more specific `basePackage` of the second group. In that case, only the definiti
 class.
 
 ## Static imports
-Matching static imports is also possible but the `static ` prefix must be explicitly mentioned:
+(*Note:* Behavior has been changed in version 2.0.0)
+
+Every package pattern also automatically matches `static` imports. However, it is possible to explicitly mention the
+`static` keyword in the pattern. In that case, the pattern will only match a resp. static import.
+
 ```xml
 <configuration>
     <rules>
@@ -210,13 +212,13 @@ Matching static imports is also possible but the `static ` prefix must be explic
 Inclusions and exclusion will work identically.
 
 ## Test code
-By default, test code is not subject to the banned import checks. You can enable analysis
-of test code using the `includeTestCode` option.
+By default, test code is also subject to the banned import checks (this is new since version `2.0.0`). You can disable 
+analysis of test code using the `includeTestCode` option.
 ```xml
 <configuration>
     <rules>
         <RestrictImports>
-            <includeTestCode>true</includeTestCode>
+            <includeTestCode>false</includeTestCode>
             <!-- ... -->
         </RestrictImports>
     </rules>
@@ -248,6 +250,11 @@ If you want banned import analysis but without breaking your build you can set
     </rules>
 </configuration>
 ```
+
+You can also pass these parameters as property to the maven build using `-Drestrictimports.skip` resp. 
+`-Drestrictimports.failBuild`. When passed as property, the property's value takes precedence over what has been
+configured in the pom file.
+
 ## Exclude source roots
 By default, all source roots reported by Maven is subject to the banned import checks, which for example includes but
 is not limited to `${project.basedir}/src/main/java`, `${project.basedir}/src/test/java`,
@@ -267,6 +274,24 @@ is not limited to `${project.basedir}/src/main/java`, `${project.basedir}/src/te
     </rules>
 </configuration>
 ```
+
+## Parallel Analysis
+(*Note:* This is a beta feature and not thoroughly tested. Syntax and behavior 
+changes in upcoming versions are likely)
+
+We support basic parallelization of the analysis. This is disabled by default but can be enabled either in the pom file
+using the `<parallel>` option or by passing `-Drestrictimports.parallel` to the maven build.
+```xml
+<configuration>
+    <rules>
+        <RestrictImports>
+            <parallel>false</parallel>
+            <!-- ... -->
+        </RestrictImports>
+    </rules>
+</configuration>
+```
+
 
 ## Package Patterns
 
@@ -332,17 +357,17 @@ Overview of all configuration parameters:
 | `includeCompileCode`    | Boolean                   | no       | `true`                            | `1.2.0`  |
 | `excludedSourceRoot(s)` | (List of) java.io.File    | no       | empty list                        | `1.3.0`  |
 
-* _Deprecated_: Setting this property might have no effect but will log a descriptive warning
-* _Soft-Removed_: Setting this property will fail the build with a descriptive warning that this property is no longer supported
-* _Removed_: The property no longer exists and the plugin behaves as if it never did.
-
-## Versioning and Compatibility
-This project adheres to version 2 of the [semantic version specification](http://semver.org).
+## Versioning, Deprecations and Compatibility
+This project adheres to version 2 of the [semantic version specification](http://semver.org) with regards to the 
+plugin's configuration syntax and analysis semantics.
 
 You can always safely update the _minor_ and the _patch_ version of the rule's dependency entry within a pom.xml without 
-breaking your build. Interface or behavioral changes will only ever be introduced with a new _major_ version. Changes
-that break previous plugin configurations that were wrong in the first place may also be introduced with 
-a _minor_ version change!
+breaking your build. Breaking interface or behavioral changes will only ever be introduced with a new _major_ version. 
 
-This artifact is (currently) not meant to be used as standalone dependency. Thus breaking code changes might occur 
-even between two different patch versions!
+When deprecating/removing functionality, we use the following terminology:
+* _Deprecated_: Using this feature still works, but will log a descriptive deprecation warning
+* _Soft-Removed_: Using this feature will fail the build with a descriptive warning that this feature is no longer supported
+* _Removed_: The feature no longer exists and the plugin behaves as if it never did.
+
+This artifact is not meant to be used as standalone dependency. Thus its actual implementation is not covered by 
+semantic versioning.

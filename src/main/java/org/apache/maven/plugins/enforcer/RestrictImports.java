@@ -3,7 +3,6 @@ package org.apache.maven.plugins.enforcer;
 import static de.skuzzle.enforcer.restrictimports.util.Preconditions.checkArgument;
 
 import java.io.File;
-import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -38,17 +37,22 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RestrictImports.class);
 
+    private static final String SKIP_PROPERTY_NAME = "restrictimports.skip";
+    private static final String FAIL_BUILD_PROPERTY_NAME = "restrictimports.failBuild";
+    private static final String PARALLEL_ANALYSIS_PROPERTY_NAME = "restrictimports.parallel";
+
     private final SourceTreeAnalyzer analyzer = SourceTreeAnalyzer.getInstance();
     private final MatchFormatter matchFormatter = MatchFormatter.getInstance();
 
     private List<BannedImportGroupDefinition> groups = new ArrayList<>();
 
     private boolean includeCompileCode = true;
-    private boolean includeTestCode = false;
+    private boolean includeTestCode = true;
     private File excludedSourceRoot = null;
     private List<File> excludedSourceRoots = new ArrayList<>();
     private boolean failBuild = true;
     private boolean skip = false;
+    private boolean parallel = false;
 
     @Override
     public EnforcerLevel getLevel() {
@@ -59,12 +63,12 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
     @Override
     public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException {
-        if (skip) {
-            LOGGER.info("restrict-imports-enforcer rule is skipped");
-            return;
-        }
-
         try {
+            if (isSkip(helper)) {
+                LOGGER.info("restrict-imports-enforcer rule is skipped");
+                return;
+            }
+
             final MavenProject project = (MavenProject) helper.evaluate("${project}");
 
             LOGGER.debug("Checking for banned imports");
@@ -72,7 +76,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
             final BannedImportGroups groups = createGroupsFromPluginConfiguration();
             LOGGER.debug("Banned import groups:\n{}", groups);
 
-            final AnalyzerSettings analyzerSettings = createAnalyzerSettingsFromPluginConfiguration(project);
+            final AnalyzerSettings analyzerSettings = createAnalyzerSettingsFromPluginConfiguration(helper, project);
             LOGGER.debug("Analyzer settings:\n{}", analyzerSettings);
 
             final AnalyzeResult analyzeResult = analyzer.analyze(analyzerSettings, groups);
@@ -82,7 +86,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
                 final String errorMessage = matchFormatter
                         .formatMatches(analyzerSettings.getAllDirectories(), analyzeResult);
 
-                if (failBuild) {
+                if (isFailBuild(helper)) {
                     throw new EnforcerRuleException(errorMessage);
                 } else {
                     LOGGER.warn(errorMessage);
@@ -93,14 +97,12 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
             } else {
                 LOGGER.debug("No banned imports found");
             }
-        } catch (final UncheckedIOException e) {
-            throw new EnforcerRuleException(e.getMessage(), e);
         } catch (final BannedImportDefinitionException e) {
             throw new EnforcerRuleException("RestrictImports rule configuration error: " + e.getMessage(), e);
-        } catch (final EnforcerRuleException e) {
+        } catch (final EnforcerRuleException | RuntimeException e) {
             throw e;
         } catch (final Exception e) {
-            throw new EnforcerRuleException("Encountered unexpected exception: " + e.getLocalizedMessage(), e);
+            throw new RuntimeException("Encountered unexpected exception: " + e.getLocalizedMessage(), e);
         }
     }
 
@@ -120,7 +122,8 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
     }
 
     private AnalyzerSettings createAnalyzerSettingsFromPluginConfiguration(
-            MavenProject mavenProject) {
+            EnforcerRuleHelper helper,
+            MavenProject mavenProject) throws Exception {
         if (!(includeCompileCode || includeTestCode)) {
             throw new IllegalArgumentException("Configuration error: No sources were included");
         }
@@ -134,11 +137,13 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
                 : Collections.emptyList();
 
         final Charset sourceFileCharset = determineSourceFileCharset(mavenProject);
+        final boolean parallel = isParallel(helper);
 
         return AnalyzerSettings.builder()
                 .withSrcDirectories(srcDirectories)
                 .withTestDirectories(testDirectories)
                 .withSourceFileCharset(sourceFileCharset)
+                .enableParallelAnalysis(parallel)
                 .build();
     }
 
@@ -273,8 +278,45 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         this.failBuild = failBuild;
     }
 
+    private boolean isFailBuild(EnforcerRuleHelper evaluator) throws Exception {
+        final Object failBuildProperty = evaluator.evaluate("${" + FAIL_BUILD_PROPERTY_NAME + "}");
+        if (failBuildProperty != null) {
+            LOGGER.warn(
+                    "'{}={}' has been passed which takes precedence over 'failBuild={}' configuration in the pom file",
+                    FAIL_BUILD_PROPERTY_NAME, failBuildProperty, this.failBuild);
+            return "true".equalsIgnoreCase(failBuildProperty.toString());
+        }
+        return this.failBuild;
+    }
+
     public void setSkip(boolean skip) {
         this.skip = skip;
+    }
+
+    private boolean isSkip(EnforcerRuleHelper evaluator) throws Exception {
+        final Object skipProperty = evaluator.evaluate("${" + SKIP_PROPERTY_NAME + "}");
+        if (skipProperty != null) {
+            LOGGER.warn(
+                    "'{}={}' has been passed which takes precedence over 'skip={}' configuration in the pom file",
+                    SKIP_PROPERTY_NAME, skipProperty, this.skip);
+            return "true".equalsIgnoreCase(skipProperty.toString());
+        }
+        return this.skip;
+    }
+
+    public void setParallel(boolean parallel) {
+        this.parallel = parallel;
+    }
+
+    private boolean isParallel(EnforcerRuleHelper evaluator) throws Exception {
+        final Object parallelProperty = evaluator.evaluate("${" + PARALLEL_ANALYSIS_PROPERTY_NAME + "}");
+        if (parallelProperty != null) {
+            LOGGER.warn(
+                    "'{}={}' has been passed which takes precedence over 'parallel={}' configuration in the pom file",
+                    PARALLEL_ANALYSIS_PROPERTY_NAME, parallelProperty, this.parallel);
+            return "true".equalsIgnoreCase(parallelProperty.toString());
+        }
+        return this.parallel;
     }
 
     @Override

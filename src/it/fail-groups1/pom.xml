@@ -22,7 +22,7 @@
                 </dependencies>
                 <configuration>
                     <rules>
-                        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+                        <RestrictImports>
                             <groups>
                                 <group>
                                     <basePackage>**</basePackage>
@@ -32,7 +32,7 @@
                                     </bannedImports>
                                 </group>
                             </groups>
-                        </restrictImports>
+                        </RestrictImports>
                     </rules>
                 </configuration>
             </plugin>

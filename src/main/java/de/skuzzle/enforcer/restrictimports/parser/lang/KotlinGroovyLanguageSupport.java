@@ -9,9 +9,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
+import de.skuzzle.enforcer.restrictimports.util.Whitespaces;
 
 public class KotlinGroovyLanguageSupport implements LanguageSupport {
 
+    private static final String STATIC_PREFIX = "static";
     private static final String IMPORT_STATEMENT = "import ";
     private static final String PACKAGE_STATEMENT = "package ";
     private static final Set<String> EXTENSIONS = Collections
@@ -46,8 +48,16 @@ public class KotlinGroovyLanguageSupport implements LanguageSupport {
                 .map(s -> s.substring(IMPORT_STATEMENT.length()))
                 .map(String::trim)
                 .map(this::removeAlias)
-                .map(importName -> new ImportStatement(importName, lineNumber))
+                .map(importName -> toImportStatement(importName, lineNumber))
                 .collect(Collectors.toList());
+    }
+
+    private ImportStatement toImportStatement(String importName, int lineNumber) {
+        if (importName.startsWith(STATIC_PREFIX)) {
+            final String realImportName = Whitespaces.trimAll(importName.substring(STATIC_PREFIX.length()));
+            return new ImportStatement(realImportName, lineNumber, true);
+        }
+        return new ImportStatement(importName, lineNumber, false);
     }
 
     private boolean is(String compare, String line) {

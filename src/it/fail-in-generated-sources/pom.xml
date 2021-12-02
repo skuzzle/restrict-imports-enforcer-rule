@@ -40,7 +40,7 @@
                 </dependencies>
                 <configuration>
                     <rules>
-                        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+                        <RestrictImports>
                             <basePackage>**</basePackage>
                             <bannedImports>
                                 <bannedImport>java.util.*</bannedImport>
@@ -49,7 +49,7 @@
                             <allowedImports>
                                 <allowedImport>java.util.ArrayList</allowedImport>
                             </allowedImports>
-                        </restrictImports>
+                        </RestrictImports>
                     </rules>
                 </configuration>
             </plugin>

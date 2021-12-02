@@ -20,8 +20,6 @@ import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import de.skuzzle.enforcer.restrictimports.rule.RestrictImports;
-
 public class RestrictImportsTest {
 
     private static final List<String> SOURCE_ROOTS = Arrays.asList("/src/main/java",

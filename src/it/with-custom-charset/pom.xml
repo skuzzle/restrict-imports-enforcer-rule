@@ -26,10 +26,10 @@
                 </dependencies>
                 <configuration>
                     <rules>
-                        <restrictImports implementation="de.skuzzle.enforcer.restrictimports.rule.RestrictImports">
+                        <RestrictImports>
                             <basePackage>de.sküzzle.**</basePackage>
                             <bannedImport>jävä.ütil.*</bannedImport>
-                        </restrictImports>
+                        </RestrictImports>
                     </rules>
                 </configuration>
             </plugin>

@@ -10,7 +10,7 @@ pattern.
 
 ### Forbid all static imports
 ```xml
-<restrictImports>
+<RestrictImports>
     <reason>Don't use static imports</reason>
     <bannedImport>static **</bannedImport>
 </RestrictImports>

@@ -11,7 +11,10 @@ import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 
 public class BannedImportGroupDefinition {
 
-    private static final String DEFAULT_BASE_PACKAGE = "**";
+    // This new String(...) is required in order to distinguish the plugin's default '**'
+    // from an explicit user configured '**'. We compare the configured string using ==
+    // but if we don't create a new String here, then String-inlining gets in our way
+    private static final String DEFAULT_BASE_PACKAGE = new String("**");
 
     private String basePackage = DEFAULT_BASE_PACKAGE;
     private List<String> basePackages = new ArrayList<>();

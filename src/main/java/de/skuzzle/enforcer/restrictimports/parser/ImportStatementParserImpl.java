@@ -2,6 +2,7 @@ package de.skuzzle.enforcer.restrictimports.parser;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,21 +24,38 @@ final class ImportStatementParserImpl implements ImportStatementParser {
     private static final Logger LOGGER = LoggerFactory.getLogger(ImportStatementParserImpl.class);
 
     private final LineSupplier supplier;
+    private final Charset charset;
+    private final boolean parseFullCompilationUnit;
 
-    /**
-     * Constructor just for testing purposes.
-     *
-     * @param supplier The line sources
-     */
-    ImportStatementParserImpl(LineSupplier supplier) {
-        this.supplier = supplier;
+    ImportStatementParserImpl(Charset charset, boolean parseFullCompilationUnit) {
+        this.supplier = new SkipCommentsLineSupplier(charset);
+        this.charset = charset;
+        this.parseFullCompilationUnit = parseFullCompilationUnit;
     }
-
+    
     @Override
     public ParsedFile parse(Path sourceFilePath) {
         LOGGER.trace("Analyzing {} for imports", sourceFilePath);
 
         final LanguageSupport languageSupport = LanguageSupport.getLanguageSupport(sourceFilePath);
+        try {
+        if (parseFullCompilationUnit && languageSupport.parseFullCompilationUnitSupported()) {
+            LOGGER.debug("Using 'full-compilation-unit' parsing for {}", sourceFilePath);
+
+            return languageSupport.parseCompilationUnit(sourceFilePath, charset);
+        } else {
+            LOGGER.debug("Using 'line-based' parsing for {}", sourceFilePath);
+
+            return parseLineByLine(sourceFilePath, languageSupport);
+        }
+        } catch (IOException e) {
+            throw new UncheckedIOException(String.format(
+                    "Encountered IOException while analyzing %s for banned imports",
+                    sourceFilePath), e);
+        }
+    }
+
+    private ParsedFile parseLineByLine(Path sourceFilePath, LanguageSupport languageSupport) throws IOException {
         final List<ImportStatement> imports = new ArrayList<>();
 
         final String fileName = getFileNameWithoutExtension(sourceFilePath);
@@ -79,12 +97,9 @@ final class ImportStatementParserImpl implements ImportStatementParser {
             }
 
             return new ParsedFile(sourceFilePath, packageName, fqcn, imports);
-        } catch (final IOException e) {
-            throw new UncheckedIOException(String.format(
-                    "Encountered IOException while analyzing %s for banned imports",
-                    sourceFilePath), e);
         }
     }
+
 
     private String guessFQCN(String packageName, String sourceFileName) {
         return packageName.isEmpty()

@@ -23,14 +23,16 @@ public final class AnalyzerSettings {
     private final Collection<Path> srcDirectories;
     private final Collection<Path> testDirectories;
     private final boolean parallel;
+    private final boolean parseFullCompilationUnit;
 
     private AnalyzerSettings(Charset sourceFileCharset,
             Collection<Path> srcDirectories,
-            Collection<Path> testDirectories, boolean parallel) {
+            Collection<Path> testDirectories, boolean parallel, boolean parseFullCompilationUnit) {
         this.sourceFileCharset = sourceFileCharset;
         this.srcDirectories = srcDirectories;
         this.testDirectories = testDirectories;
         this.parallel = parallel;
+        this.parseFullCompilationUnit = parseFullCompilationUnit;
     }
 
     public static Builder builder() {
@@ -51,6 +53,10 @@ public final class AnalyzerSettings {
 
     public boolean isParallel() {
         return this.parallel;
+    }
+
+    public boolean isParseFullCompilationUnit() {
+        return this.parseFullCompilationUnit;
     }
 
     /**
@@ -76,7 +82,8 @@ public final class AnalyzerSettings {
                 && Objects.equals(sourceFileCharset, ((AnalyzerSettings) obj).sourceFileCharset)
                 && Objects.equals(srcDirectories, ((AnalyzerSettings) obj).srcDirectories)
                 && Objects.equals(testDirectories, ((AnalyzerSettings) obj).testDirectories)
-                && parallel == ((AnalyzerSettings) obj).parallel;
+                && parallel == ((AnalyzerSettings) obj).parallel
+                && parseFullCompilationUnit == ((AnalyzerSettings) obj).parseFullCompilationUnit;
     }
 
     @Override
@@ -86,6 +93,7 @@ public final class AnalyzerSettings {
                 .add("srcDirectories", srcDirectories)
                 .add("testDirectories", testDirectories)
                 .add("parallel", parallel)
+                .add("parseFullCompilationUnit", parseFullCompilationUnit)
                 .toString();
     }
 
@@ -95,6 +103,7 @@ public final class AnalyzerSettings {
         private final List<Path> testDirectories = new ArrayList<>();
         private Charset sourceFileCharset = Charset.defaultCharset();
         private boolean parallel = false;
+        private boolean parseFullCompilationUnit = false;
 
         private Builder() {
             // hidden
@@ -130,8 +139,14 @@ public final class AnalyzerSettings {
             return this;
         }
 
+        public Builder withParseFullCompilationUnit(boolean parseFullCompilationUnit) {
+            this.parseFullCompilationUnit = parseFullCompilationUnit;
+            return this;
+        }
+
         public AnalyzerSettings build() {
-            return new AnalyzerSettings(sourceFileCharset, srcDirectories, testDirectories, parallel);
+            return new AnalyzerSettings(sourceFileCharset, srcDirectories, testDirectories, parallel,
+                    parseFullCompilationUnit);
         }
     }
 }

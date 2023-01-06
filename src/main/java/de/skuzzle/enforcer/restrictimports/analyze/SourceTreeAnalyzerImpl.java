@@ -37,7 +37,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
     @Override
     public AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroups groups) {
         final long start = System.currentTimeMillis();
-        final ImportStatementParser fileParser = ImportStatementParser.forCharset(settings.getSourceFileCharset());
+        final ImportStatementParser fileParser = ImportStatementParser.forCharset(settings.getSourceFileCharset(), settings.isParseFullCompilationUnit());
 
         if (settings.isParallel()) {
             LOGGER.warn("EXPERIMENTAL FEATURE enabled. You have enabled parallel analysis which is marked as "

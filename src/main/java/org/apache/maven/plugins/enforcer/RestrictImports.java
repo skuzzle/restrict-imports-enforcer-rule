@@ -53,6 +53,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
     private boolean failBuild = true;
     private boolean skip = false;
     private boolean parallel = false;
+    private boolean parseFullCompilationUnit = false;
 
     @Override
     public EnforcerLevel getLevel() {
@@ -138,12 +139,14 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
 
         final Charset sourceFileCharset = determineSourceFileCharset(mavenProject);
         final boolean parallel = isParallel(helper);
+        final boolean parseFullCompilationUnit = this.parseFullCompilationUnit;
 
         return AnalyzerSettings.builder()
                 .withSrcDirectories(srcDirectories)
                 .withTestDirectories(testDirectories)
                 .withSourceFileCharset(sourceFileCharset)
                 .enableParallelAnalysis(parallel)
+                .withParseFullCompilationUnit(parseFullCompilationUnit)
                 .build();
     }
 
@@ -190,6 +193,10 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
         }
     }
 
+    public void setParseFullCompilationUnit(boolean parseFullCompilationUnit) {
+        this.parseFullCompilationUnit = parseFullCompilationUnit;
+    }
+    
     @Override
     public void setBasePackage(String basePackage) {
         checkGroups(this.groups.isEmpty());

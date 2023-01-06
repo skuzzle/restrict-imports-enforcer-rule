@@ -13,10 +13,12 @@ public interface ImportStatementParser {
      * Constructs a default instance of the parser which uses the provided charset.
      *
      * @param charset The charset to use.
+     * @param parseFullCompilationUnit If supported, use full compilation unit parsing.
+     *            Otherwise fall back to the original line based parsing.
      * @return The parser instance.
      */
-    static ImportStatementParser forCharset(Charset charset) {
-        return new ImportStatementParserImpl(new SkipCommentsLineSupplier(charset));
+    static ImportStatementParser forCharset(Charset charset, boolean parseFullCompilationUnit) {
+        return new ImportStatementParserImpl(charset, parseFullCompilationUnit);
     }
 
     /**

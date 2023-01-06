@@ -1,105 +1,181 @@
 package de.skuzzle.enforcer.restrictimports.parser;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class ImportStatementParserImplTest {
 
-    private final Path path = mock(Path.class);
-    private final Path fileName = mock(Path.class);
-
-    @BeforeEach
-    void setup() {
-        when(path.getFileName()).thenReturn(fileName);
-        when(fileName.toString()).thenReturn("Filename.java");
+    private Path tempSourceFile(Path tmpDir, String fileName, Charset charset, String... lines) throws IOException {
+        final Path sourceFile = tmpDir.resolve(fileName);
+        Files.write(sourceFile, Arrays.asList(lines), charset);
+        return sourceFile;
     }
 
-    private LineSupplier lines(String... lines) {
-        return path -> Arrays.stream(lines);
+    private Path tempSourceFile(Path tmpDir, String fileName, String... lines) throws IOException {
+        return tempSourceFile(tmpDir, fileName, StandardCharsets.UTF_8, lines);
     }
 
     @Test
-    void testAnalyzeDefaultPackage() {
-        final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines("import de.skuzzle.test;"));
-        final ParsedFile parsedFile = subject.parse(path);
+    void testAnalyzeInlineFullQualifiedClassUsage(@TempDir Path tempDir) throws Exception {
+        final Path sourceFile = tempSourceFile(tempDir, "Filename.java",
+                "import de.skzzle.test;",
+                "class Test {",
+                "  void foo() {",
+                "    org.apache.commons.lang.StringUtils.isBlank(\"xyz\");",
+                "    boolean foo = abc.test.StringUtils.isBlank(\"xyz\");",
+                "    List.of(\"1\").stream().filter(foo.bar.xyz.StringUtils::isBlank);",
+                "    Collections.emptyList().stream().filter(Objects::nonNull);",
+                "  }",
+                "}");
+        final boolean parseFullCompilationUnit = true;
+        final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
+                parseFullCompilationUnit);
+        final ParsedFile parsedFile = subject.parse(sourceFile);
+        assertThat(parsedFile.getImports()).contains(
+                new ImportStatement("org.apache.commons.lang.StringUtils", 4, false),
+                new ImportStatement("abc.test.StringUtils", 5, false),
+                new ImportStatement("foo.bar.xyz.StringUtils", 6, false));
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void testAnalyzeWithUmlautsUtf8(boolean parseFullCompilationUnit, @TempDir Path tempDir) throws IOException {
+        final Path sourceFile = tempSourceFile(tempDir, "Filename.java", StandardCharsets.UTF_8,
+                "import de.sküzzle.test;");
+
+        final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
+                parseFullCompilationUnit);
+        final ParsedFile parsedFile = subject.parse(sourceFile);
+        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.sküzzle.test", 1, false));
+        assertThat(parsedFile.getFqcn()).isEqualTo("Filename");
+        assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void testAnalyzeWithUmlautsIso8859(boolean parseFullCompilationUnit, @TempDir Path tempDir) throws IOException {
+        final Path sourceFile = tempSourceFile(tempDir, "Filename.java", StandardCharsets.ISO_8859_1,
+                "import de.sküzzle.test;");
+
+        final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.ISO_8859_1,
+                parseFullCompilationUnit);
+        final ParsedFile parsedFile = subject.parse(sourceFile);
+        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.sküzzle.test", 1, false));
+        assertThat(parsedFile.getFqcn()).isEqualTo("Filename");
+        assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void testAnalyzeDefaultPackage(boolean parseFullCompilationUnit, @TempDir Path tempDir) throws IOException {
+        final Path sourceFile = tempSourceFile(tempDir, "Filename.java", "import de.skuzzle.test;");
+
+        final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
+                parseFullCompilationUnit);
+        final ParsedFile parsedFile = subject.parse(sourceFile);
         assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 1, false));
         assertThat(parsedFile.getFqcn()).isEqualTo("Filename");
-        assertThat(parsedFile.getPath()).isEqualTo(path);
+        assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
 
-    @Test
-    void testAnalyzeWithPackageDefinition() {
-        final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines(
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void testAnalyzeWithPackageDefinition(boolean parseFullCompilationUnit, @TempDir Path tempDir) throws IOException {
+        final Path sourceFile = tempSourceFile(tempDir, "Filename.java",
                 "package com.foo.bar;",
-                "import de.skuzzle.test;"));
-        final ParsedFile parsedFile = subject.parse(path);
+                "import de.skuzzle.test;");
+
+        final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
+                parseFullCompilationUnit);
+
+        final ParsedFile parsedFile = subject.parse(sourceFile);
         assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 2, false));
         assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
-        assertThat(parsedFile.getPath()).isEqualTo(path);
+        assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
 
-    @Test
-    void testAnalyzeWithStaticImport() {
-        final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines(
-                "import static de.skuzzle.test;"));
-        final ParsedFile parsedFile = subject.parse(path);
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void testAnalyzeWithStaticImport(boolean parseFullCompilationUnit, @TempDir Path tempDir) throws IOException {
+        final Path sourceFile = tempSourceFile(tempDir, "Filename.java",
+                "import static de.skuzzle.test;");
+        final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
+                parseFullCompilationUnit);
+        final ParsedFile parsedFile = subject.parse(sourceFile);
         assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 1, true));
     }
 
-    @Test
-    void testAnalyzeEmptyFile() {
-        final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines(""));
-        final ParsedFile parsedFile = subject.parse(path);
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void testAnalyzeEmptyFile(boolean parseFullCompilationUnit, @TempDir Path tempDir) throws IOException {
+        final Path sourceFile = tempSourceFile(tempDir, "Filename.java", "");
+        final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
+                parseFullCompilationUnit);
+        final ParsedFile parsedFile = subject.parse(sourceFile);
         assertThat(parsedFile.getFqcn()).isEqualTo("Filename");
-        assertThat(parsedFile.getPath()).isEqualTo(path);
+        assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
 
-    @Test
-    void testStopAtClassDeclaration() {
-        final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines(
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void testStopAtClassDeclaration(boolean parseFullCompilationUnit, @TempDir Path tempDir) throws IOException {
+        final Path sourceFile = tempSourceFile(tempDir, "Filename.java",
                 "package com.foo.bar;",
                 "",
                 "import de.skuzzle.test;",
                 "import de.skuzzle.test2;",
                 "",
                 "public class HereStartsAClass {",
-                "}"));
-        final ParsedFile parsedFile = subject.parse(path);
+                "}");
+        final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
+                parseFullCompilationUnit);
+
+        final ParsedFile parsedFile = subject.parse(sourceFile);
         assertThat(parsedFile.getImports()).containsOnly(
                 new ImportStatement("de.skuzzle.test", 3, false),
                 new ImportStatement("de.skuzzle.test2", 4, false));
         assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
-        assertThat(parsedFile.getPath()).isEqualTo(path);
+        assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
 
-    @Test
-    void testStopAtClassDeclarationWithAnnotations() {
-        final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines(
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void testStopAtClassDeclarationWithAnnotations(boolean parseFullCompilationUnit, @TempDir Path tempDir)
+            throws IOException {
+        final Path sourceFile = tempSourceFile(tempDir, "Filename.java",
                 "package com.foo.bar;",
                 "",
                 "import de.skuzzle.test;",
                 "import de.skuzzle.test2;",
                 "@Deprecated",
                 "public class HereStartsAClass {",
-                "}"));
-        final ParsedFile parsedFile = subject.parse(path);
+                "}");
+        final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
+                parseFullCompilationUnit);
+
+        final ParsedFile parsedFile = subject.parse(sourceFile);
         assertThat(parsedFile.getImports()).containsOnly(
                 new ImportStatement("de.skuzzle.test", 3, false),
                 new ImportStatement("de.skuzzle.test2", 4, false));
         assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
-        assertThat(parsedFile.getPath()).isEqualTo(path);
+        assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
 
-    @Test
-    void testLeadingAndTrailingWhitespaces() {
-        final ImportStatementParserImpl subject = new ImportStatementParserImpl(lines(
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void testLeadingAndTrailingWhitespaces(boolean parseFullCompilationUnit, @TempDir Path tempDir) throws IOException {
+        final Path sourceFile = tempSourceFile(tempDir, "Filename.java",
                 "package com.foo.bar;  ",
                 "",
                 "\t    ",
@@ -107,12 +183,15 @@ class ImportStatementParserImplTest {
                 "import de.skuzzle.test2;    ",
                 "\t\t",
                 "\tpublic class HereStartsAClass {",
-                "}"));
-        final ParsedFile parsedFile = subject.parse(path);
+                "}");
+        final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
+                parseFullCompilationUnit);
+
+        final ParsedFile parsedFile = subject.parse(sourceFile);
         assertThat(parsedFile.getImports()).containsOnly(
                 new ImportStatement("de.skuzzle.test", 4, false),
                 new ImportStatement("de.skuzzle.test2", 5, false));
         assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
-        assertThat(parsedFile.getPath()).isEqualTo(path);
+        assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
 }

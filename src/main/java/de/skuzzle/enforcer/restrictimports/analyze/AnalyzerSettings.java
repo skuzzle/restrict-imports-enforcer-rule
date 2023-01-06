@@ -73,7 +73,7 @@ public final class AnalyzerSettings {
 
     @Override
     public int hashCode() {
-        return Objects.hash(sourceFileCharset, srcDirectories, testDirectories, parallel);
+        return Objects.hash(sourceFileCharset, srcDirectories, testDirectories, parallel, parseFullCompilationUnit);
     }
 
     @Override

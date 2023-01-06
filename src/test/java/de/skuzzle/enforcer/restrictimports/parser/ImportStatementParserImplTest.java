@@ -43,9 +43,9 @@ class ImportStatementParserImplTest {
                 parseFullCompilationUnit);
         final ParsedFile parsedFile = subject.parse(sourceFile);
         assertThat(parsedFile.getImports()).contains(
-                new ImportStatement("org.apache.commons.lang.StringUtils", 4, false),
-                new ImportStatement("abc.test.StringUtils", 5, false),
-                new ImportStatement("foo.bar.xyz.StringUtils", 6, false));
+                new ImportStatement("org.apache.commons.lang.StringUtils", 4, false, true),
+                new ImportStatement("abc.test.StringUtils", 5, false, true),
+                new ImportStatement("foo.bar.xyz.StringUtils", 6, false, true));
     }
 
     @ParameterizedTest
@@ -57,7 +57,7 @@ class ImportStatementParserImplTest {
         final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
                 parseFullCompilationUnit);
         final ParsedFile parsedFile = subject.parse(sourceFile);
-        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.sküzzle.test", 1, false));
+        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.sküzzle.test", 1, false, false));
         assertThat(parsedFile.getFqcn()).isEqualTo("Filename");
         assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
@@ -71,7 +71,7 @@ class ImportStatementParserImplTest {
         final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.ISO_8859_1,
                 parseFullCompilationUnit);
         final ParsedFile parsedFile = subject.parse(sourceFile);
-        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.sküzzle.test", 1, false));
+        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.sküzzle.test", 1, false, false));
         assertThat(parsedFile.getFqcn()).isEqualTo("Filename");
         assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
@@ -84,7 +84,7 @@ class ImportStatementParserImplTest {
         final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
                 parseFullCompilationUnit);
         final ParsedFile parsedFile = subject.parse(sourceFile);
-        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 1, false));
+        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 1, false, false));
         assertThat(parsedFile.getFqcn()).isEqualTo("Filename");
         assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
@@ -100,7 +100,7 @@ class ImportStatementParserImplTest {
                 parseFullCompilationUnit);
 
         final ParsedFile parsedFile = subject.parse(sourceFile);
-        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 2, false));
+        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 2, false, false));
         assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
         assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
@@ -113,7 +113,7 @@ class ImportStatementParserImplTest {
         final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
                 parseFullCompilationUnit);
         final ParsedFile parsedFile = subject.parse(sourceFile);
-        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 1, true));
+        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 1, true, false));
     }
 
     @ParameterizedTest
@@ -143,8 +143,8 @@ class ImportStatementParserImplTest {
 
         final ParsedFile parsedFile = subject.parse(sourceFile);
         assertThat(parsedFile.getImports()).containsOnly(
-                new ImportStatement("de.skuzzle.test", 3, false),
-                new ImportStatement("de.skuzzle.test2", 4, false));
+                new ImportStatement("de.skuzzle.test", 3, false, false),
+                new ImportStatement("de.skuzzle.test2", 4, false, false));
         assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
         assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
@@ -166,8 +166,8 @@ class ImportStatementParserImplTest {
 
         final ParsedFile parsedFile = subject.parse(sourceFile);
         assertThat(parsedFile.getImports()).containsOnly(
-                new ImportStatement("de.skuzzle.test", 3, false),
-                new ImportStatement("de.skuzzle.test2", 4, false));
+                new ImportStatement("de.skuzzle.test", 3, false, false),
+                new ImportStatement("de.skuzzle.test2", 4, false, false));
         assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
         assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
@@ -189,8 +189,8 @@ class ImportStatementParserImplTest {
 
         final ParsedFile parsedFile = subject.parse(sourceFile);
         assertThat(parsedFile.getImports()).containsOnly(
-                new ImportStatement("de.skuzzle.test", 4, false),
-                new ImportStatement("de.skuzzle.test2", 5, false));
+                new ImportStatement("de.skuzzle.test", 4, false, false),
+                new ImportStatement("de.skuzzle.test2", 5, false, false));
         assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
         assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }

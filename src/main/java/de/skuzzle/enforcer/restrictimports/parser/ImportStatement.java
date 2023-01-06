@@ -15,8 +15,9 @@ public final class ImportStatement {
     private final String importName;
     private final int line;
     private final boolean staticImport;
+    private final boolean qualifiedTypeUsage;
 
-    public ImportStatement(String importName, int line, boolean staticImport) {
+    public ImportStatement(String importName, int line, boolean staticImport, boolean qualifiedTypeUsage) {
         Preconditions.checkArgument(importName != null && !importName.isEmpty(), "importName must not be empty");
         Preconditions.checkArgument(!importName.startsWith(IMPORT_PREFIX),
                 "importName should be the raw package name without 'import ' prefix but was: '%s'", importName);
@@ -29,6 +30,7 @@ public final class ImportStatement {
         this.importName = importName;
         this.line = line;
         this.staticImport = staticImport;
+        this.qualifiedTypeUsage = qualifiedTypeUsage;
     }
 
     /**
@@ -58,18 +60,29 @@ public final class ImportStatement {
         return importName;
     }
 
+    /**
+     * Whether this is an 'artificial' import that has been created from a full qualified
+     * type reference within the source rather than from a real import statement.
+     * 
+     * @return Whether this represents a full qualified type use.
+     */
+    public boolean isQualifiedTypeUsage() {
+        return qualifiedTypeUsage;
+    }
+
     @Override
     public String toString() {
         return StringRepresentation.ofInstance(this)
                 .add("import", importName)
                 .add("line", line)
                 .add("static", staticImport)
+                .add("qualifiedTypeUsage", qualifiedTypeUsage)
                 .toString();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(importName, line, staticImport);
+        return Objects.hash(importName, line, staticImport, qualifiedTypeUsage);
     }
 
     @Override
@@ -77,6 +90,7 @@ public final class ImportStatement {
         return obj == this || obj instanceof ImportStatement
                 && Objects.equals(this.line, ((ImportStatement) obj).line)
                 && Objects.equals(this.staticImport, ((ImportStatement) obj).staticImport)
+                && Objects.equals(this.qualifiedTypeUsage, ((ImportStatement) obj).qualifiedTypeUsage)
                 && Objects.equals(this.importName, ((ImportStatement) obj).importName);
     }
 }

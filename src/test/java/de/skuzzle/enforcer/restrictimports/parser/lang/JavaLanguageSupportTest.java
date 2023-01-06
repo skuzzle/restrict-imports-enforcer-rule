@@ -13,13 +13,13 @@ public class JavaLanguageSupportTest {
     @Test
     public void testValidImport() {
         assertThat(subject.parseImport("import java.util.List;", 1)).first()
-                .isEqualTo(new ImportStatement("java.util.List", 1, false));
+                .isEqualTo(new ImportStatement("java.util.List", 1, false, false));
     }
 
     @Test
     public void testValidStaticImport() {
         assertThat(subject.parseImport("import static java.util.List.of;", 1)).first()
-                .isEqualTo(new ImportStatement("java.util.List.of", 1, true));
+                .isEqualTo(new ImportStatement("java.util.List.of", 1, true, false));
     }
 
     @Test
@@ -60,28 +60,28 @@ public class JavaLanguageSupportTest {
     @Test
     void testMultipleImportsInSameLine() {
         assertThat(subject.parseImport("import java.util.List; import java.util.Collection;", 1)).containsOnly(
-                new ImportStatement("java.util.List", 1, false),
-                new ImportStatement("java.util.Collection", 1, false));
+                new ImportStatement("java.util.List", 1, false, false),
+                new ImportStatement("java.util.Collection", 1, false, false));
     }
 
     @Test
     void testMultipleImportsWithStaticInSameLine() {
         assertThat(subject.parseImport("import java.util.List; import static java.util.Collections.emptyList;", 1))
                 .containsOnly(
-                        new ImportStatement("java.util.List", 1, false),
-                        new ImportStatement("java.util.Collections.emptyList", 1, true));
+                        new ImportStatement("java.util.List", 1, false, false),
+                        new ImportStatement("java.util.Collections.emptyList", 1, true, false));
     }
 
     @Test
     void testDanglingSemicolonSingleImport() throws Exception {
         assertThat(subject.parseImport("import java.util.List; ;;", 1)).containsOnly(
-                new ImportStatement("java.util.List", 1, false));
+                new ImportStatement("java.util.List", 1, false, false));
     }
 
     @Test
     void testDanglingSemicolonMultipleImports() throws Exception {
         assertThat(subject.parseImport("import java.util.List;import java.util.Collection;;", 1)).containsOnly(
-                new ImportStatement("java.util.List", 1, false),
-                new ImportStatement("java.util.Collection", 1, false));
+                new ImportStatement("java.util.List", 1, false, false),
+                new ImportStatement("java.util.Collection", 1, false, false));
     }
 }

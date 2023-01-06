@@ -55,9 +55,9 @@ public class KotlinGroovyLanguageSupport implements LanguageSupport {
     private ImportStatement toImportStatement(String importName, int lineNumber) {
         if (importName.startsWith(STATIC_PREFIX)) {
             final String realImportName = Whitespaces.trimAll(importName.substring(STATIC_PREFIX.length()));
-            return new ImportStatement(realImportName, lineNumber, true);
+            return new ImportStatement(realImportName, lineNumber, true, false);
         }
-        return new ImportStatement(importName, lineNumber, false);
+        return new ImportStatement(importName, lineNumber, false, false);
     }
 
     private boolean is(String compare, String line) {

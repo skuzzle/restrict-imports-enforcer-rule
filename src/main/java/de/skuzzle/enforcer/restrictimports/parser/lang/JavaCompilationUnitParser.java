@@ -36,7 +36,6 @@ final class JavaCompilationUnitParser {
 
         // find inline full qualified type usages and report them as import
         compilationUnit.stream()
-                .peek(node -> System.out.println(node.toString() + "   [" + node.getClass() + "]"))
                 .map(this::nodeToImportStatement)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -63,6 +62,7 @@ final class JavaCompilationUnitParser {
                 return Optional.of(new ImportStatement(classType.getNameWithScope(), positionOf(node), false, true));
             }
         } else if (node instanceof MethodCallExpr) {
+            // Special case for full qualified static lambda calls
             final MethodCallExpr expr = (MethodCallExpr) node;
             final FieldAccessExpr accessExpr = expr.findFirst(FieldAccessExpr.class).orElse(null);
             if (accessExpr == null || accessExpr.getScope() == null) {

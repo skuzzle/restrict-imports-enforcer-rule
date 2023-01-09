@@ -13,6 +13,7 @@ import java.util.Optional;
 import org.junit.jupiter.api.Test;
 
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
+import de.skuzzle.enforcer.restrictimports.parser.ImportType;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 
 class ImportAnalyzerTest {
@@ -35,7 +36,7 @@ class ImportAnalyzerTest {
         final List<ImportStatement> imports = new ArrayList<>();
 
         for (int lineNumber = 0; lineNumber < lines.length; ++lineNumber) {
-            imports.add(new ImportStatement(lines[lineNumber], lineNumber + 1, false));
+            imports.add(new ImportStatement(lines[lineNumber], lineNumber + 1, ImportType.IMPORT));
         }
         return new ParsedFile(path, packageName, fqcn, imports);
 

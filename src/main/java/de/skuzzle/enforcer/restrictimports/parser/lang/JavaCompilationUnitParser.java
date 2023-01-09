@@ -21,6 +21,12 @@ import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 import de.skuzzle.enforcer.restrictimports.parser.ImportType;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 
+/**
+ * Parses a full java source file using JavaParser.org dependency in order to detect
+ * inline full qualified type usages.
+ * 
+ * @author Simon Taddiken
+ */
 final class JavaCompilationUnitParser {
 
     public ParsedFile parseCompilationUnit(Path sourceFilePath, Charset charset) throws IOException {

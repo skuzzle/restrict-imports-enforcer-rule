@@ -32,23 +32,23 @@ final class ImportStatementParserImpl implements ImportStatementParser {
         this.charset = charset;
         this.parseFullCompilationUnit = parseFullCompilationUnit;
     }
-    
+
     @Override
     public ParsedFile parse(Path sourceFilePath) {
         LOGGER.trace("Analyzing {} for imports", sourceFilePath);
 
         final LanguageSupport languageSupport = LanguageSupport.getLanguageSupport(sourceFilePath);
         try {
-        if (parseFullCompilationUnit && languageSupport.parseFullCompilationUnitSupported()) {
-            LOGGER.debug("Using 'full-compilation-unit' parsing for {}", sourceFilePath);
+            if (parseFullCompilationUnit && languageSupport.parseFullCompilationUnitSupported()) {
+                LOGGER.debug("Using 'full-compilation-unit' parsing for {}", sourceFilePath);
 
-            return languageSupport.parseCompilationUnit(sourceFilePath, charset);
-        } else {
-            LOGGER.debug("Using 'line-based' parsing for {}", sourceFilePath);
+                return languageSupport.parseCompilationUnit(sourceFilePath, charset);
+            } else {
+                LOGGER.debug("Using 'line-based' parsing for {}", sourceFilePath);
 
-            return parseLineByLine(sourceFilePath, languageSupport);
-        }
-        } catch (IOException e) {
+                return parseLineByLine(sourceFilePath, languageSupport);
+            }
+        } catch (final IOException e) {
             throw new UncheckedIOException(String.format(
                     "Encountered IOException while analyzing %s for banned imports",
                     sourceFilePath), e);
@@ -99,7 +99,6 @@ final class ImportStatementParserImpl implements ImportStatementParser {
             return new ParsedFile(sourceFilePath, packageName, fqcn, imports);
         }
     }
-
 
     private String guessFQCN(String packageName, String sourceFileName) {
         return packageName.isEmpty()

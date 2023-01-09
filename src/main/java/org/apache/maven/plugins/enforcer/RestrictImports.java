@@ -196,7 +196,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
     public void setParseFullCompilationUnit(boolean parseFullCompilationUnit) {
         this.parseFullCompilationUnit = parseFullCompilationUnit;
     }
-    
+
     @Override
     public void setBasePackage(String basePackage) {
         checkGroups(this.groups.isEmpty());

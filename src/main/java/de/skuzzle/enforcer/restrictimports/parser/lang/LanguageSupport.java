@@ -49,10 +49,31 @@ public interface LanguageSupport {
                 && SupportedLanguageHolder.isLanguageSupported(FileExtension.fromPath(filename));
     }
 
+    /**
+     * When returning true, the framework will not use the line base import parser but
+     * will instead try to parse the whole source file using
+     * {@link #parseCompilationUnit(Path, Charset)}.
+     * 
+     * @return Whether this implementation supports full compilation unit parsing.
+     * @since 2.1.0
+     */
     default boolean parseFullCompilationUnitSupported() {
         return false;
     }
 
+    /**
+     * Called only when {@link #parseFullCompilationUnitSupported()} returns true.
+     * <p>
+     * Used to parse a full source file into a {@link ParsedFile}.
+     * <p>
+     * By default, throws an {@link UnsupportedOperationException}.
+     * 
+     * @param sourceFilePath Path of the source file to parse.
+     * @param charset Charset to apply when parsing.
+     * @return The parsed file.
+     * @throws IOException If an I/O error occurred.
+     * @since 2.1.0
+     */
     default ParsedFile parseCompilationUnit(Path sourceFilePath, Charset charset) throws IOException {
         throw new UnsupportedOperationException();
     }

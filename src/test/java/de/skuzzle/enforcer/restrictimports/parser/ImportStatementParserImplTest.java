@@ -36,6 +36,7 @@ class ImportStatementParserImplTest {
                 "    boolean foo = abc.test.StringUtils.isBlank(\"xyz\");",
                 "    List.of(\"1\").stream().filter(foo.bar.xyz.StringUtils::isBlank);",
                 "    Collections.emptyList().stream().filter(Objects::nonNull);",
+                "    List<String> list = new java.util.ArrayList<>();",
                 "  }",
                 "}");
         final boolean parseFullCompilationUnit = true;
@@ -45,7 +46,8 @@ class ImportStatementParserImplTest {
         assertThat(parsedFile.getImports()).contains(
                 new ImportStatement("org.apache.commons.lang.StringUtils", 4, false, true),
                 new ImportStatement("abc.test.StringUtils", 5, false, true),
-                new ImportStatement("foo.bar.xyz.StringUtils", 6, false, true));
+                new ImportStatement("foo.bar.xyz.StringUtils", 6, false, true),
+                new ImportStatement("java.util.ArrayList", 8, false, true));
     }
 
     @ParameterizedTest

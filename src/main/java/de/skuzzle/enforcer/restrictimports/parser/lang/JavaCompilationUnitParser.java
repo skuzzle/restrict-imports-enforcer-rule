@@ -36,6 +36,7 @@ final class JavaCompilationUnitParser {
 
         // find inline full qualified type usages and report them as import
         compilationUnit.stream()
+                .peek(node -> System.out.println(node.toString() + "   [" + node.getClass() + "]"))
                 .map(this::nodeToImportStatement)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -56,8 +57,10 @@ final class JavaCompilationUnitParser {
     private Optional<ImportStatement> nodeToImportStatement(Node node) {
         if (node instanceof NodeWithType<?, ?>) {
             final NodeWithType<?, ?> expr = (NodeWithType<?, ?>) node;
-            if (isQualifiedTypeUse(expr.getType())) {
-                return Optional.of(new ImportStatement(node.toString(), positionOf(node), false, true));
+            final Type type = expr.getType();
+            if (type instanceof ClassOrInterfaceType) {
+                final ClassOrInterfaceType classType = (ClassOrInterfaceType) expr.getType();
+                return Optional.of(new ImportStatement(classType.getNameWithScope(), positionOf(node), false, true));
             }
         } else if (node instanceof MethodCallExpr) {
             final MethodCallExpr expr = (MethodCallExpr) node;
@@ -71,10 +74,6 @@ final class JavaCompilationUnitParser {
         }
 
         return Optional.empty();
-    }
-
-    private boolean isQualifiedTypeUse(Type node) {
-        return node instanceof ClassOrInterfaceType && ((ClassOrInterfaceType) node).getScope().isPresent();
     }
 
     private String getFileNameWithoutExtension(Path file) {

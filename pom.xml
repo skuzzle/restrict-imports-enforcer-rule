@@ -7,21 +7,17 @@
         <artifactId>skuzzle-parent</artifactId>
         <version>3.0.1</version>
     </parent>
-
     <groupId>de.skuzzle.enforcer</groupId>
     <artifactId>restrict-imports-enforcer-rule</artifactId>
-    <version>2.0.1-SNAPSHOT</version>
+    <version>2.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
-
     <name>Restrict Imports Enforcer Rule</name>
     <description>Bans imports of specified classes/packages</description>
-
     <properties>
         <coveralls.skip>false</coveralls.skip>
         <maven.compiler.target>1.8</maven.compiler.target>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.release>8</maven.compiler.release>
-
         <version.enforcer-api>3.0.0</version.enforcer-api>
         <version.maven>2.2.1</version.maven>
         <version.junit>5.8.1</version.junit>
@@ -30,17 +26,14 @@
         <version.slf4j>1.7.25</version.slf4j>
         <version.mockito>4.0.0</version.mockito>
         <version.jimfs>1.2</version.jimfs>
-
+        <version.java-parser>3.24.10</version.java-parser>
         <version.resources-plugin>3.2.0</version.resources-plugin>
         <version.invoker-plugin>3.1.0</version.invoker-plugin>
-
         <site.name>restrict-imports-enforcer-rule</site.name>
         <github.name>restrict-imports-enforcer-rule</github.name>
-
         <!-- dont break on dependency failure -->
         <failOnWarning>false</failOnWarning>
     </properties>
-
     <scm>
         <developerConnection>scm:git:https://github.com/skuzzle/${github.name}.git</developerConnection>
         <tag>HEAD</tag>
@@ -54,7 +47,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
             <dependency>
                 <groupId>org.apache.maven</groupId>
                 <artifactId>maven-project</artifactId>
@@ -70,7 +62,11 @@
                 <artifactId>enforcer-api</artifactId>
                 <version>${version.enforcer-api}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.github.javaparser</groupId>
+                <artifactId>javaparser-core</artifactId>
+                <version>${version.java-parser}</version>
+            </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
@@ -98,11 +94,14 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.javaparser</groupId>
+            <artifactId>javaparser-core</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.enforcer</groupId>
@@ -127,6 +126,11 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -239,7 +243,7 @@
                     <dependency>
                         <groupId>${project.groupId}</groupId>
                         <artifactId>${project.artifactId}</artifactId>
-                        <version>1.4.0</version>
+                        <version>2.0.0</version>
                     </dependency>
                 </dependencies>
                 <executions>

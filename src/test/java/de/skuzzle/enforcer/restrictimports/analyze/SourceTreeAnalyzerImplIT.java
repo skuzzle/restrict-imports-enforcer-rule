@@ -391,4 +391,36 @@ public class SourceTreeAnalyzerImplIT {
 
         assertThat(result.bannedImportsFound()).isFalse();
     }
+
+    @Test
+    void testFindFullQualifiedTypeUse() throws Exception {
+        new SourceFileBuilder(fs)
+                .atPath("src/main/java/de/skuzzle/Sample.java")
+                .withLines("",
+                        "package de.skuzzle;",
+                        "class Test {",
+                        "  void foo() {",
+                        "    boolean x = org.apache.commons.lang.StringUtils.isBlank(\"123\");",
+                        "    org.apache.commons.io.Whatever.xyz(\"123\");",
+                        "  }",
+                        "}");
+
+        final BannedImportGroups groups = BannedImportGroups.builder()
+                .withGroup(BannedImportGroup.builder()
+                        .withBasePackages("**")
+                        .withBannedImports(
+                                "org.apache.commons.lang.StringUtils",
+                                "org.apache.commons.io.**"))
+                .build();
+
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
+        final AnalyzeResult result = subject.analyze(AnalyzerSettings.builder()
+                .withSrcDirectories(root)
+                .withParseFullCompilationUnit(true)
+                .build(), groups);
+
+        assertThat(result.bannedImportsFound()).isTrue();
+        assertThat(result.getSrcMatches()).hasSize(1);
+        assertThat(result.getSrcMatches()).first().matches(file -> file.getMatchedImports().size() == 2);
+    }
 }

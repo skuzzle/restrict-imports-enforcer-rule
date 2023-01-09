@@ -1,5 +1,7 @@
 package de.skuzzle.enforcer.restrictimports.parser.lang;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -8,6 +10,7 @@ import java.util.ServiceLoader;
 import java.util.Set;
 
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
+import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 
 /**
  * SPI for plugging in import statement recognition for different languages.
@@ -44,6 +47,35 @@ public interface LanguageSupport {
         final Path filename = path.getFileName();
         return !Files.isDirectory(path)
                 && SupportedLanguageHolder.isLanguageSupported(FileExtension.fromPath(filename));
+    }
+
+    /**
+     * When returning true, the framework will not use the line base import parser but
+     * will instead try to parse the whole source file using
+     * {@link #parseCompilationUnit(Path, Charset)}.
+     * 
+     * @return Whether this implementation supports full compilation unit parsing.
+     * @since 2.1.0
+     */
+    default boolean parseFullCompilationUnitSupported() {
+        return false;
+    }
+
+    /**
+     * Called only when {@link #parseFullCompilationUnitSupported()} returns true.
+     * <p>
+     * Used to parse a full source file into a {@link ParsedFile}.
+     * <p>
+     * By default, throws an {@link UnsupportedOperationException}.
+     * 
+     * @param sourceFilePath Path of the source file to parse.
+     * @param charset Charset to apply when parsing.
+     * @return The parsed file.
+     * @throws IOException If an I/O error occurred.
+     * @since 2.1.0
+     */
+    default ParsedFile parseCompilationUnit(Path sourceFilePath, Charset charset) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     /**

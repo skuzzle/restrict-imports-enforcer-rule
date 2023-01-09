@@ -1,7 +1,7 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.0.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.0.0/jar)
-[![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=2.0.0&color=orange)](http://www.javadoc.io/doc/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.0.0)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.1.0-SNAPSHOT&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.1.0-SNAPSHOT/jar)
+[![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=2.1.0-SNAPSHOT&color=orange)](http://www.javadoc.io/doc/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.1.0-SNAPSHOT)
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
@@ -26,7 +26,7 @@ information.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>2.0.0</version>
+            <version>2.1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <executions>
@@ -68,7 +68,7 @@ information.
   * [Syntactical](#syntactical-limitation)
   * [Conceptual](#conceptual-limitation)
 * [Configuration options](#configuration-options)
-* [Versioning and Compatibility](#versioning-and-compatibility)
+* [Versioning, Deprecations and Compatibility](#versioning-deprecations-and-compatibility)
 
 ## Rationale
 Grown code bases often have a huge number of dependencies. That leads to a lot of clutter in their 
@@ -184,7 +184,6 @@ of this groups within a single enforcer rule.
 </configuration>
 ```
 
-
 When analysing a source file, the plugin filters all groups where the group's 
 `basePackage` matches the source file's package name. In case multiple groups are 
 matching, only the group with the _most specific_ base package is retained and the others 
@@ -276,7 +275,7 @@ is not limited to `${project.basedir}/src/main/java`, `${project.basedir}/src/te
 ```
 
 ## Parallel Analysis
-(*Note:* This is a beta feature and not thoroughly tested. Syntax and behavior 
+(*Note:* This is an experimental feature and not thoroughly tested. Syntax and behavior 
 changes in upcoming versions are likely)
 
 We support basic parallelization of the analysis. This is disabled by default but can be enabled either in the pom file
@@ -291,6 +290,10 @@ using the `<parallel>` option or by passing `-Drestrictimports.parallel` to the 
     </rules>
 </configuration>
 ```
+
+## Full qualified class usage
+See [Limitation](#limitation)
+
 
 
 ## Package Patterns
@@ -317,7 +320,11 @@ comparison.
 
 ### Syntactical limitation
 This rule implementation assumes that every analyzed java source file is syntactically 
-correct. If a source file is not, the analysis result is undefined.
+correct. If a source file is not, the analysis result is undefined. We don't use a formal parser to parse the whole 
+source file into an abstract syntax tree. Instead, import statements are extracted by relying on more or less simple 
+String split operations and only reading each source file up until a non-import statement (like class declaration) is 
+discovered. We cover a set of esoteric edge cases, for example block comments within a single import statement and the 
+like.
 
 ### Conceptual limitation
 Import recognition works by comparing the import statements within your source files 
@@ -331,6 +338,8 @@ this plugin will not be able to match that import against a banned pattern point
 concrete class like `java.util.ArrayList`. However, wildcard recognition would still work
 as expected.
 
+Also, it is not possible to detect full qualified class usages, where a type is used without an import statement.
+
 For checking the `basePackage` and `exclusion` patterns, the plugin tries to construct the
 _full qualified class name_ (FQCN) of each analyzed source file. It does so by 
 concatenating the file name to the source file's value of the `package <value>;` 
@@ -339,23 +348,41 @@ statement. Thus if your `exclusion` pattern points to a concrete class like
 with the exact name `ClassName.java`. The same applies in case you use a base package 
 pattern with no wild cards.
 
+### Experimental full compilation unit parsing
+(*Note:* This is an experimental feature)
+
+To overcome the afore mentioned limitation, you can enable 'full compilation unit' parsing mode using
+```xml
+<configuration>
+    <rules>
+        <RestrictImports>
+            <parseFullCompilationUnit>true</parseFullCompilationUnit>
+            <!-- ... -->
+        </RestrictImports>
+    </rules>
+</configuration>
+```
+The option currently only affects parsing of java source files. When enabled, we will do a full parse of each 
+java source file, creating an actual AST. This allows to also detect full qualified class usages but will be
+considerably slower.
 
 ## Configuration options
 
 Overview of all configuration parameters:
 
-| Parameter               | Type                      | Required | Default                           | Since    |
-|-------------------------|---------------------------|----------|-----------------------------------|----------|
-| `basePackage(s)`        | (List of) package pattern | no       | `**`                              |          |
-| `bannedImport(s)`       | (List of) package pattern | yes      |                                   |          |
-| `allowedImport(s)`      | (List of) package pattern | no       | empty list                        |          |
-| `exclusion(s)`          | (List of) package pattern | no       | empty list                        |          |
-| `includeTestCode`       | Boolean                   | no       | `false`                           | `0.7.0`  |
-| `reason`                | String                    | no       | empty String                      | `0.8.0`  |
-| `failBuild`             | Boolean                   | no       | `true`                            | `0.17.0` |
-| `skip`                  | Boolean                   | no       | `false`                           | `0.17.0` |
-| `includeCompileCode`    | Boolean                   | no       | `true`                            | `1.2.0`  |
-| `excludedSourceRoot(s)` | (List of) java.io.File    | no       | empty list                        | `1.3.0`  |
+| Parameter                     | Type                      | Required | Default                           | Since    |
+|-------------------------------|---------------------------|----------|-----------------------------------|----------|
+| `basePackage(s)`              | (List of) package pattern | no       | `**`                              |          |
+| `bannedImport(s)`             | (List of) package pattern | yes      |                                   |          |
+| `allowedImport(s)`            | (List of) package pattern | no       | empty list                        |          |
+| `exclusion(s)`                | (List of) package pattern | no       | empty list                        |          |
+| `includeTestCode`             | Boolean                   | no       | `false`                           | `0.7.0`  |
+| `reason`                      | String                    | no       | empty String                      | `0.8.0`  |
+| `failBuild`                   | Boolean                   | no       | `true`                            | `0.17.0` |
+| `skip`                        | Boolean                   | no       | `false`                           | `0.17.0` |
+| `includeCompileCode`          | Boolean                   | no       | `true`                            | `1.2.0`  |
+| `excludedSourceRoot(s)`       | (List of) java.io.File    | no       | empty list                        | `1.3.0`  |
+| `parseFullCompilationUnit(s)` | Boolean                   | no       | `false`                           | `2.1.0`  |
 
 ## Versioning, Deprecations and Compatibility
 This project adheres to version 2 of the [semantic version specification](http://semver.org) with regards to the 

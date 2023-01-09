@@ -1,5 +1,8 @@
 package de.skuzzle.enforcer.restrictimports.parser.lang;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -8,6 +11,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
+import de.skuzzle.enforcer.restrictimports.parser.ImportType;
+import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 import de.skuzzle.enforcer.restrictimports.util.Whitespaces;
 
 public class JavaLanguageSupport implements LanguageSupport {
@@ -16,9 +21,21 @@ public class JavaLanguageSupport implements LanguageSupport {
     private static final String IMPORT_STATEMENT = "import ";
     private static final String PACKAGE_STATEMENT = "package ";
 
+    private static final JavaCompilationUnitParser javaCUParser = new JavaCompilationUnitParser();
+
     @Override
     public Set<String> getSupportedFileExtensions() {
         return Collections.singleton("java");
+    }
+
+    @Override
+    public boolean parseFullCompilationUnitSupported() {
+        return true;
+    }
+
+    @Override
+    public ParsedFile parseCompilationUnit(Path sourceFilePath, Charset charset) throws IOException {
+        return javaCUParser.parseCompilationUnit(sourceFilePath, charset);
     }
 
     @Override
@@ -51,9 +68,9 @@ public class JavaLanguageSupport implements LanguageSupport {
     private ImportStatement toImportStatement(String importName, int lineNumber) {
         if (importName.startsWith(STATIC_PREFIX)) {
             final String realImportName = Whitespaces.trimAll(importName.substring(STATIC_PREFIX.length()));
-            return new ImportStatement(realImportName, lineNumber, true);
+            return new ImportStatement(realImportName, lineNumber, ImportType.STATIC_IMPORT);
         }
-        return new ImportStatement(importName, lineNumber, false);
+        return new ImportStatement(importName, lineNumber, ImportType.IMPORT);
     }
 
     private boolean is(String compare, String line) {

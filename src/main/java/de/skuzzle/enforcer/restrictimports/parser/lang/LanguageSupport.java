@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.ServiceLoader;
@@ -12,7 +11,6 @@ import java.util.Set;
 
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
-import de.skuzzle.enforcer.restrictimports.util.Preconditions;
 
 /**
  * SPI for plugging in import statement recognition for different languages.
@@ -50,11 +48,11 @@ public interface LanguageSupport {
         return !Files.isDirectory(path)
                 && SupportedLanguageHolder.isLanguageSupported(FileExtension.fromPath(filename));
     }
-    
+
     default boolean parseFullCompilationUnitSupported() {
         return false;
     }
-    
+
     default ParsedFile parseCompilationUnit(Path sourceFilePath, Charset charset) throws IOException {
         throw new UnsupportedOperationException();
     }

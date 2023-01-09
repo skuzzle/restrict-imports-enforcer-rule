@@ -14,10 +14,9 @@ public final class ImportStatement {
     private static final String STATIC_PREFIX = "static ";
     private final String importName;
     private final int line;
-    private final boolean staticImport;
-    private final boolean qualifiedTypeUsage;
+    private final ImportType importType;
 
-    public ImportStatement(String importName, int line, boolean staticImport, boolean qualifiedTypeUsage) {
+    public ImportStatement(String importName, int line, ImportType importType) {
         Preconditions.checkArgument(importName != null && !importName.isEmpty(), "importName must not be empty");
         Preconditions.checkArgument(!importName.startsWith(IMPORT_PREFIX),
                 "importName should be the raw package name without 'import ' prefix but was: '%s'", importName);
@@ -26,11 +25,11 @@ public final class ImportStatement {
         Preconditions.checkArgument(importName.trim().equals(importName),
                 "importName has leading or trailing spaces: '%s'", importName);
         Preconditions.checkArgument(line > 0, "line numbers should be 1-based and not start at 0");
+        Preconditions.checkArgument(importType != null, "importType must not be null");
 
         this.importName = importName;
         this.line = line;
-        this.staticImport = staticImport;
-        this.qualifiedTypeUsage = qualifiedTypeUsage;
+        this.importType = importType;
     }
 
     /**
@@ -50,7 +49,7 @@ public final class ImportStatement {
      * @return The full import name.
      */
     public String getImportName() {
-        if (staticImport) {
+        if (importType == ImportType.STATIC_IMPORT) {
             return STATIC_PREFIX + importName;
         }
         return importName;
@@ -67,7 +66,7 @@ public final class ImportStatement {
      * @return Whether this represents a full qualified type use.
      */
     public boolean isQualifiedTypeUsage() {
-        return qualifiedTypeUsage;
+        return importType == ImportType.QUALIFIED_TYPE_USE;
     }
 
     @Override
@@ -75,22 +74,20 @@ public final class ImportStatement {
         return StringRepresentation.ofInstance(this)
                 .add("import", importName)
                 .add("line", line)
-                .add("static", staticImport)
-                .add("qualifiedTypeUsage", qualifiedTypeUsage)
+                .add("importType", importType)
                 .toString();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(importName, line, staticImport, qualifiedTypeUsage);
+        return Objects.hash(importName, line, importType);
     }
 
     @Override
     public boolean equals(Object obj) {
         return obj == this || obj instanceof ImportStatement
                 && Objects.equals(this.line, ((ImportStatement) obj).line)
-                && Objects.equals(this.staticImport, ((ImportStatement) obj).staticImport)
-                && Objects.equals(this.qualifiedTypeUsage, ((ImportStatement) obj).qualifiedTypeUsage)
+                && Objects.equals(this.importType, ((ImportStatement) obj).importType)
                 && Objects.equals(this.importName, ((ImportStatement) obj).importName);
     }
 }

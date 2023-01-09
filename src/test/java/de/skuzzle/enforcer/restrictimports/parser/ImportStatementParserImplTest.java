@@ -31,23 +31,27 @@ class ImportStatementParserImplTest {
         final Path sourceFile = tempSourceFile(tempDir, "Filename.java",
                 "import de.skzzle.test;",
                 "class Test {",
-                "  void foo() {",
+                "  net.io.Whatever foo(com.foo.bar.Xyz parameter) {",
                 "    org.apache.commons.lang.StringUtils.isBlank(\"xyz\");",
                 "    boolean foo = abc.test.StringUtils.isBlank(\"xyz\");",
                 "    List.of(\"1\").stream().filter(foo.bar.xyz.StringUtils::isBlank);",
                 "    Collections.emptyList().stream().filter(Objects::nonNull);",
                 "    List<String> list = new java.util.ArrayList<>();",
+                "    return null;",
                 "  }",
                 "}");
         final boolean parseFullCompilationUnit = true;
         final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
                 parseFullCompilationUnit);
         final ParsedFile parsedFile = subject.parse(sourceFile);
-        assertThat(parsedFile.getImports()).contains(
-                new ImportStatement("org.apache.commons.lang.StringUtils", 4, false, true),
-                new ImportStatement("abc.test.StringUtils", 5, false, true),
-                new ImportStatement("foo.bar.xyz.StringUtils", 6, false, true),
-                new ImportStatement("java.util.ArrayList", 8, false, true));
+        assertThat(parsedFile.getImports()).containsOnly(
+                new ImportStatement("de.skzzle.test", 1, ImportType.IMPORT),
+                new ImportStatement("com.foo.bar.Xyz", 3, ImportType.QUALIFIED_TYPE_USE),
+                new ImportStatement("net.io.Whatever", 3, ImportType.QUALIFIED_TYPE_USE),
+                new ImportStatement("org.apache.commons.lang.StringUtils", 4, ImportType.QUALIFIED_TYPE_USE),
+                new ImportStatement("abc.test.StringUtils", 5, ImportType.QUALIFIED_TYPE_USE),
+                new ImportStatement("foo.bar.xyz.StringUtils", 6, ImportType.QUALIFIED_TYPE_USE),
+                new ImportStatement("java.util.ArrayList", 8, ImportType.QUALIFIED_TYPE_USE));
     }
 
     @ParameterizedTest
@@ -59,7 +63,7 @@ class ImportStatementParserImplTest {
         final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
                 parseFullCompilationUnit);
         final ParsedFile parsedFile = subject.parse(sourceFile);
-        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.sküzzle.test", 1, false, false));
+        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.sküzzle.test", 1, ImportType.IMPORT));
         assertThat(parsedFile.getFqcn()).isEqualTo("Filename");
         assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
@@ -73,7 +77,7 @@ class ImportStatementParserImplTest {
         final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.ISO_8859_1,
                 parseFullCompilationUnit);
         final ParsedFile parsedFile = subject.parse(sourceFile);
-        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.sküzzle.test", 1, false, false));
+        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.sküzzle.test", 1, ImportType.IMPORT));
         assertThat(parsedFile.getFqcn()).isEqualTo("Filename");
         assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
@@ -86,7 +90,7 @@ class ImportStatementParserImplTest {
         final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
                 parseFullCompilationUnit);
         final ParsedFile parsedFile = subject.parse(sourceFile);
-        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 1, false, false));
+        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 1, ImportType.IMPORT));
         assertThat(parsedFile.getFqcn()).isEqualTo("Filename");
         assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
@@ -102,7 +106,7 @@ class ImportStatementParserImplTest {
                 parseFullCompilationUnit);
 
         final ParsedFile parsedFile = subject.parse(sourceFile);
-        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 2, false, false));
+        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 2, ImportType.IMPORT));
         assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
         assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
@@ -115,7 +119,8 @@ class ImportStatementParserImplTest {
         final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
                 parseFullCompilationUnit);
         final ParsedFile parsedFile = subject.parse(sourceFile);
-        assertThat(parsedFile.getImports()).containsOnly(new ImportStatement("de.skuzzle.test", 1, true, false));
+        assertThat(parsedFile.getImports())
+                .containsOnly(new ImportStatement("de.skuzzle.test", 1, ImportType.STATIC_IMPORT));
     }
 
     @ParameterizedTest
@@ -145,8 +150,8 @@ class ImportStatementParserImplTest {
 
         final ParsedFile parsedFile = subject.parse(sourceFile);
         assertThat(parsedFile.getImports()).containsOnly(
-                new ImportStatement("de.skuzzle.test", 3, false, false),
-                new ImportStatement("de.skuzzle.test2", 4, false, false));
+                new ImportStatement("de.skuzzle.test", 3, ImportType.IMPORT),
+                new ImportStatement("de.skuzzle.test2", 4, ImportType.IMPORT));
         assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
         assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
@@ -168,8 +173,8 @@ class ImportStatementParserImplTest {
 
         final ParsedFile parsedFile = subject.parse(sourceFile);
         assertThat(parsedFile.getImports()).containsOnly(
-                new ImportStatement("de.skuzzle.test", 3, false, false),
-                new ImportStatement("de.skuzzle.test2", 4, false, false));
+                new ImportStatement("de.skuzzle.test", 3, ImportType.IMPORT),
+                new ImportStatement("de.skuzzle.test2", 4, ImportType.IMPORT));
         assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
         assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }
@@ -191,8 +196,8 @@ class ImportStatementParserImplTest {
 
         final ParsedFile parsedFile = subject.parse(sourceFile);
         assertThat(parsedFile.getImports()).containsOnly(
-                new ImportStatement("de.skuzzle.test", 4, false, false),
-                new ImportStatement("de.skuzzle.test2", 5, false, false));
+                new ImportStatement("de.skuzzle.test", 4, ImportType.IMPORT),
+                new ImportStatement("de.skuzzle.test2", 5, ImportType.IMPORT));
         assertThat(parsedFile.getFqcn()).isEqualTo("com.foo.bar.Filename");
         assertThat(parsedFile.getPath()).isEqualTo(sourceFile);
     }

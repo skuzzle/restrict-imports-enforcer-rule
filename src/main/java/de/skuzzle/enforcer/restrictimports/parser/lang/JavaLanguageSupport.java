@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
+import de.skuzzle.enforcer.restrictimports.parser.ImportType;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 import de.skuzzle.enforcer.restrictimports.util.Whitespaces;
 
@@ -67,9 +68,9 @@ public class JavaLanguageSupport implements LanguageSupport {
     private ImportStatement toImportStatement(String importName, int lineNumber) {
         if (importName.startsWith(STATIC_PREFIX)) {
             final String realImportName = Whitespaces.trimAll(importName.substring(STATIC_PREFIX.length()));
-            return new ImportStatement(realImportName, lineNumber, true, false);
+            return new ImportStatement(realImportName, lineNumber, ImportType.STATIC_IMPORT);
         }
-        return new ImportStatement(importName, lineNumber, false, false);
+        return new ImportStatement(importName, lineNumber, ImportType.IMPORT);
     }
 
     private boolean is(String compare, String line) {

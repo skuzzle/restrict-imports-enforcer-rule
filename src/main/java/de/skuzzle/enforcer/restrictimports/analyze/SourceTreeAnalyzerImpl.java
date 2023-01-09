@@ -37,11 +37,17 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
     @Override
     public AnalyzeResult analyze(AnalyzerSettings settings, BannedImportGroups groups) {
         final long start = System.currentTimeMillis();
-        final ImportStatementParser fileParser = ImportStatementParser.forCharset(settings.getSourceFileCharset(), settings.isParseFullCompilationUnit());
+        final ImportStatementParser fileParser = ImportStatementParser.forCharset(settings.getSourceFileCharset(),
+                settings.isParseFullCompilationUnit());
 
         if (settings.isParallel()) {
             LOGGER.warn("EXPERIMENTAL FEATURE enabled. You have enabled parallel analysis which is marked as "
                     + "experimental. Please be aware that experimental features might get removed. "
+                    + "Please share your feedback!");
+        }
+        if (settings.isParseFullCompilationUnit()) {
+            LOGGER.warn("EXPERIMENTAL FEATURE enabled. You have enabled full-compilation-unit parsing. "
+                    + "Please be aware that experimental features might get removed. "
                     + "Please share your feedback!");
         }
 

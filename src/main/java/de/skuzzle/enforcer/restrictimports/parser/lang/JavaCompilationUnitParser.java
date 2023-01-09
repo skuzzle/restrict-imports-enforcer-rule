@@ -18,6 +18,7 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
+import de.skuzzle.enforcer.restrictimports.parser.ImportType;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 
 final class JavaCompilationUnitParser {
@@ -31,7 +32,7 @@ final class JavaCompilationUnitParser {
 
         final List<ImportStatement> imports = compilationUnit.getImports().stream()
                 .map(id -> new ImportStatement(id.getNameAsString(), id.getBegin().map(p -> p.line).orElse(0),
-                        id.isStatic(), false))
+                        id.isStatic() ? ImportType.STATIC_IMPORT : ImportType.IMPORT))
                 .collect(Collectors.toList());
 
         // find inline full qualified type usages and report them as import
@@ -57,9 +58,10 @@ final class JavaCompilationUnitParser {
         if (node instanceof NodeWithType<?, ?>) {
             final NodeWithType<?, ?> expr = (NodeWithType<?, ?>) node;
             final Type type = expr.getType();
-            if (type instanceof ClassOrInterfaceType) {
+            if (type instanceof ClassOrInterfaceType && ((ClassOrInterfaceType) type).getScope().isPresent()) {
                 final ClassOrInterfaceType classType = (ClassOrInterfaceType) expr.getType();
-                return Optional.of(new ImportStatement(classType.getNameWithScope(), positionOf(node), false, true));
+                return Optional.of(new ImportStatement(classType.getNameWithScope(), positionOf(node),
+                        ImportType.QUALIFIED_TYPE_USE));
             }
         } else if (node instanceof MethodCallExpr) {
             // Special case for full qualified static lambda calls
@@ -70,7 +72,7 @@ final class JavaCompilationUnitParser {
             }
 
             return Optional.of(new ImportStatement(accessExpr.getScope() + "." + accessExpr.getName(),
-                    positionOf(node), false, true));
+                    positionOf(node), ImportType.QUALIFIED_TYPE_USE));
         }
 
         return Optional.empty();

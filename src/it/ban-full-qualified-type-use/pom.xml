@@ -25,7 +25,7 @@
                         <RestrictImports>
                             <basePackage>**</basePackage>
                             <reason>These classes should not be used!</reason>
-							<parseFullCompilationUnit>true</parseFullCompilationUnit>
+                            <parseFullCompilationUnit>true</parseFullCompilationUnit>
                             <bannedImports>
                                 <bannedImport>java.util.*</bannedImport>
                             </bannedImports>

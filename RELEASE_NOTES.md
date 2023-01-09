@@ -1,11 +1,8 @@
 [![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.1.0-SNAPSHOT&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.1.0-SNAPSHOT/jar) [![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=2.1.0-SNAPSHOT&color=orange)](http://www.javadoc.io/doc/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.1.0-SNAPSHOT)
 
-### Changes
-
-* [#XX](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/XX) TBD
 ### Features
+* [#57](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/57) Detect full qualified class usages (must be enabled via `<parseFullCompilationUnit>true</parseFullCompilationUnit>`
 
-### Bug fixes
 
 
 Maven Central coordinates for this release:

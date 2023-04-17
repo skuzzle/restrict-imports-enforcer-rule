@@ -65,7 +65,7 @@ public final class AnalyzeResult {
 
     /**
      * Returns the matches that occurred in test source files grouped by their
-     * {@link BannedImportGroup}
+     * {@link BannedImportGroup}.
      *
      * @return The matches grouped by {@link BannedImportGroup}
      */
@@ -75,8 +75,14 @@ public final class AnalyzeResult {
                 .collect(Collectors.groupingBy(matchedFile -> matchedFile.getMatchedBy().get()));
     }
 
+    /**
+     * Returns wheter either a warning or a banned import has been found in any source root
+     *
+     * @return Whether any reportable results where detected.
+     * @since 2.2.0
+     */
     public boolean bannedImportsOrWarningsFound() {
-        return bannedImportsFoundIn() || warningsFound();
+        return bannedImportsFound() || warningsFound();
     }
 
     /**
@@ -85,7 +91,7 @@ public final class AnalyzeResult {
      *
      * @return Whether a banned import has been found.
      */
-    public boolean bannedImportsFoundIn() {
+    public boolean bannedImportsFound() {
         return bannedImportsInCompileCode() || bannedImportsInTestCode();
     }
 
@@ -114,14 +120,28 @@ public final class AnalyzeResult {
         return matchedFiles.stream().anyMatch(MatchedFile::hasBannedImports);
     }
 
+    /**
+     * @return Whether warnings were detected while analysing compile code.
+     * @since 2.2.0
+     */
     public boolean warningsFoundInCompileCode() {
         return warningsFound(srcMatches);
     }
 
+    /**
+     * @return Whether warnings were detected while analysing test code.
+     * @since 2.2.0
+     */
     public boolean warningsFoundInTestCode() {
         return warningsFound(testMatches);
     }
 
+    /**
+     * @return Whether warnings were detected while analysing compile or  code.
+     * @since 2.2.0
+     * @see #warningsFoundInCompileCode()
+     * @see #warningsFoundInTestCode()
+     */
     public boolean warningsFound() {
         return warningsFoundInCompileCode() || warningsFoundInTestCode();
     }

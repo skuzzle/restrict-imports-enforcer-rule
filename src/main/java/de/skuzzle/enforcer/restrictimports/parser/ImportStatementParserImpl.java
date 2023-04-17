@@ -59,10 +59,10 @@ final class ImportStatementParserImpl implements ImportStatementParser {
         try {
             return languageSupport.parseCompilationUnit(sourceFilePath, charset);
         } catch (Exception e) {
-            LOGGER.debug("Full compilation unit parsing of {} resulted in failure. Falling back to lin-by-line parsing",
+            LOGGER.debug("Full compilation unit parsing of {} resulted in failure. Falling back to line-by-line parsing",
                 sourceFilePath, e);
             return parseLineByLine(sourceFilePath, languageSupport)
-                .andAddAnnotation(Annotation.withMessage("Failed to parse in 'full-compilation-unit' mode. Analysis might be inaccurate"));
+                .andAddAnnotation(Annotation.withMessage("Failed to parse in full-compilation-unit mode. Analysis might be inaccurate"));
         }
     }
 

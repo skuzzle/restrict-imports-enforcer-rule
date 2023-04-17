@@ -366,6 +366,10 @@ The option currently only affects parsing of java source files. When enabled, we
 java source file, creating an actual AST. This allows to also detect full qualified class usages but will be
 considerably slower.
 
+> **Warning**
+> This option causes inaccuracies when used with Java Language Features introduced with Java 16 or greater.
+> See [#60](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/60) for details.
+
 ## Configuration options
 
 Overview of all configuration parameters:

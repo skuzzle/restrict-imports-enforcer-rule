@@ -1,4 +1,7 @@
-package example;
+package de.skuzzle.enforcer.test;
+
+
+import java.util.LinkedList;
 
 public class DataImporter {
 
@@ -10,5 +13,4 @@ public class DataImporter {
         }
         return importedLines;
     }
-
-}
+    // Missing closing '}' to simulate a parse error

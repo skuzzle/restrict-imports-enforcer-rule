@@ -1,4 +1,4 @@
-package example;
+package de.skuzzle.enforcer.test;
 
 public class DataImporter {
 

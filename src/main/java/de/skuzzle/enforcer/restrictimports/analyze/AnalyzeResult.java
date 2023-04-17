@@ -50,7 +50,8 @@ public final class AnalyzeResult {
      */
     public Map<BannedImportGroup, List<MatchedFile>> srcMatchesByGroup() {
         return srcMatches.stream()
-                .collect(Collectors.groupingBy(MatchedFile::getMatchedBy));
+            .filter(matchedFile -> matchedFile.getMatchedBy().isPresent())
+            .collect(Collectors.groupingBy(matchedFile -> matchedFile.getMatchedBy().get()));
     }
 
     /**
@@ -70,7 +71,12 @@ public final class AnalyzeResult {
      */
     public Map<BannedImportGroup, List<MatchedFile>> testMatchesByGroup() {
         return testMatches.stream()
-                .collect(Collectors.groupingBy(MatchedFile::getMatchedBy));
+                .filter(matchedFile -> matchedFile.getMatchedBy().isPresent())
+                .collect(Collectors.groupingBy(matchedFile -> matchedFile.getMatchedBy().get()));
+    }
+
+    public boolean bannedImportsOrWarningsFound() {
+        return bannedImportsFoundIn() || warningsFound();
     }
 
     /**
@@ -79,7 +85,7 @@ public final class AnalyzeResult {
      *
      * @return Whether a banned import has been found.
      */
-    public boolean bannedImportsFound() {
+    public boolean bannedImportsFoundIn() {
         return bannedImportsInCompileCode() || bannedImportsInTestCode();
     }
 
@@ -90,8 +96,9 @@ public final class AnalyzeResult {
      * @return Whether a banned import has been found.
      */
     public boolean bannedImportsInCompileCode() {
-        return !srcMatches.isEmpty();
+        return bannedImportsFoundIn(srcMatches);
     }
+
 
     /**
      * Returns whether at least one banned import has been found within the analyzed test
@@ -100,7 +107,27 @@ public final class AnalyzeResult {
      * @return Whether a banned import has been found.
      */
     public boolean bannedImportsInTestCode() {
-        return !testMatches.isEmpty();
+        return bannedImportsFoundIn(testMatches);
+    }
+
+    private boolean bannedImportsFoundIn(List<MatchedFile> matchedFiles) {
+        return matchedFiles.stream().anyMatch(MatchedFile::hasBannedImports);
+    }
+
+    public boolean warningsFoundInCompileCode() {
+        return warningsFound(srcMatches);
+    }
+
+    public boolean warningsFoundInTestCode() {
+        return warningsFound(testMatches);
+    }
+
+    public boolean warningsFound() {
+        return warningsFoundInCompileCode() || warningsFoundInTestCode();
+    }
+
+    private boolean warningsFound(List<MatchedFile> matches) {
+        return matches.stream().anyMatch(matchedFile -> !matchedFile.getWarnings().isEmpty());
     }
 
     /**

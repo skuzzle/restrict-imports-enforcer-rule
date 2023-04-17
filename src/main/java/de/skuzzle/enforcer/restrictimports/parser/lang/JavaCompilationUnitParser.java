@@ -24,7 +24,7 @@ import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 /**
  * Parses a full java source file using JavaParser.org dependency in order to detect
  * inline full qualified type usages.
- * 
+ *
  * @author Simon Taddiken
  */
 final class JavaCompilationUnitParser {
@@ -53,7 +53,7 @@ final class JavaCompilationUnitParser {
                 .orElse("");
         final String primaryTypeName = compilationUnit.getPrimaryTypeName().orElse(fileName);
         final String fqcn = declaredPackage.isEmpty() ? primaryTypeName : declaredPackage + "." + primaryTypeName;
-        return new ParsedFile(sourceFilePath, declaredPackage, fqcn, imports);
+        return ParsedFile.successful(sourceFilePath, declaredPackage, fqcn, imports);
     }
 
     private int positionOf(Node node) {

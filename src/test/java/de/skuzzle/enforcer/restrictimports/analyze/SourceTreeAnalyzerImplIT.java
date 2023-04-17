@@ -251,7 +251,7 @@ public class SourceTreeAnalyzerImplIT {
         final BannedImportGroups groups = BannedImportGroups.builder().withGroup(group).build();
         final AnalyzeResult analyzeResult = subject.analyze(settings, groups);
 
-        assertThat(analyzeResult.bannedImportsFound()).isFalse();
+        assertThat(analyzeResult.bannedImportsFoundIn()).isFalse();
     }
 
     @Test
@@ -269,7 +269,7 @@ public class SourceTreeAnalyzerImplIT {
                         .withBannedImports("java.util.ArrayList"))
                         .build());
 
-        assertThat(analyzeResult.bannedImportsFound()).isFalse();
+        assertThat(analyzeResult.bannedImportsFoundIn()).isFalse();
     }
 
     @Test
@@ -288,7 +288,7 @@ public class SourceTreeAnalyzerImplIT {
                         .withExclusions("de.skuzzle.Sample"))
                         .build());
 
-        assertThat(analyzeResult.bannedImportsFound()).isFalse();
+        assertThat(analyzeResult.bannedImportsFoundIn()).isFalse();
     }
 
     @Test
@@ -307,7 +307,7 @@ public class SourceTreeAnalyzerImplIT {
                         .withAllowedImports("java.util.ArrayList"))
                         .build());
 
-        assertThat(analyzeResult.bannedImportsFound()).isFalse();
+        assertThat(analyzeResult.bannedImportsFoundIn()).isFalse();
     }
 
     @Test
@@ -364,7 +364,7 @@ public class SourceTreeAnalyzerImplIT {
 
         final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
         final AnalyzeResult result = subject.analyze(settings, groups);
-        assertThat(result.bannedImportsFound()).isFalse();
+        assertThat(result.bannedImportsFoundIn()).isFalse();
     }
 
     @Test
@@ -389,7 +389,7 @@ public class SourceTreeAnalyzerImplIT {
         final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
         final AnalyzeResult result = subject.analyze(settings, groups);
 
-        assertThat(result.bannedImportsFound()).isFalse();
+        assertThat(result.bannedImportsFoundIn()).isFalse();
     }
 
     @Test
@@ -419,7 +419,7 @@ public class SourceTreeAnalyzerImplIT {
                 .withParseFullCompilationUnit(true)
                 .build(), groups);
 
-        assertThat(result.bannedImportsFound()).isTrue();
+        assertThat(result.bannedImportsFoundIn()).isTrue();
         assertThat(result.getSrcMatches()).hasSize(1);
         assertThat(result.getSrcMatches()).first().matches(file -> file.getMatchedImports().size() == 2);
     }

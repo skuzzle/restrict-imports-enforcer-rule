@@ -3,7 +3,9 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import de.skuzzle.enforcer.restrictimports.parser.Annotation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,11 +33,26 @@ class ImportAnalyzer {
     Optional<MatchedFile> matchFile(ParsedFile sourceFile, BannedImportGroups groups) {
         LOGGER.trace("Analyzing {} for banned imports", sourceFile);
 
+        final List<Warning> warnings = warningsFrom(sourceFile);
+        if (sourceFile.isFailedToParse()) {
+            LOGGER.trace("Skipping analysis because source file failed to parse: {}", sourceFile);
+            return Optional.of(MatchedFile.forSourceFile(sourceFile.getPath())
+                .withFailedToParse(true)
+                .withWarnings(warnings)
+                .build());
+        }
+
         final BannedImportGroup group = groups.selectGroupFor(sourceFile.getFqcn())
                 .orElse(null);
         if (group == null) {
-            LOGGER.trace("No rule group matched {}", sourceFile);
-            return Optional.empty();
+            if (!warnings.isEmpty()) {
+                LOGGER.trace("No rule group matched {}, but warnings were found: {}", sourceFile, warnings);
+                return Optional.of(MatchedFile.forSourceFile(sourceFile.getPath()).withWarnings(warnings).build());
+            } else {
+                LOGGER.trace("No rule group matched {}", sourceFile);
+                return Optional.empty();
+            }
+
         }
         LOGGER.trace("Selected {} for {}", group, sourceFile);
 
@@ -46,11 +63,18 @@ class ImportAnalyzer {
                             bannedImport))
                     .ifPresent(matches::add);
         }
-        if (matches.isEmpty()) {
+        if (matches.isEmpty() && warnings.isEmpty()) {
             return Optional.empty();
         }
-        final MatchedFile matchedFile = new MatchedFile(sourceFile.getPath(), matches, group);
-        LOGGER.debug("Found banned import matches: {}", matchedFile);
+        final MatchedFile matchedFile = new MatchedFile(sourceFile.getPath(), matches, group, warnings, false);
+        LOGGER.debug("Found banned import matches or warnings: {}", matchedFile);
         return Optional.of(matchedFile);
+    }
+
+    private List<Warning> warningsFrom(ParsedFile sourceFile) {
+        return sourceFile.getAnnotations().stream()
+            .map(Annotation::getMessage)
+            .map(Warning::withMessage)
+            .collect(Collectors.toList());
     }
 }

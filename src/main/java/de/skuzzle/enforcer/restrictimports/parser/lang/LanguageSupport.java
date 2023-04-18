@@ -53,7 +53,7 @@ public interface LanguageSupport {
      * When returning true, the framework will not use the line base import parser but
      * will instead try to parse the whole source file using
      * {@link #parseCompilationUnit(Path, Charset)}.
-     * 
+     *
      * @return Whether this implementation supports full compilation unit parsing.
      * @since 2.1.0
      */
@@ -67,7 +67,7 @@ public interface LanguageSupport {
      * Used to parse a full source file into a {@link ParsedFile}.
      * <p>
      * By default, throws an {@link UnsupportedOperationException}.
-     * 
+     *
      * @param sourceFilePath Path of the source file to parse.
      * @param charset Charset to apply when parsing.
      * @return The parsed file.

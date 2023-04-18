@@ -29,7 +29,7 @@
         <version.java-parser>3.24.10</version.java-parser>
         <version.resources-plugin>3.2.0</version.resources-plugin>
         <version.invoker-plugin>3.5.1</version.invoker-plugin>
-        <version.spotless-plugin>2.36.0</version.spotless-plugin>
+        <version.spotless-plugin>2.34.0</version.spotless-plugin>
         <site.name>restrict-imports-enforcer-rule</site.name>
         <github.name>restrict-imports-enforcer-rule</github.name>
         <!-- dont break on dependency failure -->
@@ -183,7 +183,6 @@
                     <!-- define a language-specific format -->
                     <java>
                         <eclipse>
-                            <version>4.26</version>
                             <file>${project.basedir}/spotless/formatter-settings.xml</file>
                         </eclipse>
                         <importOrder>

@@ -5,7 +5,7 @@
     <bannedImport>**.'*'</bannedImport>
 </RestrictImports>
 ```
-_Note_: `'*'` is a special literal which is treated specially. It is only allowed as the last part of a package 
+_Note_: `'*'` is a special literal which is treated specially. It is only allowed as the last part of a package
 pattern.
 
 ### Forbid all static imports

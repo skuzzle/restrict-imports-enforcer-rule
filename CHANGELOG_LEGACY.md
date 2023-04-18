@@ -20,7 +20,7 @@ This changelog is no longer maintained. Follow the release notes at the GitHub r
 * Display analysis duration
 
 ### Version 1.0.0
-* [#35](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/35): Recognize multiple import statements on same line in groovy sources 
+* [#35](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/35): Recognize multiple import statements on same line in groovy sources
 * _Remove_ `commentLineBufferSize`
 
 ### Version 0.18.0

@@ -8,12 +8,12 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import org.junit.jupiter.api.Test;
+import de.skuzzle.enforcer.restrictimports.analyze.SourceFileBuilder;
 
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 
-import de.skuzzle.enforcer.restrictimports.analyze.SourceFileBuilder;
+import org.junit.jupiter.api.Test;
 
 public class SkipCommentsLineSupplierTest {
 

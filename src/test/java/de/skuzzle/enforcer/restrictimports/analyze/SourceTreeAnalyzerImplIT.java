@@ -2,6 +2,7 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
@@ -422,5 +423,56 @@ public class SourceTreeAnalyzerImplIT {
         assertThat(result.bannedImportsFound()).isTrue();
         assertThat(result.getSrcMatches()).hasSize(1);
         assertThat(result.getSrcMatches()).first().matches(file -> file.getMatchedImports().size() == 2);
+    }
+
+    @Test
+    void testReportWarningWhenFallBackToLineByLineParsingButNoBannedImportsDetected() throws IOException {
+        new SourceFileBuilder(fs)
+            .atPath("src/main/java/de/skuzzle/Sample.java")
+            .withLines("",
+                "package de.skuzzle;",
+                "}"); // compile failure
+
+        final BannedImportGroups groups = BannedImportGroups.builder()
+            .withGroup(BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports(
+                    "org.apache.commons.io.**"))
+            .build();
+
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
+        final AnalyzeResult result = subject.analyze(AnalyzerSettings.builder()
+            .withSrcDirectories(root)
+            .withParseFullCompilationUnit(true)
+            .build(), groups);
+
+        assertThat(result.bannedImportsFound()).isFalse();
+        assertThat(result.warningsFound()).isTrue();
+    }
+
+    @Test
+    void testReportWarningAndBannedImportsWhenFallBackToLineByLineParsing() throws IOException {
+        new SourceFileBuilder(fs)
+            .atPath("src/main/java/de/skuzzle/Sample.java")
+            .withLines("",
+                "package de.skuzzle;",
+                "import org.apache.commons.lang.StringUtils;",
+                "}"); // compile failure to force fall back to line-by-line parsing
+
+        final BannedImportGroups groups = BannedImportGroups.builder()
+            .withGroup(BannedImportGroup.builder()
+                .withBasePackages("**")
+                .withBannedImports(
+                    "org.apache.commons.lang.**"))
+            .build();
+
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
+        final AnalyzeResult result = subject.analyze(AnalyzerSettings.builder()
+            .withSrcDirectories(root)
+            .withParseFullCompilationUnit(true)
+            .build(), groups);
+
+        assertThat(result.bannedImportsFound()).isTrue();
+        assertThat(result.warningsFound()).isTrue();
     }
 }

@@ -83,16 +83,17 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
             final AnalyzeResult analyzeResult = analyzer.analyze(analyzerSettings, groups);
             LOGGER.debug("Analyzer result:\n{}", analyzeResult);
 
-            if (analyzeResult.bannedImportsFound()) {
+            final MavenAnalysisResult mavenAnalysisResult = MavenAnalysisResult.from(analyzeResult);
+            if (analyzeResult.bannedImportsOrWarningsFound()) {
                 final String errorMessage = matchFormatter
                         .formatMatches(analyzerSettings.getAllDirectories(), analyzeResult);
 
-                if (isFailBuild(helper)) {
+                if (analyzeResult.bannedImportsFound() && isFailBuild(helper)) {
                     throw new EnforcerRuleException(errorMessage);
                 } else {
                     LOGGER.warn(errorMessage);
                     LOGGER.warn(
-                            "\nDetected banned imports will not fail the build as the 'failBuild' flag is set to false!");
+                            "Detected banned imports will not fail the build as the 'failBuild' flag is set to false!");
                 }
 
             } else {

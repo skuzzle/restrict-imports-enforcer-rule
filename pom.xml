@@ -278,7 +278,7 @@
 								<pomInclude>**/pom.xml</pomInclude>
 								<!-- Include sub directories -->
 							</pomIncludes>
-                            <parallelThreads>1.5C</parallelThreads>
+                            <parallelThreads>1</parallelThreads>
 							<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
 							<mavenOpts>${argLine}</mavenOpts>
 						</configuration>

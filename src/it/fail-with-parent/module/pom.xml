@@ -4,12 +4,12 @@
 
     <parent>
         <groupId>de.skuzzle.enforcer.it</groupId>
-        <artifactId>fail2</artifactId>
+        <artifactId>fail-with-parent</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    
+
     <groupId>de.skuzzle.enforcer.it</groupId>
-    <artifactId>fail2-module</artifactId>
+    <artifactId>fail-with-parent-module</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Banned Import child</name>
 

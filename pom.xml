@@ -28,7 +28,7 @@
 		<version.jimfs>1.2</version.jimfs>
 		<version.java-parser>3.24.10</version.java-parser>
 		<version.resources-plugin>3.2.0</version.resources-plugin>
-		<version.invoker-plugin>3.1.0</version.invoker-plugin>
+		<version.invoker-plugin>3.5.1</version.invoker-plugin>
 		<version.spotless-plugin>2.36.0</version.spotless-plugin>
 		<site.name>restrict-imports-enforcer-rule</site.name>
 		<github.name>restrict-imports-enforcer-rule</github.name>
@@ -197,6 +197,13 @@
 						<endWithNewline/>
 					</java>
 				</configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -271,6 +278,7 @@
 								<pomInclude>**/pom.xml</pomInclude>
 								<!-- Include sub directories -->
 							</pomIncludes>
+                            <parallelThreads>1.5C</parallelThreads>
 							<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
 							<mavenOpts>${argLine}</mavenOpts>
 						</configuration>

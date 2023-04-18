@@ -48,7 +48,8 @@ public final class MatchedFile {
     }
 
     /**
-     * The matches found in this file.
+     * The matches found in this file. Will be empty in case no banned imports were found but still
+     * warnings were detected while analyzing this file.
      *
      * @return The matches.
      */
@@ -60,7 +61,8 @@ public final class MatchedFile {
      * Returns the group that contains the banned import that caused the match in this
      * file.
      * <p>
-     * The result will be empty if this file wasn't matched by any group but warnings were found while parsings
+     * The result will be empty if this file wasn't matched by any group but warnings were found while parsings. In that
+     * case the list returned by {@link #getMatchedImports()} will also be empty.
      *
      * @return The group.
      */

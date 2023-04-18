@@ -4,6 +4,14 @@ import de.skuzzle.enforcer.restrictimports.util.StringRepresentation;
 
 import java.util.Objects;
 
+/**
+ * Represents an additional warning that might be reported and shall be displayed to the end user.
+ * <p>
+ * Presence of a Waning alone on a MatchedFile usually doesn't fail the build as long as
+ * no banned imports were detected.
+ *
+ * @since 2.2.0
+ */
 public final class Warning {
 
     private final String message;

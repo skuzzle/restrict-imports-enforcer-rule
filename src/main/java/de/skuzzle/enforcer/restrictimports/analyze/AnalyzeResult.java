@@ -121,6 +121,16 @@ public final class AnalyzeResult {
     }
 
     /**
+     * @return Whether warnings were detected while analysing compile or  code.
+     * @since 2.2.0
+     * @see #warningsFoundInCompileCode()
+     * @see #warningsFoundInTestCode()
+     */
+    public boolean warningsFound() {
+        return warningsFoundInCompileCode() || warningsFoundInTestCode();
+    }
+
+    /**
      * @return Whether warnings were detected while analysing compile code.
      * @since 2.2.0
      */
@@ -134,16 +144,6 @@ public final class AnalyzeResult {
      */
     public boolean warningsFoundInTestCode() {
         return warningsFound(testMatches);
-    }
-
-    /**
-     * @return Whether warnings were detected while analysing compile or  code.
-     * @since 2.2.0
-     * @see #warningsFoundInCompileCode()
-     * @see #warningsFoundInTestCode()
-     */
-    public boolean warningsFound() {
-        return warningsFoundInCompileCode() || warningsFoundInTestCode();
     }
 
     private boolean warningsFound(List<MatchedFile> matches) {

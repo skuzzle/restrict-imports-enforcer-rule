@@ -5,6 +5,10 @@ import de.skuzzle.enforcer.restrictimports.util.StringRepresentation;
 
 import java.util.Objects;
 
+/**
+ * Represents additional findings that shall be reported for an encountered file.
+ * @since 2.2.0
+ */
 public final class Annotation {
     private final String message;
 

@@ -34,15 +34,42 @@ public final class ParsedFile {
         this.annotations = annotations;
     }
 
+    /**
+     * Creates a {@link ParsedFile} for a source file that was parsed successfully.
+     *
+     * @param path The path of the source file.
+     * @param declaredPackage The package from the source file's <code>package</code> declaration
+     * @param fqcn The full qualified name of the class represented by the source file.
+     * @param imports The detected import statements within the source file.
+     * @return The ParsedFile.
+     * @since 2.2.0
+     */
     public static ParsedFile successful(Path path, String declaredPackage, String fqcn, Collection<ImportStatement> imports) {
         return new ParsedFile(path, declaredPackage, fqcn, imports, false, Collections.emptyList());
     }
 
+    /**
+     * Creates a {@link ParsedFile} for the situation where the file could not be
+     * parsed at all (technical problem occurred while parsing).
+     *
+     * @param path The file that could not be parsed.
+     * @param annotations At least one annotation that roughly describes the failure.
+     * @return The ParsedFile.
+     * @since 2.2.0
+     */
     public static ParsedFile failedToParse(Path path, Annotation... annotations) {
         return new ParsedFile(path, "", "",
             Collections.emptyList(), true, Arrays.asList(annotations));
     }
 
+    /**
+     * Returns a new {@link ParsedFile} with identical information as this one but merging this file's
+     * annotations with the provided annotations.
+     *
+     * @param furtherAnnotations Annotations to append to the resulting ParsedFile.
+     * @return A new ParsedFile.
+     * @since 2.2.0
+     */
     public ParsedFile andAddAnnotation(Annotation... furtherAnnotations) {
         final List<Annotation> allAnnotations = new ArrayList<>(this.annotations);
         allAnnotations.addAll(Arrays.asList(furtherAnnotations));
@@ -61,10 +88,23 @@ public final class ParsedFile {
         return fqcn;
     }
 
+    /**
+     * Whether the file could not be parsed at all and we have no information about used imports.
+     *
+     * @return Whether the file could not be parsed at all.
+     * @since 2.2.0
+     */
     public boolean isFailedToParse() {
         return failedToParse;
     }
 
+    /**
+     * A list of findings in this file apart from banned imports. Those findings will be reported
+     * separately in the analysis report but will usually not fail the build.
+     *
+     * @return Any findings/warnings that were detected while parsing this file.
+     * @since 2.2.0
+     */
     public List<Annotation> getAnnotations() {
         return annotations;
     }

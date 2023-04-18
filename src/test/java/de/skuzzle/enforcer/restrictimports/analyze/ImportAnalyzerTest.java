@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.Optional;
 
 import de.skuzzle.enforcer.restrictimports.parser.Annotation;
-import org.junit.jupiter.api.Test;
-
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 import de.skuzzle.enforcer.restrictimports.parser.ImportType;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
+
+import org.junit.jupiter.api.Test;
 
 class ImportAnalyzerTest {
 
@@ -29,12 +29,12 @@ class ImportAnalyzerTest {
             "de.foo.bar.Test");
 
     private final ParsedFile parsedFileWithAnnotation = parsedFileWithAnnotation("File", "de.skuzzle.test",
-        Annotation.withMessage("Sample Annotation"),
-        "de.skuzzle.sample.Test",
-        "foo.bar.xyz",
-        "de.skuzzle.sample.Test2",
-        "de.skuzzle.sample.Test3",
-        "de.foo.bar.Test");
+            Annotation.withMessage("Sample Annotation"),
+            "de.skuzzle.sample.Test",
+            "foo.bar.xyz",
+            "de.skuzzle.sample.Test2",
+            "de.skuzzle.sample.Test3",
+            "de.foo.bar.Test");
 
     private ParsedFile parsedFile(String className, String packageName, String... lines) {
         return parsedFileWithAnnotation(className, packageName, null, lines);
@@ -48,7 +48,8 @@ class ImportAnalyzerTest {
         return ParsedFile.failedToParse(path, annotation);
     }
 
-    private ParsedFile parsedFileWithAnnotation(String className, String packageName, Annotation annotation, String... lines) {
+    private ParsedFile parsedFileWithAnnotation(String className, String packageName, Annotation annotation,
+            String... lines) {
         final String fqcn = packageName + "." + className;
         final Path path = mock(Path.class);
         final Path pathFileName = mock(Path.class);
@@ -69,17 +70,17 @@ class ImportAnalyzerTest {
     @Test
     void testMatchFailedToParse() {
         final BannedImportGroups groups = BannedImportGroups.builder()
-            .withGroup(BannedImportGroup.builder()
-                .withBasePackages("**")
-                .withBannedImports("not.in.that.file.**")
-                .build())
-            .build();
+                .withGroup(BannedImportGroup.builder()
+                        .withBasePackages("**")
+                        .withBannedImports("not.in.that.file.**")
+                        .build())
+                .build();
 
         ParsedFile failedToParseFile = failedToParse("Filename", Annotation.withMessage("Error while parsing"));
         final Optional<MatchedFile> matches = this.subject.matchFile(failedToParseFile, groups);
         final MatchedFile expectedMatchedFile = MatchedFile.forSourceFile(failedToParseFile.getPath())
-            .withWarnings(Warning.withMessage("Error while parsing"))
-            .withFailedToParse(true).build();
+                .withWarnings(Warning.withMessage("Error while parsing"))
+                .withFailedToParse(true).build();
 
         assertThat(matches).isEqualTo(Optional.of(expectedMatchedFile));
     }
@@ -87,11 +88,11 @@ class ImportAnalyzerTest {
     @Test
     void testNoMatchedImportsButWithAnnotations() {
         final BannedImportGroups groups = BannedImportGroups.builder()
-            .withGroup(BannedImportGroup.builder()
-                .withBasePackages("does.not.match.the.sample.file.**")
-                .withBannedImports("**")
-                .build())
-            .build();
+                .withGroup(BannedImportGroup.builder()
+                        .withBasePackages("does.not.match.the.sample.file.**")
+                        .withBannedImports("**")
+                        .build())
+                .build();
 
         final Optional<MatchedFile> matches = this.subject.matchFile(parsedFileWithAnnotation, groups);
 
@@ -104,18 +105,18 @@ class ImportAnalyzerTest {
     @Test
     void testWithMatchesAndAnnotations() {
         final BannedImportGroups groups = BannedImportGroups.builder()
-            .withGroup(BannedImportGroup.builder()
-                .withBasePackages("**")
-                .withBannedImports("foo.**")
-                .build())
-            .build();
+                .withGroup(BannedImportGroup.builder()
+                        .withBasePackages("**")
+                        .withBannedImports("foo.**")
+                        .build())
+                .build();
 
         final Optional<MatchedFile> matches = this.subject.matchFile(parsedFileWithAnnotation, groups);
 
         assertThat(matches).isPresent();
         assertThat(matches.get().getMatchedBy()).isPresent();
         assertThat(matches.get().getMatchedImports()).containsExactly(
-            new MatchedImport(2, "foo.bar.xyz", PackagePattern.parse("foo.**")));
+                new MatchedImport(2, "foo.bar.xyz", PackagePattern.parse("foo.**")));
         assertThat(matches.get().getWarnings()).containsExactly(Warning.withMessage("Sample Annotation"));
     }
 

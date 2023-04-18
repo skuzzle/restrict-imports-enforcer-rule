@@ -6,11 +6,11 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import de.skuzzle.enforcer.restrictimports.parser.Annotation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Collects banned import matches from a single source file.
@@ -37,9 +37,9 @@ class ImportAnalyzer {
         if (sourceFile.isFailedToParse()) {
             LOGGER.trace("Skipping analysis because source file failed to parse: {}", sourceFile);
             return Optional.of(MatchedFile.forSourceFile(sourceFile.getPath())
-                .withFailedToParse(true)
-                .withWarnings(warnings)
-                .build());
+                    .withFailedToParse(true)
+                    .withWarnings(warnings)
+                    .build());
         }
 
         final BannedImportGroup group = groups.selectGroupFor(sourceFile.getFqcn())
@@ -73,8 +73,8 @@ class ImportAnalyzer {
 
     private List<Warning> warningsFrom(ParsedFile sourceFile) {
         return sourceFile.getAnnotations().stream()
-            .map(Annotation::getMessage)
-            .map(Warning::withMessage)
-            .collect(Collectors.toList());
+                .map(Annotation::getMessage)
+                .map(Warning::withMessage)
+                .collect(Collectors.toList());
     }
 }

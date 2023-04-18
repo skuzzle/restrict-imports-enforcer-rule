@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 import de.skuzzle.enforcer.restrictimports.util.Preconditions;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Parses a source file into a {@link ParsedFile} representation.
@@ -49,9 +49,10 @@ final class ImportStatementParserImpl implements ImportStatementParser {
             }
         } catch (final IOException e) {
             LOGGER.debug("Encountered IOException while analyzing {} for banned imports",
-                sourceFilePath, e);
+                    sourceFilePath, e);
 
-            return ParsedFile.failedToParse(sourceFilePath, Annotation.withMessage("Encountered IOException while parsing"));
+            return ParsedFile.failedToParse(sourceFilePath,
+                    Annotation.withMessage("Encountered IOException while parsing"));
         }
     }
 
@@ -59,10 +60,12 @@ final class ImportStatementParserImpl implements ImportStatementParser {
         try {
             return languageSupport.parseCompilationUnit(sourceFilePath, charset);
         } catch (Exception e) {
-            LOGGER.debug("Full compilation unit parsing of {} resulted in failure. Falling back to line-by-line parsing",
-                sourceFilePath, e);
+            LOGGER.debug(
+                    "Full compilation unit parsing of {} resulted in failure. Falling back to line-by-line parsing",
+                    sourceFilePath, e);
             return parseLineByLine(sourceFilePath, languageSupport)
-                .andAddAnnotation(Annotation.withMessage("Failed to parse in full-compilation-unit mode. Analysis might be inaccurate"));
+                    .andAddAnnotation(Annotation.withMessage(
+                            "Failed to parse in full-compilation-unit mode. Analysis might be inaccurate"));
         }
     }
 

@@ -20,7 +20,8 @@ public final class MatchedFile {
     private final List<Warning> warnings;
     private final boolean failedToParse;
 
-    MatchedFile(Path sourceFile, List<MatchedImport> matchedImports, BannedImportGroup matchedBy, List<Warning> warnings, boolean failedToParse) {
+    MatchedFile(Path sourceFile, List<MatchedImport> matchedImports, BannedImportGroup matchedBy,
+            List<Warning> warnings, boolean failedToParse) {
         this.sourceFile = sourceFile;
         this.matchedImports = matchedImports;
         this.matchedBy = matchedBy;
@@ -48,8 +49,8 @@ public final class MatchedFile {
     }
 
     /**
-     * The matches found in this file. Will be empty in case no banned imports were found but still
-     * warnings were detected while analyzing this file.
+     * The matches found in this file. Will be empty in case no banned imports were found
+     * but still warnings were detected while analyzing this file.
      *
      * @return The matches.
      */
@@ -61,8 +62,9 @@ public final class MatchedFile {
      * Returns the group that contains the banned import that caused the match in this
      * file.
      * <p>
-     * The result will be empty if this file wasn't matched by any group but warnings were found while parsings. In that
-     * case the list returned by {@link #getMatchedImports()} will also be empty.
+     * The result will be empty if this file wasn't matched by any group but warnings were
+     * found while parsings. In that case the list returned by
+     * {@link #getMatchedImports()} will also be empty.
      *
      * @return The group.
      */
@@ -71,8 +73,9 @@ public final class MatchedFile {
     }
 
     /**
-     * Whether the file could not be parsed at all. When true, this file will not be matced against any banned import
-     * definitions but {@link #getWarnings()} will contain a helpful message why parsing failed.
+     * Whether the file could not be parsed at all. When true, this file will not be
+     * matced against any banned import definitions but {@link #getWarnings()} will
+     * contain a helpful message why parsing failed.
      *
      * @return Whether we failed to parse the file.
      * @see #getWarnings()
@@ -122,8 +125,6 @@ public final class MatchedFile {
                 .add("failedToParse", failedToParse)
                 .toString();
     }
-
-
 
     public static class Builder {
         private final Path sourceFile;

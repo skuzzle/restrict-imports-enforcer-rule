@@ -1,11 +1,11 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import nl.jqno.equalsverifier.EqualsVerifier;
-import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.Test;
 
-class WarningTest {
+import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 
+class WarningTest {
 
     @Test
     void testEquals() {

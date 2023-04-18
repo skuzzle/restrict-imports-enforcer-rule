@@ -1,12 +1,13 @@
 package de.skuzzle.enforcer.restrictimports.parser;
 
+import java.util.Objects;
+
 import de.skuzzle.enforcer.restrictimports.util.Preconditions;
 import de.skuzzle.enforcer.restrictimports.util.StringRepresentation;
 
-import java.util.Objects;
-
 /**
  * Represents additional findings that shall be reported for an encountered file.
+ *
  * @since 2.2.0
  */
 public final class Annotation {
@@ -33,13 +34,13 @@ public final class Annotation {
     @Override
     public boolean equals(Object obj) {
         return obj == this || obj instanceof Annotation &&
-            Objects.equals(message, ((Annotation) obj).message);
+                Objects.equals(message, ((Annotation) obj).message);
     }
 
     @Override
     public String toString() {
         return StringRepresentation.ofInstance(this)
-            .add("message", message)
-            .toString();
+                .add("message", message)
+                .toString();
     }
 }

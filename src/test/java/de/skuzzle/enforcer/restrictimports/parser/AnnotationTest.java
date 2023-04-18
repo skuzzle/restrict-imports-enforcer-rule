@@ -1,7 +1,8 @@
 package de.skuzzle.enforcer.restrictimports.parser;
 
-import nl.jqno.equalsverifier.EqualsVerifier;
 import org.junit.jupiter.api.Test;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 class AnnotationTest {
 

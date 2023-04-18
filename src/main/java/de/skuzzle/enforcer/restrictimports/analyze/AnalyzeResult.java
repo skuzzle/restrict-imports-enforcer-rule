@@ -50,8 +50,8 @@ public final class AnalyzeResult {
      */
     public Map<BannedImportGroup, List<MatchedFile>> srcMatchesByGroup() {
         return srcMatches.stream()
-            .filter(matchedFile -> matchedFile.getMatchedBy().isPresent())
-            .collect(Collectors.groupingBy(matchedFile -> matchedFile.getMatchedBy().get()));
+                .filter(matchedFile -> matchedFile.getMatchedBy().isPresent())
+                .collect(Collectors.groupingBy(matchedFile -> matchedFile.getMatchedBy().get()));
     }
 
     /**
@@ -76,7 +76,8 @@ public final class AnalyzeResult {
     }
 
     /**
-     * Returns wheter either a warning or a banned import has been found in any source root
+     * Returns wheter either a warning or a banned import has been found in any source
+     * root
      *
      * @return Whether any reportable results where detected.
      * @since 2.2.0
@@ -105,7 +106,6 @@ public final class AnalyzeResult {
         return bannedImportsFoundIn(srcMatches);
     }
 
-
     /**
      * Returns whether at least one banned import has been found within the analyzed test
      * source code.
@@ -121,7 +121,7 @@ public final class AnalyzeResult {
     }
 
     /**
-     * @return Whether warnings were detected while analysing compile or  code.
+     * @return Whether warnings were detected while analysing compile or code.
      * @since 2.2.0
      * @see #warningsFoundInCompileCode()
      * @see #warningsFoundInTestCode()

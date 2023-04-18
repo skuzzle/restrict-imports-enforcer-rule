@@ -29,17 +29,19 @@ class ImportStatementParserImplTest {
     @Test
     void testAnalyzeFallbackOnFailure(@TempDir Path tempDir) throws IOException {
         final Path sourceFile = tempSourceFile(tempDir, "Filename.java", StandardCharsets.UTF_8,
-            "import de.skuzzle.test;",
-            "class Filename {"); // compile failure, unclosed '{'
+                "import de.skuzzle.test;",
+                "class Filename {"); // compile failure, unclosed '{'
 
         final boolean parseFullCompilationUnit = true;
         final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
-            parseFullCompilationUnit);
+                parseFullCompilationUnit);
 
         final ParsedFile result = subject.parse(sourceFile);
-        assertThat(result.getAnnotations()).containsExactly(Annotation.withMessage("Failed to parse in full-compilation-unit mode. Analysis might be inaccurate"));
+        assertThat(result.getAnnotations()).containsExactly(
+                Annotation.withMessage("Failed to parse in full-compilation-unit mode. Analysis might be inaccurate"));
         assertThat(result.getImports()).containsExactly(new ImportStatement("de.skuzzle.test", 1, ImportType.IMPORT));
-        assertThat(result.isFailedToParse()).isFalse(); // should only be only true fallback parsing also failed
+        assertThat(result.isFailedToParse()).isFalse(); // should only be only true
+                                                        // fallback parsing also failed
     }
 
     @Test

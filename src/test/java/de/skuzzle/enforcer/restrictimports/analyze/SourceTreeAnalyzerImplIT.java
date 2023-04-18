@@ -7,12 +7,12 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.FileSystem;
 import java.nio.file.Path;
 
-import org.junit.jupiter.api.Test;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup.Builder;
 
 import com.google.common.jimfs.Configuration;
 import com.google.common.jimfs.Jimfs;
 
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup.Builder;
+import org.junit.jupiter.api.Test;
 
 public class SourceTreeAnalyzerImplIT {
 
@@ -428,23 +428,23 @@ public class SourceTreeAnalyzerImplIT {
     @Test
     void testReportWarningWhenFallBackToLineByLineParsingButNoBannedImportsDetected() throws IOException {
         new SourceFileBuilder(fs)
-            .atPath("src/main/java/de/skuzzle/Sample.java")
-            .withLines("",
-                "package de.skuzzle;",
-                "}"); // compile failure
+                .atPath("src/main/java/de/skuzzle/Sample.java")
+                .withLines("",
+                        "package de.skuzzle;",
+                        "}"); // compile failure
 
         final BannedImportGroups groups = BannedImportGroups.builder()
-            .withGroup(BannedImportGroup.builder()
-                .withBasePackages("**")
-                .withBannedImports(
-                    "org.apache.commons.io.**"))
-            .build();
+                .withGroup(BannedImportGroup.builder()
+                        .withBasePackages("**")
+                        .withBannedImports(
+                                "org.apache.commons.io.**"))
+                .build();
 
         final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
         final AnalyzeResult result = subject.analyze(AnalyzerSettings.builder()
-            .withSrcDirectories(root)
-            .withParseFullCompilationUnit(true)
-            .build(), groups);
+                .withSrcDirectories(root)
+                .withParseFullCompilationUnit(true)
+                .build(), groups);
 
         assertThat(result.bannedImportsFound()).isFalse();
         assertThat(result.warningsFound()).isTrue();
@@ -453,24 +453,25 @@ public class SourceTreeAnalyzerImplIT {
     @Test
     void testReportWarningAndBannedImportsWhenFallBackToLineByLineParsing() throws IOException {
         new SourceFileBuilder(fs)
-            .atPath("src/main/java/de/skuzzle/Sample.java")
-            .withLines("",
-                "package de.skuzzle;",
-                "import org.apache.commons.lang.StringUtils;",
-                "}"); // compile failure to force fall back to line-by-line parsing
+                .atPath("src/main/java/de/skuzzle/Sample.java")
+                .withLines("",
+                        "package de.skuzzle;",
+                        "import org.apache.commons.lang.StringUtils;",
+                        "}"); // compile failure to force fall back to line-by-line
+                              // parsing
 
         final BannedImportGroups groups = BannedImportGroups.builder()
-            .withGroup(BannedImportGroup.builder()
-                .withBasePackages("**")
-                .withBannedImports(
-                    "org.apache.commons.lang.**"))
-            .build();
+                .withGroup(BannedImportGroup.builder()
+                        .withBasePackages("**")
+                        .withBannedImports(
+                                "org.apache.commons.lang.**"))
+                .build();
 
         final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
         final AnalyzeResult result = subject.analyze(AnalyzerSettings.builder()
-            .withSrcDirectories(root)
-            .withParseFullCompilationUnit(true)
-            .build(), groups);
+                .withSrcDirectories(root)
+                .withParseFullCompilationUnit(true)
+                .build(), groups);
 
         assertThat(result.bannedImportsFound()).isTrue();
         assertThat(result.warningsFound()).isTrue();

@@ -51,22 +51,23 @@ class MatchFormatterImpl implements MatchFormatter {
 
     private void formatWarnings(Collection<Path> roots, StringBuilder b, AnalyzeResult analyzeResult) {
         final List<MatchedFile> allFilesWithWarning = Stream.concat(
-            analyzeResult.getSrcMatches().stream(),
-            analyzeResult.getTestMatches().stream())
-            .filter(MatchedFile::hasWarning)
-            .collect(Collectors.toList());
+                analyzeResult.getSrcMatches().stream(),
+                analyzeResult.getTestMatches().stream())
+                .filter(MatchedFile::hasWarning)
+                .collect(Collectors.toList());
 
         final List<Warning> distinctWarnings = allFilesWithWarning.stream()
-            .map(MatchedFile::getWarnings)
-            .flatMap(Collection::stream)
-            .distinct()
-            .collect(Collectors.toList());
+                .map(MatchedFile::getWarnings)
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
 
         distinctWarnings.forEach(warning -> {
             b.append("\t").append(warning.getMessage()).append(":\n");
             allFilesWithWarning.stream()
-                .filter(matchedFile -> matchedFile.getWarnings().contains(warning))
-                .forEach(matchedFile -> b.append("\t\t").append(relativize(roots, matchedFile.getSourceFile())).append("\n"));
+                    .filter(matchedFile -> matchedFile.getWarnings().contains(warning))
+                    .forEach(matchedFile -> b.append("\t\t").append(relativize(roots, matchedFile.getSourceFile()))
+                            .append("\n"));
         });
     }
 
@@ -85,8 +86,7 @@ class MatchFormatterImpl implements MatchFormatter {
             group.getReason().ifPresent(reason -> b.append("Reason: ").append(reason).append("\n"));
             matches.forEach(fileMatch -> {
                 b.append("\tin file").append(": ")
-                        .append(relativize(roots, fileMatch.getSourceFile()))
-                        ;
+                        .append(relativize(roots, fileMatch.getSourceFile()));
 
                 if (fileMatch.hasWarning()) {
                     b.append(" (!)");

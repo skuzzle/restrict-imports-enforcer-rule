@@ -1,11 +1,12 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
-import de.skuzzle.enforcer.restrictimports.util.StringRepresentation;
-
 import java.util.Objects;
 
+import de.skuzzle.enforcer.restrictimports.util.StringRepresentation;
+
 /**
- * Represents an additional warning that might be reported and shall be displayed to the end user.
+ * Represents an additional warning that might be reported and shall be displayed to the
+ * end user.
  * <p>
  * Presence of a Waning alone on a MatchedFile usually doesn't fail the build as long as
  * no banned imports were detected.
@@ -24,10 +25,10 @@ public final class Warning {
         return new Warning(message);
     }
 
-
     public String getMessage() {
         return this.message;
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(message);
@@ -36,14 +37,14 @@ public final class Warning {
     @Override
     public boolean equals(Object obj) {
         return obj == this || obj instanceof Warning
-            && Objects.equals(message, ((Warning) obj).message);
+                && Objects.equals(message, ((Warning) obj).message);
     }
 
     @Override
     public String toString() {
         return StringRepresentation.ofInstance(this)
-            .add("message", message)
-            .toString();
+                .add("message", message)
+                .toString();
     }
 
 }

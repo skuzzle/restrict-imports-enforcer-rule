@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
+import de.skuzzle.enforcer.restrictimports.parser.ImportType;
+import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
+
 import com.github.javaparser.ParserConfiguration.LanguageLevel;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -16,10 +20,6 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithType;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
-
-import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
-import de.skuzzle.enforcer.restrictimports.parser.ImportType;
-import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 
 /**
  * Parses a full java source file using JavaParser.org dependency in order to detect

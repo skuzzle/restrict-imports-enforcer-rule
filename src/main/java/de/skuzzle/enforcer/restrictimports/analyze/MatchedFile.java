@@ -66,7 +66,7 @@ public final class MatchedFile {
      * found while parsings. In that case the list returned by
      * {@link #getMatchedImports()} will also be empty.
      *
-     * @return The group.
+     * @return The group. Will be empty if {@link #hasBannedImports()} is false.
      */
     public Optional<BannedImportGroup> getMatchedBy() {
         return Optional.ofNullable(this.matchedBy);
@@ -97,7 +97,7 @@ public final class MatchedFile {
     }
 
     public boolean hasBannedImports() {
-        return !matchedImports.isEmpty();
+        return !matchedImports.isEmpty() ;
     }
 
     @Override

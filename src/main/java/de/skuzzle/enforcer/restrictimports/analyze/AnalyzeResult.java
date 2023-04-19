@@ -50,7 +50,7 @@ public final class AnalyzeResult {
      */
     public Map<BannedImportGroup, List<MatchedFile>> srcMatchesByGroup() {
         return srcMatches.stream()
-                .filter(matchedFile -> matchedFile.getMatchedBy().isPresent())
+                .filter(MatchedFile::hasBannedImports)
                 .collect(Collectors.groupingBy(matchedFile -> matchedFile.getMatchedBy().get()));
     }
 
@@ -71,7 +71,7 @@ public final class AnalyzeResult {
      */
     public Map<BannedImportGroup, List<MatchedFile>> testMatchesByGroup() {
         return testMatches.stream()
-                .filter(matchedFile -> matchedFile.getMatchedBy().isPresent())
+                .filter(MatchedFile::hasBannedImports)
                 .collect(Collectors.groupingBy(matchedFile -> matchedFile.getMatchedBy().get()));
     }
 

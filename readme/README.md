@@ -295,7 +295,6 @@ using the `<parallel>` option or by passing `-Drestrictimports.parallel` to the 
 See [Limitation](#limitation)
 
 
-
 ## Package Patterns
 
 Package patterns are dot separated strings that can be compared case sensitively part by part. Every part must adhere to
@@ -325,6 +324,10 @@ source file into an abstract syntax tree. Instead, import statements are extract
 String split operations and only reading each source file up until a non-import statement (like class declaration) is
 discovered. We cover a set of esoteric edge cases, for example block comments within a single import statement and the
 like.
+
+> **Info**
+> Plus side to this approach is, that we are mostly agnostic to the Java version you are using. Our parser doesn't
+> need updates even if you want to use latest Java language features in your code base.
 
 ### Conceptual limitation
 Import recognition works by comparing the import statements within your source files

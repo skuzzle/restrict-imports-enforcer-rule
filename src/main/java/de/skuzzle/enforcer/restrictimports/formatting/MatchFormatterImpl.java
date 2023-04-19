@@ -8,7 +8,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.skuzzle.enforcer.restrictimports.analyze.*;
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.analyze.MatchedFile;
+import de.skuzzle.enforcer.restrictimports.analyze.MatchedImport;
+import de.skuzzle.enforcer.restrictimports.analyze.Warning;
 import de.skuzzle.enforcer.restrictimports.util.Preconditions;
 
 class MatchFormatterImpl implements MatchFormatter {

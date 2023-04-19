@@ -1,7 +1,12 @@
 package de.skuzzle.enforcer.restrictimports.parser;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 import de.skuzzle.enforcer.restrictimports.util.Preconditions;
 import de.skuzzle.enforcer.restrictimports.util.StringRepresentation;

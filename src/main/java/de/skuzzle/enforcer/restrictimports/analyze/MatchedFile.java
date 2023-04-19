@@ -1,7 +1,11 @@
 package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import de.skuzzle.enforcer.restrictimports.util.Preconditions;
 import de.skuzzle.enforcer.restrictimports.util.StringRepresentation;
@@ -97,7 +101,7 @@ public final class MatchedFile {
     }
 
     public boolean hasBannedImports() {
-        return !matchedImports.isEmpty() ;
+        return !matchedImports.isEmpty();
     }
 
     @Override

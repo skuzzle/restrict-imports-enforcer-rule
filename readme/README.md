@@ -63,6 +63,7 @@ information.
   * [Skipping](#skipping)
   * [Exclude source roots](#exclude-source-roots)
   * [Parallel analysis](#parallel-analysis)
+  * [Detecting full qualified class usage](#detecting-full-qualified-class-usage)
   * [Package patterns](#package-patterns)
 * [Limitation](#limitation)
   * [Syntactical](#syntactical-limitation)
@@ -291,9 +292,32 @@ using the `<parallel>` option or by passing `-Drestrictimports.parallel` to the 
 </configuration>
 ```
 
-## Full qualified class usage
-See [Limitation](#limitation)
+## Detecting full qualified class usage
+(*Note:* This is an experimental feature)
 
+To overcome some of the limitations mentioned [here](#limitation), you can enable 'full compilation unit' parsing
+mode using
+```xml
+<configuration>
+    <rules>
+        <RestrictImports>
+            <parseFullCompilationUnit>true</parseFullCompilationUnit>
+            <!-- ... -->
+        </RestrictImports>
+    </rules>
+</configuration>
+```
+The option currently only affects parsing of java source files. When enabled, we will attempt a full parse of each
+java source file, creating an actual AST. This allows to also detect full qualified class usages but will be
+considerably slower.
+
+> **Warning**
+> In case a source file cannot be properly parsed, we try to fall back to our _native_ line-by-line_ parsing
+> approach described [here](#syntactical-limitation). A respective warning will be issued in the
+> report that is generated at the end.
+>
+> This is especially the case when using Java language features introduced with version 16 or higher.
+> See [#60](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/60) for details.
 
 ## Package Patterns
 
@@ -352,26 +376,7 @@ with the exact name `ClassName.java`. The same applies in case you use a base pa
 pattern with no wild cards.
 
 ### Experimental full compilation unit parsing
-(*Note:* This is an experimental feature)
 
-To overcome the afore mentioned limitation, you can enable 'full compilation unit' parsing mode using
-```xml
-<configuration>
-    <rules>
-        <RestrictImports>
-            <parseFullCompilationUnit>true</parseFullCompilationUnit>
-            <!-- ... -->
-        </RestrictImports>
-    </rules>
-</configuration>
-```
-The option currently only affects parsing of java source files. When enabled, we will do a full parse of each
-java source file, creating an actual AST. This allows to also detect full qualified class usages but will be
-considerably slower.
-
-> **Warning**
-> This option causes inaccuracies when used with Java Language Features introduced with Java 16 or greater.
-> See [#60](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/60) for details.
 
 ## Configuration options
 

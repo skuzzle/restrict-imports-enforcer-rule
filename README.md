@@ -1,7 +1,7 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.2.0-SNAPSHOT&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.2.0-SNAPSHOT/jar)
-[![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=2.2.0-SNAPSHOT&color=orange)](http://www.javadoc.io/doc/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.2.0-SNAPSHOT)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.2.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.2.0/jar)
+[![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=2.2.0&color=orange)](http://www.javadoc.io/doc/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.2.0)
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
@@ -26,7 +26,7 @@ information.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>2.2.0-SNAPSHOT</version>
+            <version>2.2.0</version>
         </dependency>
     </dependencies>
     <executions>
@@ -63,6 +63,7 @@ information.
   * [Skipping](#skipping)
   * [Exclude source roots](#exclude-source-roots)
   * [Parallel analysis](#parallel-analysis)
+  * [Detecting full qualified class usage](#detecting-full-qualified-class-usage)
   * [Package patterns](#package-patterns)
 * [Limitation](#limitation)
   * [Syntactical](#syntactical-limitation)
@@ -291,10 +292,32 @@ using the `<parallel>` option or by passing `-Drestrictimports.parallel` to the 
 </configuration>
 ```
 
-## Full qualified class usage
-See [Limitation](#limitation)
+## Detecting full qualified class usage
+(*Note:* This is an experimental feature)
 
+To overcome some of the limitations mentioned [here](#limitation), you can enable 'full compilation unit' parsing
+mode using
+```xml
+<configuration>
+    <rules>
+        <RestrictImports>
+            <parseFullCompilationUnit>true</parseFullCompilationUnit>
+            <!-- ... -->
+        </RestrictImports>
+    </rules>
+</configuration>
+```
+The option currently only affects parsing of java source files. When enabled, we will attempt a full parse of each
+java source file, creating an actual AST. This allows to also detect full qualified class usages but will be
+considerably slower.
 
+> **Warning**
+> In case a source file cannot be properly parsed, we try to fall back to our _native_ line-by-line_ parsing
+> approach described [here](#syntactical-limitation). A respective warning will be issued in the
+> report that is generated at the end.
+>
+> This is especially the case when using Java language features introduced with version 16 or higher.
+> See [#60](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/60) for details.
 
 ## Package Patterns
 
@@ -326,6 +349,10 @@ String split operations and only reading each source file up until a non-import 
 discovered. We cover a set of esoteric edge cases, for example block comments within a single import statement and the
 like.
 
+> **Info**
+> Plus side to this approach is, that we are mostly agnostic to the Java version you are using. Our parser doesn't
+> need updates even if you want to use latest Java language features in your code base.
+
 ### Conceptual limitation
 Import recognition works by comparing the import statements within your source files
 against the specified patterns. If your class uses wildcard imports like in
@@ -349,26 +376,7 @@ with the exact name `ClassName.java`. The same applies in case you use a base pa
 pattern with no wild cards.
 
 ### Experimental full compilation unit parsing
-(*Note:* This is an experimental feature)
 
-To overcome the afore mentioned limitation, you can enable 'full compilation unit' parsing mode using
-```xml
-<configuration>
-    <rules>
-        <RestrictImports>
-            <parseFullCompilationUnit>true</parseFullCompilationUnit>
-            <!-- ... -->
-        </RestrictImports>
-    </rules>
-</configuration>
-```
-The option currently only affects parsing of java source files. When enabled, we will do a full parse of each
-java source file, creating an actual AST. This allows to also detect full qualified class usages but will be
-considerably slower.
-
-> **Warning**
-> This option causes inaccuracies when used with Java Language Features introduced with Java 16 or greater.
-> See [#60](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/60) for details.
 
 ## Configuration options
 

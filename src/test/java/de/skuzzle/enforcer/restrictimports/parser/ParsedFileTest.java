@@ -7,12 +7,12 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 class ParsedFileTest {
 
     @Test
-    public void testEquals() throws Exception {
+    public void testEquals() {
         EqualsVerifier.forClass(ParsedFile.class).verify();
     }
 
     @Test
-    public void testEqualsImportStatement() throws Exception {
+    public void testEqualsImportStatement() {
         EqualsVerifier.forClass(ImportStatement.class).verify();
     }
 }

@@ -1,7 +1,6 @@
 package de.skuzzle.enforcer.restrictimports.parser;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -10,11 +9,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
 import de.skuzzle.enforcer.restrictimports.util.Preconditions;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Parses a source file into a {@link ParsedFile} representation.
@@ -42,16 +41,31 @@ final class ImportStatementParserImpl implements ImportStatementParser {
             if (parseFullCompilationUnit && languageSupport.parseFullCompilationUnitSupported()) {
                 LOGGER.debug("Using 'full-compilation-unit' parsing for {}", sourceFilePath);
 
-                return languageSupport.parseCompilationUnit(sourceFilePath, charset);
+                return parseCompilationUnit(sourceFilePath, languageSupport);
             } else {
                 LOGGER.debug("Using 'line-based' parsing for {}", sourceFilePath);
 
                 return parseLineByLine(sourceFilePath, languageSupport);
             }
         } catch (final IOException e) {
-            throw new UncheckedIOException(String.format(
-                    "Encountered IOException while analyzing %s for banned imports",
-                    sourceFilePath), e);
+            LOGGER.debug("Encountered IOException while analyzing {} for banned imports",
+                    sourceFilePath, e);
+
+            return ParsedFile.failedToParse(sourceFilePath,
+                    Annotation.withMessage("Encountered IOException while parsing"));
+        }
+    }
+
+    private ParsedFile parseCompilationUnit(Path sourceFilePath, LanguageSupport languageSupport) throws IOException {
+        try {
+            return languageSupport.parseCompilationUnit(sourceFilePath, charset);
+        } catch (Exception e) {
+            LOGGER.debug(
+                    "Full compilation unit parsing of {} resulted in failure. Falling back to line-by-line parsing",
+                    sourceFilePath, e);
+            return parseLineByLine(sourceFilePath, languageSupport)
+                    .andAddAnnotation(Annotation.withMessage(
+                            "Failed to parse in full-compilation-unit mode. Analysis might be inaccurate"));
         }
     }
 
@@ -96,7 +110,7 @@ final class ImportStatementParserImpl implements ImportStatementParser {
                 imports.addAll(importStatements);
             }
 
-            return new ParsedFile(sourceFilePath, packageName, fqcn, imports);
+            return ParsedFile.successful(sourceFilePath, packageName, fqcn, imports);
         }
     }
 

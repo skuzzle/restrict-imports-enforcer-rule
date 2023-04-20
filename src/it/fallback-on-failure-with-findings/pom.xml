@@ -3,8 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.skuzzle.enforcer.it</groupId>
-    <artifactId>fail1</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>fallback-on-failure-with-findings</artifactId>
     <name>Banned Import found</name>
 
     <build>
@@ -23,12 +22,17 @@
                 <configuration>
                     <rules>
                         <RestrictImports>
-                            <basePackage>**</basePackage>
-                            <reason>These classes should not be used!</reason>
-                            <failBuild>true</failBuild>
+                            <parseFullCompilationUnit>true</parseFullCompilationUnit>
+                            <basePackages>
+                                <basePackage>de.skuzzle.test.**</basePackage>
+                                <basePackage>de.skuzzle.enforcer.**</basePackage>
+                            </basePackages>
                             <bannedImports>
                                 <bannedImport>java.util.*</bannedImport>
                             </bannedImports>
+                            <allowedImports>
+                                <allowedImport>java.util.ArrayList</allowedImport>
+                            </allowedImports>
                         </RestrictImports>
                     </rules>
                 </configuration>

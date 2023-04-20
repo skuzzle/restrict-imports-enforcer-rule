@@ -58,7 +58,7 @@ public final class AnalyzerSettings {
     /**
      * When supported for a specific source file, we will attempt to parse the full source
      * file. This allows for a more accurate detection of imports.
-     * 
+     *
      * @return Whether to attempt a full parse.
      * @since 2.1.0
      */

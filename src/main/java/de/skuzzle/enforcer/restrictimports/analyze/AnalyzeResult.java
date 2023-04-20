@@ -50,7 +50,8 @@ public final class AnalyzeResult {
      */
     public Map<BannedImportGroup, List<MatchedFile>> srcMatchesByGroup() {
         return srcMatches.stream()
-                .collect(Collectors.groupingBy(MatchedFile::getMatchedBy));
+                .filter(MatchedFile::hasBannedImports)
+                .collect(Collectors.groupingBy(matchedFile -> matchedFile.getMatchedBy().get()));
     }
 
     /**
@@ -64,13 +65,25 @@ public final class AnalyzeResult {
 
     /**
      * Returns the matches that occurred in test source files grouped by their
-     * {@link BannedImportGroup}
+     * {@link BannedImportGroup}.
      *
      * @return The matches grouped by {@link BannedImportGroup}
      */
     public Map<BannedImportGroup, List<MatchedFile>> testMatchesByGroup() {
         return testMatches.stream()
-                .collect(Collectors.groupingBy(MatchedFile::getMatchedBy));
+                .filter(MatchedFile::hasBannedImports)
+                .collect(Collectors.groupingBy(matchedFile -> matchedFile.getMatchedBy().get()));
+    }
+
+    /**
+     * Returns wheter either a warning or a banned import has been found in any source
+     * root
+     *
+     * @return Whether any reportable results where detected.
+     * @since 2.2.0
+     */
+    public boolean bannedImportsOrWarningsFound() {
+        return bannedImportsFound() || warningsFound();
     }
 
     /**
@@ -90,7 +103,7 @@ public final class AnalyzeResult {
      * @return Whether a banned import has been found.
      */
     public boolean bannedImportsInCompileCode() {
-        return !srcMatches.isEmpty();
+        return bannedImportsFoundIn(srcMatches);
     }
 
     /**
@@ -100,7 +113,41 @@ public final class AnalyzeResult {
      * @return Whether a banned import has been found.
      */
     public boolean bannedImportsInTestCode() {
-        return !testMatches.isEmpty();
+        return bannedImportsFoundIn(testMatches);
+    }
+
+    private boolean bannedImportsFoundIn(List<MatchedFile> matchedFiles) {
+        return matchedFiles.stream().anyMatch(MatchedFile::hasBannedImports);
+    }
+
+    /**
+     * @return Whether warnings were detected while analysing compile or code.
+     * @since 2.2.0
+     * @see #warningsFoundInCompileCode()
+     * @see #warningsFoundInTestCode()
+     */
+    public boolean warningsFound() {
+        return warningsFoundInCompileCode() || warningsFoundInTestCode();
+    }
+
+    /**
+     * @return Whether warnings were detected while analysing compile code.
+     * @since 2.2.0
+     */
+    public boolean warningsFoundInCompileCode() {
+        return warningsFound(srcMatches);
+    }
+
+    /**
+     * @return Whether warnings were detected while analysing test code.
+     * @since 2.2.0
+     */
+    public boolean warningsFoundInTestCode() {
+        return warningsFound(testMatches);
+    }
+
+    private boolean warningsFound(List<MatchedFile> matches) {
+        return matches.stream().anyMatch(matchedFile -> !matchedFile.getWarnings().isEmpty());
     }
 
     /**

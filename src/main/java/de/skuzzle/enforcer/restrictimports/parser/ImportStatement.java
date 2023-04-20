@@ -62,7 +62,7 @@ public final class ImportStatement {
     /**
      * Whether this is an 'artificial' import that has been created from a full qualified
      * type reference within the source rather than from a real import statement.
-     * 
+     *
      * @return Whether this represents a full qualified type use.
      */
     public boolean isQualifiedTypeUsage() {

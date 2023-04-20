@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
+import de.skuzzle.enforcer.restrictimports.parser.ImportType;
+import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
+
 import com.github.javaparser.ParserConfiguration.LanguageLevel;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
@@ -17,14 +21,10 @@ import com.github.javaparser.ast.nodeTypes.NodeWithType;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 
-import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
-import de.skuzzle.enforcer.restrictimports.parser.ImportType;
-import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
-
 /**
  * Parses a full java source file using JavaParser.org dependency in order to detect
  * inline full qualified type usages.
- * 
+ *
  * @author Simon Taddiken
  */
 final class JavaCompilationUnitParser {
@@ -53,7 +53,7 @@ final class JavaCompilationUnitParser {
                 .orElse("");
         final String primaryTypeName = compilationUnit.getPrimaryTypeName().orElse(fileName);
         final String fqcn = declaredPackage.isEmpty() ? primaryTypeName : declaredPackage + "." + primaryTypeName;
-        return new ParsedFile(sourceFilePath, declaredPackage, fqcn, imports);
+        return ParsedFile.successful(sourceFilePath, declaredPackage, fqcn, imports);
     }
 
     private int positionOf(Node node) {

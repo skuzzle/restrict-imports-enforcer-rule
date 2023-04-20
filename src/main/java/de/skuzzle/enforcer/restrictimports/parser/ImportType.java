@@ -2,7 +2,7 @@ package de.skuzzle.enforcer.restrictimports.parser;
 
 /**
  * The type of a detected import.
- * 
+ *
  * @author Simon Taddiken
  * @since 2.1.0
  */

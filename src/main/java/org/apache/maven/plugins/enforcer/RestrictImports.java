@@ -12,6 +12,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
+import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
+import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
+
 import org.apache.maven.enforcer.rule.api.EnforcerLevel;
 import org.apache.maven.enforcer.rule.api.EnforcerRule;
 import org.apache.maven.enforcer.rule.api.EnforcerRule2;
@@ -20,14 +28,6 @@ import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
-import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
-import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
-import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
 
 /**
  * Enforcer rule which restricts the usage of certain packages or classes within a Java
@@ -83,16 +83,17 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
             final AnalyzeResult analyzeResult = analyzer.analyze(analyzerSettings, groups);
             LOGGER.debug("Analyzer result:\n{}", analyzeResult);
 
-            if (analyzeResult.bannedImportsFound()) {
+            final MavenAnalysisResult mavenAnalysisResult = MavenAnalysisResult.from(analyzeResult);
+            if (analyzeResult.bannedImportsOrWarningsFound()) {
                 final String errorMessage = matchFormatter
                         .formatMatches(analyzerSettings.getAllDirectories(), analyzeResult);
 
-                if (isFailBuild(helper)) {
+                if (analyzeResult.bannedImportsFound() && isFailBuild(helper)) {
                     throw new EnforcerRuleException(errorMessage);
                 } else {
                     LOGGER.warn(errorMessage);
                     LOGGER.warn(
-                            "\nDetected banned imports will not fail the build as the 'failBuild' flag is set to false!");
+                            "Detected banned imports will not fail the build as the 'failBuild' flag is set to false!");
                 }
 
             } else {

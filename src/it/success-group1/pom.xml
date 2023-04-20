@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>de.skuzzle.enforcer.it</groupId>
-    <artifactId>success1</artifactId>
+    <artifactId>success-group1</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Banned Import found</name>
 

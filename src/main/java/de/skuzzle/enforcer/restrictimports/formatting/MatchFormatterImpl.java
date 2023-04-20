@@ -5,11 +5,14 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.analyze.MatchedFile;
 import de.skuzzle.enforcer.restrictimports.analyze.MatchedImport;
+import de.skuzzle.enforcer.restrictimports.analyze.Warning;
 import de.skuzzle.enforcer.restrictimports.util.Preconditions;
 
 class MatchFormatterImpl implements MatchFormatter {
@@ -33,6 +36,13 @@ class MatchFormatterImpl implements MatchFormatter {
             formatGroupedMatches(roots, b, testMatchesByGroup);
         }
 
+        if (analyzeResult.warningsFound()) {
+            b.append("\nBanned imports analysis completed with warnings. Results may be inaccurate!\n\n");
+            formatWarnings(roots, b, analyzeResult);
+
+            b.append("\n\tRun the build with debug information to see error details about the warning\n");
+        }
+
         final Duration duration = analyzeResult.duration();
         b.append("\nAnalysis of ")
                 .append(pluralize(analyzeResult.analysedFiles(), " file"))
@@ -41,6 +51,28 @@ class MatchFormatterImpl implements MatchFormatter {
                 .append("\n");
 
         return b.toString();
+    }
+
+    private void formatWarnings(Collection<Path> roots, StringBuilder b, AnalyzeResult analyzeResult) {
+        final List<MatchedFile> allFilesWithWarning = Stream.concat(
+                analyzeResult.getSrcMatches().stream(),
+                analyzeResult.getTestMatches().stream())
+                .filter(MatchedFile::hasWarning)
+                .collect(Collectors.toList());
+
+        final List<Warning> distinctWarnings = allFilesWithWarning.stream()
+                .map(MatchedFile::getWarnings)
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
+
+        distinctWarnings.forEach(warning -> {
+            b.append("\t").append(warning.getMessage()).append(":\n");
+            allFilesWithWarning.stream()
+                    .filter(matchedFile -> matchedFile.getWarnings().contains(warning))
+                    .forEach(matchedFile -> b.append("\t\t").append(relativize(roots, matchedFile.getSourceFile()))
+                            .append("\n"));
+        });
     }
 
     private static String pluralize(long value, String singular) {
@@ -58,8 +90,12 @@ class MatchFormatterImpl implements MatchFormatter {
             group.getReason().ifPresent(reason -> b.append("Reason: ").append(reason).append("\n"));
             matches.forEach(fileMatch -> {
                 b.append("\tin file").append(": ")
-                        .append(relativize(roots, fileMatch.getSourceFile()))
-                        .append("\n");
+                        .append(relativize(roots, fileMatch.getSourceFile()));
+
+                if (fileMatch.hasWarning()) {
+                    b.append(" (!)");
+                }
+                b.append("\n");
                 fileMatch.getMatchedImports().forEach(match -> appendMatch(match, longestMatchedString, b));
             });
         });

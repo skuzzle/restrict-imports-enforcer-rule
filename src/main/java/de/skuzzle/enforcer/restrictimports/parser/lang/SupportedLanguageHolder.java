@@ -5,10 +5,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.ServiceLoader;
 
+import de.skuzzle.enforcer.restrictimports.util.Preconditions;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import de.skuzzle.enforcer.restrictimports.util.Preconditions;
 
 /**
  * Helper class to list available {@link LanguageSupport} implementations from

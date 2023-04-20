@@ -5,13 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.nio.file.Path;
 import java.util.Collection;
 
-import org.apache.maven.plugins.enforcer.MockMavenProject;
-import org.junit.jupiter.api.Test;
-
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.analyze.MatchedFile;
 import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
+
+import org.apache.maven.plugins.enforcer.MockMavenProject;
+import org.junit.jupiter.api.Test;
 
 public class MatchFormatterImplTest {
 

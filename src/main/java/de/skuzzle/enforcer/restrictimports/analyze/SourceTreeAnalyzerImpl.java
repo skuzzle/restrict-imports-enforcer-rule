@@ -15,12 +15,12 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatementParser;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
 import de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 

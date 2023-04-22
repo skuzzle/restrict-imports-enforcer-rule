@@ -33,20 +33,20 @@
         <maven.compiler.target>8</maven.compiler.target>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.release>8</maven.compiler.release>
-        <version.maven>2.2.1</version.maven>
-        <version.junit>5.8.1</version.junit>
-        <version.assertj>3.13.2</version.assertj>
-        <version.equals-verifier>3.7.2</version.equals-verifier>
-        <version.slf4j>1.7.25</version.slf4j>
-        <version.mockito>4.0.0</version.mockito>
         <maven.surefire.version>3.0.0</maven.surefire.version>
         <maven.failsafe.version>3.0.0</maven.failsafe.version>
         <version.enforcer-api>3.3.0</version.enforcer-api>
+        <version.maven>3.9.1</version.maven>
+        <version.junit>5.9.2</version.junit>
+        <version.assertj>3.24.2</version.assertj>
+        <version.equals-verifier>3.14.1</version.equals-verifier>
+        <version.slf4j>1.7.36</version.slf4j>
+        <version.mockito>4.11.0</version.mockito>
         <version.jimfs>1.2</version.jimfs>
-        <version.java-parser>3.24.10</version.java-parser>
-        <version.resources-plugin>3.2.0</version.resources-plugin>
+        <version.java-parser>3.25.2</version.java-parser>
+        <version.resources-plugin>3.3.1</version.resources-plugin>
         <version.invoker-plugin>3.5.1</version.invoker-plugin>
-        <version.spotless-plugin>2.34.0</version.spotless-plugin>
+        <version.spotless-plugin>2.36.0</version.spotless-plugin>
         <site.name>restrict-imports-enforcer-rule</site.name>
         <github.name>restrict-imports-enforcer-rule</github.name>
         <!-- dont break on dependency failure -->

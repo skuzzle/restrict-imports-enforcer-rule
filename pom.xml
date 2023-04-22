@@ -18,6 +18,15 @@
 
     <name>Restrict Imports Enforcer Rule</name>
     <description>Bans imports of specified classes/packages</description>
+    <url>https://github.com/skuzzle/${github.name}</url>
+
+    <scm>
+        <connection>scm:git:git://github.com/skuzzle/${github.name}.git</connection>
+        <developerConnection>scm:git:https://github.com/skuzzle/${github.name}.git</developerConnection>
+        <url>https://github.com/skuzzle/${github.name}</url>
+        <tag>HEAD</tag>
+    </scm>
+
     <properties>
         <coveralls.skip>false</coveralls.skip>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -40,10 +49,7 @@
         <!-- dont break on dependency failure -->
         <failOnWarning>false</failOnWarning>
     </properties>
-    <scm>
-        <developerConnection>scm:git:https://github.com/skuzzle/${github.name}.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
+
     <dependencyManagement>
         <dependencies>
             <dependency>

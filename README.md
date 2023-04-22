@@ -21,7 +21,7 @@ information.
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-enforcer-plugin</artifactId>
-    <version>3.0.0</version>
+    <version>3.3.0</version>
     <dependencies>
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>

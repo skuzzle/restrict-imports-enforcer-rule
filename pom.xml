@@ -29,6 +29,7 @@
 
     <properties>
         <coveralls.skip>false</coveralls.skip>
+        <jacoco-plugin.version>0.8.9</jacoco-plugin.version>
         <maven.compiler.target>8</maven.compiler.target>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.release>8</maven.compiler.release>

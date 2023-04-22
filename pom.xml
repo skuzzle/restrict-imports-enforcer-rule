@@ -39,6 +39,8 @@
         <version.equals-verifier>3.7.2</version.equals-verifier>
         <version.slf4j>1.7.25</version.slf4j>
         <version.mockito>4.0.0</version.mockito>
+        <maven.surefire.version>3.0.0</maven.surefire.version>
+        <maven.failsafe.version>3.0.0</maven.failsafe.version>
         <version.enforcer-api>3.3.0</version.enforcer-api>
         <version.jimfs>1.2</version.jimfs>
         <version.java-parser>3.24.10</version.java-parser>

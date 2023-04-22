@@ -49,8 +49,6 @@
         <version.spotless-plugin>2.36.0</version.spotless-plugin>
         <site.name>restrict-imports-enforcer-rule</site.name>
         <github.name>restrict-imports-enforcer-rule</github.name>
-        <!-- dont break on dependency failure -->
-        <failOnWarning>false</failOnWarning>
     </properties>
 
     <dependencyManagement>

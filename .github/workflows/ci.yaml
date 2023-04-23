@@ -8,18 +8,21 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
+        maven: [3.3.9, 3.9.1]
         java: [11, 17, 20, 21-ea]
         distribution: ['zulu']
       fail-fast: false
       max-parallel: 4
-    name: Test JDK ${{ matrix.java }}, ${{ matrix.os }}
+    name: Verify JDK ${{ matrix.java }}, Maven ${{ matrix.maven }} ${{ matrix.os }}
 
     steps:
       - uses: actions/checkout@v3
-      - name: Set up JDK
+      - name: Setup JDK ${{ matrix.java }} using ${{ matrix.distribution }}
         uses: actions/setup-java@v3
         with:
           java-version: ${{ matrix.java }}
           distribution: ${{ matrix.distribution }}
-      - name: Test with Maven
-        run: ./mvnw test -B
+      - name: Load Maven ${{ matrix.maven }}
+        run: ./mvnw -B -V org.apache.maven.plugins:maven-wrapper-plugin:3.2.0:wrapper -Dmaven=${{ matrix.maven }} --no-transfer-progress
+      - name: Verify with Maven
+        run: ./mvnw verify -B -V

@@ -9,5 +9,5 @@ issue before implementing any new feature and sending a pull request. I'm happy 
 discuss your idea and give advice on how to best implement it.
 
 If your idea is accepted, simply send the PR against the *development* branch.
-Contributions should adhere to the coding standards used. All changes and additions
-should be covered by unit tests. We do use spaces here :)
+Note that code formatting is enforced by `spotless`. You can apply the configured
+formatting rules to your changes by running `./mvnw spotless:apply`

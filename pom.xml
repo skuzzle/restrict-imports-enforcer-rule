@@ -27,7 +27,7 @@
         <version.mockito>4.0.0</version.mockito>
         <version.jimfs>1.2</version.jimfs>
         <version.java-parser>3.24.10</version.java-parser>
-        <version.resources-plugin>3.2.0</version.resources-plugin>
+        <version.resources-plugin>3.3.1</version.resources-plugin>
         <version.invoker-plugin>3.5.1</version.invoker-plugin>
         <version.spotless-plugin>2.34.0</version.spotless-plugin>
         <site.name>restrict-imports-enforcer-rule</site.name>

@@ -21,7 +21,7 @@
         <version.enforcer-api>3.0.0</version.enforcer-api>
         <version.maven>2.2.1</version.maven>
         <version.junit>5.8.1</version.junit>
-        <version.assertj>3.13.2</version.assertj>
+        <version.assertj>3.24.2</version.assertj>
         <version.equals-verifier>3.7.2</version.equals-verifier>
         <version.slf4j>1.7.25</version.slf4j>
         <version.mockito>4.0.0</version.mockito>

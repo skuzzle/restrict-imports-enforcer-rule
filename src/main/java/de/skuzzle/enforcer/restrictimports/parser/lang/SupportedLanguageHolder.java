@@ -39,7 +39,8 @@ final class SupportedLanguageHolder {
      * @return The implementations, mapped by their supported extensions.
      */
     private static Map<String, LanguageSupport> lookupImplementations() {
-        final ServiceLoader<LanguageSupport> serviceProvider = ServiceLoader.load(LanguageSupport.class);
+        final ClassLoader classLoader = SupportedLanguageHolder.class.getClassLoader();
+        final ServiceLoader<LanguageSupport> serviceProvider = ServiceLoader.load(LanguageSupport.class, classLoader);
         final Map<String, LanguageSupport> implementations = new HashMap<>();
         serviceProvider.forEach(parser -> parser.getSupportedFileExtensions().stream()
                 .map(SupportedLanguageHolder::determineNormalizedExtension)

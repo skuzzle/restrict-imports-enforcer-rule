@@ -40,7 +40,11 @@
         <version.java-parser>3.25.2</version.java-parser>
         <version.resources-plugin>3.3.1</version.resources-plugin>
         <version.invoker-plugin>3.5.1</version.invoker-plugin>
+
+        <!-- DO NOT UPDATE spotless UNTIL #64 IS RESOLVED -->
+        <!-- https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/64 -->
         <version.spotless-plugin>2.34.0</version.spotless-plugin>
+
         <site.name>restrict-imports-enforcer-rule</site.name>
         <github.name>restrict-imports-enforcer-rule</github.name>
     </properties>

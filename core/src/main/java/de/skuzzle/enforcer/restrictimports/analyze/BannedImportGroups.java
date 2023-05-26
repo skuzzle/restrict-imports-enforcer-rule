@@ -68,7 +68,7 @@ public final class BannedImportGroups {
         return groups.stream().map(BannedImportGroup::toString).collect(Collectors.joining(System.lineSeparator()));
     }
 
-    private static class GroupMatch implements Comparable<GroupMatch> {
+    private static final class GroupMatch implements Comparable<GroupMatch> {
         private final PackagePattern basePackage;
         private final BannedImportGroup group;
 

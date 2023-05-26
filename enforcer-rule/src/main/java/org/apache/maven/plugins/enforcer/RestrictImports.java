@@ -17,6 +17,8 @@ import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
+import de.skuzzle.enforcer.restrictimports.analyze.NotFixable;
+import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
 import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
 
@@ -47,6 +49,7 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
     private final BannedImportGroupDefinition group = new BannedImportGroupDefinition();
     private List<BannedImportGroupDefinition> groups = new ArrayList<>();
 
+    private List<NotFixableDefinition> notFixables = new ArrayList<>();
     private boolean includeCompileCode = true;
     private boolean includeTestCode = true;
     private File excludedSourceRoot = null;
@@ -109,15 +112,20 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
     }
 
     private BannedImportGroups createGroupsFromPluginConfiguration() {
+        final List<NotFixable> globalNotFixables = this.notFixables.stream()
+                .map(notFixable -> NotFixable.of(PackagePattern.parse(notFixable.getIn()),
+                        PackagePattern.parseAll(notFixable.getImports())))
+                .collect(Collectors.toList());
+
         if (!this.groups.isEmpty()) {
             final List<BannedImportGroup> bannedImportGroups = this.groups.stream()
-                    .map(BannedImportGroupDefinition::createGroupFromPluginConfiguration)
+                    .map(group -> group.createGroupFromPluginConfiguration(globalNotFixables))
                     .collect(Collectors.toList());
             return BannedImportGroups.builder()
                     .withGroups(bannedImportGroups)
                     .build();
         }
-        final BannedImportGroup singleGroup = group.createGroupFromPluginConfiguration();
+        final BannedImportGroup singleGroup = group.createGroupFromPluginConfiguration(globalNotFixables);
         return BannedImportGroups.builder()
                 .withGroup(singleGroup)
                 .build();
@@ -279,6 +287,11 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
                 "Configuration error: you should either specify a single excluded source root using <excludedSourceRoot> or multiple "
                         + "excluded source roots using <excludedSourceRoots> but not both");
         this.excludedSourceRoots = excludedSourceRoots;
+    }
+
+    public final void setNotFixables(List<NotFixableDefinition> notFixables) {
+        checkArgument(!notFixables.isEmpty(), "Not fixable list must not be empty");
+        this.notFixables = notFixables;
     }
 
     public void setFailBuild(boolean failBuild) {

@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.List;
 
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.analyze.NotFixable;
 import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 
 public class BannedImportGroupDefinition implements BannedImportGroupDefinitionInterface {
@@ -30,13 +31,14 @@ public class BannedImportGroupDefinition implements BannedImportGroupDefinitionI
 
     private String reason;
 
-    public BannedImportGroup createGroupFromPluginConfiguration() {
+    public BannedImportGroup createGroupFromPluginConfiguration(List<NotFixable> globalNotFixables) {
         return BannedImportGroup.builder()
                 .withBasePackages(assembleList(this.basePackage, this.basePackages))
                 .withBannedImports(assembleList(this.bannedImport, this.bannedImports))
                 .withAllowedImports(assembleList(this.allowedImport, this.allowedImports))
                 .withExclusions(assembleList(this.exclusion, this.exclusions))
                 .withReason(reason)
+                .withNotFixables(globalNotFixables)
                 .build();
     }
 

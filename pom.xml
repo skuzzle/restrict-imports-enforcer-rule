@@ -35,7 +35,7 @@
         <version.byte-buddy>1.14.4</version.byte-buddy>
         <version.equals-verifier>3.14.1</version.equals-verifier>
         <version.slf4j>1.7.36</version.slf4j>
-        <version.mockito>4.11.0</version.mockito>
+        <version.mockito>5.3.1</version.mockito>
         <version.jimfs>1.2</version.jimfs>
         <version.java-parser>3.25.2</version.java-parser>
         <version.resources-plugin>3.3.1</version.resources-plugin>

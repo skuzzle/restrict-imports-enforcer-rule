@@ -10,6 +10,14 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 public class PackagePatternTest {
 
     @Test
+    void testMatchWildcardPrefix() {
+        // See #76
+        // https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/76
+        assertThat(PackagePattern.parse("**.com.google.common.annotations.VisibleForTesting")
+                .matches("com.couchbase.client.core.deps.com.google.common.annotations.VisibleForTesting")).isTrue();
+    }
+
+    @Test
     void testMatchLiteralAsterisk() {
         final PackagePattern pattern = PackagePattern.parse("java.util.'*'");
         assertThat(pattern.matches("java.util.*")).isTrue();

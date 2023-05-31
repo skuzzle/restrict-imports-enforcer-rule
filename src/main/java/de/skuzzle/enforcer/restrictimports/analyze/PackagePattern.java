@@ -163,6 +163,13 @@ public final class PackagePattern implements Comparable<PackagePattern> {
 
             if ("**".equals(patternPart)) {
                 if (patternIndex + 1 < patternParts.length) {
+
+                    // See #76
+                    // https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/76
+                    // ** is supposed to match at least one package. So we eagerly skip
+                    // one package
+                    matchIndex++;
+
                     final String nextPatternPart = patternParts[patternIndex + 1];
                     while (matchIndex < matchParts.length
                             && !matchParts(nextPatternPart, matchParts[matchIndex])) {

@@ -14,9 +14,9 @@
     <packaging>jar</packaging>
     <name>Restrict Imports Enforcer Rule</name>
     <description>Bans imports of specified classes/packages</description>
-    <url>https://github.com/skuzzle/${github.name}</url>
+    <url>https://github.com/skuzzle/restrict-imports-enforcer-rule</url>
     <scm>
-        <developerConnection>scm:git:https://github.com/skuzzle/${github.name}.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/skuzzle/restrict-imports-enforcer-rule.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 

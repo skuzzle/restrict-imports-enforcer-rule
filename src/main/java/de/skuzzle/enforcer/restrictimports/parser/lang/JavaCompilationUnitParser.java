@@ -16,6 +16,7 @@ import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
+import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.nodeTypes.NodeWithType;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
@@ -79,6 +80,14 @@ final class JavaCompilationUnitParser {
 
             return Optional.of(new ImportStatement(accessExpr.getScope() + "." + accessExpr.getName(),
                     positionOf(node), ImportType.QUALIFIED_TYPE_USE));
+        } else if (node instanceof MarkerAnnotationExpr) {
+            final MarkerAnnotationExpr expr = (MarkerAnnotationExpr) node;
+            final boolean isQualified = expr.getName().getQualifier().isPresent();
+
+            if (isQualified) {
+                return Optional.of(
+                        new ImportStatement(expr.getNameAsString(), positionOf(node), ImportType.QUALIFIED_TYPE_USE));
+            }
         }
 
         return Optional.empty();

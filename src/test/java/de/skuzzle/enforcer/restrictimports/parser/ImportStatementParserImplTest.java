@@ -45,6 +45,24 @@ class ImportStatementParserImplTest {
     }
 
     @Test
+    void testFullQualifiedAnnotationUsage(@TempDir Path tempDir) throws Exception {
+        final Path sourceFile = tempSourceFile(tempDir, "Filename.java",
+                "class Test {",
+                "  @a.b.c.Annotation",
+                "  @Override",
+                "  String foo(int parameter) {",
+                "    return null;",
+                "  }",
+                "}");
+        final boolean parseFullCompilationUnit = true;
+        final ImportStatementParser subject = ImportStatementParser.forCharset(StandardCharsets.UTF_8,
+                parseFullCompilationUnit);
+        final ParsedFile parsedFile = subject.parse(sourceFile);
+        assertThat(parsedFile.getImports()).containsOnly(
+                new ImportStatement("a.b.c.Annotation", 2, ImportType.QUALIFIED_TYPE_USE));
+    }
+
+    @Test
     void testAnalyzeInlineFullQualifiedClassUsage(@TempDir Path tempDir) throws Exception {
         final Path sourceFile = tempSourceFile(tempDir, "Filename.java",
                 "import de.skzzle.test;",

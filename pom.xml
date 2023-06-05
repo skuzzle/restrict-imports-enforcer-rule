@@ -33,7 +33,7 @@
         <version.junit>5.9.2</version.junit>
         <version.assertj>3.24.2</version.assertj>
         <version.byte-buddy>1.14.4</version.byte-buddy>
-        <version.equals-verifier>3.14.1</version.equals-verifier>
+        <version.equals-verifier>3.14.2</version.equals-verifier>
         <version.slf4j>1.7.36</version.slf4j>
         <version.mockito>5.3.1</version.mockito>
         <version.jimfs>1.2</version.jimfs>

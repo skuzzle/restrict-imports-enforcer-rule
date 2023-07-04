@@ -50,9 +50,9 @@
     </properties>
 
     <modules>
+        <module>enforcer-rule-maven-it</module>
         <module>core</module>
         <module>enforcer-rule</module>
-        <module>enforcer-rule-maven-it</module>
     </modules>
 
     <dependencyManagement>

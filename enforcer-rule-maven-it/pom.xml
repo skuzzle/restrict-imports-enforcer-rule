@@ -11,6 +11,14 @@
     <packaging>pom</packaging>
     <name>Restrict Imports Enforcer Rule Maven Integration Tests</name>
 
+    <dependencies>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>restrict-imports-enforcer-rule</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>

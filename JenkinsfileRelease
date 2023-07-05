@@ -1,6 +1,6 @@
 pipeline {
-  options { 
-    disableConcurrentBuilds() 
+  options {
+    disableConcurrentBuilds()
   }
   agent {
     docker {
@@ -60,7 +60,7 @@ pipeline {
     stage('Create GitHub release') {
       steps {
         sh 'git checkout master'
-        sh "mvn -B github-release:github-release -Dgithub.release-token=${GITHUB_RELEASE_TOKEN}"
+        sh "mvn -B -N github-release:github-release -Dgithub.release-token=${GITHUB_RELEASE_TOKEN}"
       }
     }
   }

@@ -9,7 +9,6 @@ pipeline {
     }
   }
   environment {
-    BUILD_CACHE = credentials('build_cache')
     GPG_SECRET = credentials('gpg_password')
     GITHUB = credentials('Github-Username-Pw')
     GITHUB_RELEASE_TOKEN = credentials('github_registry_release')

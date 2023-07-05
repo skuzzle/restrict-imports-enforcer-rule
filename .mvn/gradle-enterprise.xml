@@ -12,17 +12,5 @@
         <local>
             <enabled>true</enabled>
         </local>
-        <remote>
-            <enabled>true</enabled>
-            <storeEnabled>#{env['CI'] == null}</storeEnabled>
-            <server>
-                <id>taddiken-net</id>
-                <url>https://build-cache.taddiken.net</url>
-                <credentials>
-                    <username>#{env['BUILD_CACHE_USR']}</username>
-                    <password>#{env['BUILD_CACHE_PSW']}</password>
-                </credentials>
-            </server>
-        </remote>
     </buildCache>
 </gradleEnterprise>

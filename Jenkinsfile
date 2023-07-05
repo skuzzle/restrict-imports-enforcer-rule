@@ -9,7 +9,6 @@ pipeline {
     }
   }
   environment {
-    BUILD_CACHE = credentials('build_cache')
     COVERALLS_REPO_TOKEN = credentials('coveralls_repo_token_restrict_imports_rule')
     GPG_SECRET = credentials('gpg_password')
   }

@@ -1,0 +1,28 @@
+<gradleEnterprise
+    xmlns="https://www.gradle.com/gradle-enterprise-maven" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://www.gradle.com/gradle-enterprise-maven https://www.gradle.com/schema/gradle-enterprise-maven.xsd">
+    <buildScan>
+        <termsOfService>
+            <url>https://gradle.com/terms-of-service</url>
+            <accept>true</accept>
+        </termsOfService>
+        <backgroundBuildScanUpload>#{env['CI'] == null}</backgroundBuildScanUpload>
+    </buildScan>
+    <buildCache>
+        <local>
+            <enabled>true</enabled>
+        </local>
+        <remote>
+            <enabled>true</enabled>
+            <storeEnabled>#{env['CI'] == null}</storeEnabled>
+            <server>
+                <id>taddiken-net</id>
+                <url>https://build-cache.taddiken.net</url>
+                <credentials>
+                    <username>#{env['BUILD_CACHE_USR']}</username>
+                    <password>#{env['BUILD_CACHE_PSW']}</password>
+                </credentials>
+            </server>
+        </remote>
+    </buildCache>
+</gradleEnterprise>

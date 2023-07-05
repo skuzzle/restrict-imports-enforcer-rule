@@ -27,7 +27,9 @@ public final class NotFixable {
     }
 
     public void checkConsistency() {
-        // TBD
+        if (imports.isEmpty()) {
+            throw new BannedImportDefinitionException("No 'not fixable' imports defined for " + in);
+        }
     }
 
     @Override

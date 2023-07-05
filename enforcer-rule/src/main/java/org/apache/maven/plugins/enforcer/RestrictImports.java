@@ -11,6 +11,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
@@ -49,6 +50,7 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
     private final BannedImportGroupDefinition group = new BannedImportGroupDefinition();
     private List<BannedImportGroupDefinition> groups = new ArrayList<>();
 
+    private NotFixableDefinition notFixable = null;
     private List<NotFixableDefinition> notFixables = new ArrayList<>();
     private boolean includeCompileCode = true;
     private boolean includeTestCode = true;
@@ -112,9 +114,12 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
     }
 
     private BannedImportGroups createGroupsFromPluginConfiguration() {
-        final List<NotFixable> globalNotFixables = this.notFixables.stream()
+        Stream<NotFixableDefinition> notFixableDefinitions = notFixable != null
+                ? Stream.of(notFixable)
+                : notFixables.stream();
+        final List<NotFixable> globalNotFixables = notFixableDefinitions
                 .map(notFixable -> NotFixable.of(PackagePattern.parse(notFixable.getIn()),
-                        PackagePattern.parseAll(notFixable.getImports())))
+                        PackagePattern.parseAll(notFixable.getAllowImport())))
                 .collect(Collectors.toList());
 
         if (!this.groups.isEmpty()) {
@@ -289,7 +294,19 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
         this.excludedSourceRoots = excludedSourceRoots;
     }
 
+    public void setNotFixable(NotFixableDefinition notFixable) {
+        checkArgument(notFixables.isEmpty(),
+                "Configuration error: you should either specify a single not-fixable entry using <notFixable> or multiple "
+                        +
+                        "entries using <notFixables> but not both");
+        this.notFixable = notFixable;
+    }
+
     public final void setNotFixables(List<NotFixableDefinition> notFixables) {
+        checkArgument(notFixable == null,
+                "Configuration error: you should either specify a single not-fixable entry using <notFixable> or multiple "
+                        +
+                        "entries using <notFixables> but not both");
         checkArgument(!notFixables.isEmpty(), "Not fixable list must not be empty");
         this.notFixables = notFixables;
     }

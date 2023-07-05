@@ -1,7 +1,7 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=${project.version}&color=blue)](https://search.maven.org/artifact/${project.groupId}/${project.artifactId}/${project.version}/jar)
-[![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=${project.version}&color=orange)](http://www.javadoc.io/doc/${project.groupId}/${project.artifactId}/${project.version})
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=${project.version}&color=blue)](https://search.maven.org/artifact/${project.groupId}/restrict-imports-enforcer-rule/${project.version}/jar)
+[![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=${project.version}&color=orange)](http://www.javadoc.io/doc/${project.groupId}/restrict-imports-enforcer-rule/${project.version})
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/${github.name}/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/${github.name}?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
@@ -226,6 +226,30 @@ analysis of test code using the `includeTestCode` option.
     </rules>
 </configuration>
 ```
+
+## Not-fixable imports
+In certain situations you might not be able to avoid using a banned import. For example if you implement an
+interface which requires a banned type as either return- or parameter type. Instead of globally allowing such imports,
+you can allow them to be used only in some explicitly configured locations.
+
+```xml
+<configuration>
+    <rules>
+        <RestrictImports>
+            <bannedImport>com.foo.BannedClass</bannedImport>
+            <notFixable>
+                <in>com.yourdomain.persistence.SomeClass</in>
+                <allowImports>
+                    <allowImport>com.foo.BannedClass</allowImport>
+                </allowImports>
+                <because>Type required by implemented interface</because>
+            </notFixable>
+        </RestrictImports>
+    </rules>
+</configuration>
+```
+
+You can add multiple _not-fixable_ definitions if you nest them in `<notFixables></notFixables>`.
 
 ## Skipping
 Using the configuration option `skip` you are able to temporarily disable a rule

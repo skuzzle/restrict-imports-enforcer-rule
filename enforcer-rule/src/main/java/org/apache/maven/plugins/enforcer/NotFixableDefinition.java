@@ -10,11 +10,11 @@ public final class NotFixableDefinition {
 
     private String in = null;
 
-    private String import_ = null;
+    private String allowImport = null;
 
     private String because = "No reason specified";
 
-    private List<String> imports = new ArrayList<>();
+    private List<String> allowImports = new ArrayList<>();
 
     public String getIn() {
         return in;
@@ -24,24 +24,29 @@ public final class NotFixableDefinition {
         this.in = in;
     }
 
-    public void setImport_(String import_) {
-        Preconditions.checkArgument(imports.isEmpty(), "TBD");
-        this.import_ = import_;
+    public void setAllowImport(String allowImport) {
+        Preconditions.checkArgument(allowImport.isEmpty(), "Configuration error: You should either specify a single " +
+                "allowed import using <allowImport> or multiple allowed imports using <allowImports> but not both.");
+        this.allowImport = allowImport;
     }
 
     public void setBecause(String because) {
         this.because = because;
     }
 
-    public void setImports(List<String> imports) {
-        Preconditions.checkArgument(import_ == null, "TBD");
-        this.imports = imports;
+    public void setAllowImports(List<String> allowImports) {
+        Preconditions.checkArgument(this.allowImport == null, "Configuration error: You should either " +
+                "specify a single allowed import using <allowImport> or multiple allowed imports using <allowImports> but not both.");
+
+        Preconditions.checkArgument(allowImports.isEmpty(),
+                "Configuration error: Allowed imports list must not be empty");
+        this.allowImports = allowImports;
     }
 
-    public List<String> getImports() {
-        if (import_ != null) {
-            return Collections.singletonList(import_);
+    public List<String> getAllowImport() {
+        if (allowImport != null) {
+            return Collections.singletonList(allowImport);
         }
-        return imports;
+        return allowImports;
     }
 }

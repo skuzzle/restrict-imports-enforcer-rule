@@ -1,6 +1,6 @@
 pipeline {
-  options { 
-    disableConcurrentBuilds() 
+  options {
+    disableConcurrentBuilds()
   }
   agent {
     docker {

@@ -26,8 +26,6 @@
         <maven.compiler.target>8</maven.compiler.target>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.release>8</maven.compiler.release>
-        <maven.surefire.version>3.0.0</maven.surefire.version>
-        <maven.failsafe.version>3.0.0</maven.failsafe.version>
         <version.enforcer-api>3.3.0</version.enforcer-api>
         <version.maven>3.9.2</version.maven>
         <version.junit>5.9.2</version.junit>
@@ -222,7 +220,6 @@
             <plugin>
                 <groupId>com.ragedunicorn.tools.maven</groupId>
                 <artifactId>github-release-maven-plugin</artifactId>
-                <version>1.0.2</version>
                 <configuration>
                     <owner>skuzzle</owner>
                     <repository>${github.name}</repository>

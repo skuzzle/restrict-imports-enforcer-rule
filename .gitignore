@@ -19,3 +19,4 @@ target
 .idea/
 *.iml
 README.md
+gradle-enterprise-workspace-id

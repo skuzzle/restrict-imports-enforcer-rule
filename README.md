@@ -375,9 +375,6 @@ statement. Thus if your `exclusion` pattern points to a concrete class like
 with the exact name `ClassName.java`. The same applies in case you use a base package
 pattern with no wild cards.
 
-### Experimental full compilation unit parsing
-
-
 ## Configuration options
 
 Overview of all configuration parameters:

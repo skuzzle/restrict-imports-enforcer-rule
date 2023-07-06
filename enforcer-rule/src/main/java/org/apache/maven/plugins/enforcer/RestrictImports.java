@@ -84,7 +84,6 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
             final AnalyzeResult analyzeResult = analyzer.analyze(analyzerSettings, groups);
             LOGGER.debug("Analyzer result:\n{}", analyzeResult);
 
-            final MavenAnalysisResult mavenAnalysisResult = MavenAnalysisResult.from(analyzeResult);
             if (analyzeResult.bannedImportsOrWarningsFound()) {
                 final String errorMessage = matchFormatter
                         .formatMatches(analyzerSettings.getAllDirectories(), analyzeResult);
@@ -168,10 +167,9 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
         return Charset.defaultCharset();
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    private Collection<Path> listSourceRoots(Collection pathNames, Collection<Path> excludedSourceRootsAbsolutePaths) {
-        final Collection<String> pathNamesAsString = pathNames;
-        return pathNamesAsString.stream()
+    private Collection<Path> listSourceRoots(Collection<String> pathNames,
+            Collection<Path> excludedSourceRootsAbsolutePaths) {
+        return pathNames.stream()
                 .peek(pathName -> LOGGER.debug("Including source dir: {}", pathName))
                 .map(Paths::get)
                 .filter(path -> include(path, excludedSourceRootsAbsolutePaths))

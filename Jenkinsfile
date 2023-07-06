@@ -33,7 +33,7 @@ pipeline {
         branch 'develop'
       }
       steps {
-        sh 'mvn -B -Prelease -DskipTests -Dgpg.passphrase=${GPG_SECRET} deploy'
+        sh 'mvn -B -Prelease -DskipTests=true -Dgpg.passphrase=${GPG_SECRET} deploy'
       }
     }
   }

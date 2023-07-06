@@ -54,7 +54,7 @@ pipeline {
     }
     stage('Perform release') {
       steps {
-        sh "mvn -B gitflow:release-finish -DargLine=\"-Prelease -B -Dgpg.passphrase=${GPG_SECRET} -DskipTests\""
+        sh "mvn -B gitflow:release-finish -DargLine=\"-Prelease -B -Dgpg.passphrase=${GPG_SECRET} -DskipTests=true\""
       }
     }
     stage('Create GitHub release') {

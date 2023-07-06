@@ -25,6 +25,9 @@
                 <artifactId>maven-invoker-plugin</artifactId>
                 <version>${version.invoker-plugin}</version>
                 <configuration>
+                    <skipInstallation>${skipTests}</skipInstallation>
+                    <skipInvocation>${skipTests}</skipInvocation>
+
                     <showErrors>true</showErrors>
                     <streamLogs>false</streamLogs>
                     <settingsFile>src/it/maven/settings.xml</settingsFile>
@@ -50,8 +53,8 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
-                            <reportsDirectory>${project.build.directory}/test-against-${version.min-supported-enforcer-plugin}-reports</reportsDirectory>
-                            <cloneProjectsTo>${project.build.directory}/test-against-${version.min-supported-enforcer-plugin}-builds</cloneProjectsTo>
+                            <reportsDirectory>${project.build.directory}/test-against-${version.min-supported-enforcer-plugin}/reports</reportsDirectory>
+                            <cloneProjectsTo>${project.build.directory}/test-against-${version.min-supported-enforcer-plugin}/builds</cloneProjectsTo>
                             <filterProperties>
                                 <version.enforcer-plugin>${version.min-supported-enforcer-plugin}</version.enforcer-plugin>
                             </filterProperties>
@@ -64,8 +67,8 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
-                            <reportsDirectory>${project.build.directory}/test-against-${version.max-supported-enforcer-plugin}-reports</reportsDirectory>
-                            <cloneProjectsTo>${project.build.directory}/test-against-${version.max-supported-enforcer-plugin}-builds</cloneProjectsTo>
+                            <reportsDirectory>${project.build.directory}/test-against-${version.max-supported-enforcer-plugin}/reports</reportsDirectory>
+                            <cloneProjectsTo>${project.build.directory}/test-against-${version.max-supported-enforcer-plugin}/builds</cloneProjectsTo>
                             <filterProperties>
                                 <version.enforcer-plugin>${version.max-supported-enforcer-plugin}</version.enforcer-plugin>
                             </filterProperties>

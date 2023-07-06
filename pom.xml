@@ -237,7 +237,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-enforcer-plugin</artifactId>
-                <version>${version.enforcer-api}</version>
+                <version>${version.max-supported-enforcer-plugin}</version>
                 <dependencies>
                     <dependency>
                         <groupId>${project.groupId}</groupId>

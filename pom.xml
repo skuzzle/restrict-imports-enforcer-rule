@@ -43,6 +43,9 @@
         <!-- https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/64 -->
         <version.spotless-plugin>2.34.0</version.spotless-plugin>
 
+        <version.min-supported-enforcer-plugin>1.4.1</version.min-supported-enforcer-plugin>
+        <version.max-supported-enforcer-plugin>3.3.0</version.max-supported-enforcer-plugin>
+
         <site.name>restrict-imports-enforcer-rule</site.name>
         <github.name>restrict-imports-enforcer-rule</github.name>
     </properties>

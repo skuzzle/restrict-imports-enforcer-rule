@@ -13,6 +13,8 @@ usage of unwanted classes! [More](#rationale)
 - [x] Groovy (since 0.15)
 - [ ] Scala (see [Issue 24](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/24))
 
+Tested against maven-enforcer-plugin `${version.min-supported-enforcer-plugin}` and `${version.max-supported-enforcer-plugin}`.
+
 ## Simple usage
 This is a minimal usage example. Please scroll down for detailed configuration
 information.

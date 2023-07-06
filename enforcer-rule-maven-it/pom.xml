@@ -28,23 +28,47 @@
                     <showErrors>true</showErrors>
                     <streamLogs>false</streamLogs>
                     <settingsFile>src/it/maven/settings.xml</settingsFile>
+                    <pomIncludes>
+                        <pomInclude>**/pom.xml</pomInclude>
+                    </pomIncludes>
+                    <parallelThreads>2C</parallelThreads>
+                    <mavenOpts>${argLine}</mavenOpts>
                     <!--uncomment next line to debug invoker tests -->
                     <!--<mavenOpts>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000</mavenOpts> -->
                 </configuration>
                 <executions>
                     <execution>
+                        <id>install</id>
                         <goals>
                             <goal>install</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>test-against-min-supported-enforcer-plugin-version</id>
+                        <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
                         </goals>
                         <configuration>
-                            <pomIncludes>
-                                <pomInclude>**/pom.xml</pomInclude>
-                            </pomIncludes>
-                            <parallelThreads>2C</parallelThreads>
-                            <cloneProjectsTo>target/it</cloneProjectsTo>
-                            <mavenOpts>${argLine}</mavenOpts>
+                            <reportsDirectory>${project.build.directory}/test-against-${version.min-supported-enforcer-plugin}-reports</reportsDirectory>
+                            <cloneProjectsTo>${project.build.directory}/test-against-${version.min-supported-enforcer-plugin}-builds</cloneProjectsTo>
+                            <filterProperties>
+                                <version.enforcer-plugin>${version.min-supported-enforcer-plugin}</version.enforcer-plugin>
+                            </filterProperties>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-against-max-supported-enforcer-plugin-version</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <reportsDirectory>${project.build.directory}/test-against-${version.max-supported-enforcer-plugin}-reports</reportsDirectory>
+                            <cloneProjectsTo>${project.build.directory}/test-against-${version.max-supported-enforcer-plugin}-builds</cloneProjectsTo>
+                            <filterProperties>
+                                <version.enforcer-plugin>${version.max-supported-enforcer-plugin}</version.enforcer-plugin>
+                            </filterProperties>
                         </configuration>
                     </execution>
                 </executions>

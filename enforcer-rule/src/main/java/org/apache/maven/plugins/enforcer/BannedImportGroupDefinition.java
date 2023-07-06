@@ -9,7 +9,7 @@ import java.util.List;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 
-public class BannedImportGroupDefinition {
+public class BannedImportGroupDefinition implements BannedImportGroupDefinitionInterface {
 
     // This new String(...) is required in order to distinguish the plugin's default '**'
     // from an explicit user configured '**'. We compare the configured string using ==
@@ -66,6 +66,7 @@ public class BannedImportGroupDefinition {
         }
     }
 
+    @Override
     public void setBasePackage(String basePackage) {
         checkArgument(this.basePackages.isEmpty(),
                 "Configuration error: you should either specify a single base package using <basePackage> or multiple "
@@ -73,6 +74,7 @@ public class BannedImportGroupDefinition {
         this.basePackage = basePackage;
     }
 
+    @Override
     public void setBasePackages(List<String> basePackages) {
         checkArgument(this.basePackage == DEFAULT_BASE_PACKAGE,
                 "Configuration error: you should either specify a single base package using <basePackage> or multiple "
@@ -83,6 +85,7 @@ public class BannedImportGroupDefinition {
         this.basePackages = basePackages;
     }
 
+    @Override
     public void setBannedImport(String bannedImport) {
         checkArgument(this.bannedImports.isEmpty(),
                 "Configuration error: you should either specify a single banned import using <bannedImport> or multiple "
@@ -92,6 +95,7 @@ public class BannedImportGroupDefinition {
         this.bannedImport = bannedImport;
     }
 
+    @Override
     public void setBannedImports(List<String> bannedPackages) {
         checkArgument(this.bannedImport == null,
                 "Configuration error: you should either specify a single banned import using <bannedImport> or multiple "
@@ -102,6 +106,7 @@ public class BannedImportGroupDefinition {
         this.bannedImports = bannedPackages;
     }
 
+    @Override
     public void setAllowedImport(String allowedImport) {
         checkArgument(this.allowedImports.isEmpty(),
                 "Configuration error: you should either specify a single allowed import using <allowedImport> or multiple "
@@ -111,6 +116,7 @@ public class BannedImportGroupDefinition {
         this.allowedImport = allowedImport;
     }
 
+    @Override
     public void setAllowedImports(List<String> allowedImports) {
         checkArgument(this.allowedImport == null,
                 "Configuration error: you should either specify a single allowed import using <allowedImport> or multiple "
@@ -118,6 +124,7 @@ public class BannedImportGroupDefinition {
         this.allowedImports = allowedImports;
     }
 
+    @Override
     public void setExclusion(String exclusion) {
         checkArgument(this.exclusions.isEmpty(),
                 "Configuration error: you should either specify a single exclusion using <exclusion> or multiple "
@@ -127,6 +134,7 @@ public class BannedImportGroupDefinition {
         this.exclusion = exclusion;
     }
 
+    @Override
     public void setExclusions(List<String> exclusions) {
         checkArgument(this.exclusion == null,
                 "Configuration error: you should either specify a single exclusion using <exclusion> or multiple "
@@ -134,6 +142,7 @@ public class BannedImportGroupDefinition {
         this.exclusions = exclusions;
     }
 
+    @Override
     public void setReason(String reason) {
         this.reason = reason;
     }

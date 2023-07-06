@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
  * Enforcer rule which restricts the usage of certain packages or classes within a Java
  * code base.
  */
-public class RestrictImports extends BannedImportGroupDefinition implements EnforcerRule, EnforcerRule2 {
+public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImportGroupDefinitionInterface {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RestrictImports.class);
 
@@ -44,6 +44,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
     private final SourceTreeAnalyzer analyzer = SourceTreeAnalyzer.getInstance();
     private final MatchFormatter matchFormatter = MatchFormatter.getInstance();
 
+    private final BannedImportGroupDefinition group = new BannedImportGroupDefinition();
     private List<BannedImportGroupDefinition> groups = new ArrayList<>();
 
     private boolean includeCompileCode = true;
@@ -117,7 +118,7 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
                     .withGroups(bannedImportGroups)
                     .build();
         }
-        final BannedImportGroup singleGroup = createGroupFromPluginConfiguration();
+        final BannedImportGroup singleGroup = group.createGroupFromPluginConfiguration();
         return BannedImportGroups.builder()
                 .withGroup(singleGroup)
                 .build();
@@ -201,59 +202,59 @@ public class RestrictImports extends BannedImportGroupDefinition implements Enfo
     @Override
     public void setBasePackage(String basePackage) {
         checkGroups(this.groups.isEmpty());
-        super.setBasePackage(basePackage);
+        group.setBasePackage(basePackage);
     }
 
     @Override
     public void setBasePackages(List<String> basePackages) {
         checkGroups(this.groups.isEmpty());
-        super.setBasePackages(basePackages);
+        group.setBasePackages(basePackages);
     }
 
     @Override
     public void setBannedImport(String bannedImport) {
         checkGroups(this.groups.isEmpty());
-        super.setBannedImport(bannedImport);
+        group.setBannedImport(bannedImport);
     }
 
     @Override
     public void setBannedImports(List<String> bannedPackages) {
         checkGroups(this.groups.isEmpty());
-        super.setBannedImports(bannedPackages);
+        group.setBannedImports(bannedPackages);
     }
 
     @Override
     public void setAllowedImport(String allowedImport) {
         checkGroups(this.groups.isEmpty());
-        super.setAllowedImport(allowedImport);
+        group.setAllowedImport(allowedImport);
     }
 
     @Override
     public void setAllowedImports(List<String> allowedImports) {
         checkGroups(this.groups.isEmpty());
-        super.setAllowedImports(allowedImports);
+        group.setAllowedImports(allowedImports);
     }
 
     @Override
     public void setExclusion(String exclusion) {
         checkGroups(this.groups.isEmpty());
-        super.setExclusion(exclusion);
+        group.setExclusion(exclusion);
     }
 
     @Override
     public void setExclusions(List<String> exclusions) {
         checkGroups(this.groups.isEmpty());
-        super.setExclusions(exclusions);
+        group.setExclusions(exclusions);
     }
 
     @Override
     public void setReason(String reason) {
         checkGroups(this.groups.isEmpty());
-        super.setReason(reason);
+        group.setReason(reason);
     }
 
     public void setGroups(List<BannedImportGroupDefinition> groups) {
-        checkGroups(!this.hasInput());
+        checkGroups(!group.hasInput());
         checkArgument(groups != null && !groups.isEmpty(), "Groups may not be empty");
         this.groups = groups;
     }

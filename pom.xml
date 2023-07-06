@@ -22,7 +22,11 @@
     </scm>
 
     <properties>
-        <coveralls.skip>false</coveralls.skip>
+        <!-- Skip coverage collection for local builds -->
+        <skipCoverage>true</skipCoverage>
+        <coveralls.skip>${skipCoverage}</coveralls.skip>
+        <jacoco.skip>${skipCoverage}</jacoco.skip>
+
         <maven.compiler.target>8</maven.compiler.target>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.release>8</maven.compiler.release>
@@ -38,6 +42,7 @@
         <version.java-parser>3.25.2</version.java-parser>
         <version.resources-plugin>3.3.1</version.resources-plugin>
         <version.invoker-plugin>3.6.0</version.invoker-plugin>
+        <version.sisu-inject>0.3.5</version.sisu-inject>
 
         <!-- DO NOT UPDATE spotless UNTIL #64 IS RESOLVED -->
         <!-- https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/64 -->

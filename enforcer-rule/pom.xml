@@ -72,4 +72,23 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <!-- Explicit annotation processor declaration required for Gradle Enterprise compilation avoidance -->
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.eclipse.sisu</groupId>
+                            <artifactId>org.eclipse.sisu.inject</artifactId>
+                            <version>${version.sisu-inject}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

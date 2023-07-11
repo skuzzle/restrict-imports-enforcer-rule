@@ -31,6 +31,7 @@
                     <showErrors>true</showErrors>
                     <streamLogs>false</streamLogs>
                     <settingsFile>src/it/maven/settings.xml</settingsFile>
+                    <localRepositoryPath>target/local-repo</localRepositoryPath>
                     <pomIncludes>
                         <pomInclude>**/pom.xml</pomInclude>
                     </pomIncludes>

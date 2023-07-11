@@ -55,6 +55,7 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
+                            <junitPackageName>maven.invoker.it.min</junitPackageName>
                             <reportsDirectory>${project.build.directory}/test-against-${version.min-supported-enforcer-plugin}/reports</reportsDirectory>
                             <cloneProjectsTo>${project.build.directory}/test-against-${version.min-supported-enforcer-plugin}/builds</cloneProjectsTo>
                             <filterProperties>
@@ -69,6 +70,7 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
+                            <junitPackageName>maven.invoker.it.max</junitPackageName>
                             <reportsDirectory>${project.build.directory}/test-against-${version.max-supported-enforcer-plugin}/reports</reportsDirectory>
                             <cloneProjectsTo>${project.build.directory}/test-against-${version.max-supported-enforcer-plugin}/builds</cloneProjectsTo>
                             <filterProperties>

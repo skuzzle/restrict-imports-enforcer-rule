@@ -37,6 +37,7 @@
                     </pomIncludes>
                     <parallelThreads>2C</parallelThreads>
                     <mavenOpts>${argLine}</mavenOpts>
+                    <writeJunitReport>true</writeJunitReport>
                     <!--uncomment next line to debug invoker tests -->
                     <!--<mavenOpts>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000</mavenOpts> -->
                 </configuration>

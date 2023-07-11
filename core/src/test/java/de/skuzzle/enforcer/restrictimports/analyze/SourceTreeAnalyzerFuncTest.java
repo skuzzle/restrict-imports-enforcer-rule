@@ -14,7 +14,7 @@ import com.google.common.jimfs.Jimfs;
 
 import org.junit.jupiter.api.Test;
 
-public class SourceTreeAnalyzerImplIT {
+public class SourceTreeAnalyzerFuncTest {
 
     private final FileSystem fs = Jimfs.newFileSystem(Configuration.unix());
     private final Path root = fs.getPath("/");

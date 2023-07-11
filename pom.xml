@@ -5,7 +5,7 @@
     <parent>
         <groupId>de.skuzzle</groupId>
         <artifactId>skuzzle-parent</artifactId>
-        <version>3.0.6</version>
+        <version>4.0.0-rc1</version>
         <relativePath/>
     </parent>
 
@@ -22,11 +22,6 @@
     </scm>
 
     <properties>
-        <!-- Skip coverage collection for local builds -->
-        <skipCoverage>true</skipCoverage>
-        <coveralls.skip>${skipCoverage}</coveralls.skip>
-        <jacoco.skip>${skipCoverage}</jacoco.skip>
-
         <maven.compiler.target>8</maven.compiler.target>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.release>8</maven.compiler.release>
@@ -138,6 +133,20 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <profiles>
+        <profile>
+            <id>with-coverage</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>

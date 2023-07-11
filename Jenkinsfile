@@ -15,12 +15,12 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'mvn -B clean verify'
+        sh 'mvn -B clean verify -Pwith-coverage'
       }
     }
     stage('Coverage') {
       steps {
-        sh 'mvn -B jacoco:report jacoco:report-integration coveralls:report -DrepoToken=$COVERALLS_REPO_TOKEN -DskipCoverage=false'
+        sh 'mvn -B jacoco:report jacoco:report-integration coveralls:report -DrepoToken=$COVERALLS_REPO_TOKEN -Pwith-coverage'
       }
     }
     stage('javadoc') {

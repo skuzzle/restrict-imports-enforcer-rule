@@ -39,7 +39,7 @@ pipeline {
   }
   post {
     always {
-      junit (testResults: '**/target/test-results/test/**.xml,**/target/*/reports/**.xml', allowEmptyResults: true)
+      junit (testResults: '**/target/surefire-reports/**.xml,**/target/*/reports/**.xml', allowEmptyResults: true)
     }
   }
 }

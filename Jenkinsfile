@@ -15,7 +15,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'mvn -B clean verify -Pwith-coverage'
+        sh 'mvn -B clean install -Pwith-coverage'
       }
     }
     stage('Coverage') {

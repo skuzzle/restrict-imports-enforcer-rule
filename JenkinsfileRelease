@@ -1,6 +1,6 @@
 pipeline {
-  options { 
-    disableConcurrentBuilds() 
+  options {
+    disableConcurrentBuilds()
   }
   agent {
     docker {
@@ -13,6 +13,9 @@ pipeline {
     GITHUB = credentials('Github-Username-Pw')
     GITHUB_RELEASE_TOKEN = credentials('github_registry_release')
     GIT_ASKPASS='./.git-askpass'
+  }
+  parameters {
+    booleanParam(name: 'PUBLISH_GITHUB', defaultValue: true, description: 'Whether to publish a GitHub release')
   }
   stages {
     stage ('Ensure dev branch') {
@@ -43,7 +46,7 @@ pipeline {
     }
     stage('Verify release') {
       steps {
-        sh 'mvn -B -Prelease -Dgpg.passphrase=${GPG_SECRET} verify'
+        sh 'mvn -B -Prelease -Dgpg.passphrase=${GPG_SECRET} install'
       }
     }
     stage('Update readme') {
@@ -54,13 +57,16 @@ pipeline {
     }
     stage('Perform release') {
       steps {
-        sh "mvn -B gitflow:release-finish -DargLine=\"-Prelease -B -Dgpg.passphrase=${GPG_SECRET} -DskipTests\""
+        sh "mvn -B gitflow:release-finish -DargLine=\"-Prelease -B -Dgpg.passphrase=${GPG_SECRET} -DskipTests=true\""
       }
     }
     stage('Create GitHub release') {
+      when {
+        expression { params.PUBLISH_GITHUB }
+      }
       steps {
         sh 'git checkout master'
-        sh "mvn -B github-release:github-release -Dgithub.release-token=${GITHUB_RELEASE_TOKEN}"
+        sh "mvn -B -N github-release:github-release -Dgithub.release-token=${GITHUB_RELEASE_TOKEN}"
       }
     }
   }

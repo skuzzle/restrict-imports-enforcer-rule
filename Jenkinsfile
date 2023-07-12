@@ -1,6 +1,6 @@
 pipeline {
-  options { 
-    disableConcurrentBuilds() 
+  options {
+    disableConcurrentBuilds()
   }
   agent {
     docker {
@@ -15,12 +15,12 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'mvn -B clean verify'
+        sh 'mvn -B clean install -Pwith-coverage'
       }
     }
     stage('Coverage') {
       steps {
-        sh 'mvn -B jacoco:report jacoco:report-integration coveralls:report -DrepoToken=$COVERALLS_REPO_TOKEN'
+        sh 'mvn -B jacoco:report jacoco:report-integration coveralls:report -DrepoToken=$COVERALLS_REPO_TOKEN -Pwith-coverage'
       }
     }
     stage('javadoc') {
@@ -33,8 +33,13 @@ pipeline {
         branch 'develop'
       }
       steps {
-        sh 'mvn -B -Prelease -DskipTests -Dgpg.passphrase=${GPG_SECRET} deploy'
+        sh 'mvn -B -Prelease -DskipTests=true -Dgpg.passphrase=${GPG_SECRET} deploy'
       }
+    }
+  }
+  post {
+    always {
+      junit (testResults: '**/target/surefire-reports/**.xml,**/target/*/reports/**.xml', allowEmptyResults: true)
     }
   }
 }

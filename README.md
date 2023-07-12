@@ -1,7 +1,7 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.3.1&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.3.1/jar)
-[![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=2.3.1&color=orange)](http://www.javadoc.io/doc/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.3.1)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.4.0-rc1&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.4.0-rc1/jar)
+[![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=2.4.0-rc1&color=orange)](http://www.javadoc.io/doc/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.4.0-rc1)
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
@@ -12,6 +12,8 @@ usage of unwanted classes! [More](#rationale)
 - [x] Kotlin (since 0.15)
 - [x] Groovy (since 0.15)
 - [ ] Scala (see [Issue 24](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/24))
+
+Tested against _maven-enforcer-plugin_ versions `1.4.1` and `3.3.0`.
 
 ## Simple usage
 This is a minimal usage example. Please scroll down for detailed configuration
@@ -25,8 +27,8 @@ information.
     <dependencies>
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
-            <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>2.3.1</version>
+            <artifactId>restrict-imports-enforcer-rule-parent</artifactId>
+            <version>2.4.0-rc1</version>
         </dependency>
     </dependencies>
     <executions>
@@ -57,6 +59,7 @@ information.
 * [Rationale](#rationale)
 * Usage
   * [Includes and Excludes](#includes-and-excludes)
+  * [Not fixable imports](#not-fixable-imports)
   * [Rule groups](#rule-groups)
   * [Static imports](#static-imports)
   * [Test code](#test-code)
@@ -87,7 +90,7 @@ application without having to exclude whole artifacts from your classpath.
 
 ## Includes and Excludes
 To refine the classes that are banned you may use the `allowedImports` tag in addition to
-the `bannedImports` tag. For example you can exclude a whole sub package using a wildcard
+the `bannedImports` tag. For example, you can exclude a whole sub package using a wildcard
 operator but still allow some concrete classes:
 
 ```xml
@@ -148,6 +151,35 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
 </configuration>
 ```
 
+## Not-fixable imports
+> **Note**
+> This is an experimental feature added in 2.4.0
+
+In certain situations you might not be able to avoid using a banned import. For example if you implement an
+interface which requires a banned type as either return- or parameter type. Instead of globally allowing such imports,
+you can allow them to be used only in some explicitly configured locations.
+
+```xml
+<configuration>
+    <rules>
+        <RestrictImports>
+            <bannedImport>com.foo.BannedClass</bannedImport>
+            <notFixable>
+                <in>com.yourdomain.persistence.SomeClass</in>
+                <allowedImports>
+                    <allowedImport>com.foo.BannedClass</allowedImport>
+                </allowedImports>
+                <because>Type required by implemented interface</because>
+            </notFixable>
+        </RestrictImports>
+    </rules>
+</configuration>
+```
+
+> **Note**
+> Not fixable definitions can not be nested in `<groups>` (see _Rule groups_ below). Not-fixables apply globally per
+> `RestrictImports` rule instance.
+
 ## Rule groups
 Rule groups add another level of refining which imports will be matched. You can group
 the `bannedImport(s)`, `allowedImport(s)` and `basePackage(s)` tags and specify multiple
@@ -195,7 +227,8 @@ more specific `basePackage` of the second group. In that case, only the definiti
 class.
 
 ## Static imports
-(*Note:* Behavior has been changed in version 2.0.0)
+> **Note**
+> Behavior of static import detection has been changed with version 2.0.0
 
 Every package pattern also automatically matches `static` imports. However, it is possible to explicitly mention the
 `static` keyword in the pattern. In that case, the pattern will only match a resp. static import.
@@ -224,6 +257,8 @@ analysis of test code using the `includeTestCode` option.
     </rules>
 </configuration>
 ```
+
+You can add multiple _not-fixable_ definitions if you nest them in `<notFixables></notFixables>`.
 
 ## Skipping
 Using the configuration option `skip` you are able to temporarily disable a rule
@@ -276,9 +311,6 @@ is not limited to `${project.basedir}/src/main/java`, `${project.basedir}/src/te
 ```
 
 ## Parallel Analysis
-(*Note:* This is an experimental feature and not thoroughly tested. Syntax and behavior
-changes in upcoming versions are likely)
-
 We support basic parallelization of the analysis. This is disabled by default but can be enabled either in the pom file
 using the `<parallel>` option or by passing `-Drestrictimports.parallel` to the maven build.
 ```xml
@@ -293,7 +325,8 @@ using the `<parallel>` option or by passing `-Drestrictimports.parallel` to the 
 ```
 
 ## Detecting full qualified class usage
-(*Note:* This is an experimental feature)
+> **Note**
+> This is an experimental feature
 
 To overcome some of the limitations mentioned [here](#limitation), you can enable 'full compilation unit' parsing
 mode using
@@ -375,26 +408,24 @@ statement. Thus if your `exclusion` pattern points to a concrete class like
 with the exact name `ClassName.java`. The same applies in case you use a base package
 pattern with no wild cards.
 
-### Experimental full compilation unit parsing
-
-
 ## Configuration options
 
 Overview of all configuration parameters:
 
-| Parameter                  | Type                      | Required | Default                           | Since    |
-|----------------------------|---------------------------|----------|-----------------------------------|----------|
-| `basePackage(s)`           | (List of) package pattern | no       | `**`                              |          |
-| `bannedImport(s)`          | (List of) package pattern | yes      |                                   |          |
-| `allowedImport(s)`         | (List of) package pattern | no       | empty list                        |          |
-| `exclusion(s)`             | (List of) package pattern | no       | empty list                        |          |
-| `includeTestCode`          | Boolean                   | no       | `false`                           | `0.7.0`  |
-| `reason`                   | String                    | no       | empty String                      | `0.8.0`  |
-| `failBuild`                | Boolean                   | no       | `true`                            | `0.17.0` |
-| `skip`                     | Boolean                   | no       | `false`                           | `0.17.0` |
-| `includeCompileCode`       | Boolean                   | no       | `true`                            | `1.2.0`  |
-| `excludedSourceRoot(s)`    | (List of) java.io.File    | no       | empty list                        | `1.3.0`  |
-| `parseFullCompilationUnit` | Boolean                   | no       | `false`                           | `2.1.0`  |
+| Parameter                  | Type                           | Required | Default      | Since    |
+|----------------------------|--------------------------------|----------|--------------|----------|
+| `basePackage(s)`           | (List of) package pattern      | no       | `**`         |          |
+| `bannedImport(s)`          | (List of) package pattern      | yes      |              |          |
+| `allowedImport(s)`         | (List of) package pattern      | no       | empty list   |          |
+| `exclusion(s)`             | (List of) package pattern      | no       | empty list   |          |
+| `includeTestCode`          | Boolean                        | no       | `false`      | `0.7.0`  |
+| `reason`                   | String                         | no       | empty String | `0.8.0`  |
+| `failBuild`                | Boolean                        | no       | `true`       | `0.17.0` |
+| `skip`                     | Boolean                        | no       | `false`      | `0.17.0` |
+| `includeCompileCode`       | Boolean                        | no       | `true`       | `1.2.0`  |
+| `excludedSourceRoot(s)`    | (List of) java.io.File         | no       | empty list   | `1.3.0`  |
+| `parseFullCompilationUnit` | Boolean                        | no       | `false`      | `2.1.0`  |
+| `notFixable(s)`            | (List of) NotFixableDefinition | no       | empty list   | `2.4.0`  |
 
 ## Versioning, Deprecations and Compatibility
 This project adheres to version 2 of the [semantic version specification](http://semver.org) with regards to the

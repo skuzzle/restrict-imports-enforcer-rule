@@ -119,7 +119,7 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
                 : notFixables.stream();
         final List<NotFixable> globalNotFixables = notFixableDefinitions
                 .map(notFixable -> NotFixable.of(PackagePattern.parse(notFixable.getIn()),
-                        PackagePattern.parseAll(notFixable.getAllowImport())))
+                        PackagePattern.parseAll(notFixable.getAllowedImport())))
                 .collect(Collectors.toList());
 
         if (!this.groups.isEmpty()) {

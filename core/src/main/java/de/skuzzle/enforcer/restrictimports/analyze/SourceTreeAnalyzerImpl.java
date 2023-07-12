@@ -42,12 +42,17 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
 
         if (settings.isParallel()) {
             LOGGER.warn("EXPERIMENTAL FEATURE enabled. You have enabled parallel analysis which is marked as "
-                    + "experimental. Please be aware that experimental features might get removed. "
+                    + "experimental. Please be aware that experimental features might get removed or changed. "
                     + "Please share your feedback!");
         }
         if (settings.isParseFullCompilationUnit()) {
             LOGGER.warn("EXPERIMENTAL FEATURE enabled. You have enabled full-compilation-unit parsing. "
-                    + "Please be aware that experimental features might get removed. "
+                    + "Please be aware that experimental features might get removed or changed. "
+                    + "Please share your feedback!");
+        }
+        if (groups.hasNotFixableDefinition()) {
+            LOGGER.warn("EXPERIMENTAL FEATURE enabled. You are using not-fixables which are marked as experimental. "
+                    + "Please be aware that experimental features might get removed or changed. "
                     + "Please share your feedback!");
         }
 

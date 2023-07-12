@@ -10,11 +10,11 @@ public final class NotFixableDefinition {
 
     private String in = null;
 
-    private String allowImport = null;
+    private String allowedImport = null;
 
     private String because = "No reason specified";
 
-    private List<String> allowImports = new ArrayList<>();
+    private List<String> allowedImports = new ArrayList<>();
 
     public String getIn() {
         return in;
@@ -24,29 +24,30 @@ public final class NotFixableDefinition {
         this.in = in;
     }
 
-    public void setAllowImport(String allowImport) {
-        Preconditions.checkArgument(allowImport.isEmpty(), "Configuration error: You should either specify a single " +
+    public void setAllowedImport(String allowedImport) {
+        Preconditions.checkArgument(allowedImport.isEmpty(), "Configuration error: You should either specify a single "
+                +
                 "allowed import using <allowImport> or multiple allowed imports using <allowImports> but not both.");
-        this.allowImport = allowImport;
+        this.allowedImport = allowedImport;
     }
 
     public void setBecause(String because) {
         this.because = because;
     }
 
-    public void setAllowImports(List<String> allowImports) {
-        Preconditions.checkArgument(this.allowImport == null, "Configuration error: You should either " +
+    public void setAllowedImports(List<String> allowedImports) {
+        Preconditions.checkArgument(this.allowedImport == null, "Configuration error: You should either " +
                 "specify a single allowed import using <allowImport> or multiple allowed imports using <allowImports> but not both.");
 
-        Preconditions.checkArgument(allowImports.isEmpty(),
+        Preconditions.checkArgument(allowedImports.isEmpty(),
                 "Configuration error: Allowed imports list must not be empty");
-        this.allowImports = allowImports;
+        this.allowedImports = allowedImports;
     }
 
-    public List<String> getAllowImport() {
-        if (allowImport != null) {
-            return Collections.singletonList(allowImport);
+    public List<String> getAllowedImport() {
+        if (allowedImport != null) {
+            return Collections.singletonList(allowedImport);
         }
-        return allowImports;
+        return allowedImports;
     }
 }

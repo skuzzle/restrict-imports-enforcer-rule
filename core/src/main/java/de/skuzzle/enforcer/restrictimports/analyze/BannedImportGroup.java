@@ -94,6 +94,10 @@ public final class BannedImportGroup {
         return Optional.ofNullable(this.reason).filter(s -> !s.isEmpty());
     }
 
+    boolean hasNotFixables() {
+        return !notFixables.isEmpty();
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(basePackages, bannedImports, allowedImports, exclusions, notFixables, reason);

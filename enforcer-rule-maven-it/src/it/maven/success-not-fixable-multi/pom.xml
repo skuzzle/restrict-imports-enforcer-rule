@@ -26,15 +26,15 @@
                             <notFixables>
                                 <notFixable>
                                     <in>de.skuzzle.enforcer.restrictimports.SampleClass</in>
-                                    <allowImports>
-                                        <allowImport>java.util.ArrayList</allowImport>
-                                        <allowImport>java.util.Map</allowImport>
-                                    </allowImports>
+                                    <allowedImports>
+                                        <allowedImport>java.util.ArrayList</allowedImport>
+                                        <allowedImport>java.util.Map</allowedImport>
+                                    </allowedImports>
                                     <because>Required by third-party API</because>
                                 </notFixable>
                                 <notFixable>
                                     <in>de.skuzzle.enforcer.restrictimports.SampleClass</in>
-                                    <allowImport>java.util.LinkedList</allowImport>
+                                    <allowedImport>java.util.LinkedList</allowedImport>
                                 </notFixable>
                             </notFixables>
                         </RestrictImports>

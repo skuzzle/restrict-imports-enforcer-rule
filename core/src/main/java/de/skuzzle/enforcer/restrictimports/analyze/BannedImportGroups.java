@@ -19,6 +19,7 @@ public final class BannedImportGroups {
     private final List<BannedImportGroup> groups;
 
     private BannedImportGroups(List<BannedImportGroup> groups) {
+        Preconditions.checkArgument(!groups.isEmpty(), "Groups may not be empty");
         this.groups = groups;
     }
 
@@ -50,6 +51,10 @@ public final class BannedImportGroups {
                 .filter(pattern -> pattern.matches(fqcn))
                 .findFirst()
                 .map(basePackage -> new GroupMatch(basePackage, group));
+    }
+
+    boolean hasNotFixableDefinition() {
+        return groups.get(0).hasNotFixables();
     }
 
     @Override

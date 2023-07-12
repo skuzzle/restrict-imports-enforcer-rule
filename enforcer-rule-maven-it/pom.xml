@@ -35,7 +35,7 @@
                     <pomIncludes>
                         <pomInclude>**/pom.xml</pomInclude>
                     </pomIncludes>
-                    <parallelThreads>2C</parallelThreads>
+                    <parallelThreads>${integration-test-threads}</parallelThreads>
                     <mavenOpts>${argLine}</mavenOpts>
                     <writeJunitReport>true</writeJunitReport>
                     <!--uncomment next line to debug invoker tests -->

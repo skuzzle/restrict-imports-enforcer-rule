@@ -45,6 +45,7 @@
 
         <version.min-supported-enforcer-plugin>1.4.1</version.min-supported-enforcer-plugin>
         <version.max-supported-enforcer-plugin>3.3.0</version.max-supported-enforcer-plugin>
+        <integration-test-threads>2C</integration-test-threads>
 
         <site.name>restrict-imports-enforcer-rule</site.name>
         <github.name>restrict-imports-enforcer-rule</github.name>
@@ -137,6 +138,9 @@
     <profiles>
         <profile>
             <id>with-coverage</id>
+            <properties>
+                <integration-test-threads>1</integration-test-threads>
+            </properties>
             <build>
                 <plugins>
                     <plugin>

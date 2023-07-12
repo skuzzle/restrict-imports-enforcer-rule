@@ -21,17 +21,20 @@ public final class BannedImportGroup {
     private final List<PackagePattern> bannedImports;
     private final List<PackagePattern> allowedImports;
     private final List<PackagePattern> exclusions;
+
+    private final List<NotFixable> notFixables;
     private final String reason;
 
     private BannedImportGroup(List<PackagePattern> basePackages,
             List<PackagePattern> bannedImports,
             List<PackagePattern> allowedImports,
             List<PackagePattern> exclusions,
-            String reason) {
+            List<NotFixable> notFixables, String reason) {
         this.basePackages = basePackages;
         this.bannedImports = bannedImports;
         this.allowedImports = allowedImports;
         this.exclusions = exclusions;
+        this.notFixables = notFixables;
         this.reason = reason;
     }
 
@@ -51,10 +54,11 @@ public final class BannedImportGroup {
         return this.bannedImports;
     }
 
-    public Optional<PackagePattern> ifImportIsBanned(String importName) {
+    public Optional<PackagePattern> ifImportIsBanned(String fqcn, String importName) {
         return bannedImports.stream()
                 .filter(bannedImport -> bannedImport.matches(importName))
                 .filter(result -> !allowedImportMatches(importName))
+                .filter(result -> !isNotFixable(fqcn, importName))
                 .findFirst();
     }
 
@@ -62,8 +66,14 @@ public final class BannedImportGroup {
         return this.allowedImports;
     }
 
-    public boolean allowedImportMatches(String importName) {
+    private boolean allowedImportMatches(String importName) {
         return matchesAnyPattern(importName, allowedImports);
+    }
+
+    private boolean isNotFixable(String fqcn, String importName) {
+        return notFixables.stream()
+                .filter(notFixable -> notFixable.matchesFqcn(fqcn))
+                .anyMatch(notFixable -> notFixable.matchesImport(importName));
     }
 
     public List<PackagePattern> getExclusions() {
@@ -84,9 +94,13 @@ public final class BannedImportGroup {
         return Optional.ofNullable(this.reason).filter(s -> !s.isEmpty());
     }
 
+    boolean hasNotFixables() {
+        return !notFixables.isEmpty();
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hash(basePackages, bannedImports, allowedImports, exclusions, reason);
+        return Objects.hash(basePackages, bannedImports, allowedImports, exclusions, notFixables, reason);
     }
 
     @Override
@@ -96,6 +110,7 @@ public final class BannedImportGroup {
                 && Objects.equals(bannedImports, ((BannedImportGroup) obj).bannedImports)
                 && Objects.equals(allowedImports, ((BannedImportGroup) obj).allowedImports)
                 && Objects.equals(exclusions, ((BannedImportGroup) obj).exclusions)
+                && Objects.equals(notFixables, ((BannedImportGroup) obj).notFixables)
                 && Objects.equals(reason, ((BannedImportGroup) obj).reason);
     }
 
@@ -106,6 +121,7 @@ public final class BannedImportGroup {
                 .add("bannedImports", this.bannedImports)
                 .add("allowedImports", this.allowedImports)
                 .add("exclusions", this.exclusions)
+                .add("notFixables", this.notFixables)
                 .add("reason", this.reason)
                 .toString();
     }
@@ -115,6 +131,8 @@ public final class BannedImportGroup {
         private List<PackagePattern> bannedImports = Collections.emptyList();
         private List<PackagePattern> allowedImports = Collections.emptyList();
         private List<PackagePattern> exclusions = Collections.emptyList();
+
+        private List<NotFixable> notFixables = Collections.emptyList();
         private String reason;
 
         private Builder() {
@@ -165,6 +183,15 @@ public final class BannedImportGroup {
             return this;
         }
 
+        public Builder withNotFixables(NotFixable... notFixables) {
+            return withNotFixables(Arrays.asList(notFixables));
+        }
+
+        public Builder withNotFixables(List<NotFixable> notFixables) {
+            this.notFixables = notFixables;
+            return this;
+        }
+
         /**
          * Assembles the {@link BannedImportGroup} from this builder.
          *
@@ -175,7 +202,7 @@ public final class BannedImportGroup {
         public BannedImportGroup build() {
             final BannedImportGroup group = new BannedImportGroup(basePackages,
                     bannedImports, allowedImports,
-                    exclusions, reason);
+                    exclusions, notFixables, reason);
             checkGroupConsistency(group);
             return group;
         }
@@ -187,6 +214,10 @@ public final class BannedImportGroup {
             checkBasePackageNotStatic(group);
             checkExclusionNotStatic(group);
             exclusionsMustMatchBasePattern(group);
+        }
+
+        private void checkNotFixables(BannedImportGroup group) {
+            group.notFixables.forEach(NotFixable::checkConsistency);
         }
 
         private void checkAmbiguous(BannedImportGroup group) {

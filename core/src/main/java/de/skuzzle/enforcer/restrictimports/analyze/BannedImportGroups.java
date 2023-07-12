@@ -19,6 +19,7 @@ public final class BannedImportGroups {
     private final List<BannedImportGroup> groups;
 
     private BannedImportGroups(List<BannedImportGroup> groups) {
+        Preconditions.checkArgument(!groups.isEmpty(), "Groups may not be empty");
         this.groups = groups;
     }
 
@@ -52,6 +53,10 @@ public final class BannedImportGroups {
                 .map(basePackage -> new GroupMatch(basePackage, group));
     }
 
+    boolean hasNotFixableDefinition() {
+        return groups.get(0).hasNotFixables();
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(groups);
@@ -68,7 +73,7 @@ public final class BannedImportGroups {
         return groups.stream().map(BannedImportGroup::toString).collect(Collectors.joining(System.lineSeparator()));
     }
 
-    private static class GroupMatch implements Comparable<GroupMatch> {
+    private static final class GroupMatch implements Comparable<GroupMatch> {
         private final PackagePattern basePackage;
         private final BannedImportGroup group;
 

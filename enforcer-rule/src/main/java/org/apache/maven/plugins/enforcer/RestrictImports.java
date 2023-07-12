@@ -11,12 +11,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
+import de.skuzzle.enforcer.restrictimports.analyze.NotFixable;
+import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
 import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
 
@@ -47,6 +50,8 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
     private final BannedImportGroupDefinition group = new BannedImportGroupDefinition();
     private List<BannedImportGroupDefinition> groups = new ArrayList<>();
 
+    private NotFixableDefinition notFixable = null;
+    private List<NotFixableDefinition> notFixables = new ArrayList<>();
     private boolean includeCompileCode = true;
     private boolean includeTestCode = true;
     private File excludedSourceRoot = null;
@@ -109,15 +114,23 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
     }
 
     private BannedImportGroups createGroupsFromPluginConfiguration() {
+        Stream<NotFixableDefinition> notFixableDefinitions = notFixable != null
+                ? Stream.of(notFixable)
+                : notFixables.stream();
+        final List<NotFixable> globalNotFixables = notFixableDefinitions
+                .map(notFixable -> NotFixable.of(PackagePattern.parse(notFixable.getIn()),
+                        PackagePattern.parseAll(notFixable.getAllowedImport())))
+                .collect(Collectors.toList());
+
         if (!this.groups.isEmpty()) {
             final List<BannedImportGroup> bannedImportGroups = this.groups.stream()
-                    .map(BannedImportGroupDefinition::createGroupFromPluginConfiguration)
+                    .map(group -> group.createGroupFromPluginConfiguration(globalNotFixables))
                     .collect(Collectors.toList());
             return BannedImportGroups.builder()
                     .withGroups(bannedImportGroups)
                     .build();
         }
-        final BannedImportGroup singleGroup = group.createGroupFromPluginConfiguration();
+        final BannedImportGroup singleGroup = group.createGroupFromPluginConfiguration(globalNotFixables);
         return BannedImportGroups.builder()
                 .withGroup(singleGroup)
                 .build();
@@ -279,6 +292,23 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
                 "Configuration error: you should either specify a single excluded source root using <excludedSourceRoot> or multiple "
                         + "excluded source roots using <excludedSourceRoots> but not both");
         this.excludedSourceRoots = excludedSourceRoots;
+    }
+
+    public void setNotFixable(NotFixableDefinition notFixable) {
+        checkArgument(notFixables.isEmpty(),
+                "Configuration error: you should either specify a single not-fixable entry using <notFixable> or multiple "
+                        +
+                        "entries using <notFixables> but not both");
+        this.notFixable = notFixable;
+    }
+
+    public final void setNotFixables(List<NotFixableDefinition> notFixables) {
+        checkArgument(notFixable == null,
+                "Configuration error: you should either specify a single not-fixable entry using <notFixable> or multiple "
+                        +
+                        "entries using <notFixables> but not both");
+        checkArgument(!notFixables.isEmpty(), "Not fixable list must not be empty");
+        this.notFixables = notFixables;
     }
 
     public void setFailBuild(boolean failBuild) {

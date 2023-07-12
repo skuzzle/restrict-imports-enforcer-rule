@@ -13,7 +13,7 @@ usage of unwanted classes! [More](#rationale)
 - [x] Groovy (since 0.15)
 - [ ] Scala (see [Issue 24](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/24))
 
-Tested against maven-enforcer-plugin `${version.min-supported-enforcer-plugin}` and `${version.max-supported-enforcer-plugin}`.
+Tested against _maven-enforcer-plugin_ versions `${version.min-supported-enforcer-plugin}` and `${version.max-supported-enforcer-plugin}`.
 
 ## Simple usage
 This is a minimal usage example. Please scroll down for detailed configuration
@@ -175,6 +175,9 @@ you can allow them to be used only in some explicitly configured locations.
 </configuration>
 ```
 
+> **Note**
+> Not fixable definitions can not be nested in `<groups>` (see _Rule groups_ below). Not-fixables apply globally per
+> `RestrictImports` rule instance.
 
 ## Rule groups
 Rule groups add another level of refining which imports will be matched. You can group

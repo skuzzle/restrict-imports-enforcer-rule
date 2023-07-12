@@ -37,6 +37,7 @@
                     </pomIncludes>
                     <parallelThreads>2C</parallelThreads>
                     <mavenOpts>${argLine}</mavenOpts>
+                    <writeJunitReport>true</writeJunitReport>
                     <!--uncomment next line to debug invoker tests -->
                     <!--<mavenOpts>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000</mavenOpts> -->
                 </configuration>
@@ -54,6 +55,7 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
+                            <junitPackageName>maven.invoker.it.min</junitPackageName>
                             <reportsDirectory>${project.build.directory}/test-against-${version.min-supported-enforcer-plugin}/reports</reportsDirectory>
                             <cloneProjectsTo>${project.build.directory}/test-against-${version.min-supported-enforcer-plugin}/builds</cloneProjectsTo>
                             <filterProperties>
@@ -68,6 +70,7 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
+                            <junitPackageName>maven.invoker.it.max</junitPackageName>
                             <reportsDirectory>${project.build.directory}/test-against-${version.max-supported-enforcer-plugin}/reports</reportsDirectory>
                             <cloneProjectsTo>${project.build.directory}/test-against-${version.max-supported-enforcer-plugin}/builds</cloneProjectsTo>
                             <filterProperties>

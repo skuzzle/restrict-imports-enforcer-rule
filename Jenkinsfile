@@ -37,4 +37,9 @@ pipeline {
       }
     }
   }
+  post {
+    always {
+      junit (testResults: '**/target/surefire-reports/**.xml,**/target/*/reports/**.xml', allowEmptyResults: true)
+    }
+  }
 }

@@ -1,7 +1,7 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.4.0-SNAPSHOT&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.4.0-SNAPSHOT/jar)
-[![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=2.4.0-SNAPSHOT&color=orange)](http://www.javadoc.io/doc/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.4.0-SNAPSHOT)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.4.0-rc1-SNAPSHOT&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.4.0-rc1-SNAPSHOT/jar)
+[![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=2.4.0-rc1-SNAPSHOT&color=orange)](http://www.javadoc.io/doc/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.4.0-rc1-SNAPSHOT)
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
@@ -28,7 +28,7 @@ information.
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule-parent</artifactId>
-            <version>2.4.0-SNAPSHOT</version>
+            <version>2.4.0-rc1-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <executions>
@@ -152,7 +152,8 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
 ```
 
 ## Not-fixable imports
-(*Note:* This is an experimental feature added in 2.4.0)
+> **Note**
+> This is an experimental feature added in 2.4.0
 
 In certain situations you might not be able to avoid using a banned import. For example if you implement an
 interface which requires a banned type as either return- or parameter type. Instead of globally allowing such imports,
@@ -175,6 +176,9 @@ you can allow them to be used only in some explicitly configured locations.
 </configuration>
 ```
 
+> **Note**
+> Not fixable definitions can not be nested in `<groups>` (see _Rule groups_ below). Not-fixables apply globally per
+> `RestrictImports` rule instance.
 
 ## Rule groups
 Rule groups add another level of refining which imports will be matched. You can group
@@ -223,7 +227,8 @@ more specific `basePackage` of the second group. In that case, only the definiti
 class.
 
 ## Static imports
-(*Note:* Behavior has been changed in version 2.0.0)
+> **Note**
+> Behavior of static import detection has been changed with version 2.0.0
 
 Every package pattern also automatically matches `static` imports. However, it is possible to explicitly mention the
 `static` keyword in the pattern. In that case, the pattern will only match a resp. static import.
@@ -320,7 +325,8 @@ using the `<parallel>` option or by passing `-Drestrictimports.parallel` to the 
 ```
 
 ## Detecting full qualified class usage
-(*Note:* This is an experimental feature)
+> **Note**
+> This is an experimental feature
 
 To overcome some of the limitations mentioned [here](#limitation), you can enable 'full compilation unit' parsing
 mode using

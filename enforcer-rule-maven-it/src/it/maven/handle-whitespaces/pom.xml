@@ -22,7 +22,7 @@
                 <configuration>
                     <rules>
                         <RestrictImports>
-                            <parallel>true</parallel>
+                            <parallel>false         </parallel>
                             <excludedSourceRoot>
                             ${project.basedir}/target/generated-sources/main/java</excludedSourceRoot>
                             <basePackages>

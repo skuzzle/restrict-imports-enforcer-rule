@@ -5,6 +5,7 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,11 +41,6 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
         final ImportStatementParser fileParser = ImportStatementParser.forCharset(settings.getSourceFileCharset(),
                 settings.isParseFullCompilationUnit());
 
-        if (settings.isParallel()) {
-            LOGGER.warn("EXPERIMENTAL FEATURE enabled. You have enabled parallel analysis which is marked as "
-                    + "experimental. Please be aware that experimental features might get removed or changed. "
-                    + "Please share your feedback!");
-        }
         if (settings.isParseFullCompilationUnit()) {
             LOGGER.warn("EXPERIMENTAL FEATURE enabled. You have enabled full-compilation-unit parsing. "
                     + "Please be aware that experimental features might get removed or changed. "
@@ -76,6 +72,7 @@ final class SourceTreeAnalyzerImpl implements SourceTreeAnalyzer {
             Iterable<Path> directories, boolean parallel, ThreadSafeCounter counter) {
         return StreamSupport.stream(directories.spliterator(), parallel)
                 .flatMap(srcDir -> analyzeDirectory(groups, fileParser, srcDir, parallel, counter))
+                .sorted(Comparator.comparing(MatchedFile::getSourceFile))
                 .collect(Collectors.toList());
     }
 

@@ -306,9 +306,6 @@ is not limited to `\${project.basedir}/src/main/java`, `\${project.basedir}/src/
 ```
 
 ## Parallel Analysis
-(*Note:* This is an experimental feature and not thoroughly tested. Syntax and behavior
-changes in upcoming versions are likely)
-
 We support basic parallelization of the analysis. This is disabled by default but can be enabled either in the pom file
 using the `<parallel>` option or by passing `-Drestrictimports.parallel` to the maven build.
 ```xml

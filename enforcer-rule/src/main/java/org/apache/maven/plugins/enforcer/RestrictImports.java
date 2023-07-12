@@ -58,7 +58,7 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
     private List<File> excludedSourceRoots = new ArrayList<>();
     private boolean failBuild = true;
     private boolean skip = false;
-    private boolean parallel = false;
+    private boolean parallel = true;
     private boolean parseFullCompilationUnit = false;
 
     @Override

@@ -433,7 +433,7 @@ pattern with no wild cards.
             </allowedImports>
         </group>
     </groups>
-    <notFixables> <!-- Optional. Nesting not needed when specifying a single package -->
+    <notFixables> <!-- Optional. Nesting not needed when specifying a single not-fixable -->
         <notFixable>
             <in>**</in>
             <allowedImports> <!-- Optional. Nesting not needed when specifying a single package -->

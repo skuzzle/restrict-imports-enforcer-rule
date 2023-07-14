@@ -17,7 +17,7 @@ Tested against _maven-enforcer-plugin_ versions `${version.min-supported-enforce
 
 ## Simple usage
 This is a minimal usage example. Please scroll down for detailed configuration
-information.
+information or have a look at the [Full configuration example](#full-configuration-example).
 
 ```xml
 <plugin>
@@ -71,6 +71,7 @@ information.
 * [Limitation](#limitation)
   * [Syntactical](#syntactical-limitation)
   * [Conceptual](#conceptual-limitation)
+* [Full configuration example](#full-configuration-example)
 * [Configuration options](#configuration-options)
 * [Versioning, Deprecations and Compatibility](#versioning-deprecations-and-compatibility)
 
@@ -176,6 +177,8 @@ you can allow them to be used only in some explicitly configured locations.
 </configuration>
 ```
 
+You can add multiple _not-fixable_ definitions if you nest them in `<notFixables></notFixables>`.
+
 > **Note**
 > Not fixable definitions can not be nested in `<groups>` (see _Rule groups_ below). Not-fixables apply globally per
 > `RestrictImports` rule instance.
@@ -258,8 +261,6 @@ analysis of test code using the `includeTestCode` option.
 </configuration>
 ```
 
-You can add multiple _not-fixable_ definitions if you nest them in `<notFixables></notFixables>`.
-
 ## Skipping
 Using the configuration option `skip` you are able to temporarily disable a rule
 instance.
@@ -311,7 +312,7 @@ is not limited to `\${project.basedir}/src/main/java`, `\${project.basedir}/src/
 ```
 
 ## Parallel Analysis
-We support basic parallelization of the analysis. This is disabled by default but can be enabled either in the pom file
+We support basic parallelization of the analysis. This is enabled by default but can be disabled either in the pom file
 using the `<parallel>` option or by passing `-Drestrictimports.parallel` to the maven build.
 ```xml
 <configuration>
@@ -345,7 +346,7 @@ java source file, creating an actual AST. This allows to also detect full qualif
 considerably slower.
 
 > **Warning**
-> In case a source file cannot be properly parsed, we try to fall back to our _native_ line-by-line_ parsing
+> In case a source file cannot be properly parsed, we try to fall back to our _native_ line-by-line parsing
 > approach described [here](#syntactical-limitation). A respective warning will be issued in the
 > report that is generated at the end.
 >
@@ -407,6 +408,41 @@ statement. Thus if your `exclusion` pattern points to a concrete class like
 `com.name.ClassName` the exclusion will only match if this class is declared in a file
 with the exact name `ClassName.java`. The same applies in case you use a base package
 pattern with no wild cards.
+
+## Full configuration example
+```xml
+<RestrictImports>
+    <failBuild>true</failBuild> <!-- Can be overridden with -Drestrictimports.failBuild=... -->
+    <skip>false</skip> <!-- Can be overridden with -Drestrictimports.skip=... -->
+    <parseFullCompilationUnit>false</parseFullCompilationUnit>
+    <parallel>true</parallel> <!-- Can be overridden with -Drestrictimports.parallel=... -->
+    <excludedSourceRoots> <!-- Optional. Nesting not needed when specifying a excluded root -->
+        <excludedSourceRoot>\${project.build.directory}/generated-sources/main/java</excludedSourceRoot>
+    </excludedSourceRoots>
+    <groups>
+        <group> <!-- Optional. groups and group can be left out in simple configurations -->
+            <reason>...</reason>
+            <basePackages> <!-- Optional. Nesting not needed when specifying a single package -->
+                <basePackage>**</basePackage>
+            </basePackages>
+            <bannedImports> <!-- Optional. Nesting not needed when specifying a single package -->
+                <bannedImport>..</bannedImport>
+            </bannedImports>
+            <allowedImports> <!-- Optional. Nesting not needed when specifying a single package -->
+                <allowedImport>...</allowedImport>
+            </allowedImports>
+        </group>
+    </groups>
+    <notFixables> <!-- Optional. Nesting not needed when specifying a single package -->
+        <notFixable>
+            <in>**</in>
+            <allowedImports> <!-- Optional. Nesting not needed when specifying a single package -->
+                <allowedImport>..</allowedImport>
+            </allowedImports>
+        </notFixable>
+    </notFixables>
+</RestrictImports>
+```
 
 ## Configuration options
 

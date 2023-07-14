@@ -1,4 +1,4 @@
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=${project.version}&color=blue)](https://search.maven.org/artifact/${project.groupId}/restrict-imports-enforcer-rule/${project.version}/jar) [![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=${project.version}&color=orange)](http://www.javadoc.io/doc/${project.groupId}/restrict-imports-enforcer-rule/${project.version})
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=${project.version}&color=blue)](https://search.maven.org/artifact/${project.groupId}/restrict-imports-enforcer-rule/${project.version}/jar)
 
 ### Bug fixes
 * [#55](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/55) Make parallel analysis the default

@@ -1,7 +1,6 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
 [![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=${project.version}&color=blue)](https://search.maven.org/artifact/${project.groupId}/restrict-imports-enforcer-rule/${project.version}/jar)
-[![JavaDoc](https://img.shields.io/static/v1?label=JavaDoc&message=${project.version}&color=orange)](http://www.javadoc.io/doc/${project.groupId}/restrict-imports-enforcer-rule/${project.version})
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/${github.name}/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/${github.name}?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 

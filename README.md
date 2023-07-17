@@ -1,6 +1,6 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.4.0-rc2-SNAPSHOT&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.4.0-rc2-SNAPSHOT/jar)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.4.0-SNAPSHOT&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.4.0-SNAPSHOT/jar)
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
@@ -27,7 +27,7 @@ information or have a look at the [Full configuration example](#full-configurati
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule-parent</artifactId>
-            <version>2.4.0-rc2-SNAPSHOT</version>
+            <version>2.4.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
     <executions>
@@ -453,12 +453,13 @@ Overview of all configuration parameters:
 | `bannedImport(s)`          | (List of) package pattern      | yes      |              |          |
 | `allowedImport(s)`         | (List of) package pattern      | no       | empty list   |          |
 | `exclusion(s)`             | (List of) package pattern      | no       | empty list   |          |
-| `includeTestCode`          | Boolean                        | no       | `false`      | `0.7.0`  |
+| `includeTestCode`          | Boolean                        | no       | `true`       | `0.7.0`  |
 | `reason`                   | String                         | no       | empty String | `0.8.0`  |
 | `failBuild`                | Boolean                        | no       | `true`       | `0.17.0` |
 | `skip`                     | Boolean                        | no       | `false`      | `0.17.0` |
 | `includeCompileCode`       | Boolean                        | no       | `true`       | `1.2.0`  |
 | `excludedSourceRoot(s)`    | (List of) java.io.File         | no       | empty list   | `1.3.0`  |
+| `parallel`                 | Boolean                        | no       | `true`       | `2.0.0`  |
 | `parseFullCompilationUnit` | Boolean                        | no       | `false`      | `2.1.0`  |
 | `notFixable(s)`            | (List of) NotFixableDefinition | no       | empty list   | `2.4.0`  |
 

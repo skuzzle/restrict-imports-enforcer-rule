@@ -453,12 +453,13 @@ Overview of all configuration parameters:
 | `bannedImport(s)`          | (List of) package pattern      | yes      |              |          |
 | `allowedImport(s)`         | (List of) package pattern      | no       | empty list   |          |
 | `exclusion(s)`             | (List of) package pattern      | no       | empty list   |          |
-| `includeTestCode`          | Boolean                        | no       | `false`      | `0.7.0`  |
+| `includeTestCode`          | Boolean                        | no       | `true`       | `0.7.0`  |
 | `reason`                   | String                         | no       | empty String | `0.8.0`  |
 | `failBuild`                | Boolean                        | no       | `true`       | `0.17.0` |
 | `skip`                     | Boolean                        | no       | `false`      | `0.17.0` |
 | `includeCompileCode`       | Boolean                        | no       | `true`       | `1.2.0`  |
 | `excludedSourceRoot(s)`    | (List of) java.io.File         | no       | empty list   | `1.3.0`  |
+| `parallel`                 | Boolean                        | no       | `true`       | `2.0.0`  |
 | `parseFullCompilationUnit` | Boolean                        | no       | `false`      | `2.1.0`  |
 | `notFixable(s)`            | (List of) NotFixableDefinition | no       | empty list   | `2.4.0`  |
 

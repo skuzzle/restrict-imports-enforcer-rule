@@ -1,6 +1,6 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.4.0-SNAPSHOT&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.4.0-SNAPSHOT/jar)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.4.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.4.0/jar)
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
@@ -27,7 +27,7 @@ information or have a look at the [Full configuration example](#full-configurati
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule-parent</artifactId>
-            <version>2.4.0-SNAPSHOT</version>
+            <version>2.4.0</version>
         </dependency>
     </dependencies>
     <executions>

@@ -44,7 +44,7 @@
         <version.spotless-plugin>2.34.0</version.spotless-plugin>
 
         <version.min-supported-enforcer-plugin>1.4.1</version.min-supported-enforcer-plugin>
-        <version.max-supported-enforcer-plugin>3.3.0</version.max-supported-enforcer-plugin>
+        <version.max-supported-enforcer-plugin>3.4.0</version.max-supported-enforcer-plugin>
         <integration-test-threads>2C</integration-test-threads>
 
         <site.name>restrict-imports-enforcer-rule</site.name>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.skuzzle.enforcer</groupId>
+    <artifactId>restrict-imports-enforcer-rule-maven-it</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+    <name>Restrict Imports Enforcer Rule Maven Integration Tests</name>
+
+    <build>
+        <directory>build</directory>
+        <plugins>
+            <plugin>
+                <artifactId>maven-invoker-plugin</artifactId>
+                <version>${fromGradle.invoker-plugin-version}</version>
+                <configuration>
+                    <showErrors>true</showErrors>
+                    <streamLogs>false</streamLogs>
+                    <settingsFile>invoker-settings.xml</settingsFile>
+                    <localRepositoryPath>${fromGradle.localIntegrationTestRepo}</localRepositoryPath>
+                    <pomIncludes>
+                        <pomInclude>**/pom.xml</pomInclude>
+                    </pomIncludes>
+                    <parallelThreads>${fromGradle.integration-test-threads}</parallelThreads>
+                    <writeJunitReport>true</writeJunitReport>
+                    <!--uncomment next line to debug invoker tests -->
+                    <!--<mavenOpts>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000</mavenOpts> -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <junitPackageName>${fromGradle.test-id}</junitPackageName>
+                            <reportsDirectory>${project.build.directory}/${fromGradle.output-dir}/reports</reportsDirectory>
+                            <cloneProjectsTo>${project.build.directory}/${fromGradle.output-dir}/builds</cloneProjectsTo>
+                            <filterProperties>
+                                <version.enforcer-plugin>${fromGradle.enforcer-api-version}</version.enforcer-plugin>
+                            </filterProperties>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

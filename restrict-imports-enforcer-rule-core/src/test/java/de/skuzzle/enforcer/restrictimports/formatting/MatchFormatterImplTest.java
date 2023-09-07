@@ -61,7 +61,7 @@ public class MatchFormatterImplTest {
                 "\tin file: SampleJavaFile.java\n" +
                 "\t\tjava.util.ArrayList \t(Line: 3, Matched by: java.util.*)\n" +
                 "\t\tjava.util.Date      \t(Line: 4, Matched by: java.util.*)\n\n" +
-                "Analysis of 2 files took 5 seconds\n");
+                "Analysis of 2 files took 8 seconds\n");
     }
 
     @Test

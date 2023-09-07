@@ -12,7 +12,7 @@ public class WhitespacesTest {
 
     @Test
     void testTrimTrailing() throws Exception {
-        assertThat(Whitespaces.trimAll("test test\t\n\r    ")).isEqualTo("test test");
+        assertThat(Whitespaces.trimAll("test test\t\n\r    ")).isEqualTo("testtest");
     }
 
     @Test

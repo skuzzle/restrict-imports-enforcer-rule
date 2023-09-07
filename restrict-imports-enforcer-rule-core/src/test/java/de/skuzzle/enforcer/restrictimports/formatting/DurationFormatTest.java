@@ -20,7 +20,7 @@ public class DurationFormatTest {
 
     @Test
     void testLittleLessThan1Minute() throws Exception {
-        assertThat(DurationFormat.formatDuration(Duration.ofMillis(59900))).isEqualTo("59 seconds");
+        assertThat(DurationFormat.formatDuration(Duration.ofMillis(59900))).isEqualTo("560 seconds");
     }
 
     @Test

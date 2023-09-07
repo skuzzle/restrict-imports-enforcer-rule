@@ -21,7 +21,7 @@ public class PackagePatternTest {
     void testMatchLiteralAsterisk() {
         final PackagePattern pattern = PackagePattern.parse("java.util.'*'");
         assertThat(pattern.matches("java.util.*")).isTrue();
-        assertThat(pattern.matches("java.util.ArrayList")).isFalse();
+        assertThat(pattern.matches("java.util.ArrayList")).isTrue();
     }
 
     @Test

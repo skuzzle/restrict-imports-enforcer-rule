@@ -1,7 +1,7 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=${project.version}&color=blue)](https://search.maven.org/artifact/${project.groupId}/restrict-imports-enforcer-rule/${project.version}/jar)
-[![Coverage Status](https://coveralls.io/repos/github/skuzzle/${github.name}/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/${github.name}?branch=master)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=@project.version@&color=blue)](https://search.maven.org/artifact/@project.groupId@/restrict-imports-enforcer-rule/@project.version@/jar)
+[![Coverage Status](https://coveralls.io/repos/github/skuzzle/@github.name@/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/@github.name@?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
 # restrict-imports-enforcer-rule
@@ -12,7 +12,7 @@ usage of unwanted classes! [More](#rationale)
 - [x] Groovy (since 0.15)
 - [ ] Scala (see [Issue 24](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/24))
 
-Tested against _maven-enforcer-plugin_ versions `${version.min-supported-enforcer-plugin}` and `${version.max-supported-enforcer-plugin}`.
+Tested against _maven-enforcer-plugin_ versions `@version.enforcer-api.min@` and `@version.enforcer-api.max@`.
 
 ## Simple usage
 This is a minimal usage example. Please scroll down for detailed configuration
@@ -22,12 +22,12 @@ information or have a look at the [Full configuration example](#full-configurati
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-enforcer-plugin</artifactId>
-    <version>${version.enforcer-api}</version>
+    <version>@version.enforcer-api.max@</version>
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>${project.artifactId}</artifactId>
-            <version>${project.version}</version>
+            <groupId>@project.groupId@</groupId>
+            <artifactId>restrict-imports-enforcer-rule</artifactId>
+            <version>@project.version@</version>
         </dependency>
     </dependencies>
     <executions>
@@ -292,16 +292,16 @@ configured in the pom file.
 
 ## Exclude source roots
 By default, all source roots reported by Maven is subject to the banned import checks, which for example includes but
-is not limited to `\${project.basedir}/src/main/java`, `\${project.basedir}/src/test/java`,
-`\${project.build.directory}/generated-sources/main/java` and
-`\${project.build.directory}/generated-test-sources/main/java`. You can exclude source root(s) using the
+is not limited to `${project.basedir}/src/main/java`, `${project.basedir}/src/test/java`,
+`${project.build.directory}/generated-sources/main/java` and
+`${project.build.directory}/generated-test-sources/main/java`. You can exclude source root(s) using the
 `excludedSourceRoot(s)` option, either absolute or relative path.
 ```xml
 <configuration>
     <rules>
         <RestrictImports>
             <excludedSourceRoots>
-                <excludedSourceRoot>\${project.build.directory}/generated-sources/main/java</excludedSourceRoot>
+                <excludedSourceRoot>${project.build.directory}/generated-sources/main/java</excludedSourceRoot>
                 <excludedSourceRoot>target/generated-test-sources/main/java</excludedSourceRoot>
             </excludedSourceRoots>
             <!-- ... -->
@@ -416,7 +416,7 @@ pattern with no wild cards.
     <parseFullCompilationUnit>false</parseFullCompilationUnit>
     <parallel>true</parallel> <!-- Can be overridden with -Drestrictimports.parallel=... -->
     <excludedSourceRoots> <!-- Optional. Nesting not needed when specifying a excluded root -->
-        <excludedSourceRoot>\${project.build.directory}/generated-sources/main/java</excludedSourceRoot>
+        <excludedSourceRoot>${project.build.directory}/generated-sources/main/java</excludedSourceRoot>
     </excludedSourceRoots>
     <groups>
         <group> <!-- Optional. groups and group can be left out in simple configurations -->

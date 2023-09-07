@@ -18,6 +18,9 @@ pipeline {
     ORG_GRADLE_PROJECT_signingPassword = credentials('gpg_password')
     ORG_GRADLE_PROJECT_base64EncodedAsciiArmoredSigningKey  = credentials('gpg_private_key')
   }
+  parameters {
+    booleanParam(name: 'PUBLISH_GITHUB', defaultValue: true, description: 'Whether to publish a GitHub release')
+  }
   stages {
     stage ('Ensure dev branch') {
       when {
@@ -55,6 +58,9 @@ pipeline {
       }
     }
     stage('Create GitHub release') {
+      when {
+        expression { params.PUBLISH_GITHUB }
+      }
       steps {
         withGradle {
           sh 'git checkout master'

@@ -15,7 +15,7 @@ gradleEnterprise {
     buildScan {
         publishAlways()
         termsOfServiceUrl = "https://gradle.com/terms-of-service"
-        termsOfServiceAgree = "yes"
+        termsOfServiceAgree = if (isCi) "yes" else null
         isUploadInBackground = !isCi
         capture {
             isTaskInputFiles = true

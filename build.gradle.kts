@@ -14,6 +14,7 @@ configure(listOf(tasks.release, tasks.runBuildTasks)) {
         doLast {
             GradleConnector
                 .newConnector()
+                .useBuildDistribution()
                 .forProjectDirectory(layout.projectDirectory.asFile)
                 .connect()
                 .use { projectConnection ->

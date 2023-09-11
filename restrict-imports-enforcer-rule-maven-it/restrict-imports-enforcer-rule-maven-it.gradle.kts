@@ -36,7 +36,7 @@ listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
                     "fromGradle.output-dir" to outputDir,
                     "fromGradle.enforcer-api-version" to it,
                     "fromGradle.invoker-plugin-version" to libs.versions.invokerPlugin.get(),
-                    "fromGradle.integration-test-threads" to "2C",
+                    "fromGradle.integration-test-threads" to "1",
                     "fromGradle.localIntegrationTestRepo" to m2Repository.get().dir("repository").asFile.absolutePath
                 )
             )

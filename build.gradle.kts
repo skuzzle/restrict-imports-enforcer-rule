@@ -53,8 +53,9 @@ tasks.register("addFilesToGit") {
     }
 }
 
+val releaseDryRun = System.getenv("RELEASE_DRY_RUN")?.toBoolean() ?: false
 release {
-    pushReleaseVersionBranch.set("master")
+    pushReleaseVersionBranch.set(if (releaseDryRun) null else "master")
     tagTemplate.set("v$version")
     git {
         requireBranch.set("develop")

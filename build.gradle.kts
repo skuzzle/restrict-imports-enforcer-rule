@@ -1,8 +1,35 @@
+import org.gradle.tooling.GradleConnector
+
 plugins {
     alias(libs.plugins.researchgate.release)
     alias(libs.plugins.nexus.publish)
     alias(libs.plugins.github.release)
     `base-conventions`
+}
+
+// HACK: This makes researchgate-release work with included build. See also: https://github.com/gradle/gradle/issues/8246
+configure(listOf(tasks.release, tasks.runBuildTasks)) {
+    configure {
+        actions.clear()
+        doLast {
+            GradleConnector
+                .newConnector()
+                .forProjectDirectory(layout.projectDirectory.asFile)
+                .connect()
+                .use { projectConnection ->
+                    val buildLauncher = projectConnection
+                        .newBuild()
+                        .forTasks(*tasks.toTypedArray())
+                        .setStandardInput(System.`in`)
+                        .setStandardOutput(System.out)
+                        .setStandardError(System.err)
+                    gradle.startParameter.excludedTaskNames.forEach {
+                        buildLauncher.addArguments("-x", it)
+                    }
+                    buildLauncher.run()
+                }
+        }
+    }
 }
 
 tasks.named("afterReleaseBuild").configure {

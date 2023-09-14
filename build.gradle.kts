@@ -77,3 +77,7 @@ nexusPublishing.repositories {
         password.set(property("sonatype_PSW").toString())
     }
 }
+
+val acceptToS by tasks.creating(AcceptGradleToSTask::class.java) {
+    markerFile.set(file("YOU ACCEPTED THE TOS FOR PUBLISHING BUILD SCANS").absolutePath)
+}

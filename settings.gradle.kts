@@ -11,11 +11,12 @@ plugins {
 }
 
 var isCi = System.getenv("CI")?.toBoolean() ?: false
+var acceptTos = isCi || file("YOU ACCEPTED THE TOS FOR PUBLISHING BUILD SCANS").exists()
 gradleEnterprise {
     buildScan {
         publishAlways()
         termsOfServiceUrl = "https://gradle.com/terms-of-service"
-        termsOfServiceAgree = if (isCi) "yes" else null
+        termsOfServiceAgree = if (acceptTos) "yes" else null
         isUploadInBackground = !isCi
         capture {
             isTaskInputFiles = true

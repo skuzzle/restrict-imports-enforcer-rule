@@ -29,6 +29,7 @@ rootProject.name = "restrict-imports"
 include("restrict-imports-enforcer-rule-core")
 include("restrict-imports-enforcer-rule")
 include("restrict-imports-enforcer-rule-maven-it")
+include("restrict-imports-gradle-plugin")
 
 include("readme")
 include("test-coverage")

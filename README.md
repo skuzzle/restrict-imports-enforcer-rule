@@ -26,7 +26,7 @@ information or have a look at the [Full configuration example](#full-configurati
     <dependencies>
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
-            <artifactId>restrict-imports-enforcer-rule-parent</artifactId>
+            <artifactId>restrict-imports-enforcer-rule</artifactId>
             <version>2.4.0</version>
         </dependency>
     </dependencies>

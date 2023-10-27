@@ -4,6 +4,7 @@ plugins {
     id("base-conventions")
     id("maven-publish")
     id("signing")
+    id("release-lifecycle")
 }
 
 tasks.withType<Jar>().configureEach {
@@ -101,3 +102,5 @@ tasks.withType<GenerateMavenPom>().configureEach {
         require(pomXml.indexOf("<scm>") >= 0) { "POM must have a scm element $destination" }
     }
 }
+
+tasks.prepareRelease.configure { dependsOn(tasks.named("publishToSonatype")) }

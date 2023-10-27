@@ -22,23 +22,16 @@ abstract class ReleaseExtension {
 
     @get:Input
     abstract val devBranch: Property<String>
+
     @get:Input
     abstract val githubRepoOwner: Property<String>
+
     @get:Input
     abstract val githubRepoName: Property<String>
+
     @get:Input
     abstract val githubReleaseToken: Property<String>
+
     @get:Input
     abstract val releaseNotesContent: Property<String>
-
-    fun wireUp(releaseStep: AbstractReleaseStep) {
-        val extension = this
-        releaseStep.apply {
-            this.releaseVersion.set(extension.releaseVersion)
-            this.dryRun.set(extension.dryRun)
-            this.verbose.set(extension.verbose)
-            this.mainBranch.set(extension.mainBranch)
-            this.devBranch.set(extension.devBranch)
-        }
-    }
 }

@@ -54,7 +54,7 @@ pipeline {
     stage('Perform release') {
       steps {
         withGradle {
-          sh './gradlew generateReadmeAndReleaseNotes publishToSonatype'
+          sh './gradlew prepareRelease'
           sh './gradlew releaseLocal'
           sh './gradlew pushRelease'
         }

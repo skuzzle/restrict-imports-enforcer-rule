@@ -2,6 +2,7 @@ import de.skuzzle.buildlogic.CopyAndFilterReadmeTask
 
 plugins {
     `base-conventions`
+    id("release-lifecycle")
 }
 
 val generateReadmeAndReleaseNotes by tasks.creating(CopyAndFilterReadmeTask::class.java) {
@@ -19,3 +20,5 @@ val generateReadmeAndReleaseNotes by tasks.creating(CopyAndFilterReadmeTask::cla
         "github.name" to project.property("githubRepo") as String
     )
 }
+
+tasks.prepareRelease.configure { dependsOn(generateReadmeAndReleaseNotes) }

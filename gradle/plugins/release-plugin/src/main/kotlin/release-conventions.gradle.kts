@@ -1,5 +1,8 @@
 import com.github.breadmoirai.githubreleaseplugin.GithubReleaseTask
-import de.skuzzle.release.*
+import de.skuzzle.release.FinalizeReleaseTask
+import de.skuzzle.release.Git
+import de.skuzzle.release.ReleaseExtension
+import de.skuzzle.release.ReleaseLocalTask
 import de.skuzzle.semantic.Version
 
 plugins {
@@ -60,29 +63,28 @@ githubRelease {
 }
 
 val calculatedVersion = calculateVersion()
+logger.lifecycle("The current version is: $calculatedVersion")
 rootProject.allprojects { this.version = calculatedVersion }
 
 fun calculateVersion(): String {
     val git = Git(providers, releaseExtension.dryRun, releaseExtension.verbose)
     val latestTagValue = git.lastReleaseTag()
     val latestVersion = latestTagValue.substring(1)
-    val pversion = releaseExtension.releaseVersion.orNull
-    if (pversion != null) {
-        return pversion.toString()
-    }
-    return Version.parseVersion(latestVersion).nextPatch("${git.currentBranch()}-SNAPSHOT").toString()
-}
-
-val checkCleanWorkingCopy by tasks.creating(CheckCleanWorkingCopyTask::class.java) {
-    releaseExtension.wireUp(this)
+    return releaseExtension.releaseVersion
+        .orElse(provider {
+            Version.parseVersion(latestVersion)
+                .nextPatch("${git.currentBranch()}-SNAPSHOT")
+                .toString()
+        })
+        .get()
 }
 
 val releaseLocal by tasks.creating(ReleaseLocalTask::class.java) {
-    releaseExtension.wireUp(this)
+    fromExtension(releaseExtension)
 }
 
 val pushReleaseInternal by tasks.creating(FinalizeReleaseTask::class.java) {
-    releaseExtension.wireUp(this)
+    fromExtension(releaseExtension)
 }
 
 val releaseTasks = tasks.withType(GithubReleaseTask::class.java)

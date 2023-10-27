@@ -38,6 +38,14 @@ abstract class AbstractReleaseStep() : DefaultTask() {
         git = Git(providers, dryRun, verbose)
     }
 
+    fun fromExtension(extension: ReleaseExtension) {
+        this.releaseVersion.set(extension.releaseVersion)
+        this.dryRun.set(extension.dryRun)
+        this.verbose.set(extension.verbose)
+        this.mainBranch.set(extension.mainBranch)
+        this.devBranch.set(extension.devBranch)
+    }
+
     fun print(s: String) {
         logger.lifecycle(s)
     }

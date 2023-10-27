@@ -12,14 +12,14 @@ pipeline {
   environment {
     GITHUB = credentials('Github-Username-Pw')
     GIT_ASKPASS='./.git-askpass'
-    COVERALLS_REPO_TOKEN = credentials('coveralls_repo_token_restrict_imports_rule')
+    RELEASE_GITHUB_TOKEN = credentials('github_registry_release')
     ORG_GRADLE_PROJECT_ghToken = credentials('github_registry_release')
     ORG_GRADLE_PROJECT_sonatype = credentials('SONATYPE_NEXUS')
     ORG_GRADLE_PROJECT_signingPassword = credentials('gpg_password')
     ORG_GRADLE_PROJECT_base64EncodedAsciiArmoredSigningKey  = credentials('gpg_private_key')
   }
   parameters {
-    booleanParam(name: 'PUBLISH_GITHUB', defaultValue: true, description: 'Whether to publish a GitHub release')
+    string(name: 'RELEASE_VERSION', defaultValue: '', description: 'Version to be released')
     booleanParam(name: 'RELEASE_DRY_RUN', defaultValue: false, description: 'Whether to push releases to GitHub')
   }
   stages {
@@ -44,28 +44,19 @@ pipeline {
         sh 'git config user.name "Jenkins"'
       }
     }
-    stage('Build Release') {
+    stage('Verify') {
       steps {
         withGradle {
-          sh './gradlew build'
+          sh './gradlew check'
         }
       }
     }
     stage('Perform release') {
       steps {
         withGradle {
-          sh './gradlew release'
-        }
-      }
-    }
-    stage('Create GitHub release') {
-      when {
-        expression { params.PUBLISH_GITHUB }
-      }
-      steps {
-        withGradle {
-          sh 'git checkout master'
-          sh './gradlew githubRelease'
+          sh './gradlew generateReadmeAndReleaseNotes publishToSonatype'
+          sh './gradlew releaseLocal'
+          sh './gradlew pushRelease'
         }
       }
     }

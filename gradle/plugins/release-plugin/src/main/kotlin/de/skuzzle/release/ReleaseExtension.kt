@@ -34,4 +34,7 @@ abstract class ReleaseExtension {
 
     @get:Input
     abstract val releaseNotesContent: Property<String>
+
+    @get:Input
+    abstract val mergeBranches: Property<Boolean>
 }

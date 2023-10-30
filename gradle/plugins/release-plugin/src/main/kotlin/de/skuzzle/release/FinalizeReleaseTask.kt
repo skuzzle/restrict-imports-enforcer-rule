@@ -9,18 +9,12 @@ abstract class FinalizeReleaseTask : AbstractReleaseStep() {
         val currentBranch = git.currentBranch()
         val mainBranch = mainBranch.get()
         val devBranch = devBranch.get()
-        if (currentBranch != mainBranch) {
-            val message =
-                "Can not finalize release: expected to be on main branch '$mainBranch' but was: $currentBranch"
-            if (dryRun.get()) {
-                println(message)
-            } else {
-                throw IllegalStateException(message)
-            }
+
+        if (mergeBranches.get()) {
+            println("Pushing release commit to $currentBranch")
+            git.git("push", "origin", mainBranch)
         }
 
-        println("Pushing release commit to $currentBranch")
-        git.git("push", "origin", mainBranch)
         println("Pushing release tag")
         git.git("push", "--tags")
         println("Switching to dev branch")

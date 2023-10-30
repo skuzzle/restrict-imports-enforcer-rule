@@ -17,6 +17,10 @@ class Git(
 
     fun currentBranch() = git("rev-parse", "--abbrev-ref", "HEAD")
 
+    fun fetchTags() {
+        git("fetch", "--tags")
+    }
+
     fun lastReleaseTag(): String {
         val latestTagHash = git("rev-list", "--tags", "--max-count=1")
         return git("describe", "--tags", latestTagHash, "--match=v[0-9]*")

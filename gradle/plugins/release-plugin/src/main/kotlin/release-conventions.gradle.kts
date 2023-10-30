@@ -20,7 +20,6 @@ val releaseExtension = extensions.create<ReleaseExtension>(ReleaseExtension.NAME
             .orElse(providers.environmentVariable("RELEASE_VERSION"))
             .orElse(providers.gradleProperty("releaseVersion"))
     )
-
     dryRun.convention(
         providers.systemProperty("RELEASE_DRY_RUN").map { it == "true" }
             .orElse(providers.environmentVariable("RELEASE_DRY_RUN").map { it == "true" })
@@ -33,7 +32,6 @@ val releaseExtension = extensions.create<ReleaseExtension>(ReleaseExtension.NAME
             .orElse(providers.gradleProperty("releaseVerbose").map { it == "true" })
             .orElse(false)
     )
-
     githubReleaseToken.convention(
         providers.systemProperty("RELEASE_GITHUB_TOKEN")
             .orElse(providers.environmentVariable("RELEASE_GITHUB_TOKEN"))
@@ -49,6 +47,12 @@ val releaseExtension = extensions.create<ReleaseExtension>(ReleaseExtension.NAME
         providers.systemProperty("RELEASE_GITHUB_OWNER")
             .orElse(providers.environmentVariable("RELEASE_GITHUB_OWNER"))
             .orElse(providers.gradleProperty("releaseGithubOwner"))
+    )
+    mergeBranches.convention(
+        providers.systemProperty("RELEASE_MERGE_BRANCHES").map { it == "true" }
+            .orElse(providers.environmentVariable("RELEASE_MERGE_BRANCHES").map { it == "true" })
+            .orElse(providers.gradleProperty("releaseMergeBranches").map { it == "true" })
+            .orElse(false)
     )
 }
 
@@ -68,6 +72,7 @@ rootProject.allprojects { this.version = calculatedVersion }
 
 fun calculateVersion(): String {
     val git = Git(providers, releaseExtension.dryRun, releaseExtension.verbose)
+    git.fetchTags()
     val latestTagValue = git.lastReleaseTag()
     val latestVersion = latestTagValue.substring(1)
     return releaseExtension.releaseVersion

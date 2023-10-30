@@ -27,17 +27,19 @@ abstract class ReleaseLocalTask : AbstractReleaseStep() {
             git.git("tag", "-a", "v${releaseVersion}", "-m", "Release $releaseVersion")
         }
 
-        print("Merging release into main branch")
-        git.git("checkout", mainBranch.get())
-        git.git("merge", "v${releaseVersion}", "--strategy-option", "theirs")
+        if (mergeBranches.get()) {
+            print("Merging release into main branch")
+            git.git("checkout", mainBranch.get())
+            git.git("merge", "v${releaseVersion}", "--strategy-option", "theirs")
+        }
     }
 
     fun tryParseVersion(v: String): Exception? {
-        try {
+        return try {
             Version.parseVersion(v)
-            return null
+            null
         } catch (e: Exception) {
-            return e
+            e
         }
     }
 }

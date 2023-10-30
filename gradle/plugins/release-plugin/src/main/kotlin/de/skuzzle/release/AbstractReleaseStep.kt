@@ -29,6 +29,9 @@ abstract class AbstractReleaseStep() : DefaultTask() {
     @get:Input
     abstract val devBranch: Property<String>
 
+    @get:Input
+    abstract val mergeBranches: Property<Boolean>
+
     @get:Internal
     val git: Git
 
@@ -44,6 +47,7 @@ abstract class AbstractReleaseStep() : DefaultTask() {
         this.verbose.set(extension.verbose)
         this.mainBranch.set(extension.mainBranch)
         this.devBranch.set(extension.devBranch)
+        this.mergeBranches.set(extension.mergeBranches)
     }
 
     fun print(s: String) {

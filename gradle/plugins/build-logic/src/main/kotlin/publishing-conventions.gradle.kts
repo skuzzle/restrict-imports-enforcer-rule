@@ -11,11 +11,7 @@ tasks.withType<Jar>().configureEach {
     manifest {
         attributes(
             "Automatic-Module-Name" to provider { requireNotNull(project.findProperty("automaticModuleName")) },
-            "Created-By" to "${System.getProperty("java.version")} (${System.getProperty("java.vendor")} ${
-                System.getProperty(
-                    "java.vm.version"
-                )
-            })",
+            "Created-By" to "${System.getProperty("java.version")} (${System.getProperty("java.vendor")} ${System.getProperty("java.vm.version")})",
             "Specification-Title" to project.name,
             "Specification-Version" to (project.version as String).substringBefore('-'),
             "Implementation-Title" to project.name,
@@ -53,6 +49,7 @@ fun base64Decode(encodedString: String?): String? {
     return null;
 }
 
+val m2Repository: Provider<Directory> = rootProject.layout.buildDirectory.dir("m2")
 
 publishing {
     publications {
@@ -81,6 +78,12 @@ publishing {
                     }
                 }
             }
+        }
+    }
+    repositories {
+        maven {
+            name = "LocalIntegrationTests"
+            url = m2Repository.get().dir("repository").asFile.toURI()
         }
     }
 }

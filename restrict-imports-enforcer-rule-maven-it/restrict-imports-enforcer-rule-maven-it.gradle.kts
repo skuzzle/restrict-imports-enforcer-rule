@@ -3,24 +3,15 @@ import com.github.dkorotych.gradle.maven.exec.MavenExec
 plugins {
     `base-conventions`
     alias(libs.plugins.mavenExec)
-    id("maven-publish")
 }
 
+// TODO: fix duplication (see publishing-conventions)
 val m2Repository: Provider<Directory> = rootProject.layout.buildDirectory.dir("m2")
-publishing {
-    repositories {
-        maven {
-            name = "LocalIntegrationTests"
-            url = m2Repository.get().dir("repository").asFile.toURI()
-        }
-    }
-}
-
 
 listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
     .map { it.get() }
-    .forEach {
-        val safeVersion = it.replace(".", "_")
+    .forEach { enforcerVersion ->
+        val safeVersion = enforcerVersion.replace(".", "_")
         tasks.create<MavenExec>("runMavenIntegrationTests_$safeVersion") {
             description = "Executes Maven Enforcer Plugin integration tests"
             group = "verification"
@@ -31,11 +22,15 @@ listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
                 val publishToTestRepoTask = subproject.tasks.findByName("publishMavenPublicationToLocalIntegrationTestsRepository")
                 if (publishToTestRepoTask != null) {
                     mavenExecTask.dependsOn(publishToTestRepoTask)
+                    mavenExecTask.inputs.files(publishToTestRepoTask.outputs)
                     mavenExecTask.inputs.files(publishToTestRepoTask.project.tasks.withType<JavaCompile>())
                 }
             }
 
-            val outputDir = "test-against-$it"
+            val outputDir = "test-against-$enforcerVersion"
+            inputs.files(layout.projectDirectory.dir("src/it/maven"))
+            inputs.files(layout.projectDirectory.file("invoker-settings.xml"))
+            inputs.files(layout.projectDirectory.file("pom.xml"))
             outputs.dir(layout.buildDirectory.file(outputDir))
 
             goals(setOf("verify"))
@@ -44,7 +39,7 @@ listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
                     "revision" to project.version.toString(),
                     "fromGradle.test-id" to "maven.invoker.it._$safeVersion",
                     "fromGradle.output-dir" to outputDir,
-                    "fromGradle.enforcer-api-version" to it,
+                    "fromGradle.enforcer-api-version" to enforcerVersion,
                     "fromGradle.invoker-plugin-version" to libs.versions.invokerPlugin.get(),
                     "fromGradle.integration-test-threads" to "2C",
                     "fromGradle.localIntegrationTestRepo" to m2Repository.get().dir("repository").asFile.absolutePath

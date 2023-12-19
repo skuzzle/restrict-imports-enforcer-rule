@@ -48,5 +48,6 @@ listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
         }
     }
 
-
-tasks.named("check") { dependsOn(tasks.withType<MavenExec>()) }
+tasks.check {
+    dependsOn(tasks.withType<MavenExec>())
+}

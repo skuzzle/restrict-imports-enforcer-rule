@@ -6,6 +6,8 @@
 
 # restrict-imports-enforcer-rule
 Keep your code base clean and free from  usage of unwanted classes! [More](#rationale)
+
+Supported source files:
 - [x] Java
 - [x] Kotlin (since 0.15)
 - [x] Groovy (since 0.15)

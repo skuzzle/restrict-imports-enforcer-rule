@@ -85,7 +85,8 @@ public abstract class RestrictImports extends DefaultTask
 
     @TaskAction
     public void restrictImports() {
-        if (isDefaultRestrictImportsTask() && (!getBannedImports().isPresent() || getBannedImports().get().isEmpty() ) && (!getGroups().isPresent() || getGroups().get().isEmpty())) {
+        if (isDefaultRestrictImportsTask() && (!getBannedImports().isPresent() || getBannedImports().get().isEmpty())
+                && (!getGroups().isPresent() || getGroups().get().isEmpty())) {
             getLogger().debug("Skipping default restrictImports task because no banned imports were defined");
             return;
         }

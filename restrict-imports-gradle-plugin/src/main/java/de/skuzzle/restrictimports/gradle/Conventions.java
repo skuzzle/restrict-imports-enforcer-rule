@@ -16,16 +16,16 @@ final class Conventions {
         final SourceSetContainer sourceSets = (SourceSetContainer) project.getProperties().get("sourceSets");
 
         final Provider<FileCollection> main = sourceSets.named(SourceSet.MAIN_SOURCE_SET_NAME).map(SourceSet::getJava)
-            .map(SourceDirectorySet::getSourceDirectories);
+                .map(SourceDirectorySet::getSourceDirectories);
         final Provider<FileCollection> test = sourceSets.named(SourceSet.TEST_SOURCE_SET_NAME).map(SourceSet::getJava)
-            .map(SourceDirectorySet::getSourceDirectories);
+                .map(SourceDirectorySet::getSourceDirectories);
 
         taskConfiguration.getParallel().convention(
-            providers.systemProperty("restrictImports.parallel").map("true"::equals)
-                .orElse(true));
+                providers.systemProperty("restrictImports.parallel").map("true"::equals)
+                        .orElse(true));
         taskConfiguration.getFailBuild().convention(
-            providers.systemProperty("restrictImports.failBuild").map("true"::equals)
-                .orElse(true));
+                providers.systemProperty("restrictImports.failBuild").map("true"::equals)
+                        .orElse(true));
 
         taskConfiguration.getIncludeCompileCode().convention(true);
         taskConfiguration.getIncludeTestCode().convention(true);

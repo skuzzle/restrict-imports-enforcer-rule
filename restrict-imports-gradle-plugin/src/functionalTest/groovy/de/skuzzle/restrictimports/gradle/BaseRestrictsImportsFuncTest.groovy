@@ -38,7 +38,7 @@ abstract class BaseRestrictsImportsFuncTest extends Specification {
 
     @NamedVariant
     def javaClassWithImports(List<String> imports = [], String packageName = "", String name = "SampleClass", String srcSet = "main/java", String body = "") {
-        def path = workspace.resolve("src/$srcSet/${packageName.split("\\.").join(File.pathSeparator)}")
+        def path = workspace.resolve("src/$srcSet/${packageName.split("\\.").join(File.separator)}")
         def file = workspace.file("${path.toString()}/${name}.java")
         if (!packageName.empty) {
             file << "package $packageName;\n"

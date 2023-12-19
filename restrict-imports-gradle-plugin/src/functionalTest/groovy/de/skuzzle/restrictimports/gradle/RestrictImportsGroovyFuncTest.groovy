@@ -15,7 +15,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         buildFile << """\
         plugins {
             id("java")
-            id("de.skuzzle.restrict.imports")
+            id("de.skuzzle.restrictimports")
         }
         restrictImports {
             bannedImports = ["java.util.logging.**"]
@@ -35,7 +35,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         buildFile << """\
         plugins {
             id("java")
-            id("de.skuzzle.restrict.imports")
+            id("de.skuzzle.restrictimports")
         }
 
         restrictImports {
@@ -64,7 +64,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         buildFile << """\
         plugins {
             id("java")
-            id("de.skuzzle.restrict.imports")
+            id("de.skuzzle.restrictimports")
         }
 
         restrictImports {
@@ -91,7 +91,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         buildFile << """\
         plugins {
             id("java")
-            id("de.skuzzle.restrict.imports")
+            id("de.skuzzle.restrictimports")
         }
 
         tasks.create("customRestrictImports", de.skuzzle.restrictimports.gradle.RestrictImports) {
@@ -120,7 +120,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         buildFile << """\
         plugins {
             id("java")
-            id("de.skuzzle.restrict.imports")
+            id("de.skuzzle.restrictimports")
         }
 
         restrictImports {
@@ -138,7 +138,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         """.stripIndent(true)
 
         when:
-        def result = runAndFail(":restrictImports")
+        def result = runAndFail(":restrictImports", "-s")
 
         then:
         result.output.contains("Reason: This is a more specific group")
@@ -159,7 +159,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         buildFile << """\
         plugins {
             id("java")
-            id("de.skuzzle.restrict.imports")
+            id("de.skuzzle.restrictimports")
         }
 
         restrictImports {
@@ -192,7 +192,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         buildFile << """\
         plugins {
             id("java")
-            id("de.skuzzle.restrict.imports")
+            id("de.skuzzle.restrictimports")
         }
 
         restrictImports {
@@ -218,7 +218,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         buildFile << """\
         plugins {
             id("java")
-            id("de.skuzzle.restrict.imports")
+            id("de.skuzzle.restrictimports")
         }
 
         restrictImports {
@@ -245,7 +245,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         buildFile << """\
         plugins {
             id("java")
-            id("de.skuzzle.restrict.imports")
+            id("de.skuzzle.restrictimports")
         }
 
         restrictImports {
@@ -273,7 +273,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         buildFile << """\
         plugins {
             id("java")
-            id("de.skuzzle.restrict.imports")
+            id("de.skuzzle.restrictimports")
         }
 
         restrictImports {
@@ -300,7 +300,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         buildFile << """\
         plugins {
             id("java")
-            id("de.skuzzle.restrict.imports")
+            id("de.skuzzle.restrictimports")
         }
 
         restrictImports {
@@ -326,7 +326,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         buildFile << """\
         plugins {
             id("java")
-            id("de.skuzzle.restrict.imports")
+            id("de.skuzzle.restrictimports")
         }
 
         restrictImports {
@@ -352,7 +352,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         buildFile << """\
         plugins {
             id("java")
-            id("de.skuzzle.restrict.imports")
+            id("de.skuzzle.restrictimports")
         }
 
         restrictImports {
@@ -377,7 +377,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         buildFile << """\
         plugins {
             id("java")
-            id("de.skuzzle.restrict.imports")
+            id("de.skuzzle.restrictimports")
         }
 
         restrictImports {
@@ -394,7 +394,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         result.task(":defaultRestrictImports").outcome == TaskOutcome.SUCCESS
     }
 
-    def "ignores banned inputs covered not fixables"() {
+    def "ignores banned inputs covered by not-fixables"() {
         given:
         javaClassWithImports(["java.util.ArrayList", "java.util.LinkedList", "java.util.Map"], "de.skuzzle.enforcer.restrictimports")
 
@@ -402,7 +402,7 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         buildFile << """\
         plugins {
             id("java")
-            id("de.skuzzle.restrict.imports")
+            id("de.skuzzle.restrictimports")
         }
 
         restrictImports {
@@ -432,16 +432,24 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
 
         and:
         buildFile << """\
-        def ri1 = tasks.create("ri1", RestrictImports) {
-
+        plugins {
+            id("java")
+            id("de.skuzzle.restrictimports")
+        }
+        def ri1 = tasks.create("ri1", de.skuzzle.restrictimports.gradle.RestrictImports) {
+            bannedImports = ["java.util.*"]
+        }
+        def ri2 = tasks.create("ri2", de.skuzzle.restrictimports.gradle.RestrictImports) {
+            bannedImports = ["java.util.*"]
         }
         """.stripIndent(true)
 
         when:
-        def result = run(":restrictImports")
+        def result = runAndFail(":restrictImports")
 
         then:
-        result.task(":ri1").outcome == TaskOutcome.SUCCESS
-        result.task(":ri2").outcome == TaskOutcome.SUCCESS
+        result.output.contains("Banned imports detected:")
+        result.task(":ri1").outcome == TaskOutcome.FAILED
+        result.task(":ri2").outcome == TaskOutcome.FAILED
     }
 }

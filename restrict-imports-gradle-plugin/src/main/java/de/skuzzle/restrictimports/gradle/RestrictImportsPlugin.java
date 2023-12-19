@@ -19,23 +19,23 @@ public abstract class RestrictImportsPlugin implements Plugin<Project> {
     @Override
     public void apply(Project target) {
         final RestrictImportsExtension extension = target.getExtensions().create(RestrictImportsExtension.NAME,
-            RestrictImportsExtension.class);
+                RestrictImportsExtension.class);
         Conventions.apply(target, extension);
 
         extension.getBasePackages().convention(Collections.singletonList("**"));
 
-        final RestrictImports task = target.getTasks().create(RestrictImports.DEFAULT_TASK_NAME, RestrictImports.class);
-        Conventions.wire(extension, task);
+        final RestrictImports defaultTaks = target.getTasks().create(RestrictImports.DEFAULT_TASK_NAME, RestrictImports.class);
+        Conventions.wire(extension, defaultTaks);
 
-        task.getBasePackages().set(extension.getBasePackages());
-        task.getBannedImports().set(extension.getBannedImports());
-        task.getAllowedImports().set(extension.getAllowedImports());
-        task.getExclusions().set(extension.getExclusions());
-        task.getReason().set(extension.getReason());
+        defaultTaks.getBasePackages().set(extension.getBasePackages());
+        defaultTaks.getBannedImports().set(extension.getBannedImports());
+        defaultTaks.getAllowedImports().set(extension.getAllowedImports());
+        defaultTaks.getExclusions().set(extension.getExclusions());
+        defaultTaks.getReason().set(extension.getReason());
 
-        final TaskCollection<RestrictImports> allRestrictTasks = target.getTasks().withType(RestrictImports.class);
+        final TaskCollection<RestrictImports> allRestrictImportsTasks = target.getTasks().withType(RestrictImports.class);
         target.getTasks().register("restrictImports").configure(it -> {
-            it.dependsOn(allRestrictTasks);
+            it.dependsOn(allRestrictImportsTasks);
         });
 
     }

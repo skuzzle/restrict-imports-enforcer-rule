@@ -3,10 +3,19 @@ import com.github.dkorotych.gradle.maven.exec.MavenExec
 plugins {
     `base-conventions`
     alias(libs.plugins.mavenExec)
+    id("maven-publish")
 }
 
-// TODO: fix duplication (see publishing-conventions)
 val m2Repository: Provider<Directory> = rootProject.layout.buildDirectory.dir("m2")
+publishing {
+    repositories {
+        maven {
+            name = "LocalIntegrationTests"
+            url = m2Repository.get().dir("repository").asFile.toURI()
+        }
+    }
+}
+
 
 listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
     .map { it.get() }

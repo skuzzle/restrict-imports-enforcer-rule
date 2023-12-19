@@ -1,9 +1,10 @@
-import java.util.Base64
+import java.util.*
 
 plugins {
     id("base-conventions")
     id("maven-publish")
     id("signing")
+    id("release-lifecycle")
 }
 
 tasks.withType<Jar>().configureEach {
@@ -30,13 +31,13 @@ tasks.withType<PublishToMavenLocal>().configureEach {
 signing {
     // The gpg key is injected by jenkins as a base64 encoded string. That is because jenkins doesn't support
     // storing secret text credentials with newlines. Thus we need to decode the base64 string before we can sign
-    val signingKey : String? = base64Decode(findProperty("base64EncodedAsciiArmoredSigningKey") as String?)
-    val signingPassword : String? = findProperty("signingPassword") as String?
+    val signingKey: String? = base64Decode(findProperty("base64EncodedAsciiArmoredSigningKey") as String?)
+    val signingPassword: String? = findProperty("signingPassword") as String?
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign(publishing.publications)
 }
 
-fun base64Decode(encodedString : String?) : String? {
+fun base64Decode(encodedString: String?): String? {
     if (!encodedString.isNullOrEmpty()) {
         try {
             val decoded = Base64.getDecoder().decode(encodedString)
@@ -97,3 +98,5 @@ tasks.withType<GenerateMavenPom>().configureEach {
         require(pomXml.indexOf("<scm>") >= 0) { "POM must have a scm element $destination" }
     }
 }
+
+tasks.prepareRelease.configure { dependsOn(tasks.named("publishToSonatype")) }

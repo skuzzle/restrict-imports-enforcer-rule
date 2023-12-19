@@ -1,29 +1,24 @@
-import org.apache.tools.ant.filters.ReplaceTokens
+import de.skuzzle.buildlogic.CopyAndFilterReadmeTask
 
 plugins {
     `base-conventions`
+    id("release-lifecycle")
 }
 
-// Don't use 'Copy' Task here otherwise the main directory will become an output
-tasks.register("generateReadmeAndReleaseNotes") {
+val generateReadmeAndReleaseNotes by tasks.creating(CopyAndFilterReadmeTask::class.java) {
     group = "documentation"
     description = "Copies the readme and release notes file into the root directory, replacing all placeholders"
-
-    doLast {
-        copy {
-            from(project.projectDir) {
-                include("*.md")
-            }
-            into(project.rootDir)
-            filter(ReplaceTokens::class, "tokens" to mapOf(
-                "project.version" to project.version as String,
-                "project.groupId" to project.group as String,
-                "version.junit" to libs.versions.junit5.get(),
-                "version.enforcer-api.min" to libs.versions.enforcerMin.get(),
-                "version.enforcer-api.max" to libs.versions.enforcerMax.get(),
-                "github.user" to project.property("githubUser") as String,
-                "github.name" to project.property("githubRepo") as String
-            ))
-        }
-    }
+    sourceDir.set(project.projectDir)
+    targetDir.set(project.rootDir)
+    replaceTokens = mapOf(
+        "project.version" to project.version as String,
+        "project.groupId" to project.group as String,
+        "version.junit" to libs.versions.junit5.get(),
+        "version.enforcer-api.min" to libs.versions.enforcerMin.get(),
+        "version.enforcer-api.max" to libs.versions.enforcerMax.get(),
+        "github.user" to project.property("githubUser") as String,
+        "github.name" to project.property("githubRepo") as String
+    )
 }
+
+tasks.prepareRelease.configure { dependsOn(generateReadmeAndReleaseNotes) }

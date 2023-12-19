@@ -13,5 +13,6 @@ apply(from = "build-logic/src/main/kotlin/build-cache-conventions.settings.gradl
 rootProject.name="plugins"
 
 include("build-logic")
+include("release-plugin")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

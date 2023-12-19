@@ -34,19 +34,6 @@ repositories {
     mavenCentral()
 }
 
-if (project.pluginManager.hasPlugin("maven-publish")) {
-    configure<PublishingExtension> {
-        publications {
-            named<MavenPublication>("maven") {
-                from(components["java"])
-                pom {
-                    description.set("Module \"${project.name}\" of Restrict-Imports")
-                }
-            }
-        }
-    }
-}
-
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
     javaLauncher.set(javaToolchains.launcherFor {

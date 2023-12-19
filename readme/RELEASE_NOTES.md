@@ -43,4 +43,3 @@ Gradle version catalog (Toml)
 [plugins]
 restrict-imports = { id = "de.skuzzle.restrict.imports", version = "@project.version@" }
 ```
-

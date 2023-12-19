@@ -53,7 +53,8 @@ val m2Repository: Provider<Directory> = rootProject.layout.buildDirectory.dir("m
 
 publishing {
     publications {
-        create<MavenPublication>("maven") {
+        withType(MavenPublication::class.java) {
+            signing.sign(this)
             pom {
                 name.set(provider { project.description ?: "${project.group}:${project.name}" })
                 description.set(provider { project.name })
@@ -100,3 +101,5 @@ tasks.withType<GenerateMavenPom>().configureEach {
 }
 
 tasks.prepareRelease.configure { dependsOn(tasks.named("publishToSonatype")) }
+
+

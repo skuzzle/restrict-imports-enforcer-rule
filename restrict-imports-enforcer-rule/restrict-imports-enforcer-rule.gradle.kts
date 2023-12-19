@@ -1,6 +1,8 @@
 plugins {
-    `published-java-component`
+    id("published-java-component")
+    id("verify-publication-conventions")
 }
+
 description = "Restrict Imports Enforcer Rule"
 extra.apply {
     set("automaticModuleName", "de.skuzzle.enforcer.restrictimports.rule")
@@ -23,4 +25,20 @@ dependencies {
     testImplementation(libs.assertj.core)
     testImplementation(libs.equalsverifier)
     testImplementation(libs.jimfs)
+}
+
+val maven by publishing.publications.creating(MavenPublication::class) {
+    artifactId = "restrict-imports-enforcer-rule"
+    artifact(tasks.named("javadocJar"))
+    artifact(tasks.named("sourcesJar"))
+    shadow.component(this)
+}
+
+verifyPublication {
+    expectPublishedArtifact("restrict-imports-enforcer-rule") {
+        withClassifiers("", "javadoc", "sources")
+//        dependencies should be shadowed
+        withPomFileContentMatching("Should have no <dependencies>") { content -> !content.contains("<dependencies>") }
+        withPomFileMatchingMavenCentralRequirements()
+    }
 }

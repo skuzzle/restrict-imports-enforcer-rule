@@ -1,5 +1,5 @@
 plugins {
-    `published-java-component`
+    `java-conventions`
 }
 description = "Restrict Imports Enforcer Rule Core"
 extra.apply {

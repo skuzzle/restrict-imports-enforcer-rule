@@ -14,5 +14,6 @@ rootProject.name="plugins"
 
 include("build-logic")
 include("release-plugin")
+include("verify-publication")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

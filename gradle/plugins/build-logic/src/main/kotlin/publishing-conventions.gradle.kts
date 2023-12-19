@@ -28,11 +28,12 @@ tasks.withType<PublishToMavenLocal>().configureEach {
     dependsOn(tasks.build)
 }
 
+
 signing {
     // The gpg key is injected by jenkins as a base64 encoded string. That is because jenkins doesn't support
-    // storing secret text credentials with newlines. Thus we need to decode the base64 string before we can sign
-    val signingKey: String? = base64Decode(findProperty("base64EncodedAsciiArmoredSigningKey") as String?)
-    val signingPassword: String? = findProperty("signingPassword") as String?
+    // storing secret text credentials with newlines. Thus, we need to decode the base64 string before we can sign
+    val signingKey: String? = base64Decode(providers.gradleProperty("base64EncodedAsciiArmoredSigningKey").orNull)
+    val signingPassword: String? = providers.gradleProperty("signingPassword").orNull
     useInMemoryPgpKeys(signingKey, signingPassword)
     sign(publishing.publications)
 }

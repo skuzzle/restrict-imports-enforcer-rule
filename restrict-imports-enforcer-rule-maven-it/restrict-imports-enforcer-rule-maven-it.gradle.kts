@@ -15,6 +15,7 @@ listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
         tasks.create<MavenExec>("runMavenIntegrationTests_$safeVersion") {
             description = "Executes Maven Enforcer Plugin integration tests"
             group = "verification"
+            notCompatibleWithConfigurationCache("Inherently not")
 
             val mavenExecTask = this
             rootProject.subprojects.forEach { subproject ->

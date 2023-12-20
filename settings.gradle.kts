@@ -19,7 +19,7 @@ gradleEnterprise {
         termsOfServiceAgree = if (acceptTos) "yes" else null
         isUploadInBackground = !isCi
         capture {
-            isTaskInputFiles = true
+            isTaskInputFiles = false
         }
     }
 }

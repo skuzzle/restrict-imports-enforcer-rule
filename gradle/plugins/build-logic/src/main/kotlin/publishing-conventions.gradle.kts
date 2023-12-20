@@ -10,7 +10,6 @@ plugins {
 tasks.withType<Jar>().configureEach {
     manifest {
         attributes(
-            "Automatic-Module-Name" to provider { requireNotNull(project.findProperty("automaticModuleName")) },
             "Created-By" to "${System.getProperty("java.version")} (${System.getProperty("java.vendor")} ${System.getProperty("java.vm.version")})",
             "Specification-Title" to project.name,
             "Specification-Version" to (project.version as String).substringBefore('-'),
@@ -23,11 +22,6 @@ tasks.withType<Jar>().configureEach {
 tasks.withType<Sign>().configureEach {
     onlyIf("Run on CI") { project.isCI }
 }
-
-tasks.withType<PublishToMavenLocal>().configureEach {
-    dependsOn(tasks.build)
-}
-
 
 signing {
     // The gpg key is injected by jenkins as a base64 encoded string. That is because jenkins doesn't support

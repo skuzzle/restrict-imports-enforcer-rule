@@ -2,9 +2,7 @@ plugins {
     `java-conventions`
 }
 description = "Restrict Imports Enforcer Rule Core"
-extra.apply {
-    set("automaticModuleName", "de.skuzzle.enforcer.restrictimports.core")
-}
+
 dependencies {
     implementation(libs.slf4j)
     implementation(libs.javaparser)

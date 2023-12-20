@@ -8,5 +8,5 @@ plugins {
 }
 
 tasks.withType<ShadowJar>().configureEach {
-    archiveClassifier.set("")
+    archiveClassifier = ""
 }

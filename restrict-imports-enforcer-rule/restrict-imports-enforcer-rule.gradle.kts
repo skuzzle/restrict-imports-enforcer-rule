@@ -4,16 +4,14 @@ plugins {
 }
 
 description = "Restrict Imports Enforcer Rule"
-extra.apply {
-    set("automaticModuleName", "de.skuzzle.enforcer.restrictimports.rule")
-}
+
 dependencies {
     implementation(projects.restrictImportsEnforcerRuleCore)
     implementation(libs.slf4j)
 
-    implementation(libs.maven.core)
-    implementation(libs.maven.plugin.api)
-    implementation(libs.maven.enforcer.api)
+    compileOnly(libs.maven.core)
+    compileOnly(libs.maven.plugin.api)
+    compileOnly(libs.maven.enforcer.api)
 
     testImplementation(libs.mockito)
     testImplementation(libs.bytebuddy)
@@ -25,6 +23,10 @@ dependencies {
     testImplementation(libs.assertj.core)
     testImplementation(libs.equalsverifier)
     testImplementation(libs.jimfs)
+
+    testImplementation(libs.maven.core)
+    testImplementation(libs.maven.plugin.api)
+    testImplementation(libs.maven.enforcer.api)
 }
 
 val maven by publishing.publications.creating(MavenPublication::class) {
@@ -34,11 +36,19 @@ val maven by publishing.publications.creating(MavenPublication::class) {
     shadow.component(this)
 }
 
+tasks.jar.configure {
+    onlyIf { false }
+}
+
 verifyPublication {
     expectPublishedArtifact("restrict-imports-enforcer-rule") {
         withClassifiers("", "javadoc", "sources")
 //        dependencies should be shadowed
         withPomFileContentMatching("Should have no <dependencies>") { content -> !content.contains("<dependencies>") }
         withPomFileMatchingMavenCentralRequirements()
+        withJarContaining {
+            // Test for shadowed files
+            aFile("de/skuzzle/enforcer/restrictimports/analyze/AnalyzeResult.class")
+        }
     }
 }

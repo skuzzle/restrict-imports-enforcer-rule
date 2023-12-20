@@ -41,7 +41,7 @@ abstract class VerifyPublicationTask : DefaultTask() {
         val publicationBasePath = verificationRepoDir.dir(groupId.replace(".", File.separator))
 
         val files = publicationBasePath.asFile.list()?.size
-        require(files == artifacts.size) { "Expected ${artifacts.size} published artifacts but found $files" }
+        require(files == artifacts.size) { "Expected ${artifacts.size} published artifacts in ${publicationBasePath.asFile} but found $files" }
 
         artifacts.forEach { verifySingleArtifact(it, version, publicationBasePath) }
     }

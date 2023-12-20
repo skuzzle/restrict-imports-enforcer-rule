@@ -9,13 +9,12 @@ plugins {
 
 group = "de.skuzzle.restrictimports"
 description = "Restrict Imports Gradle Plugin"
-extra.apply {
-    set("automaticModuleName", "de.skuzzle.restrictimports.gradle")
-}
 
+val gradlePluginArtifactId = "restrict-imports-gradle-plugin"
+base.archivesName.set(gradlePluginArtifactId)
 afterEvaluate {
     val pluginMaven by publishing.publications.getting(MavenPublication::class) {
-        //artifactId = project.name
+        artifactId = project.name
     }
 }
 gradlePlugin {
@@ -30,11 +29,16 @@ gradlePlugin {
 }
 
 verifyPublication {
+    groupId = "de.skuzzle.restrictimports"
     expectPublishedArtifact("restrict-imports-gradle-plugin") {
         withClassifiers("", "javadoc", "sources")
         // dependencies should be shadowed
         withPomFileContentMatching("Should have no <dependencies>") { content -> !content.contains("<dependencies>") }
         withPomFileMatchingMavenCentralRequirements()
+        withJarContaining {
+            // Test for shadowed files
+            aFile("de/skuzzle/enforcer/restrictimports/analyze/AnalyzeResult.class")
+        }
     }
     expectPublishedArtifact("de.skuzzle.restrictimports.gradle.plugin") {
         withPomFileMatchingMavenCentralRequirements()

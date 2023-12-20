@@ -5,7 +5,10 @@ plugins {
     `maven-publish`
 }
 
-val extension = extensions.create<VerifyPublicationExtension>(VerifyPublicationExtension.NAME)
+val extension = extensions.create<VerifyPublicationExtension>(VerifyPublicationExtension.NAME).apply {
+    groupId = project.group.toString()
+}
+
 extension.verificationRepoDir.convention(layout.buildDirectory.dir("verifyPublication/repository"))
 
 publishing {
@@ -33,7 +36,7 @@ val verifyPublication by tasks.creating(VerifyPublicationTask::class.java) {
     dependsOn(clearTempRepo, publishToVerificationRepoTasks)
 
     version = project.version.toString()
-    groupId = project.group.toString()
+    groupId = extension.groupId
     verificationRepoDir = extension.verificationRepoDir
     artifacts = extension.artifacts
 }

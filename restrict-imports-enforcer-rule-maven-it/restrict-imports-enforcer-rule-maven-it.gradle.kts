@@ -8,6 +8,9 @@ plugins {
 // TODO: fix duplication (see publishing-conventions)
 val m2Repository: Provider<Directory> = rootProject.layout.buildDirectory.dir("m2")
 
+val publishEnforcerRuleTask =
+    projects.restrictImportsEnforcerRule.dependencyProject.tasks.findByName("publishMavenPublicationToLocalIntegrationTestsRepository")
+
 listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
     .map { it.get() }
     .forEach { enforcerVersion ->
@@ -18,13 +21,10 @@ listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
             notCompatibleWithConfigurationCache("Inherently not")
 
             val mavenExecTask = this
-            rootProject.subprojects.forEach { subproject ->
-                val publishToTestRepoTask = subproject.tasks.findByName("publishMavenPublicationToLocalIntegrationTestsRepository")
-                if (publishToTestRepoTask != null) {
-                    mavenExecTask.dependsOn(publishToTestRepoTask)
-                    mavenExecTask.inputs.files(publishToTestRepoTask.outputs)
-                    mavenExecTask.inputs.files(publishToTestRepoTask.project.tasks.withType<JavaCompile>())
-                }
+            with(publishEnforcerRuleTask) {
+                mavenExecTask.dependsOn(this)
+                mavenExecTask.inputs.files(this?.outputs)
+                mavenExecTask.inputs.files(this?.project?.tasks?.withType<JavaCompile>())
             }
 
             val outputDir = "test-against-$enforcerVersion"

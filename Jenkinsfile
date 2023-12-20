@@ -17,17 +17,26 @@ pipeline {
     ORG_GRADLE_PROJECT_base64EncodedAsciiArmoredSigningKey  = credentials('gpg_private_key')
   }
   stages {
-    stage('Build') {
+    stage('Assemble') {
       steps {
         withGradle {
-          sh './gradlew build'
+          sh './gradlew assemble'
+        }
+      }
+    }
+    stage('Test') {
+    parallel {
+    stage('Functional tests') {
+      steps {
+        withGradle {
+          sh './gradlew functionalTest'
         }
       }
     }
     stage('Report Coverage') {
       steps {
         withGradle {
-          sh './gradlew coveralls'
+          sh './gradlew test coveralls'
         }
       }
     }
@@ -37,6 +46,8 @@ pipeline {
           sh './gradlew generateReadmeAndReleaseNotes'
         }
       }
+    }
+    }
     }
     stage('Deploy SNAPSHOT') {
       when {

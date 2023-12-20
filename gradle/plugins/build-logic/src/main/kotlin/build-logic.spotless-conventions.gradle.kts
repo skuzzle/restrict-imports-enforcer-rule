@@ -1,6 +1,12 @@
+import com.diffplug.gradle.spotless.SpotlessCheck
+import com.diffplug.gradle.spotless.SpotlessTask
+
 plugins {
     id("com.diffplug.spotless")
+    id("build-logic.lifecycle")
 }
+
+tasks.named("quickCheck").configure { dependsOn(tasks.withType<SpotlessCheck>()) }
 
 spotless {
     format("misc") {

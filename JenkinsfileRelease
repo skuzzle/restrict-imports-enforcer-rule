@@ -45,10 +45,10 @@ pipeline {
 				sh 'git config user.name "Jenkins"'
 			}
 		}
-		stage('Assemble') {
+		stage('Quickcheck') {
 			steps {
 				withGradle {
-					sh './gradlew assemble'
+					sh './gradlew quickCheck'
 				}
 			}
 		}

@@ -1,3 +1,5 @@
+import com.diffplug.gradle.spotless.SpotlessCheck
+
 plugins {
     id("build-logic.base")
     id("java-library")
@@ -12,42 +14,45 @@ java {
     withSourcesJar()
 }
 
-tasks.compileJava {
-    javaCompiler = javaToolchains.compilerFor {
-        languageVersion = productionCodeJavaVersion
-    }
-}
+tasks {
 
-tasks.compileTestJava {
-    javaCompiler = javaToolchains.compilerFor {
-        languageVersion = testCodeJavaVersion
-    }
-}
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-    javaLauncher.set(javaToolchains.launcherFor {
-        languageVersion = testCodeJavaVersion
-    })
-}
-
-
-
-tasks.withType<JavaCompile>().configureEach {
-    options.encoding = "UTF-8"
-    options.compilerArgs + "-parameters"
-}
-
-tasks.javadoc {
-    options {
-        (this as StandardJavadocDocletOptions).apply {
-            tags = listOf(
-                "apiNote:a:API Note:",
-                "implSpec:a:Implementation Requirements:",
-                "implNote:a:Implementation Note:"
-            )
+    compileJava {
+        javaCompiler = javaToolchains.compilerFor {
+            languageVersion = productionCodeJavaVersion
         }
     }
+
+    compileTestJava {
+        javaCompiler = javaToolchains.compilerFor {
+            languageVersion = testCodeJavaVersion
+        }
+    }
+
+    withType<Test>().configureEach {
+        useJUnitPlatform()
+        javaLauncher.set(javaToolchains.launcherFor {
+            languageVersion = testCodeJavaVersion
+        })
+    }
+
+    withType<JavaCompile>().configureEach {
+        options.encoding = "UTF-8"
+        options.compilerArgs + "-parameters"
+    }
+
+    javadoc {
+        options {
+            (this as StandardJavadocDocletOptions).apply {
+                tags = listOf(
+                    "apiNote:a:API Note:",
+                    "implSpec:a:Implementation Requirements:",
+                    "implNote:a:Implementation Note:"
+                )
+            }
+        }
+    }
+
+    named("quickCheck").configure { dependsOn(compileJava, compileTestJava, javadoc, tasks.named("test")) }
 }
 
 repositories {

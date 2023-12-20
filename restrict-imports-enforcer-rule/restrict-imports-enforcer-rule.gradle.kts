@@ -59,4 +59,3 @@ verifyPublication {
 }
 
 tasks.prepareRelease.configure { dependsOn(tasks.publishToSonatype) }
-

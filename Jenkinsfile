@@ -17,10 +17,10 @@ pipeline {
 		ORG_GRADLE_PROJECT_base64EncodedAsciiArmoredSigningKey  = credentials('gpg_private_key')
 	}
 	stages {
-		stage('Assemble') {
+		stage('Quickcheck') {
 			steps {
 				withGradle {
-					sh './gradlew assemble'
+					sh './gradlew quickCheck'
 				}
 			}
 		}

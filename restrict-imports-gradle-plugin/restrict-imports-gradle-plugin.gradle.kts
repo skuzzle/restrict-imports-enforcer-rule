@@ -73,3 +73,5 @@ testing {
     }
 }
 gradlePlugin.testSourceSets.add(sourceSets["functionalTest"])
+
+tasks.prepareRelease.configure { dependsOn(tasks.publishPlugins) }

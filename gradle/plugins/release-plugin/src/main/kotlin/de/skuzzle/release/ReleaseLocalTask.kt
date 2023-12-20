@@ -34,7 +34,7 @@ abstract class ReleaseLocalTask : AbstractReleaseStep() {
         }
     }
 
-    fun tryParseVersion(v: String): Exception? {
+    private fun tryParseVersion(v: String): Exception? {
         return try {
             Version.parseVersion(v)
             null

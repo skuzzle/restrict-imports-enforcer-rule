@@ -78,7 +78,7 @@ fun calculateVersion(): String {
     return releaseExtension.releaseVersion
         .orElse(provider {
             Version.parseVersion(latestVersion)
-                .nextPatch(git.currentBranch())
+                .nextPatch("${git.currentBranch()}-SNAPSHOT")
                 .toString()
         })
         .get()

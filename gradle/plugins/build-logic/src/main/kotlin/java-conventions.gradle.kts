@@ -1,5 +1,3 @@
-import com.gradle.enterprise.gradleplugin.testselection.PredictiveTestSelectionProfile;
-
 plugins {
     id("base-conventions")
     id("java-library")
@@ -14,6 +12,27 @@ java {
     withSourcesJar()
 }
 
+tasks.compileJava {
+    javaCompiler = javaToolchains.compilerFor {
+        languageVersion = productionCodeJavaVersion
+    }
+}
+
+tasks.compileTestJava {
+    javaCompiler = javaToolchains.compilerFor {
+        languageVersion = testCodeJavaVersion
+    }
+}
+
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
+    javaLauncher.set(javaToolchains.launcherFor {
+        languageVersion = testCodeJavaVersion
+    })
+}
+
+
+
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
     options.compilerArgs + "-parameters"
@@ -25,7 +44,8 @@ tasks.javadoc {
             tags = listOf(
                 "apiNote:a:API Note:",
                 "implSpec:a:Implementation Requirements:",
-                "implNote:a:Implementation Note:")
+                "implNote:a:Implementation Note:"
+            )
         }
     }
 }
@@ -34,19 +54,3 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-    javaLauncher.set(javaToolchains.launcherFor {
-        languageVersion.set(testCodeJavaVersion)
-    })
-}
-
-tasks.compileJava {
-    sourceCompatibility = productionCodeJavaVersion.toString()
-    targetCompatibility = productionCodeJavaVersion.toString()
-}
-
-tasks.compileTestJava {
-    sourceCompatibility = testCodeJavaVersion.toString()
-    targetCompatibility = testCodeJavaVersion.toString()
-}

@@ -15,6 +15,7 @@ dependencies {
     implementation(libs.gradle.commonCustomUserData)
     implementation(libs.gradle.enterprise)
     implementation(libs.shadowPlugin)
+    implementation(libs.foojayResolver)
     implementation(projects.releasePlugin)
 }
 

@@ -17,6 +17,7 @@ dependencies {
     implementation(libs.shadowPlugin)
     implementation(libs.foojayResolver)
     implementation(projects.releasePlugin)
+    implementation(projects.verifyPublication)
 }
 
 tasks {

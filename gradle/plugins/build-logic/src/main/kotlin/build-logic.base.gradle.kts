@@ -2,7 +2,7 @@ plugins {
     base
     eclipse
     idea
-    id("spotless-conventions")
+    id("build-logic.spotless-conventions")
 }
 
 repositories {

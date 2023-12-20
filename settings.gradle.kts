@@ -7,7 +7,7 @@ pluginManagement {
 }
 
 plugins {
-    id("settings-conventions")
+    id("build-logic.settings-conventions")
 }
 
 var isCi = System.getenv("CI")?.toBoolean() ?: false

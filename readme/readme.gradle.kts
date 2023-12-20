@@ -1,8 +1,8 @@
 import de.skuzzle.buildlogic.CopyAndFilterReadmeTask
 
 plugins {
-    `base-conventions`
-    id("release-lifecycle")
+    id("build-logic.base")
+    id("build-logic.release-lifecycle")
 }
 
 val generateReadmeAndReleaseNotes by tasks.creating(CopyAndFilterReadmeTask::class.java) {

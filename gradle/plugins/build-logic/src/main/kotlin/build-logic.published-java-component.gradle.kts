@@ -2,8 +2,9 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     // NOTE: plugin application order is relevant here!
-    id("publishing-conventions")
-    id("java-conventions")
+    id("build-logic.publishing-conventions")
+    id("build-logic.java-component")
+    id("build-logic.verify-publication")
     id("com.github.johnrengelman.shadow")
 }
 

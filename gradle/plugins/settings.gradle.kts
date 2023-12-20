@@ -8,7 +8,7 @@ dependencyResolutionManagement {
 
 // kind of a hack to reuse the build cache configuration for both the included plugin build as well as
 // the main build.
-apply(from = "build-logic/src/main/kotlin/build-cache-conventions.settings.gradle.kts")
+apply(from = "build-logic/src/main/kotlin/build-logic.build-cache-conventions.settings.gradle.kts")
 
 rootProject.name="plugins"
 

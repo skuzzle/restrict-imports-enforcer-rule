@@ -1,6 +1,7 @@
 plugins {
-    `java-conventions`
+    id("build-logic.java-component")
 }
+
 description = "Restrict Imports Enforcer Rule Core"
 
 dependencies {

@@ -1,7 +1,7 @@
 import com.github.dkorotych.gradle.maven.exec.MavenExec
 
 plugins {
-    `base-conventions`
+    id("build-logic.base")
     alias(libs.plugins.mavenExec)
 }
 

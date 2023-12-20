@@ -4,8 +4,8 @@ plugins {
 
 spotless {
     format("misc") {
-        target("*.gradle.kts", "*.gradle", "buildSrc/**/*.gradle", "buildSrc/**/*.gradle.kts", "*.gitignore")
-        targetExclude("buildSrc/build/**")
+        target("*.gradle.kts", "*.gradle", "gradle/**/*.gradle", "gradle/**/*.gradle.kts", "*.gitignore")
+        targetExclude("gradle/**/build/**")
         trimTrailingWhitespace()
         indentWithSpaces()
         endWithNewline()
@@ -15,6 +15,11 @@ spotless {
         target("*.adoc", "*.md", "src/**/*.adoc", "src/**/*.md")
         trimTrailingWhitespace()
         endWithNewline()
+    }
+
+    groovy {
+        target("**Jenkinsfile", "**JenkinsfileRelease")
+        greclipse()
     }
 
     pluginManager.withPlugin("java") {

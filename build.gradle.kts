@@ -2,8 +2,8 @@ import de.skuzzle.buildlogic.AcceptGradleToSTask
 
 plugins {
     alias(libs.plugins.nexus.publish)
-    `base-conventions`
-    id("release-conventions")
+    id("build-logic.base")
+    id("build-logic.release")
 }
 
 release {

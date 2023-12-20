@@ -1,6 +1,5 @@
 plugins {
-    id("published-java-component")
-    id("verify-publication-conventions")
+    id("build-logic.published-java-component")
 }
 
 description = "Restrict Imports Enforcer Rule"

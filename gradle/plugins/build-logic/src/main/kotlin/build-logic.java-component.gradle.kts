@@ -1,5 +1,5 @@
 plugins {
-    id("base-conventions")
+    id("build-logic.base")
     id("java-library")
     id("jacoco")
 }
@@ -53,4 +53,3 @@ tasks.javadoc {
 repositories {
     mavenCentral()
 }
-

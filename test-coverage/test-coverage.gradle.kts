@@ -1,5 +1,5 @@
 plugins {
-    `base-conventions`
+    id("build-logic.base")
     id("jacoco-report-aggregation")
     alias(libs.plugins.coveralls)
 }

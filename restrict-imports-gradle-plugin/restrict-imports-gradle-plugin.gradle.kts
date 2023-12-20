@@ -3,8 +3,7 @@ plugins {
     `kotlin-dsl`
     groovy
     `jvm-test-suite`
-    id("published-java-component")
-    id("verify-publication-conventions")
+    id("build-logic.published-java-component")
 }
 
 group = "de.skuzzle.restrictimports"

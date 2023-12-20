@@ -1,10 +1,10 @@
 import java.util.*
 
 plugins {
-    id("base-conventions")
+    id("build-logic.base")
+    id("build-logic.release-lifecycle")
     id("maven-publish")
     id("signing")
-    id("release-lifecycle")
 }
 
 tasks.withType<Jar>().configureEach {
@@ -96,5 +96,3 @@ tasks.withType<GenerateMavenPom>().configureEach {
 }
 
 tasks.prepareRelease.configure { dependsOn(tasks.named("publishToSonatype")) }
-
-

@@ -51,8 +51,6 @@ tasks {
             }
         }
     }
-
-    named("quickCheck").configure { dependsOn(compileJava, compileTestJava, javadoc, tasks.named("test")) }
 }
 
 repositories {

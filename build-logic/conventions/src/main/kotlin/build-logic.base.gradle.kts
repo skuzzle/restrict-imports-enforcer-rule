@@ -12,4 +12,3 @@ repositories {
     mavenCentral()
 }
 
-tasks.named("quickCheck").configure { dependsOn(tasks.withType<VerifyPublicationTask>()) }

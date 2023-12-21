@@ -12,12 +12,6 @@ repositories {
 dependencies {
     implementation(kotlin("gradle-plugin"))
     implementation(libs.gradle.spotless)
-    implementation(libs.gradle.commonCustomUserData)
-    implementation(libs.gradle.enterprise)
-    implementation(libs.shadowPlugin)
-    implementation(libs.foojayResolver)
-    implementation(projects.releasePlugin)
-    implementation(projects.verifyPublication)
 }
 
 tasks {

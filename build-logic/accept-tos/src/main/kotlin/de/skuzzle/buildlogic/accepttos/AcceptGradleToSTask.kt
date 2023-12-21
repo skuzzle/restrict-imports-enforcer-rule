@@ -1,4 +1,4 @@
-package de.skuzzle.buildlogic
+package de.skuzzle.buildlogic.accepttos
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.provider.Property
@@ -8,6 +8,9 @@ import java.nio.file.Files
 import java.nio.file.Path
 
 abstract class AcceptGradleToSTask : DefaultTask() {
+    companion object {
+        val ACCEPT_FILE_NAME = "YOU ACCEPTED THE TOS FOR PUBLISHING BUILD SCANS"
+    }
 
     @get:Input
     abstract val markerFile: Property<String>

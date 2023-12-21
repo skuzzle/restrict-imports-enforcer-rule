@@ -1,19 +1,21 @@
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            from(files("../libs.versions.toml"))
+            from(files("../gradle/libs.versions.toml"))
         }
     }
 }
 
 // kind of a hack to reuse the build cache configuration for both the included plugin build as well as
 // the main build.
-apply(from = "build-logic/src/main/kotlin/build-logic.build-cache-conventions.settings.gradle.kts")
+apply(from = "conventions/src/main/kotlin/build-logic.build-cache-conventions.settings.gradle.kts")
 
-rootProject.name="plugins"
+rootProject.name="build-logic"
 
-include("build-logic")
+include("accept-tos")
+include("conventions")
 include("release-plugin")
 include("verify-publication")
+include("code-style")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

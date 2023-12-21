@@ -3,7 +3,7 @@ plugins {
 }
 
 tasks {
-    val quickCheck by creating {
+    val quickCheck by registering {
         group = "Lifecycle"
     }
 }

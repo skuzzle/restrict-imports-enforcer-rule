@@ -1,12 +1,6 @@
-import com.diffplug.gradle.spotless.SpotlessCheck
-import com.diffplug.gradle.spotless.SpotlessTask
-
 plugins {
     id("com.diffplug.spotless")
-    id("build-logic.lifecycle")
 }
-
-tasks.named("quickCheck").configure { dependsOn(tasks.withType<SpotlessCheck>()) }
 
 spotless {
     format("misc") {
@@ -29,7 +23,7 @@ spotless {
     }
 
     pluginManager.withPlugin("java") {
-        val configDir = rootProject.layout.projectDirectory.dir("gradle/config/eclipse")
+        val configDir = rootProject.layout.projectDirectory.dir("code-style/eclipse")
         val importOrderConfigFile = configDir.file("eclipse.importorder")
         val javaFormatterConfigFile = configDir.file("formatter-settings.xml")
 

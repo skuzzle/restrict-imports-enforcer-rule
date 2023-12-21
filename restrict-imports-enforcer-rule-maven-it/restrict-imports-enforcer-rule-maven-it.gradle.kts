@@ -14,6 +14,7 @@ val publishEnforcerRuleTask =
 val functionalTest by tasks.creating {
     group = "verification"
 }
+val checkTask = tasks.named("check")
 
 listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
     .map { it.get() }
@@ -24,8 +25,11 @@ listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
             group = "verification"
             notCompatibleWithConfigurationCache("Inherently not")
 
-            functionalTest.dependsOn(this)
             val mavenExecTask = this
+
+            functionalTest.dependsOn(mavenExecTask)
+            tasks.check.configure { dependsOn(mavenExecTask) }
+
             with(publishEnforcerRuleTask) {
                 mavenExecTask.dependsOn(this)
                 mavenExecTask.inputs.files(this?.outputs)

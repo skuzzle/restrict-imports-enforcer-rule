@@ -1,16 +1,14 @@
-import com.diffplug.gradle.spotless.SpotlessCheck
 import de.skuzzle.restrictimports.verifypublication.VerifyPublicationTask
-import gradle.kotlin.dsl.accessors._516e34ac18c4e121e5f0f9bca9fd64a8.compileJava
-import gradle.kotlin.dsl.accessors._516e34ac18c4e121e5f0f9bca9fd64a8.compileTestJava
-import gradle.kotlin.dsl.accessors._516e34ac18c4e121e5f0f9bca9fd64a8.javadoc
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 tasks.named("quickCheck").configure {
     dependsOn(
         tasks.withType<VerifyPublicationTask>(),
-        tasks.withType<SpotlessCheck>(),
-        tasks.compileJava,
-        tasks.compileTestJava,
-        tasks.javadoc,
+        tasks.named("spotlessCheck"),
+        tasks.withType<JavaCompile>(),
+        tasks.withType<Javadoc>(),
+        tasks.withType<KotlinCompile>(),
+        tasks.withType<GroovyCompile>(),
         tasks.named("test")
     )
 }

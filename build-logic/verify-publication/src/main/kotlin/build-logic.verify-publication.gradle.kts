@@ -40,3 +40,4 @@ val verifyPublication by tasks.creating(VerifyPublicationTask::class.java) {
     verificationRepoDir = extension.verificationRepoDir
     artifacts = extension.artifacts
 }
+tasks.named("check").configure { dependsOn(verifyPublication) }

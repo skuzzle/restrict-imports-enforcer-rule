@@ -1,5 +1,3 @@
-import com.diffplug.gradle.spotless.SpotlessCheck
-
 plugins {
     id("build-logic.base")
     id("java-library")

@@ -104,7 +104,6 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         def result = runAndFail(":restrictImports")
 
         then:
-        println result.output
         result.output.contains("Reason: Use slf4j for logging")
         result.output.contains("Banned imports detected")
         result.output.contains("Analysis of 1 file took")

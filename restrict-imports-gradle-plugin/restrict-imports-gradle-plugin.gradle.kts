@@ -4,6 +4,7 @@ plugins {
     groovy
     `jvm-test-suite`
     id("build-logic.published-java-component")
+    id("build-logic.release-extension")
 }
 
 group = "de.skuzzle.restrictimports"
@@ -74,4 +75,11 @@ testing {
 }
 gradlePlugin.testSourceSets.add(sourceSets["functionalTest"])
 
+tasks.publishPlugins.configure {
+    val dryRunEnabled = release.dryRun.get()
+    if (dryRunEnabled) {
+        logger.info("Setting gradle plugin-publish to 'validate-only' because release dry run is enabled")
+        setValidate(true)
+    }
+}
 tasks.prepareRelease.configure { dependsOn(tasks.publishPlugins) }

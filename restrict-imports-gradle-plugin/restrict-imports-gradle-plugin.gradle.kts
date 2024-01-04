@@ -25,6 +25,7 @@ gradlePlugin {
         implementationClass = "de.skuzzle.restrictimports.gradle.RestrictImportsPlugin"
         displayName = "Restrict Imports Gradle Plugin"
         description = project.description
+        tags = setOf("codestyle", "imports")
     }
 }
 

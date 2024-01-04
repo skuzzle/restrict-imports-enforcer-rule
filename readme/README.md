@@ -58,6 +58,12 @@ information or have a look at the [Full configuration example](#full-configurati
 
 ## Gradle quick start
 
+> **Caution**
+> Gradle support is quite new and should be considered experimental.
+> Documentation will follow, for now you can check out the func tests [here](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/gradle-plugin/restrict-imports-gradle-plugin/src/functionalTest/groovy/de/skuzzle/restrictimports/gradle/RestrictImportsGroovyFuncTest.groovy).
+>
+> Feedback is welcome and should be filed as new GitHub issue.
+
 ### ... with Groovy DSL
 ```
 plugins {

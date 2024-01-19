@@ -10,6 +10,7 @@ release {
     mainBranch.set("master")
     devBranch.set("develop")
     githubRepoOwner.set("skuzzle")
+    githubRepoName.set("restrict-imports-enforcer-rule")
     releaseNotesContent.set(providers.fileContents(layout.projectDirectory.file("RELEASE_NOTES.md")).asText)
 }
 

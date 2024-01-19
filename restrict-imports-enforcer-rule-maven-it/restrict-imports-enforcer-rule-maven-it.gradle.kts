@@ -14,7 +14,6 @@ val publishEnforcerRuleTask =
 val functionalTest by tasks.creating {
     group = "verification"
 }
-val checkTask = tasks.named("check")
 
 listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
     .map { it.get() }

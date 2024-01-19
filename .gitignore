@@ -14,9 +14,12 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 target
+build
+out
+.gradle
 
 # IntelliJ
 .idea/
 *.iml
-README.md
 gradle-enterprise-workspace-id
+YOU ACCEPTED THE TOS FOR PUBLISHING BUILD SCANS

@@ -1,20 +1,22 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=${project.version}&color=blue)](https://search.maven.org/artifact/${project.groupId}/restrict-imports-enforcer-rule/${project.version}/jar)
-[![Coverage Status](https://coveralls.io/repos/github/skuzzle/${github.name}/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/${github.name}?branch=master)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=@project.version@&color=blue)](https://search.maven.org/artifact/@project.groupId@/restrict-imports-enforcer-rule/@project.version@/jar)
+[![Coverage Status](https://coveralls.io/repos/github/skuzzle/@github.name@/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/@github.name@?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
 # restrict-imports-enforcer-rule
-Maven enforcer rule that bans certain imports. Keep your code base clean and free from
-usage of unwanted classes! [More](#rationale)
+Keep your code base clean and free from  usage of unwanted classes! [More](#rationale)
+
+Supported source files:
 - [x] Java
 - [x] Kotlin (since 0.15)
 - [x] Groovy (since 0.15)
-- [ ] Scala (see [Issue 24](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/24))
 
-Tested against _maven-enforcer-plugin_ versions `${version.min-supported-enforcer-plugin}` and `${version.max-supported-enforcer-plugin}`.
+- Tested against _maven-enforcer-plugin_ versions `@version.enforcer-api.min@` and `@version.enforcer-api.max@`.
 
-## Simple usage
+**NEW** in 2.5.0: We now also provide a Gradle plugin!
+
+## Maven quick start
 This is a minimal usage example. Please scroll down for detailed configuration
 information or have a look at the [Full configuration example](#full-configuration-example).
 
@@ -22,12 +24,12 @@ information or have a look at the [Full configuration example](#full-configurati
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-enforcer-plugin</artifactId>
-    <version>${version.enforcer-api}</version>
+    <version>@version.enforcer-api.max@</version>
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>${project.artifactId}</artifactId>
-            <version>${project.version}</version>
+            <groupId>@project.groupId@</groupId>
+            <artifactId>restrict-imports-enforcer-rule</artifactId>
+            <version>@project.version@</version>
         </dependency>
     </dependencies>
     <executions>
@@ -52,6 +54,38 @@ information or have a look at the [Full configuration example](#full-configurati
         </execution>
     </executions>
 </plugin>
+```
+
+## Gradle quick start
+
+> [!CAUTION]
+> Gradle support is quite new and should be considered experimental.
+> Documentation will follow, for now you can check out the func tests [here](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/gradle-plugin/restrict-imports-gradle-plugin/src/functionalTest/groovy/de/skuzzle/restrictimports/gradle/RestrictImportsGroovyFuncTest.groovy).
+>
+> Feedback is welcome and should be filed as new GitHub issue.
+
+### ... with Groovy DSL
+```
+plugins {
+    id("de.skuzzle.restrict.imports") version("@version@")
+}
+
+restrictImports {
+    reason = "Use slf4j for logging"
+    bannedImports = ["java.util.logging.**"]
+}
+```
+
+### ... with Kotlin DSL
+```
+plugins {
+    id("de.skuzzle.restrict.imports") version("@version@")
+}
+
+restrictImports {
+    reason.set("Use slf4j for logging")
+    bannedImports.set(listOf("java.util.logging.**"))
+}
 ```
 
 # Contents
@@ -152,7 +186,7 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
 ```
 
 ## Not-fixable imports
-> **Note**
+> [!NOTE]
 > This is an experimental feature added in 2.4.0
 
 In certain situations you might not be able to avoid using a banned import. For example if you implement an
@@ -178,7 +212,7 @@ you can allow them to be used only in some explicitly configured locations.
 
 You can add multiple _not-fixable_ definitions if you nest them in `<notFixables></notFixables>`.
 
-> **Note**
+> [!NOTE]
 > Not fixable definitions can not be nested in `<groups>` (see _Rule groups_ below). Not-fixables apply globally per
 > `RestrictImports` rule instance.
 
@@ -229,7 +263,7 @@ more specific `basePackage` of the second group. In that case, only the definiti
 class.
 
 ## Static imports
-> **Note**
+> [!NOTE]
 > Behavior of static import detection has been changed with version 2.0.0
 
 Every package pattern also automatically matches `static` imports. However, it is possible to explicitly mention the
@@ -292,16 +326,16 @@ configured in the pom file.
 
 ## Exclude source roots
 By default, all source roots reported by Maven is subject to the banned import checks, which for example includes but
-is not limited to `\${project.basedir}/src/main/java`, `\${project.basedir}/src/test/java`,
-`\${project.build.directory}/generated-sources/main/java` and
-`\${project.build.directory}/generated-test-sources/main/java`. You can exclude source root(s) using the
+is not limited to `${project.basedir}/src/main/java`, `${project.basedir}/src/test/java`,
+`${project.build.directory}/generated-sources/main/java` and
+`${project.build.directory}/generated-test-sources/main/java`. You can exclude source root(s) using the
 `excludedSourceRoot(s)` option, either absolute or relative path.
 ```xml
 <configuration>
     <rules>
         <RestrictImports>
             <excludedSourceRoots>
-                <excludedSourceRoot>\${project.build.directory}/generated-sources/main/java</excludedSourceRoot>
+                <excludedSourceRoot>${project.build.directory}/generated-sources/main/java</excludedSourceRoot>
                 <excludedSourceRoot>target/generated-test-sources/main/java</excludedSourceRoot>
             </excludedSourceRoots>
             <!-- ... -->
@@ -344,7 +378,7 @@ The option currently only affects parsing of java source files. When enabled, we
 java source file, creating an actual AST. This allows to also detect full qualified class usages but will be
 considerably slower.
 
-> **Warning**
+> [!WARNING]
 > In case a source file cannot be properly parsed, we try to fall back to our _native_ line-by-line parsing
 > approach described [here](#syntactical-limitation). A respective warning will be issued in the
 > report that is generated at the end.
@@ -382,7 +416,7 @@ String split operations and only reading each source file up until a non-import 
 discovered. We cover a set of esoteric edge cases, for example block comments within a single import statement and the
 like.
 
-> **Info**
+> !NOTE]
 > Plus side to this approach is, that we are mostly agnostic to the Java version you are using. Our parser doesn't
 > need updates even if you want to use latest Java language features in your code base.
 
@@ -416,7 +450,7 @@ pattern with no wild cards.
     <parseFullCompilationUnit>false</parseFullCompilationUnit>
     <parallel>true</parallel> <!-- Can be overridden with -Drestrictimports.parallel=... -->
     <excludedSourceRoots> <!-- Optional. Nesting not needed when specifying a excluded root -->
-        <excludedSourceRoot>\${project.build.directory}/generated-sources/main/java</excludedSourceRoot>
+        <excludedSourceRoot>${project.build.directory}/generated-sources/main/java</excludedSourceRoot>
     </excludedSourceRoots>
     <groups>
         <group> <!-- Optional. groups and group can be left out in simple configurations -->

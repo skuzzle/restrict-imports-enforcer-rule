@@ -1,5 +1,5 @@
 pluginManagement {
-    includeBuild("gradle/plugins")
+    includeBuild("build-logic")
     repositories {
         mavenLocal()
         gradlePluginPortal()
@@ -7,7 +7,7 @@ pluginManagement {
 }
 
 plugins {
-    id("settings-conventions")
+    id("build-logic.settings-conventions")
 }
 
 var isCi = System.getenv("CI")?.toBoolean() ?: false
@@ -19,7 +19,7 @@ gradleEnterprise {
         termsOfServiceAgree = if (acceptTos) "yes" else null
         isUploadInBackground = !isCi
         capture {
-            isTaskInputFiles = true
+            isTaskInputFiles = false
         }
     }
 }
@@ -29,6 +29,7 @@ rootProject.name = "restrict-imports"
 include("restrict-imports-enforcer-rule-core")
 include("restrict-imports-enforcer-rule")
 include("restrict-imports-enforcer-rule-maven-it")
+include("restrict-imports-gradle-plugin")
 
 include("readme")
 include("test-coverage")

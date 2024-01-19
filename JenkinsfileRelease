@@ -1,65 +1,85 @@
 pipeline {
-  options {
-    disableConcurrentBuilds()
-  }
-  agent {
-    docker {
-      // Need an image with git installed that is why we stick with maven image for now though we're using gradle
-      image 'maven:3.9.4-eclipse-temurin-11'
-      args '-v /home/jenkins/.m2:/var/maven/.m2 -v /home/jenkins/.gradle:/var/gradle/.gradle -v /home/jenkins/.gnupg:/.gnupg -e GRADLE_OPTS=-Duser.home=/var/gradle -e MAVEN_OPTS=-Duser.home=/var/maven -e MAVEN_CONFIG='
-    }
-  }
-  environment {
-    GITHUB = credentials('Github-Username-Pw')
-    GIT_ASKPASS='./.git-askpass'
-    RELEASE_GITHUB_TOKEN = credentials('github_registry_release')
-    RELEASE_MERGE_BRANCHES = 'true'
-    ORG_GRADLE_PROJECT_ghToken = credentials('github_registry_release')
-    ORG_GRADLE_PROJECT_sonatype = credentials('SONATYPE_NEXUS')
-    ORG_GRADLE_PROJECT_signingPassword = credentials('gpg_password')
-    ORG_GRADLE_PROJECT_base64EncodedAsciiArmoredSigningKey  = credentials('gpg_private_key')
-  }
-  parameters {
-    string(name: 'RELEASE_VERSION', defaultValue: '', description: 'Version to be released')
-    booleanParam(name: 'RELEASE_DRY_RUN', defaultValue: false, description: 'Whether to push releases to GitHub')
-  }
-  stages {
-    stage ('Ensure dev branch') {
-      when {
-        expression {
-            return env.BRANCH_NAME != 'develop';
-        }
-      }
-      steps {
-        error("Releasing is only possible from dev branch")
-      }
-    }
-    stage ('Set Git Information') {
-      steps {
-        sh 'echo \'echo \$GITHUB_PSW\' > ./.git-askpass'
-        sh 'chmod +x ./.git-askpass'
-        sh 'git config url."https://api@github.com/".insteadOf "https://github.com/"'
-        sh 'git config url."https://ssh@github.com/".insteadOf "ssh://git@github.com/"'
-        sh 'git config url."https://git@github.com/".insteadOf "git@github.com:"'
-        sh 'git config user.email "build@taddiken.online"'
-        sh 'git config user.name "Jenkins"'
-      }
-    }
-    stage('Verify') {
-      steps {
-        withGradle {
-          sh './gradlew check'
-        }
-      }
-    }
-    stage('Perform release') {
-      steps {
-        withGradle {
-          sh './gradlew prepareRelease'
-          sh './gradlew releaseLocal'
-          sh './gradlew pushRelease'
-        }
-      }
-    }
-  }
+	options {
+		disableConcurrentBuilds()
+	}
+	agent {
+		docker {
+			// Need an image with git installed that is why we stick with maven image for now though we're using gradle
+			image 'maven:3.9.4-eclipse-temurin-11'
+			args '-v /home/jenkins/.m2:/var/maven/.m2 -v /home/jenkins/.gradle:/var/gradle/.gradle -v /home/jenkins/.gnupg:/.gnupg -e GRADLE_OPTS=-Duser.home=/var/gradle -e MAVEN_OPTS=-Duser.home=/var/maven -e MAVEN_CONFIG='
+		}
+	}
+	environment {
+		GITHUB = credentials('Github-Username-Pw')
+		GIT_ASKPASS='./.git-askpass'
+		RELEASE_GITHUB_TOKEN = credentials('github_registry_release')
+		RELEASE_MERGE_BRANCHES = 'true'
+		ORG_GRADLE_PROJECT_ghToken = credentials('github_registry_release')
+		ORG_GRADLE_PROJECT_sonatype = credentials('SONATYPE_NEXUS')
+		ORG_GRADLE_PROJECT_signingPassword = credentials('gpg_password')
+		ORG_GRADLE_PROJECT_base64EncodedAsciiArmoredSigningKey  = credentials('gpg_private_key')
+		GRADLE_PUBLISH_KEY = credentials('gradle_publish_key')
+		GRADLE_PUBLISH_SECRET = credentials('gradle_publish_secret')
+	}
+	parameters {
+		string(name: 'RELEASE_VERSION', defaultValue: '', description: 'Version to be released')
+		booleanParam(name: 'RELEASE_DRY_RUN', defaultValue: false, description: 'Whether to push releases to GitHub')
+	}
+	stages {
+		stage ('Ensure dev branch') {
+			when {
+				expression {
+					return env.BRANCH_NAME != 'develop';
+				}
+			}
+			steps {
+				error("Releasing is only possible from dev branch")
+			}
+		}
+		stage ('Set Git Information') {
+			steps {
+				sh 'echo \'echo \$GITHUB_PSW\' > ./.git-askpass'
+				sh 'chmod +x ./.git-askpass'
+				sh 'git config url."https://api@github.com/".insteadOf "https://github.com/"'
+				sh 'git config url."https://ssh@github.com/".insteadOf "ssh://git@github.com/"'
+				sh 'git config url."https://git@github.com/".insteadOf "git@github.com:"'
+				sh 'git config user.email "build@taddiken.online"'
+				sh 'git config user.name "Jenkins"'
+			}
+		}
+		stage('Quickcheck') {
+			steps {
+				withGradle {
+					sh './gradlew quickCheck'
+				}
+			}
+		}
+		stage('Test') {
+			parallel {
+				stage('Func-tests') {
+					steps {
+						withGradle {
+							sh './gradlew functionalTest'
+						}
+					}
+				}
+				stage('Unit-tests') {
+					steps {
+						withGradle {
+							sh './gradlew test coveralls'
+						}
+					}
+				}
+			}
+		}
+		stage('Perform release') {
+			steps {
+				withGradle {
+					sh './gradlew prepareRelease'
+					sh './gradlew releaseGitLocal'
+					sh './gradlew pushRelease -Pgradle.publish.key=$GRADLE_PUBLISH_KEY -Pgradle.publish.secret=$GRADLE_PUBLISH_SECRET'
+				}
+			}
+		}
+	}
 }

@@ -1,10 +1,9 @@
 plugins {
-    `published-java-component`
+    id("build-logic.java-component")
 }
+
 description = "Restrict Imports Enforcer Rule Core"
-extra.apply {
-    set("automaticModuleName", "de.skuzzle.enforcer.restrictimports.core")
-}
+
 dependencies {
     implementation(libs.slf4j)
     implementation(libs.javaparser)

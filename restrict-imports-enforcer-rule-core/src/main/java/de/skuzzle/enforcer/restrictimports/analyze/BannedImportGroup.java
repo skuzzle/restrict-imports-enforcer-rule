@@ -209,11 +209,13 @@ public final class BannedImportGroup {
 
         private void checkGroupConsistency(BannedImportGroup group) {
             checkAmbiguous(group);
+            checkBasePackagesPresent(group);
             checkBannedImportsPresent(group);
             allowedImportMustMatchBannedPattern(group);
             checkBasePackageNotStatic(group);
             checkExclusionNotStatic(group);
             exclusionsMustMatchBasePattern(group);
+            checkNotFixables(group);
         }
 
         private void checkNotFixables(BannedImportGroup group) {
@@ -247,6 +249,12 @@ public final class BannedImportGroup {
         private void checkExclusionNotStatic(BannedImportGroup group) {
             if (group.getExclusions().stream().anyMatch(PackagePattern::isStatic)) {
                 throw new BannedImportDefinitionException("Exclusions must not be static");
+            }
+        }
+
+        private void checkBasePackagesPresent(BannedImportGroup group) {
+            if (group.getBasePackages().isEmpty()) {
+                throw new BannedImportDefinitionException("There are not base packages specified");
             }
         }
 

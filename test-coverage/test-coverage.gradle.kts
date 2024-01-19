@@ -1,5 +1,5 @@
 plugins {
-    `base-conventions`
+    id("build-logic.base")
     id("jacoco-report-aggregation")
     alias(libs.plugins.coveralls)
 }
@@ -20,16 +20,13 @@ reporting {
 }
 
 coveralls {
-    sourceDirs =  rootProject.allJavaModules()
+    sourceDirs = rootProject.allJavaModules()
         .flatMap { it.sourceSets["main"].allSource.srcDirs }
         .map { it.toString() }
-    jacocoReportPath = "${layout.buildDirectory.asFile.get().absolutePath}/reports/jacoco/${coverageReportName}/${coverageReportName}.xml"
-}
-
-tasks.named("check") {
-    dependsOn(tasks.named(coverageReportName))
+    jacocoReportPath =
+        "${layout.buildDirectory.asFile.get().absolutePath}/reports/jacoco/${coverageReportName}/${coverageReportName}.xml"
 }
 
 tasks.named("coveralls") {
-    dependsOn("testCodeCoverageReport")
+    dependsOn(coverageReportName)
 }

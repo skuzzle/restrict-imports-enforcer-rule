@@ -5,16 +5,18 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
 # restrict-imports-enforcer-rule
-Maven enforcer rule that bans certain imports. Keep your code base clean and free from
-usage of unwanted classes! [More](#rationale)
+Keep your code base clean and free from  usage of unwanted classes! [More](#rationale)
+
+Supported source files:
 - [x] Java
 - [x] Kotlin (since 0.15)
 - [x] Groovy (since 0.15)
-- [ ] Scala (see [Issue 24](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/24))
 
-Tested against _maven-enforcer-plugin_ versions `@version.enforcer-api.min@` and `@version.enforcer-api.max@`.
+- Tested against _maven-enforcer-plugin_ versions `@version.enforcer-api.min@` and `@version.enforcer-api.max@`.
 
-## Simple usage
+**NEW** in 2.5.0: We now also provide a Gradle plugin!
+
+## Maven quick start
 This is a minimal usage example. Please scroll down for detailed configuration
 information or have a look at the [Full configuration example](#full-configuration-example).
 
@@ -52,6 +54,38 @@ information or have a look at the [Full configuration example](#full-configurati
         </execution>
     </executions>
 </plugin>
+```
+
+## Gradle quick start
+
+> **Caution**
+> Gradle support is quite new and should be considered experimental.
+> Documentation will follow, for now you can check out the func tests [here](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/gradle-plugin/restrict-imports-gradle-plugin/src/functionalTest/groovy/de/skuzzle/restrictimports/gradle/RestrictImportsGroovyFuncTest.groovy).
+>
+> Feedback is welcome and should be filed as new GitHub issue.
+
+### ... with Groovy DSL
+```
+plugins {
+    id("de.skuzzle.restrict.imports") version("@version@")
+}
+
+restrictImports {
+    reason = "Use slf4j for logging"
+    bannedImports = ["java.util.logging.**"]
+}
+```
+
+### ... with Kotlin DSL
+```
+plugins {
+    id("de.skuzzle.restrict.imports") version("@version@")
+}
+
+restrictImports {
+    reason.set("Use slf4j for logging")
+    bannedImports.set(listOf("java.util.logging.**"))
+}
 ```
 
 # Contents

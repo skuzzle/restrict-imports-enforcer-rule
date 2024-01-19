@@ -5,16 +5,16 @@
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
 # restrict-imports-enforcer-rule
-Maven enforcer rule that bans certain imports. Keep your code base clean and free from
-usage of unwanted classes! [More](#rationale)
+Keep your code base clean and free from  usage of unwanted classes! [More](#rationale)
 - [x] Java
 - [x] Kotlin (since 0.15)
 - [x] Groovy (since 0.15)
-- [ ] Scala (see [Issue 24](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/24))
 
-Tested against _maven-enforcer-plugin_ versions `1.4.1` and `3.4.0`.
+- Tested against _maven-enforcer-plugin_ versions `1.4.1` and `3.4.0`.
 
-## Simple usage
+**NEW** in 2.5.0: We now also provide a Gradle plugin!
+
+## Maven quick start
 This is a minimal usage example. Please scroll down for detailed configuration
 information or have a look at the [Full configuration example](#full-configuration-example).
 
@@ -52,6 +52,32 @@ information or have a look at the [Full configuration example](#full-configurati
         </execution>
     </executions>
 </plugin>
+```
+
+## Gradle quick start
+
+### ... with Groovy DSL
+```
+plugins {
+    id("de.skuzzle.restrict.imports") version("@version@")
+}
+
+restrictImports {
+    reason = "Use slf4j for logging"
+    bannedImports = ["java.util.logging.**"]
+}
+```
+
+### ... with Kotlin DSL
+```
+plugins {
+    id("de.skuzzle.restrict.imports") version("@version@")
+}
+
+restrictImports {
+    reason.set("Use slf4j for logging")
+    bannedImports.set(listOf("java.util.logging.**"))
+}
 ```
 
 # Contents

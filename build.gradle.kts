@@ -9,6 +9,7 @@ plugins {
 release {
     mainBranch.set("master")
     devBranch.set("develop")
+    githubRepoOwner.set("skuzzle")
     releaseNotesContent.set(providers.fileContents(layout.projectDirectory.file("RELEASE_NOTES.md")).asText)
 }
 

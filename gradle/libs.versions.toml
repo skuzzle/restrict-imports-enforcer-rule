@@ -1,5 +1,5 @@
 [versions]
-junit5 = "5.10.0"
+junit5 = "5.10.1"
 assertj = "3.24.2"
 equalsverifier = "3.9"
 bytebuddy = "1.14.7"

@@ -49,18 +49,6 @@ pipeline {
 				}
 			}
 		}
-		stage('Deploy SNAPSHOT') {
-			when {
-				expression {
-					return env.BRANCH_NAME == 'develop';
-				}
-			}
-			steps {
-				withGradle {
-					sh './gradlew publishToSonatype'
-				}
-			}
-		}
 	}
 	post {
 		always {

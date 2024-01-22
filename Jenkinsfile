@@ -57,7 +57,7 @@ pipeline {
 			}
 			steps {
 				withGradle {
-					sh './gradlew sign publishToSonatype'
+					sh './gradlew publishToSonatype'
 				}
 			}
 		}

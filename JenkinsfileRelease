@@ -14,7 +14,7 @@ pipeline {
 		GIT_ASKPASS='./.git-askpass'
 		RELEASE_GITHUB_TOKEN = credentials('github_registry_release')
 		RELEASE_MERGE_BRANCHES = 'true'
-        BUILD_CACHE = credentials('build_cache')
+		BUILD_CACHE = credentials('build_cache')
 		ORG_GRADLE_PROJECT_ghToken = credentials('github_registry_release')
 		ORG_GRADLE_PROJECT_sonatype = credentials('SONATYPE_NEXUS')
 		ORG_GRADLE_PROJECT_signingPassword = credentials('gpg_password')

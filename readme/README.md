@@ -7,14 +7,16 @@
 # restrict-imports-enforcer-rule
 Keep your code base clean and free from  usage of unwanted classes! [More](#rationale)
 
+**NEW** in 2.5.0: We now also provide a Gradle plugin!
+
 Supported source files:
 - [x] Java
 - [x] Kotlin (since 0.15)
 - [x] Groovy (since 0.15)
 
+Compatibility:
+- Works with Java 8+
 - Tested against _maven-enforcer-plugin_ versions `@version.enforcer-api.min@` and `@version.enforcer-api.max@`.
-
-**NEW** in 2.5.0: We now also provide a Gradle plugin!
 
 ## Maven quick start
 This is a minimal usage example. Please scroll down for detailed configuration

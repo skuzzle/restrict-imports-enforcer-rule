@@ -1,20 +1,12 @@
 package de.skuzzle.restrictimports.gradle;
 
-import java.util.Collections;
-
-import javax.inject.Inject;
-
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
-import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.tasks.TaskCollection;
-import org.gradle.api.tasks.TaskProvider;
+
+import java.util.Collections;
 
 public abstract class RestrictImportsPlugin implements Plugin<Project> {
-
-    @Inject
-    protected abstract ProviderFactory getProviders();
 
     @Override
     public void apply(Project target) {

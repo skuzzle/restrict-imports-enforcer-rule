@@ -12,7 +12,7 @@ public abstract class RestrictImportsPlugin implements Plugin<Project> {
     public void apply(Project target) {
         final RestrictImportsExtension extension = target.getExtensions().create(RestrictImportsExtension.NAME,
                 RestrictImportsExtension.class);
-        Conventions.apply(target, extension);
+        Conventions.apply(target, extension, RestrictImports.DEFAULT_TASK_NAME);
 
         extension.getBasePackages().convention(Collections.singletonList("**"));
 

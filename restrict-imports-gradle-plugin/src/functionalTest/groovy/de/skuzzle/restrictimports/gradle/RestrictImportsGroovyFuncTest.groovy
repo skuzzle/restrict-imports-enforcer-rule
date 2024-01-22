@@ -83,6 +83,46 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         result.task(":defaultRestrictImports").outcome == TaskOutcome.FAILED
     }
 
+    def "should support up-to-date checks"() {
+        given:
+        javaClassWithImports([], "", "ClassWithNoBannedImports")
+
+        and:
+        buildFile << """\
+        plugins {
+            id("java")
+            id("de.skuzzle.restrictimports")
+        }
+
+        restrictImports {
+            reason = "Use slf4j for logging"
+            bannedImports = ["java.util.logging.**"]
+        }
+        """.stripIndent(true)
+
+        when:
+        def result1 = run(":restrictImports")
+
+        then:
+        workspace.resolve("build/restrictImports/restrictImports.txt").toFile().exists()
+        result1.task(":defaultRestrictImports").outcome == TaskOutcome.SUCCESS
+
+        when:
+        def result2 = run(":restrictImports")
+
+        then:
+        result2.task(":defaultRestrictImports").outcome == TaskOutcome.UP_TO_DATE
+
+        when:
+        javaClassWithImports(["java.util.logging.Logger"])
+
+        and:
+        def result3 = runAndFail(":restrictImports")
+
+        then:
+        result3.task(":defaultRestrictImports").outcome == TaskOutcome.FAILED
+    }
+
     def "detects simple banned import with custom RestrictImports task"() {
         given:
         javaClassWithImports(["java.util.logging.Logger"])
@@ -449,6 +489,8 @@ class RestrictImportsGroovyFuncTest extends BaseRestrictsImportsFuncTest {
         then:
         result.output.contains("Banned imports detected:")
         result.task(":ri1").outcome == TaskOutcome.FAILED
+        workspace.resolve("build/restrictImportsRi1/restrictImports.txt").toFile().exists()
         result.task(":ri2").outcome == TaskOutcome.FAILED
+        workspace.resolve("build/restrictImportsRi2/restrictImports.txt").toFile().exists()
     }
 }

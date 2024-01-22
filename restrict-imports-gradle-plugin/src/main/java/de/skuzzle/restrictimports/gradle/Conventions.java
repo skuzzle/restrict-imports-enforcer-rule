@@ -10,7 +10,7 @@ import org.gradle.api.tasks.SourceSetContainer;
 
 final class Conventions {
 
-    static void apply(Project project, RestrictImportsTaskConfiguration taskConfiguration) {
+    static void apply(Project project, RestrictImportsTaskConfiguration taskConfiguration, String taskName) {
         final ProviderFactory providers = project.getProviders();
 
         final SourceSetContainer sourceSets = (SourceSetContainer) project.getProperties().get("sourceSets");
@@ -27,6 +27,10 @@ final class Conventions {
                 providers.systemProperty("restrictImports.failBuild").map("true"::equals)
                         .orElse(true));
 
+        final String reportsDirName = taskName.equals(RestrictImports.DEFAULT_TASK_NAME) ? "" : capitalize(taskName);
+        taskConfiguration.getReportsDirectory()
+                .convention(project.getLayout().getBuildDirectory().dir("restrictImports" + reportsDirName));
+
         taskConfiguration.getIncludeCompileCode().convention(true);
         taskConfiguration.getIncludeTestCode().convention(true);
         taskConfiguration.getParseFullCompilationUnit().convention(false);
@@ -34,7 +38,16 @@ final class Conventions {
         taskConfiguration.getTestSourceSet().convention(test);
     }
 
+    private static String capitalize(String s) {
+        return s.isEmpty()
+                ? ""
+                : s.length() == 1
+                        ? Character.toUpperCase(s.charAt(0)) + ""
+                        : Character.toUpperCase(s.charAt(0)) + s.substring(1);
+    }
+
     static void wire(RestrictImportsTaskConfiguration from, RestrictImportsTaskConfiguration to) {
+        to.getReportsDirectory().set(from.getReportsDirectory());
         to.getParallel().set(from.getParallel());
         to.getFailBuild().set(from.getFailBuild());
         to.getIncludeCompileCode().set(from.getIncludeCompileCode());

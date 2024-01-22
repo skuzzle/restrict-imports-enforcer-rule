@@ -5,8 +5,11 @@ import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +27,7 @@ import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
 
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
@@ -31,6 +35,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Nested;
+import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
 
@@ -44,6 +49,9 @@ public abstract class RestrictImports extends DefaultTask
 
     @Inject
     protected abstract ObjectFactory getObjectFactory();
+
+    @OutputDirectory
+    public abstract DirectoryProperty getReportsDirectory();
 
     @Input
     public abstract Property<Boolean> getIncludeCompileCode();
@@ -75,7 +83,7 @@ public abstract class RestrictImports extends DefaultTask
     public abstract ListProperty<NotFixableDefinition> getNotFixable();
 
     public RestrictImports() {
-        Conventions.apply(getProject(), this);
+        Conventions.apply(getProject(), this, getName());
         getBasePackages().convention(Collections.singletonList("**"));
     }
 
@@ -104,6 +112,8 @@ public abstract class RestrictImports extends DefaultTask
         if (analyzeResult.bannedImportsOrWarningsFound()) {
             final String errorMessage = matchFormatter.formatMatches(analyzeResult);
 
+            writeOutputFile(errorMessage);
+
             if (analyzeResult.bannedImportsFound() && getFailBuild().get()) {
                 throw new RestrictedImportsFoundException(errorMessage);
             } else {
@@ -112,7 +122,18 @@ public abstract class RestrictImports extends DefaultTask
                         "Detected banned imports will not fail the build as the 'failBuild' flag is set to false!");
             }
         } else {
+            writeOutputFile("No banned imports found");
+
             getLogger().debug("No banned imports found");
+        }
+    }
+
+    private void writeOutputFile(String contents) {
+        File file = this.getReportsDirectory().file("restrictImports.txt").get().getAsFile();
+        try {
+            Files.write(file.toPath(), contents.getBytes(StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 

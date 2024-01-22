@@ -1,6 +1,7 @@
 package de.skuzzle.restrictimports.gradle;
 
 import org.gradle.api.Action;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
@@ -9,6 +10,8 @@ import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.SkipWhenEmpty;
 
 public interface RestrictImportsTaskConfiguration {
+
+    DirectoryProperty getReportsDirectory();
 
     @Input
     Property<Boolean> getIncludeCompileCode();

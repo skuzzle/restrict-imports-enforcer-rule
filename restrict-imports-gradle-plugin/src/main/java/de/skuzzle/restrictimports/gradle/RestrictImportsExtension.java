@@ -5,6 +5,7 @@ import java.util.Collections;
 import javax.inject.Inject;
 
 import org.gradle.api.Action;
+import org.gradle.api.NamedDomainObjectCollection;
 import org.gradle.api.model.ObjectFactory;
 
 public abstract class RestrictImportsExtension
@@ -16,19 +17,19 @@ public abstract class RestrictImportsExtension
     protected abstract ObjectFactory getObjectFactory();
 
     @Override
-    public void group(Action<BannedImportGroupDefinition> definition) {
+    public void group(Action<BannedImportGroupDefinition> spec) {
         final BannedImportGroupDefinition groupDefinition = getObjectFactory()
                 .newInstance(BannedImportGroupDefinition.class);
         groupDefinition.getBasePackages().convention(Collections.singletonList("**"));
 
-        definition.execute(groupDefinition);
+        spec.execute(groupDefinition);
         getGroups().add(groupDefinition);
     }
 
     @Override
-    public void notFixable(Action<NotFixableDefinition> definition) {
+    public void notFixable(Action<NotFixableDefinition> spec) {
         final NotFixableDefinition notFixableInstance = getObjectFactory().newInstance(NotFixableDefinition.class);
-        definition.execute(notFixableInstance);
+        spec.execute(notFixableInstance);
         getNotFixable().add(notFixableInstance);
     }
 

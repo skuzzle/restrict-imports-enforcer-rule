@@ -62,7 +62,7 @@ information or have a look at the [Full configuration example](#full-configurati
 
 > [!CAUTION]
 > Gradle support is quite new and should be considered experimental.
-> Documentation will follow, for now you can check out the func tests [here](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/gradle-plugin/restrict-imports-gradle-plugin/src/functionalTest/groovy/de/skuzzle/restrictimports/gradle/RestrictImportsGroovyFuncTest.groovy).
+> Documentation will follow, for now you can check out the func tests [here](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/master/restrict-imports-gradle-plugin/src/functionalTest/groovy/de/skuzzle/restrictimports/gradle/RestrictImportsGroovyFuncTest.groovy).
 >
 > Feedback is welcome and should be filed as new GitHub issue.
 

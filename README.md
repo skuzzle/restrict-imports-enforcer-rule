@@ -1,20 +1,22 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.5.0-rc-1&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.5.0-rc-1/jar)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.5.0-rc-2&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.5.0-rc-2/jar)
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
 
 # restrict-imports-enforcer-rule
 Keep your code base clean and free from  usage of unwanted classes! [More](#rationale)
 
+**NEW** in 2.5.0: We now also provide a Gradle plugin!
+
 Supported source files:
 - [x] Java
 - [x] Kotlin (since 0.15)
 - [x] Groovy (since 0.15)
 
+Compatibility:
+- Works with Java 8+
 - Tested against _maven-enforcer-plugin_ versions `1.4.1` and `3.4.0`.
-
-**NEW** in 2.5.0: We now also provide a Gradle plugin!
 
 ## Maven quick start
 This is a minimal usage example. Please scroll down for detailed configuration
@@ -29,7 +31,7 @@ information or have a look at the [Full configuration example](#full-configurati
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>2.5.0-rc-1</version>
+            <version>2.5.0-rc-2</version>
         </dependency>
     </dependencies>
     <executions>
@@ -60,14 +62,14 @@ information or have a look at the [Full configuration example](#full-configurati
 
 > [!CAUTION]
 > Gradle support is quite new and should be considered experimental.
-> Documentation will follow, for now you can check out the func tests [here](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/gradle-plugin/restrict-imports-gradle-plugin/src/functionalTest/groovy/de/skuzzle/restrictimports/gradle/RestrictImportsGroovyFuncTest.groovy).
+> Documentation will follow, for now you can check out the func tests [here](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/master/restrict-imports-gradle-plugin/src/functionalTest/groovy/de/skuzzle/restrictimports/gradle/RestrictImportsGroovyFuncTest.groovy).
 >
 > Feedback is welcome and should be filed as new GitHub issue.
 
 ### ... with Groovy DSL
 ```
 plugins {
-    id("de.skuzzle.restrict.imports") version("2.5.0-rc-1")
+    id("de.skuzzle.restrict.imports") version("@2.5.0-rc-2@")
 }
 
 restrictImports {
@@ -79,7 +81,7 @@ restrictImports {
 ### ... with Kotlin DSL
 ```
 plugins {
-    id("de.skuzzle.restrict.imports") version("2.5.0-rc-1")
+    id("de.skuzzle.restrict.imports") version("@2.5.0-rc-2@")
 }
 
 restrictImports {

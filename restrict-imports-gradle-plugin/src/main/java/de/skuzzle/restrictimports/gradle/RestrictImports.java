@@ -102,8 +102,7 @@ public abstract class RestrictImports extends DefaultTask
         getLogger().debug("Analyzer result: {}", analyzeResult);
 
         if (analyzeResult.bannedImportsOrWarningsFound()) {
-            final String errorMessage = matchFormatter
-                    .formatMatches(analyzerSettings.getAllDirectories(), analyzeResult);
+            final String errorMessage = matchFormatter.formatMatches(analyzeResult);
 
             if (analyzeResult.bannedImportsFound() && getFailBuild().get()) {
                 throw new RestrictedImportsFoundException(errorMessage);

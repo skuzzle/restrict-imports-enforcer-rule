@@ -1,10 +1,10 @@
 package de.skuzzle.restrictimports.gradle;
 
+import java.util.Collections;
+
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskCollection;
-
-import java.util.Collections;
 
 public abstract class RestrictImportsPlugin implements Plugin<Project> {
 

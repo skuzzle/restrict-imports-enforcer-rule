@@ -11,10 +11,11 @@ import org.junit.jupiter.api.Test;
 public class ExceptionFormattingTest {
 
     private final RestrictImports subject = new RestrictImports();
-    private final EnforcerRuleHelper helper = MockMavenProject.fromStaticTestFile().enforcerRuleHelper();
+    private final MockMavenProject mmp = MockMavenProject.fromStaticTestFile();
+    private final EnforcerRuleHelper helper = mmp.enforcerRuleHelper();
 
     @Test
-    void testFormatWithReason() throws Exception {
+    void testFormatWithReason() {
         this.subject.setBannedImports(Collections.singletonList("java.util.**"));
         this.subject.setReason("Some reason");
 
@@ -22,7 +23,7 @@ public class ExceptionFormattingTest {
                 .isThrownBy(() -> this.subject.execute(helper))
                 .withMessageContaining("\nBanned imports detected:\n\n" +
                         "Reason: Some reason\n" +
-                        "\tin file: SampleJavaFile.java\n" +
+                        "\tin file://" + mmp.testSourceFile().toAbsolutePath() + "\n" +
                         "\t\tjava.util.ArrayList \t(Line: 3, Matched by: java.util.**)\n\nAnalysis of 1 file took");
     }
 }

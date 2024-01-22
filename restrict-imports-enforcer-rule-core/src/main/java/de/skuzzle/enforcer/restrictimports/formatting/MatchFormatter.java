@@ -14,5 +14,5 @@ public interface MatchFormatter {
         return MatchFormatterImpl.INSTANCE;
     }
 
-    String formatMatches(Collection<Path> roots, AnalyzeResult analyzeResult);
+    String formatMatches(AnalyzeResult analyzeResult);
 }

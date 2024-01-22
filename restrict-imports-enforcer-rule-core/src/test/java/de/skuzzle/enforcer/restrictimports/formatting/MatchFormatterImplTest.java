@@ -5,8 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.File;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
 
 import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
 import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
@@ -27,7 +25,6 @@ public class MatchFormatterImplTest {
 
     private final Path sourceFile = getResource("/src/main/java/SampleJavaFile.java");
 
-    private final Collection<Path> roots = Collections.singleton(sourceFile.getParent());
     private final BannedImportGroup group = BannedImportGroup.builder()
             .withBasePackages("**")
             .withBannedImports("java.util.*")
@@ -50,15 +47,15 @@ public class MatchFormatterImplTest {
                 .withAnalysedFileCount(2)
                 .build();
 
-        final String formatted = subject.formatMatches(roots, analyzeResult);
+        final String formatted = subject.formatMatches(analyzeResult);
 
         assertThat(formatted).isEqualTo("\nBanned imports detected:\n\n" +
                 "Reason: Some reason\n" +
-                "\tin file: SampleJavaFile.java\n" +
+                "\tin file://" + sourceFile.toAbsolutePath() + "\n" +
                 "\t\tjava.util.ArrayList \t(Line: 3, Matched by: java.util.*)\n" +
                 "\nBanned imports detected in TEST code:\n\n" +
                 "Reason: Some reason\n" +
-                "\tin file: SampleJavaFile.java\n" +
+                "\tin file://" + sourceFile.toAbsolutePath() + "\n" +
                 "\t\tjava.util.ArrayList \t(Line: 3, Matched by: java.util.*)\n" +
                 "\t\tjava.util.Date      \t(Line: 4, Matched by: java.util.*)\n\n" +
                 "Analysis of 2 files took 5 seconds\n");
@@ -74,11 +71,11 @@ public class MatchFormatterImplTest {
                 .withAnalysedFileCount(2)
                 .build();
 
-        final String formatted = subject.formatMatches(roots, analyzeResult);
+        final String formatted = subject.formatMatches(analyzeResult);
 
         assertThat(formatted).isEqualTo("\nBanned imports detected:\n\n" +
                 "Reason: Some reason\n" +
-                "\tin file: SampleJavaFile.java\n" +
+                "\tin file://" + sourceFile.toAbsolutePath() + "\n" +
                 "\t\tjava.util.ArrayList \t(Line: 3, Matched by: java.util.*)\n\n" +
                 "Analysis of 2 files took 5 seconds\n");
     }
@@ -93,11 +90,11 @@ public class MatchFormatterImplTest {
                 .withAnalysedFileCount(1)
                 .build();
 
-        final String formatted = subject.formatMatches(roots, analyzeResult);
+        final String formatted = subject.formatMatches(analyzeResult);
 
         assertThat(formatted).isEqualTo("\nBanned imports detected in TEST code:\n\n" +
                 "Reason: Some reason\n" +
-                "\tin file: SampleJavaFile.java\n" +
+                "\tin file://" + sourceFile.toAbsolutePath() + "\n" +
                 "\t\tjava.util.ArrayList \t(Line: 3, Matched by: java.util.*)\n\n" +
                 "Analysis of 1 file took 5 seconds\n");
     }

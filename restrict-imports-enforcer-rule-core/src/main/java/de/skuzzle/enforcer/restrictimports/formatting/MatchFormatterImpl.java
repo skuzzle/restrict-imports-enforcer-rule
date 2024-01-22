@@ -20,25 +20,25 @@ class MatchFormatterImpl implements MatchFormatter {
     static final MatchFormatter INSTANCE = new MatchFormatterImpl();
 
     @Override
-    public String formatMatches(Collection<Path> roots, AnalyzeResult analyzeResult) {
+    public String formatMatches(AnalyzeResult analyzeResult) {
         final StringBuilder b = new StringBuilder();
 
         if (analyzeResult.bannedImportsInCompileCode()) {
             b.append("\nBanned imports detected:\n\n");
 
             final Map<BannedImportGroup, List<MatchedFile>> srcMatchesByGroup = analyzeResult.srcMatchesByGroup();
-            formatGroupedMatches(roots, b, srcMatchesByGroup);
+            formatGroupedMatches(b, srcMatchesByGroup);
         }
 
         if (analyzeResult.bannedImportsInTestCode()) {
             b.append("\nBanned imports detected in TEST code:\n\n");
             final Map<BannedImportGroup, List<MatchedFile>> testMatchesByGroup = analyzeResult.testMatchesByGroup();
-            formatGroupedMatches(roots, b, testMatchesByGroup);
+            formatGroupedMatches(b, testMatchesByGroup);
         }
 
         if (analyzeResult.warningsFound()) {
             b.append("\nBanned imports analysis completed with warnings. Results may be inaccurate!\n\n");
-            formatWarnings(roots, b, analyzeResult);
+            formatWarnings(b, analyzeResult);
 
             b.append("\n\tRun the build with debug information to see error details about the warning\n");
         }
@@ -53,7 +53,7 @@ class MatchFormatterImpl implements MatchFormatter {
         return b.toString();
     }
 
-    private void formatWarnings(Collection<Path> roots, StringBuilder b, AnalyzeResult analyzeResult) {
+    private void formatWarnings(StringBuilder b, AnalyzeResult analyzeResult) {
         final List<MatchedFile> allFilesWithWarning = Stream.concat(
                 analyzeResult.getSrcMatches().stream(),
                 analyzeResult.getTestMatches().stream())
@@ -70,7 +70,7 @@ class MatchFormatterImpl implements MatchFormatter {
             b.append("\t").append(warning.getMessage()).append(":\n");
             allFilesWithWarning.stream()
                     .filter(matchedFile -> matchedFile.getWarnings().contains(warning))
-                    .forEach(matchedFile -> b.append("\t\t").append(relativize(roots, matchedFile.getSourceFile()))
+                    .forEach(matchedFile -> b.append("\t\tfile://").append(matchedFile.getSourceFile())
                             .append("\n"));
         });
     }
@@ -81,7 +81,7 @@ class MatchFormatterImpl implements MatchFormatter {
                 : value + singular + "s";
     }
 
-    private void formatGroupedMatches(Collection<Path> roots, StringBuilder b,
+    private void formatGroupedMatches(StringBuilder b,
             Map<BannedImportGroup, List<MatchedFile>> matchesByGroup) {
 
         final int longestMatchedString = longestMatch(matchesByGroup.values());
@@ -89,8 +89,7 @@ class MatchFormatterImpl implements MatchFormatter {
         matchesByGroup.forEach((group, matches) -> {
             group.getReason().ifPresent(reason -> b.append("Reason: ").append(reason).append("\n"));
             matches.forEach(fileMatch -> {
-                b.append("\tin file").append(": ")
-                        .append(relativize(roots, fileMatch.getSourceFile()));
+                b.append("\tin file://").append(fileMatch.getSourceFile().toAbsolutePath());
 
                 if (fileMatch.hasWarning()) {
                     b.append(" (!)");
@@ -110,14 +109,6 @@ class MatchFormatterImpl implements MatchFormatter {
                 .mapToInt(String::length)
                 .max()
                 .orElse(1);
-    }
-
-    private static Path relativize(Collection<Path> roots, Path path) {
-        return roots.stream()
-                .filter(path::startsWith)
-                .map(root -> root.relativize(path))
-                .findFirst()
-                .orElse(path);
     }
 
     private void appendMatch(MatchedImport match, int longestMatchedString, StringBuilder b) {

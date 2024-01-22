@@ -90,8 +90,7 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
             LOGGER.debug("Analyzer result:\n{}", analyzeResult);
 
             if (analyzeResult.bannedImportsOrWarningsFound()) {
-                final String errorMessage = matchFormatter
-                        .formatMatches(analyzerSettings.getAllDirectories(), analyzeResult);
+                final String errorMessage = matchFormatter.formatMatches(analyzeResult);
 
                 if (analyzeResult.bannedImportsFound() && isFailBuild(helper)) {
                     throw new EnforcerRuleException(errorMessage);

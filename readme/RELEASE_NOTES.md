@@ -1,6 +1,11 @@
 [![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=@project.version@&color=blue)](https://search.maven.org/artifact/@project.groupId@/restrict-imports-enforcer-rule/@project.version@/jar)
 
+> [!NOTE]
+> This is the first release after migrating our build to Gradle and which uses shaded dependencies.
+> If you encounter any irregularities with this version, please do not hesitate to file an issue.
+
 ### Features
+* [#38](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/38) Dependencies are shaded into plugin artifacts
 * [#59](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/59) Provide a Gradle plugin
 
 Maven Central coordinates for this release:

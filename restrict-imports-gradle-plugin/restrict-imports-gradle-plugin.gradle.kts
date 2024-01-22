@@ -63,7 +63,6 @@ testing {
             useSpock(libs.versions.spock)
 
             dependencies {
-                implementation(project())
                 implementation(platform(libs.groovy.bom.get().toString()))
                 implementation(libs.groovy.nio)
             }

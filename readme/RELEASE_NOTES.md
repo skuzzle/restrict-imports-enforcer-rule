@@ -9,9 +9,7 @@
 * [#38](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/38) Dependencies are shaded into plugin artifacts
 * [#59](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/59) Provide a Gradle plugin
 * [#118](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/118) Print absolute paths in exception messages to make IntelliJ render clickable links
-
-Maven Central coordinates for this release:
-
+ 
 maven
 ```xml
 <dependency>
@@ -47,5 +45,5 @@ apply(plugin = "de.skuzzle.restrict.imports")
 Gradle version catalog (Toml)
 ```toml
 [plugins]
-restrict-imports = { id = "de.skuzzle.restrict.imports", version = "@project.version@" }
+restrictImports = { id = "de.skuzzle.restrict.imports", version = "@project.version@" }
 ```

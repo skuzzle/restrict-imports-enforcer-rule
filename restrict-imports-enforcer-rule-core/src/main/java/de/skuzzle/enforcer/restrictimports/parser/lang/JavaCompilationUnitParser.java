@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import de.skuzzle.enforcer.restrictimports.parser.ImportStatement;
 import de.skuzzle.enforcer.restrictimports.parser.ImportType;
 import de.skuzzle.enforcer.restrictimports.parser.ParsedFile;
@@ -50,7 +51,7 @@ final class JavaCompilationUnitParser {
                 .forEach(imports::add);
 
         final String fileName = getFileNameWithoutExtension(sourceFilePath);
-        final String declaredPackage = compilationUnit.getPackageDeclaration().map(pd -> pd.getNameAsString())
+        final String declaredPackage = compilationUnit.getPackageDeclaration().map(NodeWithName::getNameAsString)
                 .orElse("");
         final String primaryTypeName = compilationUnit.getPrimaryTypeName().orElse(fileName);
         final String fqcn = declaredPackage.isEmpty() ? primaryTypeName : declaredPackage + "." + primaryTypeName;

@@ -35,28 +35,24 @@ pipeline {
 				}
 			}
 		}
-		stage('Test') {
-			parallel {
-				stage('Func-tests') {
-					steps {
-						withGradle {
-							sh './gradlew functionalTest'
-						}
-					}
+		stage('Unit-tests') {
+			steps {
+				withGradle {
+					sh './gradlew test coveralls'
 				}
-				stage('Unit-tests') {
-					steps {
-						withGradle {
-							sh './gradlew test coveralls'
-						}
-					}
+			}
+		}
+		stage('Func-tests') {
+			steps {
+				withGradle {
+					sh './gradlew functionalTest'
 				}
-				stage('readme') {
-					steps {
-						withGradle {
-							sh './gradlew generateReadmeAndReleaseNotes'
-						}
-					}
+			}
+		}
+		stage('readme') {
+			steps {
+				withGradle {
+					sh './gradlew generateReadmeAndReleaseNotes'
 				}
 			}
 		}

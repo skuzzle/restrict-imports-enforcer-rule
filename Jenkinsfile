@@ -21,6 +21,7 @@ pipeline {
 		stage('Prepare Gradle Cache') {
 			steps {
 			    sh 'ls -la /var/jenkins_home'
+			    sh 'id'
 			    sh 'ls -la ~'
 			    sh 'mkdir -p ${GRADLE_USER_HOME}'
 				// Copy the Gradle cache from the host, so we can write to it

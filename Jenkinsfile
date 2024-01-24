@@ -4,7 +4,7 @@ pipeline {
 	}
 	agent {
 		docker {
-			image 'eclipse-temurin:21-jdk'
+			image 'ghcr.io/cloud-taddiken-online/build-java:21-jdk'
 			args '-v /home/jenkins/.m2:/var/maven/.m2 -v /home/jenkins/.gradle:/tmp/gradle-user-home:rw -v /home/jenkins/.gnupg:/.gnupg -e MAVEN_OPTS=-Duser.home=/var/maven -e MAVEN_CONFIG='
 		}
 	}

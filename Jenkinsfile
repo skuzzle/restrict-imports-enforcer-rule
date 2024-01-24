@@ -12,6 +12,7 @@ pipeline {
 	environment {
 		COVERALLS_REPO_TOKEN = credentials('coveralls_repo_token_restrict_imports_rule')
 		BUILD_CACHE = credentials('build_cache')
+		GRADLE_USER_HOME = '/var/gradle'
 		ORG_GRADLE_PROJECT_sonatype = credentials('SONATYPE_NEXUS')
 		ORG_GRADLE_PROJECT_signingPassword = credentials('gpg_password')
 		ORG_GRADLE_PROJECT_base64EncodedAsciiArmoredSigningKey  = credentials('gpg_private_key')

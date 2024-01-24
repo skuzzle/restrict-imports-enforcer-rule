@@ -2,7 +2,7 @@ pipeline {
 	agent {
 		docker {
 			image 'ghcr.io/cloud-taddiken-online/build-java:21-jdk'
-			args '-v /home/jenkins/caches/restrict-imports/.gradle:/tmp/gradle-user-home:rw -v /home/jenkins/.gnupg:/.gnupg:ro'
+			args '-v /home/jenkins/caches/restrict-imports/.m2:/home/jenkins/.m2:rw -v /home/jenkins/caches/restrict-imports/.gradle:/tmp/gradle-user-home:rw -v /home/jenkins/.gnupg:/.gnupg:ro'
 		}
 	}
 	environment {
@@ -40,7 +40,7 @@ pipeline {
 				stage('Func-tests') {
 					steps {
 						withGradle {
-							sh './gradlew functionalTest'
+							sh './gradlew functionalTest --rerun-tasks'
 						}
 					}
 				}

@@ -2,7 +2,6 @@ pipeline {
 	agent {
 		docker {
 			image 'ghcr.io/cloud-taddiken-online/build-java:21-jdk'
-		    alwaysPull true
 			args '-v /home/jenkins/caches/restrict-imports/.m2:/var/maven/.m2:rw -v /home/jenkins/caches/restrict-imports/.gradle:/tmp/gradle-user-home:rw -v /home/jenkins/.gnupg:/.gnupg:ro'
 		}
 	}

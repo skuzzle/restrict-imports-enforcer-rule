@@ -4,8 +4,7 @@ pipeline {
 	}
 	agent {
 		docker {
-			// Need an image with git installed that is why we stick with maven image for now though we're using gradle
-			image 'maven:3.9.4-eclipse-temurin-11'
+			image 'eclipse-temurin:21-jdk'
 			args '-v /home/jenkins/.m2:/var/maven/.m2 -v /home/jenkins/.gradle:/tmp/gradle-user-home:rw -v /home/jenkins/.gnupg:/.gnupg -e MAVEN_OPTS=-Duser.home=/var/maven -e MAVEN_CONFIG='
 		}
 	}

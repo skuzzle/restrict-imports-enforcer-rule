@@ -1,7 +1,4 @@
 pipeline {
-	options {
-		disableConcurrentBuilds()
-	}
 	agent {
 		docker {
 			// Need an image with git installed that is why we stick with maven image for now though we're using gradle

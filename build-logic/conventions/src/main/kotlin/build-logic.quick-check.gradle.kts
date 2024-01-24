@@ -9,6 +9,6 @@ tasks.named("quickCheck").configure {
         tasks.withType<Javadoc>(),
         tasks.withType<KotlinCompile>(),
         tasks.withType<GroovyCompile>(),
-        tasks.withType(Test::class)
+        tasks.withType<Test>()
     )
 }

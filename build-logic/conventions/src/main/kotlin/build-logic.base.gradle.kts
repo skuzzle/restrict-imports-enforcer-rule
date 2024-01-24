@@ -6,6 +6,7 @@ plugins {
     idea
     id("build-logic.spotless-conventions")
     id("build-logic.lifecycle")
+    id("build-logic.quick-check")
 }
 
 repositories {

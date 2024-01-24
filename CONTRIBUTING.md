@@ -15,9 +15,10 @@ If your idea is accepted, simply send the PR targetting the *development* branch
 ## Local Development
 
 ### Building
-For fast feedback during development you can run `./gradlew quickCheck` or its short-form `./gradlew qC`. This runs only fast unit tests as well as code style checks.
-
-To run the full test suite use `./gradlew check`.
+For fast feedback during development you can run
+1. `./gradlew quickCheck` or its short-form `./gradlew qC` for fast superficial tests
+2. `./gradlew test` for running quick unit tests
+3. `./gradlew check` for running the full test suite
 
 ### Code Style
 Note that code formatting is enforced by `spotless`. You can apply the configured

@@ -64,17 +64,17 @@ pipeline {
                 }
             }
         }
-        stage('Func-tests') {
-            steps {
-                withGradle {
-                    sh './gradlew functionalTest'
-                }
-            }
-        }
         stage('Unit-tests') {
             steps {
                 withGradle {
                     sh './gradlew test coveralls'
+                }
+            }
+        }
+        stage('Func-tests') {
+            steps {
+                withGradle {
+                    sh './gradlew functionalTest'
                 }
             }
         }

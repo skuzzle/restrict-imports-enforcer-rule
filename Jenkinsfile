@@ -29,10 +29,10 @@ pipeline {
                 }
             }
         }
-        stage('Coverage') {
+        stage('Unit-tests') {
             steps {
                 withGradle {
-                    sh './gradlew coveralls'
+                    sh './gradlew test coveralls'
                 }
             }
         }

@@ -13,7 +13,8 @@ spotless {
 
     format("documentation") {
         target("*.adoc", "*.md", "src/**/*.adoc", "src/**/*.md")
-
+        trimTrailingWhitespace()
+        endWithNewline()
     }
 
     groovy {

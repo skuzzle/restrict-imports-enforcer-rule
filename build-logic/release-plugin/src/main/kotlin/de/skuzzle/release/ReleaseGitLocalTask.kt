@@ -29,8 +29,10 @@ abstract class ReleaseGitLocalTask : AbstractReleaseStep() {
         }
 
         if (mergeBranches.get()) {
-            print("Merging release tag $releaseTagName into ${mainBranch.get()}")
+            print("Merging release tag $releaseTagName into ${mainBranch.get()} (current branch: ${git.currentBranch()})")
+            git.git("fetch", "origin", mainBranch.get())
             git.git("checkout", mainBranch.get())
+            git.git("pull")
             git.git("merge", releaseTagName, "--strategy-option", "theirs")
         }
     }

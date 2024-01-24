@@ -40,7 +40,7 @@ pipeline {
 				stage('Func-tests') {
 					steps {
 						withGradle {
-							sh './gradlew functionalTest --rerun-tasks'
+							sh './gradlew functionalTest'
 						}
 					}
 				}

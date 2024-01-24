@@ -2,7 +2,7 @@ pipeline {
 	agent {
 		docker {
 			image 'ghcr.io/cloud-taddiken-online/build-java:21-jdk'
-			args '-v /home/jenkins/.m2:/var/maven/.m2 -v /home/jenkins/caches/restrict-imports/.gradle:/tmp/gradle-user-home:rw -v /home/jenkins/.gnupg:/.gnupg -e MAVEN_OPTS=-Duser.home=/var/maven -e MAVEN_CONFIG='
+			args '-v /home/jenkins/.m2:/var/maven/.m2 -v /builds/caches/restrict-imports/.gradle:/tmp/gradle-user-home:rw -v /home/jenkins/.gnupg:/.gnupg -e MAVEN_OPTS=-Duser.home=/var/maven -e MAVEN_CONFIG='
 		}
 	}
 	environment {
@@ -17,6 +17,7 @@ pipeline {
 	stages {
 		stage('Prepare Gradle Cache') {
 			steps {
+			    sh 'mkdir -p ${GRADLE_USER_HOME}'
 				// Copy the Gradle cache from the host, so we can write to it
 				sh "rsync -a --include /caches --include /wrapper --exclude '/*' ${GRADLE_CACHE}/ ${GRADLE_USER_HOME} || true"
 			}

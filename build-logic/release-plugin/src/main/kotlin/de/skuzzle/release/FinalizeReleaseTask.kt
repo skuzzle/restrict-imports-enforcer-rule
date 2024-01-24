@@ -6,7 +6,6 @@ abstract class FinalizeReleaseTask : AbstractReleaseStep() {
 
     @TaskAction
     fun finalizeRelease() {
-        val currentBranch = git.currentBranch()
         val mainBranch = mainBranch.get()
         val devBranch = devBranch.get()
 

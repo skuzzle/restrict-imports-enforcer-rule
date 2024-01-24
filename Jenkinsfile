@@ -2,7 +2,7 @@ pipeline {
 	agent {
 		docker {
 			image 'ghcr.io/cloud-taddiken-online/build-java:21-jdk'
-			args '-v /home/jenkins/.m2:/var/maven/.m2 -v /builds/caches/restrict-imports/.gradle:/tmp/gradle-user-home:rw -v /home/jenkins/.gnupg:/.gnupg -e MAVEN_OPTS=-Duser.home=/var/maven -e MAVEN_CONFIG='
+			args '-v /home/jenkins/caches/restrict-imports/.m2:/var/maven/.m2:rw -v /home/jenkins/caches/restrict-imports/.gradle:/tmp/gradle-user-home:rw -v /home/jenkins/.gnupg:/.gnupg:ro'
 		}
 	}
 	environment {
@@ -10,6 +10,9 @@ pipeline {
 		BUILD_CACHE = credentials('build_cache')
 		GRADLE_CACHE = '/tmp/gradle-user-home'
 		GRADLE_USER_HOME = '/var/gradle/.gradle'
+		GRADLE_OPTS = '-Duser.home=/var/gradle'
+		MAVEN_OPTS = '-Duser.home=/var/maven'
+		MAVEN_CONFIG = ''
 		ORG_GRADLE_PROJECT_sonatype = credentials('SONATYPE_NEXUS')
 		ORG_GRADLE_PROJECT_signingPassword = credentials('gpg_password')
 		ORG_GRADLE_PROJECT_base64EncodedAsciiArmoredSigningKey  = credentials('gpg_private_key')
@@ -17,6 +20,8 @@ pipeline {
 	stages {
 		stage('Prepare Gradle Cache') {
 			steps {
+			    sh 'ls -la /var/jenkins_home'
+			    sh 'ls -la ~'
 			    sh 'mkdir -p ${GRADLE_USER_HOME}'
 				// Copy the Gradle cache from the host, so we can write to it
 				sh "rsync -a --include /caches --include /wrapper --exclude '/*' ${GRADLE_CACHE}/ ${GRADLE_USER_HOME} || true"

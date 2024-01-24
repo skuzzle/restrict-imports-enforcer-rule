@@ -2,6 +2,7 @@ pipeline {
 	agent {
 		docker {
 			image 'ghcr.io/cloud-taddiken-online/build-java:21-jdk'
+		    alwaysPull true
 			args '-v /home/jenkins/caches/restrict-imports/.m2:/var/maven/.m2:rw -v /home/jenkins/caches/restrict-imports/.gradle:/tmp/gradle-user-home:rw -v /home/jenkins/.gnupg:/.gnupg:ro'
 		}
 	}
@@ -16,10 +17,8 @@ pipeline {
 		ORG_GRADLE_PROJECT_base64EncodedAsciiArmoredSigningKey  = credentials('gpg_private_key')
 	}
 	stages {
-		stage('Prepare Gradle Cache') {
+		stage('Load Gradle Cache from host') {
 			steps {
-			    sh 'ls -la ~'
-			    sh 'cat /etc/passwd'
 				// Copy the Gradle cache from the host, so we can write to it
 				sh "rsync -a --include /caches --include /wrapper --exclude '/*' ${GRADLE_CACHE}/ ${GRADLE_USER_HOME} || true"
 			}
@@ -27,6 +26,7 @@ pipeline {
 		stage('Prepare Gradle Daemon') {
 			steps {
 				sh "./gradlew -version"
+				sh "./gradlew projects"
 			}
 		}
 		stage('Quickcheck') {
@@ -41,7 +41,7 @@ pipeline {
 				stage('Func-tests') {
 					steps {
 						withGradle {
-							sh './gradlew functionalTest'
+							sh './gradlew functionalTest --rerun-tasks'
 						}
 					}
 				}

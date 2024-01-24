@@ -20,8 +20,8 @@ pipeline {
 	stages {
 		stage('Prepare Gradle Cache') {
 			steps {
-			    sh 'ls -la /var/jenkins_home'
 			    sh 'ls -la /home'
+			    sh 'cat /etc/passwd'
 			    sh 'mkdir -p ${GRADLE_USER_HOME}'
 				// Copy the Gradle cache from the host, so we can write to it
 				sh "rsync -a --include /caches --include /wrapper --exclude '/*' ${GRADLE_CACHE}/ ${GRADLE_USER_HOME} || true"

@@ -1,7 +1,4 @@
 pipeline {
-	options {
-		disableConcurrentBuilds()
-	}
 	agent {
 		docker {
 			image 'ghcr.io/cloud-taddiken-online/build-java:21-jdk'

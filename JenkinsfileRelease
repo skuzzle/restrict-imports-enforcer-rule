@@ -24,6 +24,7 @@ pipeline {
 	parameters {
 		string(name: 'RELEASE_VERSION', defaultValue: '', description: 'Version to be released')
 		booleanParam(name: 'RELEASE_DRY_RUN', defaultValue: false, description: 'Whether to push releases to GitHub')
+		booleanParam(name: 'RELEASE_VERBOSE', defaultValue: false, description: 'Whether to print more verbose logs during release')
 		booleanParam(name: 'IS_PRODUCTION', defaultValue: false, description: 'If true, dev branch will be merged and push to main. Disable this for release candidates. No effect when dry run is true')
 	}
 	stages {

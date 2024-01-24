@@ -42,11 +42,11 @@ fun calculateVersion(): String {
         .get()
 }
 
-val releaseGitLocal by tasks.creating(ReleaseGitLocalTask::class.java) {
+val releaseGitLocal by tasks.registering(ReleaseGitLocalTask::class) {
     fromExtension(releaseExtension)
 }
 
-val pushReleaseInternal by tasks.creating(FinalizeReleaseTask::class.java) {
+val pushReleaseInternal by tasks.registering(FinalizeReleaseTask::class) {
     fromExtension(releaseExtension)
 }
 

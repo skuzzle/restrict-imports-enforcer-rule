@@ -19,7 +19,7 @@ pipeline {
 		stage('Load Gradle Cache from host') {
 			steps {
 				// Copy the Gradle cache from the host, so we can write to it
-				sh "rsync -a --include /caches --include /wrapper --exclude '/*' ${GRADLE_CACHE}/ ${GRADLE_USER_HOME} || true"
+				sh "rsync -a --include /jdks --include /caches --include /wrapper --exclude '/*' ${GRADLE_CACHE}/ ${GRADLE_USER_HOME} || true"
 			}
 		}
 		stage('Prepare Gradle Daemon') {
@@ -64,7 +64,7 @@ pipeline {
 	post {
 		success {
 			// Write updates to the Gradle cache back to the host
-			sh "rsync -au ${GRADLE_USER_HOME}/caches ${GRADLE_USER_HOME}/wrapper ${GRADLE_CACHE}/ || true"
+			sh "rsync -au ${GRADLE_USER_HOME}/jdks ${GRADLE_USER_HOME}/caches ${GRADLE_USER_HOME}/wrapper ${GRADLE_CACHE}/ || true"
 		}
 		always {
 			archiveArtifacts(artifacts: '*.md')

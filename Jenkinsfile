@@ -6,7 +6,7 @@ pipeline {
 		docker {
 			// Need an image with git installed that is why we stick with maven image for now though we're using gradle
 			image 'maven:3.9.4-eclipse-temurin-11'
-			args '-v /home/jenkins/.m2:/var/maven/.m2 -v /home/jenkins/.gradle:/var/gradle/.gradle -v /home/jenkins/.gnupg:/.gnupg -e GRADLE_OPTS=-Duser.home=/var/gradle -e MAVEN_OPTS=-Duser.home=/var/maven -e MAVEN_CONFIG='
+			args '-v /home/jenkins/.m2:/var/maven/.m2 -v /home/jenkins/.gnupg:/.gnupg -e MAVEN_OPTS=-Duser.home=/var/maven -e MAVEN_CONFIG='
 		}
 	}
 	environment {

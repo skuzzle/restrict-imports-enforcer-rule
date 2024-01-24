@@ -12,16 +12,21 @@ pipeline {
 		COVERALLS_REPO_TOKEN = credentials('coveralls_repo_token_restrict_imports_rule')
 		BUILD_CACHE = credentials('build_cache')
 		GRADLE_CACHE = '/tmp/gradle-user-home'
-		HOME = '~/'
+		HOME = '~'
 		ORG_GRADLE_PROJECT_sonatype = credentials('SONATYPE_NEXUS')
 		ORG_GRADLE_PROJECT_signingPassword = credentials('gpg_password')
 		ORG_GRADLE_PROJECT_base64EncodedAsciiArmoredSigningKey  = credentials('gpg_private_key')
 	}
 	stages {
-		stage('Prepare container') {
+		stage('Prepare Gradle Cache') {
 			steps {
 				// Copy the Gradle cache from the host, so we can write to it
 				sh "rsync -a --include /caches --include /wrapper --exclude '/*' ${GRADLE_CACHE}/ ${HOME}/.gradle || true"
+			}
+		}
+		stage('Prepare Gradle Daemon') {
+			steps {
+				sh "./gradlew -version"
 			}
 		}
 		stage('Quickcheck') {

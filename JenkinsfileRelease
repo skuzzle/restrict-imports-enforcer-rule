@@ -14,7 +14,7 @@ pipeline {
 		RELEASE_GITHUB_TOKEN = credentials('github_registry_release')
 		BUILD_CACHE = credentials('build_cache')
 		GRADLE_CACHE = '/tmp/gradle-user-home'
-		HOME = '~/'
+		HOME = '~'
 		ORG_GRADLE_PROJECT_ghToken = credentials('github_registry_release')
 		ORG_GRADLE_PROJECT_sonatype = credentials('SONATYPE_NEXUS')
 		ORG_GRADLE_PROJECT_signingPassword = credentials('gpg_password')

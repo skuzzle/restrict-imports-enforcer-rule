@@ -11,7 +11,6 @@ abstract class FinalizeReleaseTask : AbstractReleaseStep() {
         val devBranch = devBranch.get()
 
         if (mergeBranches.get()) {
-            require(currentBranch.equals(mainBranch))
             println("Pushing release commit to $mainBranch")
             git.git("push", "origin", mainBranch)
         }

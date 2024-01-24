@@ -87,11 +87,11 @@ pipeline {
                 }
             }
         }
-        post {
-            success {
-                // Write updates to the Gradle cache back to the host
-                sh "rsync -au ${GRADLE_USER_HOME}/jdks ${GRADLE_USER_HOME}/caches ${GRADLE_USER_HOME}/wrapper ${GRADLE_CACHE}/ || true"
-            }
+    }
+    post {
+        success {
+            // Write updates to the Gradle cache back to the host
+            sh "rsync -au ${GRADLE_USER_HOME}/jdks ${GRADLE_USER_HOME}/caches ${GRADLE_USER_HOME}/wrapper ${GRADLE_CACHE}/ || true"
         }
     }
 }

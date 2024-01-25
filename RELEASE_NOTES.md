@@ -1,5 +1,5 @@
 [![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.5.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.5.0/jar)
-![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=2.5.0)
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=2.5.0)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/2.5.0)
 
 > [!NOTE]
 > This is the first release after migrating our build to Gradle and which uses shaded dependencies.

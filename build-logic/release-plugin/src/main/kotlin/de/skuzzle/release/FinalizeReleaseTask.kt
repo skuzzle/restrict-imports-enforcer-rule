@@ -6,12 +6,11 @@ abstract class FinalizeReleaseTask : AbstractReleaseStep() {
 
     @TaskAction
     fun finalizeRelease() {
-        val currentBranch = git.currentBranch()
         val mainBranch = mainBranch.get()
         val devBranch = devBranch.get()
 
         if (mergeBranches.get()) {
-            println("Pushing release commit to $currentBranch")
+            println("Pushing release commit to $mainBranch")
             git.git("push", "origin", mainBranch)
         }
 

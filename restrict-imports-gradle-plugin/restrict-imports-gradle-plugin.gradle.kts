@@ -39,6 +39,11 @@ verifyPublication {
         withJarContaining {
             // Test for shadowed files
             aFile("de/skuzzle/enforcer/restrictimports/analyze/AnalyzeResult.class")
+            aFile("META-INF/services/de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport") {
+                matching("") {content ->
+                    content.contains("de.skuzzle.enforcer.restrictimports.parser.lang.KotlinGroovyLanguageSupport")
+                }
+            }
         }
     }
     expectPublishedArtifact("de.skuzzle.restrictimports.gradle.plugin") {

@@ -20,6 +20,9 @@ spotless {
     groovy {
         target("**Jenkinsfile", "**JenkinsfileRelease")
         greclipse()
+        trimTrailingWhitespace()
+        indentWithSpaces()
+        endWithNewline()
     }
 
     pluginManager.withPlugin("java") {

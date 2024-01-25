@@ -23,14 +23,17 @@ abstract class ReleaseGitLocalTask : AbstractReleaseStep() {
 
         printVerbose("Creating release commit & tag")
         git.git("commit", "-m", "Release $releaseVersion")
+        val releaseTagName = "v${releaseVersion}"
         if (!dryRun.get()) {
-            git.git("tag", "-a", "v${releaseVersion}", "-m", "Release $releaseVersion")
+            git.git("tag", "-a", releaseTagName, "-m", "Release $releaseVersion")
         }
 
         if (mergeBranches.get()) {
-            print("Merging release into main branch")
+            print("Merging release tag $releaseTagName into ${mainBranch.get()} (current branch: ${git.currentBranch()})")
+            git.git("fetch", "origin", mainBranch.get())
             git.git("checkout", mainBranch.get())
-            git.git("merge", "v${releaseVersion}", "--strategy-option", "theirs")
+            git.git("pull")
+            git.git("merge", releaseTagName, "--strategy-option", "theirs")
         }
     }
 

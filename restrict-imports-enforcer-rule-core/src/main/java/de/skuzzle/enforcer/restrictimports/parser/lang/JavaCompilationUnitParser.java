@@ -18,6 +18,7 @@ import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.expr.FieldAccessExpr;
 import com.github.javaparser.ast.expr.MarkerAnnotationExpr;
 import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.nodeTypes.NodeWithName;
 import com.github.javaparser.ast.nodeTypes.NodeWithType;
 import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
@@ -50,7 +51,7 @@ final class JavaCompilationUnitParser {
                 .forEach(imports::add);
 
         final String fileName = getFileNameWithoutExtension(sourceFilePath);
-        final String declaredPackage = compilationUnit.getPackageDeclaration().map(pd -> pd.getNameAsString())
+        final String declaredPackage = compilationUnit.getPackageDeclaration().map(NodeWithName::getNameAsString)
                 .orElse("");
         final String primaryTypeName = compilationUnit.getPrimaryTypeName().orElse(fileName);
         final String fqcn = declaredPackage.isEmpty() ? primaryTypeName : declaredPackage + "." + primaryTypeName;

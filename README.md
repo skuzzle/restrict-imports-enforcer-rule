@@ -1,8 +1,9 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.5.0-rc-2&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.5.0-rc-2/jar)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.5.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.5.0/jar)
+![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=2.5.0)
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
-[![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/skuzzleOSS)
+[![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/ProjectPolly)
 
 # restrict-imports-enforcer-rule
 Keep your code base clean and free from  usage of unwanted classes! [More](#rationale)
@@ -16,7 +17,7 @@ Supported source files:
 
 Compatibility:
 - Works with Java 8+
-- Tested against _maven-enforcer-plugin_ versions `1.4.1` and `3.4.0`.
+- Tested against _maven-enforcer-plugin_ versions `1.4.1` and `3.4.1`.
 
 ## Maven quick start
 This is a minimal usage example. Please scroll down for detailed configuration
@@ -26,12 +27,12 @@ information or have a look at the [Full configuration example](#full-configurati
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-enforcer-plugin</artifactId>
-    <version>3.4.0</version>
+    <version>3.4.1</version>
     <dependencies>
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>2.5.0-rc-2</version>
+            <version>2.5.0</version>
         </dependency>
     </dependencies>
     <executions>
@@ -69,7 +70,7 @@ information or have a look at the [Full configuration example](#full-configurati
 ### ... with Groovy DSL
 ```
 plugins {
-    id("de.skuzzle.restrict.imports") version("@2.5.0-rc-2@")
+    id("de.skuzzle.restrict.imports") version("2.5.0")
 }
 
 restrictImports {
@@ -81,7 +82,7 @@ restrictImports {
 ### ... with Kotlin DSL
 ```
 plugins {
-    id("de.skuzzle.restrict.imports") version("@2.5.0-rc-2@")
+    id("de.skuzzle.restrict.imports") version("2.5.0")
 }
 
 restrictImports {

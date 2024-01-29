@@ -2,7 +2,7 @@
 junit5 = "5.10.1"
 assertj = "3.24.2"
 equalsverifier = "3.15.6"
-bytebuddy = "1.14.7"
+bytebuddy = "1.14.11"
 maven = "3.9.4"
 enforcerMin = "1.4.1"
 enforcerMax = "3.4.1"

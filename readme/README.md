@@ -665,11 +665,7 @@ restrictImports {
 </details>
 
 ## Detecting full qualified class usage
-> **Note**
-> This is an experimental feature
-
-To overcome some of the limitations mentioned [here](#limitation), you can enable 'full compilation unit' parsing
-mode using
+To overcome some of the limitations mentioned [here](#limitation), you can enable 'full compilation unit' parsing mode using
 
 <details open>
     <summary><b>Maven</b></summary>

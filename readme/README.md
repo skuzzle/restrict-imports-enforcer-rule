@@ -1,7 +1,7 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
 [![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=@project.version@&color=blue)](https://search.maven.org/artifact/@project.groupId@/restrict-imports-enforcer-rule/@project.version@/jar)
-![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=@project.version@)
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=@project.version@)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/@project.version@)
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/@github.name@/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/@github.name@?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/ProjectPolly)
 
@@ -130,6 +130,8 @@ To refine the classes that are banned you may use the `allowedImports` tag in ad
 the `bannedImports` tag. For example, you can exclude a whole sub package using a wildcard
 operator but still allow some concrete classes:
 
+<details>
+    <summary>Show Maven example</summary>
 ```xml
 <configuration>
     <rules>
@@ -140,6 +142,16 @@ operator but still allow some concrete classes:
     </rules>
 </configuration>
 ```
+</details>
+<details>
+    <summary>Show Gradle example</summary>
+```kotlin
+    restrictImports {
+        bannedImports = listOf("java.util.logging.**")
+        allowedImports = listOf("java.util.loggingHandler")
+    }
+```
+</details>
 
 It is possible to exclude certain source files from being affected by the bans at
 all. You can use `basePackage` to specify a package pattern of classes that are affected

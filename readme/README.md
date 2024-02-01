@@ -132,6 +132,7 @@ operator but still allow some concrete classes:
 
 <details>
     <summary>Show Maven example</summary>
+
 ```xml
 <configuration>
     <rules>
@@ -145,6 +146,7 @@ operator but still allow some concrete classes:
 </details>
 <details>
     <summary>Show Gradle example</summary>
+
 ```kotlin
     restrictImports {
         bannedImports = listOf("java.util.logging.**")

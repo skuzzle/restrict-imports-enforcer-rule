@@ -131,7 +131,7 @@ the `bannedImports` tag. For example, you can exclude a whole sub package using 
 operator but still allow some concrete classes:
 
 <details open>
-    <summary>Show Maven example</summary>
+    <summary><b>Show Maven example</b></summary>
 
 ```xml
 <configuration>
@@ -145,7 +145,7 @@ operator but still allow some concrete classes:
 ```
 </details>
 <details>
-    <summary>Show Gradle (Kotlin) example</summary>
+    <summary><b>Show Gradle (Kotlin) example</b></summary>
 
 ```kotlin
 restrictImports {
@@ -156,7 +156,7 @@ restrictImports {
 </details>
 
 <details>
-    <summary>Show Gradle (Groovy) example</summary>
+    <summary><b>Show Gradle (Groovy) example</b></summary>
 
 ```groovy
 restrictImports {
@@ -173,7 +173,7 @@ by the rule. You may then exclude some classes to refine the matches using the
 `exclusion` tag. It is also possible to specify multiple base packages.
 
 <details open>
-    <summary>Show Maven example</summary>
+    <summary><b>Show Maven example</b></summary>
 
 ```xml
 <configuration>
@@ -193,7 +193,7 @@ by the rule. You may then exclude some classes to refine the matches using the
 ```
 </details>
 <details>
-    <summary>Show Gradle (Kotlin) example</summary>
+    <summary><b>Show Gradle (Kotlin) example</b></summary>
 
 ```kotlin
 restrictImports {
@@ -206,7 +206,7 @@ restrictImports {
 </details>
 
 <details>
-    <summary>Show Gradle (Groovy) example</summary>
+    <summary><b>Show Gradle (Groovy) example</b></summary>
 
 ```groovy
 restrictImports {
@@ -223,7 +223,7 @@ Wherever you write package patterns you can also specify a list of patterns. Thu
 possible to define multiple banned imports/exclusions/allowed imports or base packages.
 
 <details open>
-    <summary>Show Maven example</summary>
+    <summary><b>Show Maven example</b></summary>
 
 ```xml
 <configuration>
@@ -248,7 +248,7 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
 ```
 </details>
 <details>
-    <summary>Show Gradle (Kotlin) example</summary>
+    <summary><b>Show Gradle (Kotlin) example</b></summary>
 
 ```kotlin
 restrictImports {
@@ -260,7 +260,7 @@ restrictImports {
 </details>
 
 <details>
-    <summary>Show Gradle (Groovy) example</summary>
+    <summary><b>Show Gradle (Groovy) example</b></summary>
 
 ```groovy
 restrictImports {
@@ -280,7 +280,7 @@ interface which requires a banned type as either return- or parameter type. Inst
 you can allow them to be used only in some explicitly configured locations.
 
 <details open>
-    <summary>Show Maven example</summary>
+    <summary><b>Show Maven example</b></summary>
 
 ```xml
 <configuration>

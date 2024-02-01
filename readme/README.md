@@ -130,7 +130,7 @@ To refine the classes that are banned you may use the `allowedImports` tag in ad
 the `bannedImports` tag. For example, you can exclude a whole sub package using a wildcard
 operator but still allow some concrete classes:
 
-<details>
+<details open>
     <summary>Show Maven example</summary>
 
 ```xml
@@ -158,7 +158,7 @@ restrictImports {
 <details>
     <summary>Show Gradle (Groovy) example</summary>
 
-```kotlin
+```groovy
 restrictImports {
     bannedImports = ["java.util.logging.**"]
     allowedImports = ["java.util.loggingHandler"]
@@ -171,6 +171,9 @@ It is possible to exclude certain source files from being affected by the bans a
 all. You can use `basePackage` to specify a package pattern of classes that are affected
 by the rule. You may then exclude some classes to refine the matches using the
 `exclusion` tag. It is also possible to specify multiple base packages.
+
+<details open>
+    <summary>Show Maven example</summary>
 
 ```xml
 <configuration>
@@ -188,9 +191,39 @@ by the rule. You may then exclude some classes to refine the matches using the
     </rules>
 </configuration>
 ```
+</details>
+<details>
+    <summary>Show Gradle (Kotlin) example</summary>
+
+```kotlin
+restrictImports {
+    basePackes = listOf("com.your.domain.**", "com.your.company.**")
+    bannedImports = listOf("java.util.logging.**")
+    allowedImports = listOf("java.util.loggingHandler")
+    exclusions = list("com.your.domain.treat.special.*")
+}
+```
+</details>
+
+<details>
+    <summary>Show Gradle (Groovy) example</summary>
+
+```groovy
+restrictImports {
+    basePackes = ["com.your.domain.**", "com.your.company.**"]
+    bannedImports = ["java.util.logging.**"]
+    allowedImports = ["java.util.loggingHandler"]
+    exclusions = ["com.your.domain.treat.special.*"]
+}
+```
+</details>
+
 
 Wherever you write package patterns you can also specify a list of patterns. Thus it is
 possible to define multiple banned imports/exclusions/allowed imports or base packages.
+
+<details open>
+    <summary>Show Maven example</summary>
 
 ```xml
 <configuration>
@@ -213,6 +246,30 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
     </rules>
 </configuration>
 ```
+</details>
+<details>
+    <summary>Show Gradle (Kotlin) example</summary>
+
+```kotlin
+restrictImports {
+    bannedImports = listOf("java.util.logging.**", "what.ever.**")
+    allowedImports = listOf("java.util.logging.Handler", "what.ever.IsCool")
+    exclusions = list("com.your.domain.treat.special.*", "com.your.domain.treat.special.too.*")
+}
+```
+</details>
+
+<details>
+    <summary>Show Gradle (Groovy) example</summary>
+
+```groovy
+restrictImports {
+    bannedImports = ["java.util.logging.**", "what.ever.**"]
+    allowedImports = ["java.util.logging.Handler", "what.ever.IsCool"]
+    exclusions = ["com.your.domain.treat.special.*", "com.your.domain.treat.special.too.*"]
+}
+```
+</details>
 
 ## Not-fixable imports
 > [!NOTE]
@@ -221,6 +278,9 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
 In certain situations you might not be able to avoid using a banned import. For example if you implement an
 interface which requires a banned type as either return- or parameter type. Instead of globally allowing such imports,
 you can allow them to be used only in some explicitly configured locations.
+
+<details open>
+    <summary>Show Maven example</summary>
 
 ```xml
 <configuration>
@@ -238,6 +298,7 @@ you can allow them to be used only in some explicitly configured locations.
     </rules>
 </configuration>
 ```
+</details>
 
 You can add multiple _not-fixable_ definitions if you nest them in `<notFixables></notFixables>`.
 

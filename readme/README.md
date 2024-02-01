@@ -145,15 +145,27 @@ operator but still allow some concrete classes:
 ```
 </details>
 <details>
-    <summary>Show Gradle example</summary>
+    <summary>Show Gradle (Kotlin) example</summary>
 
 ```kotlin
-    restrictImports {
-        bannedImports = listOf("java.util.logging.**")
-        allowedImports = listOf("java.util.loggingHandler")
-    }
+restrictImports {
+    bannedImports = listOf("java.util.logging.**")
+    allowedImports = listOf("java.util.loggingHandler")
+}
 ```
 </details>
+
+<details>
+    <summary>Show Gradle (Groovy) example</summary>
+
+```kotlin
+restrictImports {
+    bannedImports = ["java.util.logging.**"]
+    allowedImports = ["java.util.loggingHandler"]
+}
+```
+</details>
+
 
 It is possible to exclude certain source files from being affected by the bans at
 all. You can use `basePackage` to specify a package pattern of classes that are affected

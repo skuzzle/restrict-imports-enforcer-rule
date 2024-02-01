@@ -63,7 +63,6 @@ information or have a look at the [Full configuration example](#full-configurati
 
 > [!CAUTION]
 > Gradle support is quite new and should be considered experimental.
-> Documentation will follow, for now you can check out the func tests [here](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/master/restrict-imports-gradle-plugin/src/functionalTest/groovy/de/skuzzle/restrictimports/gradle/RestrictImportsGroovyFuncTest.groovy).
 >
 > Feedback is welcome and should be filed as new GitHub issue.
 
@@ -150,7 +149,7 @@ operator but still allow some concrete classes:
 ```kotlin
 restrictImports {
     bannedImports = listOf("java.util.logging.**")
-    allowedImports = listOf("java.util.loggingHandler")
+    allowedImports = listOf("java.util.logging.Handler")
 }
 ```
 </details>
@@ -161,7 +160,7 @@ restrictImports {
 ```groovy
 restrictImports {
     bannedImports = ["java.util.logging.**"]
-    allowedImports = ["java.util.loggingHandler"]
+    allowedImports = ["java.util.logging.Handler"]
 }
 ```
 </details>
@@ -199,7 +198,7 @@ by the rule. You may then exclude some classes to refine the matches using the
 restrictImports {
     basePackes = listOf("com.your.domain.**", "com.your.company.**")
     bannedImports = listOf("java.util.logging.**")
-    allowedImports = listOf("java.util.loggingHandler")
+    allowedImports = listOf("java.util.logging.Handler")
     exclusions = list("com.your.domain.treat.special.*")
 }
 ```
@@ -212,7 +211,7 @@ restrictImports {
 restrictImports {
     basePackes = ["com.your.domain.**", "com.your.company.**"]
     bannedImports = ["java.util.logging.**"]
-    allowedImports = ["java.util.loggingHandler"]
+    allowedImports = ["java.util.logging.Handler"]
     exclusions = ["com.your.domain.treat.special.*"]
 }
 ```
@@ -282,6 +281,8 @@ you can allow them to be used only in some explicitly configured locations.
 <details open>
     <summary><b>Maven</b></summary>
 
+You can add multiple _not-fixable_ definitions if you nest them in `<notFixables></notFixables>`.
+
 ```xml
 <configuration>
     <rules>
@@ -300,7 +301,35 @@ you can allow them to be used only in some explicitly configured locations.
 ```
 </details>
 
-You can add multiple _not-fixable_ definitions if you nest them in `<notFixables></notFixables>`.
+<details>
+    <summary><b>Gradle (Kotlin)</b></summary>
+
+```kotlin
+restrictImports {
+    bannedImports = listOf("com.foo.BannedClass")
+    notFixable {
+        in = "com.yourdomain.persistence.SomeClass"
+        allowedImports = listOf("com.foo.BannedClass")
+        because = "Type required by implemented interface"
+    }
+}
+```
+</details>
+
+<details>
+    <summary><b>Gradle (Groovy)</b></summary>
+
+```kotlin
+restrictImports {
+    bannedImports = ["com.foo.BannedClass"]
+    notFixable {
+        in = "com.yourdomain.persistence.SomeClass"
+        allowedImports = ["com.foo.BannedClass"]
+        because = "Type required by implemented interface"
+    }
+}
+```
+</details>
 
 > [!NOTE]
 > Not fixable definitions can not be nested in `<groups>` (see _Rule groups_ below). Not-fixables apply globally per
@@ -310,6 +339,9 @@ You can add multiple _not-fixable_ definitions if you nest them in `<notFixables
 Rule groups add another level of refining which imports will be matched. You can group
 the `bannedImport(s)`, `allowedImport(s)` and `basePackage(s)` tags and specify multiple
 of this groups within a single enforcer rule.
+
+<details open>
+    <summary><b>Maven</b></summary>
 
 ```xml
 <configuration>
@@ -342,6 +374,67 @@ of this groups within a single enforcer rule.
     </rules>
 </configuration>
 ```
+</details>
+
+<details>
+    <summary><b>Gradle (Kotlin)</b></summary>
+
+```kotlin
+restrictImports {
+    group {
+        reason = "Persistence classes must only be used from within .persistence package"
+        basePackages = listOf("**")
+        bannedImports = listOf(
+          "javax.persistence.EntityManager",
+          "javax.sql.DataSource",
+          "javax.persistence.NamedQueries",
+          "javax.persistence.NamedQuery",
+          "javax.ejb.Stateful",
+          "javax.ejb.EJB"
+        )
+    }
+    group {
+        basePackages = listOf("com.yourdomain.persistence.**")
+        bannedImports = listOf(
+            "javax.persistence.NamedQueries",
+            "javax.persistence.NamedQuery",
+            "javax.ejb.Stateful",
+            "javax.ejb.EJB"
+        )
+    }
+}
+```
+</details>
+
+<details>
+    <summary><b>Gradle (Groovy)</b></summary>
+
+```groovy
+restrictImports {
+    group {
+        reason = "Persistence classes must only be used from within .persistence package"
+        basePackages = ["**"]
+        bannedImports = [
+          "javax.persistence.EntityManager",
+          "javax.sql.DataSource",
+          "javax.persistence.NamedQueries",
+          "javax.persistence.NamedQuery",
+          "javax.ejb.Stateful",
+          "javax.ejb.EJB"
+        ]
+    }
+    group {
+        basePackages = ["com.yourdomain.persistence.**"]
+        bannedImports = [
+            "javax.persistence.NamedQueries",
+            "javax.persistence.NamedQuery",
+            "javax.ejb.Stateful",
+            "javax.ejb.EJB"
+        ]
+    }
+}
+```
+</details>
 
 When analysing a source file, the plugin filters all groups where the group's
 `basePackage` matches the source file's package name. In case multiple groups are
@@ -359,6 +452,9 @@ class.
 Every package pattern also automatically matches `static` imports. However, it is possible to explicitly mention the
 `static` keyword in the pattern. In that case, the pattern will only match a resp. static import.
 
+<details open>
+    <summary><b>Maven</b></summary>
+
 ```xml
 <configuration>
     <rules>
@@ -368,11 +464,35 @@ Every package pattern also automatically matches `static` imports. However, it i
     </rules>
 </configuration>
 ```
+</details>
+<details>
+    <summary><b>Gradle (Kotlin)</b></summary>
+
+```kotlin
+restrictImports {
+    bannedImports = listOf("static org.junit.Assert.*")
+}
+```
+</details>
+<details>
+    <summary><b>Gradle (Groovy)</b></summary>
+
+```groovy
+restrictImports {
+    bannedImports = ["static org.junit.Assert.*"]
+}
+```
+</details>
+
 Inclusions and exclusion will work identically.
 
 ## Test code
 By default, test code is also subject to the banned import checks (this is new since version `2.0.0`). You can disable
 analysis of test code using the `includeTestCode` option.
+
+<details open>
+    <summary><b>Maven</b></summary>
+
 ```xml
 <configuration>
     <rules>
@@ -383,10 +503,33 @@ analysis of test code using the `includeTestCode` option.
     </rules>
 </configuration>
 ```
+</details>
+<details>
+    <summary><b>Gradle (Kotlin)</b></summary>
+
+```kotlin
+restrictImports {
+    includeTestCode = false
+}
+```
+</details>
+<details>
+    <summary><b>Gradle (Groovy)</b></summary>
+
+```groovy
+restrictImports {
+    includeTestCode = false
+}
+```
+</details>
 
 ## Skipping
 Using the configuration option `skip` you are able to temporarily disable a rule
 instance.
+
+<details open>
+    <summary><b>Maven</b></summary>
+
 ```xml
 <configuration>
     <rules>
@@ -397,8 +540,24 @@ instance.
     </rules>
 </configuration>
 ```
+</details>
+<details>
+    <summary><b>Gradle (Kotlin)</b></summary>
+
+No direct equivalent
+</details>
+<details>
+    <summary><b>Gradle (Groovy)</b></summary>
+
+No direct equivalent
+</details>
+
 If you want banned import analysis but without breaking your build you can set
 `failBuild` to `false`.
+
+<details open>
+    <summary><b>Maven</b></summary>
+
 ```xml
 <configuration>
     <rules>
@@ -409,17 +568,40 @@ If you want banned import analysis but without breaking your build you can set
     </rules>
 </configuration>
 ```
+</details>
+<details>
+    <summary><b>Gradle (Kotlin)</b></summary>
+
+```kotlin
+restrictImports {
+    failBuild = false
+}
+```
+</details>
+<details>
+    <summary><b>Gradle (Groovy)</b></summary>
+
+```groovy
+restrictImports {
+    failBuild = false
+}
+```
+</details>
 
 You can also pass these parameters as property to the maven build using `-Drestrictimports.skip` resp.
 `-Drestrictimports.failBuild`. When passed as property, the property's value takes precedence over what has been
 configured in the pom file.
 
 ## Exclude source roots
-By default, all source roots reported by Maven is subject to the banned import checks, which for example includes but
+By default, all source roots reported by Maven/Gradle are subject to the banned import checks, which for example includes but
 is not limited to `${project.basedir}/src/main/java`, `${project.basedir}/src/test/java`,
 `${project.build.directory}/generated-sources/main/java` and
 `${project.build.directory}/generated-test-sources/main/java`. You can exclude source root(s) using the
 `excludedSourceRoot(s)` option, either absolute or relative path.
+
+<details open>
+    <summary><b>Maven</b></summary>
+
 ```xml
 <configuration>
     <rules>
@@ -433,10 +615,25 @@ is not limited to `${project.basedir}/src/main/java`, `${project.basedir}/src/te
     </rules>
 </configuration>
 ```
+</details>
+<details>
+    <summary><b>Gradle (Kotlin)</b></summary>
+
+No direct equivalent
+</details>
+<details>
+    <summary><b>Gradle (Groovy)</b></summary>
+
+No direct equivalent
+</details>
 
 ## Parallel Analysis
 We support basic parallelization of the analysis. This is enabled by default but can be disabled either in the pom file
 using the `<parallel>` option or by passing `-Drestrictimports.parallel` to the maven build.
+
+<details open>
+    <summary><b>Maven</b></summary>
+
 ```xml
 <configuration>
     <rules>
@@ -447,6 +644,25 @@ using the `<parallel>` option or by passing `-Drestrictimports.parallel` to the 
     </rules>
 </configuration>
 ```
+</details>
+<details>
+    <summary><b>Gradle (Kotlin)</b></summary>
+
+```kotlin
+restrictImports {
+    parallel = false
+}
+```
+</details>
+<details>
+    <summary><b>Gradle (Groovy)</b></summary>
+
+```groovy
+restrictImports {
+    parallel = false
+}
+```
+</details>
 
 ## Detecting full qualified class usage
 > **Note**
@@ -454,6 +670,10 @@ using the `<parallel>` option or by passing `-Drestrictimports.parallel` to the 
 
 To overcome some of the limitations mentioned [here](#limitation), you can enable 'full compilation unit' parsing
 mode using
+
+<details open>
+    <summary><b>Maven</b></summary>
+
 ```xml
 <configuration>
     <rules>
@@ -464,6 +684,26 @@ mode using
     </rules>
 </configuration>
 ```
+</details>
+<details>
+    <summary><b>Gradle (Kotlin)</b></summary>
+
+```kotlin
+restrictImports {
+  parseFullCompilationUnit = false
+}
+```
+</details>
+<details>
+    <summary><b>Gradle (Groovy)</b></summary>
+
+```groovy
+restrictImports {
+    parseFullCompilationUnit = false
+}
+```
+</details>
+
 The option currently only affects parsing of java source files. When enabled, we will attempt a full parse of each
 java source file, creating an actual AST. This allows to also detect full qualified class usages but will be
 considerably slower.
@@ -533,6 +773,10 @@ with the exact name `ClassName.java`. The same applies in case you use a base pa
 pattern with no wild cards.
 
 ## Full configuration example
+
+<details open>
+    <summary><b>Maven</b></summary>
+
 ```xml
 <RestrictImports>
     <failBuild>true</failBuild> <!-- Can be overridden with -Drestrictimports.failBuild=... -->
@@ -554,6 +798,9 @@ pattern with no wild cards.
             <allowedImports> <!-- Optional. Nesting not needed when specifying a single package -->
                 <allowedImport>...</allowedImport>
             </allowedImports>
+            <exclusions> <!-- Optional. Nesting not needed when specifying a single package -->
+                <exclusion>...</exclusion>
+            </exclusions>
         </group>
     </groups>
     <notFixables> <!-- Optional. Nesting not needed when specifying a single not-fixable -->
@@ -566,38 +813,36 @@ pattern with no wild cards.
     </notFixables>
 </RestrictImports>
 ```
+</details>
+<details>
+    <summary><b>Gradle (Kotlin)</b></summary>
 
-## Configuration options
+```kotlin
+restrictImports {
+    reason = "..."
+    bannedImports = listOf("...")
+    allowedImports = listOf("...")
+    exclusions = listOf("...")
+    parallel = false
+    includeCompileCode = false
+    includeTestCode = false
+    parseFullCompilationUnit = false
+}
+```
+</details>
+<details>
+    <summary><b>Gradle (Groovy)</b></summary>
 
-Overview of all configuration parameters:
-
-| Parameter                  | Type                           | Required | Default      | Since    |
-|----------------------------|--------------------------------|----------|--------------|----------|
-| `basePackage(s)`           | (List of) package pattern      | no       | `**`         |          |
-| `bannedImport(s)`          | (List of) package pattern      | yes      |              |          |
-| `allowedImport(s)`         | (List of) package pattern      | no       | empty list   |          |
-| `exclusion(s)`             | (List of) package pattern      | no       | empty list   |          |
-| `includeTestCode`          | Boolean                        | no       | `true`       | `0.7.0`  |
-| `reason`                   | String                         | no       | empty String | `0.8.0`  |
-| `failBuild`                | Boolean                        | no       | `true`       | `0.17.0` |
-| `skip`                     | Boolean                        | no       | `false`      | `0.17.0` |
-| `includeCompileCode`       | Boolean                        | no       | `true`       | `1.2.0`  |
-| `excludedSourceRoot(s)`    | (List of) java.io.File         | no       | empty list   | `1.3.0`  |
-| `parallel`                 | Boolean                        | no       | `true`       | `2.0.0`  |
-| `parseFullCompilationUnit` | Boolean                        | no       | `false`      | `2.1.0`  |
-| `notFixable(s)`            | (List of) NotFixableDefinition | no       | empty list   | `2.4.0`  |
-
-## Versioning, Deprecations and Compatibility
-This project adheres to version 2 of the [semantic version specification](http://semver.org) with regards to the
-plugin's configuration syntax and analysis semantics.
-
-You can always safely update the _minor_ and the _patch_ version of the rule's dependency entry within a pom.xml without
-breaking your build. Breaking interface or behavioral changes will only ever be introduced with a new _major_ version.
-
-When deprecating/removing functionality, we use the following terminology:
-* _Deprecated_: Using this feature still works, but will log a descriptive deprecation warning
-* _Soft-Removed_: Using this feature will fail the build with a descriptive warning that this feature is no longer supported
-* _Removed_: The feature no longer exists and the plugin behaves as if it never did.
-
-This artifact is not meant to be used as standalone dependency. Thus its actual implementation is not covered by
-semantic versioning.
+```groovy
+restrictImports {
+    reason = "..."
+    bannedImports = ["..."]
+    allowedImports = ["..."]
+    exclusions = ["..."]
+    parallel = false
+    includeCompileCode = false
+    includeTestCode = false
+    parseFullCompilationUnit = false
+}
+```
+</details>

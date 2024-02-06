@@ -28,7 +28,7 @@ tasks {
 
 testing {
     suites {
-        val functionalTest by registering(JvmTestSuite::class) {
+        val test by getting(JvmTestSuite::class) {
             useSpock(libs.versions.spock)
 
             dependencies {
@@ -38,5 +38,3 @@ testing {
         }
     }
 }
-gradlePlugin.testSourceSets.add(sourceSets["functionalTest"])
-tasks.test.configure { dependsOn(tasks.named("functionalTest")) }

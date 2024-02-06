@@ -2,6 +2,7 @@ package de.skuzzle.buildlogic
 
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.api.DefaultTask
+import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
@@ -20,10 +21,10 @@ abstract class CopyAndFilterReadmeTask : DefaultTask() {
     abstract val fileSystemOps: FileSystemOperations
 
     @get:Internal
-    abstract val sourceDir: Property<File>
+    abstract val sourceDir: DirectoryProperty
 
     @get:Internal
-    abstract val targetDir: Property<File>
+    abstract val targetDir: DirectoryProperty
 
     @get:[Input Optional]
     abstract val replaceTokens: MapProperty<String?, Any?>

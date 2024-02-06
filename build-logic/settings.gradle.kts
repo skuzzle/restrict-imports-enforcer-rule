@@ -17,5 +17,6 @@ include("conventions")
 include("release-plugin")
 include("verify-publication")
 include("code-style")
+include("replace-snippets")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

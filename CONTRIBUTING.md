@@ -10,7 +10,7 @@ I don't want you to waste your time on changes that I might decline, so please o
 issue before implementing any new feature and sending a pull request. I'm happy to
 discuss your idea and give advice on how to best implement it.
 
-If your idea is accepted, simply send the PR targetting the *development* branch.
+If your idea is accepted, simply send the PR targeting the *development* branch.
 
 ## Local Development
 

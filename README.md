@@ -362,7 +362,7 @@ using the `<parallel>` option or by passing `-Drestrictimports.parallel` to the 
 ```
 
 ## Detecting full qualified class usage
-> **Note**
+> [!NOTE]
 > This is an experimental feature
 
 To overcome some of the limitations mentioned [here](#limitation), you can enable 'full compilation unit' parsing
@@ -419,7 +419,7 @@ String split operations and only reading each source file up until a non-import 
 discovered. We cover a set of esoteric edge cases, for example block comments within a single import statement and the
 like.
 
-> !NOTE]
+> [!NOTE]
 > Plus side to this approach is, that we are mostly agnostic to the Java version you are using. Our parser doesn't
 > need updates even if you want to use latest Java language features in your code base.
 

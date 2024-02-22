@@ -22,7 +22,7 @@ maven
 Gradle plugin DSL
 ```groovy
 plugins {
-  id("de.skuzzle.restrict.imports") version "2.5.0"
+  id("de.skuzzle.restrictimports") version "2.5.0"
 }
 ```
 
@@ -39,7 +39,7 @@ buildscript {
   }
 }
 
-apply(plugin = "de.skuzzle.restrict.imports")
+apply(plugin = "de.skuzzle.restrictimports")
 ```
 
 Gradle version catalog (Toml)

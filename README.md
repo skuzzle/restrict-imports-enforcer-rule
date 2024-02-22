@@ -70,7 +70,7 @@ information or have a look at the [Full configuration example](#full-configurati
 ### ... with Groovy DSL
 ```
 plugins {
-    id("de.skuzzle.restrict.imports") version("2.5.0")
+    id("de.skuzzle.restrictimports") version("2.5.0")
 }
 
 restrictImports {
@@ -82,7 +82,7 @@ restrictImports {
 ### ... with Kotlin DSL
 ```
 plugins {
-    id("de.skuzzle.restrict.imports") version("2.5.0")
+    id("de.skuzzle.restrictimports") version("2.5.0")
 }
 
 restrictImports {

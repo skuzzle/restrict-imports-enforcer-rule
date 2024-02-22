@@ -69,7 +69,7 @@ information or have a look at the [Full configuration example](#full-configurati
 ### ... with Groovy DSL
 ```
 plugins {
-    id("de.skuzzle.restrict.imports") version("@project.version@")
+    id("de.skuzzle.restrictimports") version("@project.version@")
 }
 
 restrictImports {

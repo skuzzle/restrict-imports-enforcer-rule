@@ -13,11 +13,12 @@ val generateReadmeAndReleaseNotes by tasks.creating(CopyAndFilterReadmeTask::cla
     replaceTokens = mapOf(
         "project.version" to project.version as String,
         "project.groupId" to project.group as String,
+        "project.pluginId" to providers.gradleProperty("pluginId"),
         "version.junit" to libs.versions.junit5.get(),
         "version.enforcer-api.min" to libs.versions.enforcerMin.get(),
         "version.enforcer-api.max" to libs.versions.enforcerMax.get(),
-        "github.user" to project.property("githubUser") as String,
-        "github.name" to project.property("githubRepo") as String
+        "github.user" to providers.gradleProperty("githubUser"),
+        "github.name" to providers.gradleProperty("githubRepo")
     )
 }
 

@@ -1,7 +1,7 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
 [![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=@project.version@&color=blue)](https://search.maven.org/artifact/@project.groupId@/restrict-imports-enforcer-rule/@project.version@/jar)
-[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=@project.version@)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/@project.version@)
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/@project.pluginId@?versionSuffix=@project.version@)](https://plugins.gradle.org/plugin/@project.pluginId@/@project.version@)
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/@github.name@/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/@github.name@?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/ProjectPolly)
 
@@ -69,7 +69,7 @@ information or have a look at the [Full configuration example](#full-configurati
 ### ... with Groovy DSL
 ```
 plugins {
-    id("de.skuzzle.restrictimports") version("@project.version@")
+    id("@project.pluginId@") version("@project.version@")
 }
 
 restrictImports {
@@ -81,7 +81,7 @@ restrictImports {
 ### ... with Kotlin DSL
 ```
 plugins {
-    id("de.skuzzle.restrict.imports") version("@project.version@")
+    id("@project.pluginId@") version("@project.version@")
 }
 
 restrictImports {

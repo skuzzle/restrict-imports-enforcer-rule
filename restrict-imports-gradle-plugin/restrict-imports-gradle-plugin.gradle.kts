@@ -21,7 +21,7 @@ gradlePlugin {
     website = "https://github.com/skuzzle/restrict-imports-enforcer-rule"
     vcsUrl = "https://github.com/skuzzle/restrict-imports-enforcer-rule"
     val restrictImports by plugins.creating {
-        id = "de.skuzzle.restrictimports"
+        id = providers.gradleProperty("pluginId").get()
         implementationClass = "de.skuzzle.restrictimports.gradle.RestrictImportsPlugin"
         displayName = "Restrict Imports Gradle Plugin"
         description = project.description

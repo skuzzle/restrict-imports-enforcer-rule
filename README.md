@@ -686,7 +686,7 @@ To overcome some of the limitations mentioned [here](#limitation), you can enabl
 
 ```kotlin
 restrictImports {
-  parseFullCompilationUnit = false
+  parseFullCompilationUnit = true
 }
 ```
 </details>
@@ -695,7 +695,7 @@ restrictImports {
 
 ```groovy
 restrictImports {
-    parseFullCompilationUnit = false
+    parseFullCompilationUnit = true
 }
 ```
 </details>

@@ -199,7 +199,7 @@ restrictImports {
     basePackes = listOf("com.your.domain.**", "com.your.company.**")
     bannedImports = listOf("java.util.logging.**")
     allowedImports = listOf("java.util.logging.Handler")
-    exclusions = list("com.your.domain.treat.special.*")
+    exclusions = listOf("com.your.domain.treat.special.*")
 }
 ```
 </details>
@@ -253,7 +253,7 @@ possible to define multiple banned imports/exclusions/allowed imports or base pa
 restrictImports {
     bannedImports = listOf("java.util.logging.**", "what.ever.**")
     allowedImports = listOf("java.util.logging.Handler", "what.ever.IsCool")
-    exclusions = list("com.your.domain.treat.special.*", "com.your.domain.treat.special.too.*")
+    exclusions = listOf("com.your.domain.treat.special.*", "com.your.domain.treat.special.too.*")
 }
 ```
 </details>

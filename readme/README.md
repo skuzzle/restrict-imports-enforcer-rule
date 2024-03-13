@@ -436,7 +436,7 @@ restrictImports {
 ```
 </details>
 
-When analysing a source file, the plugin filters all groups where the group's
+When analysing a source file, the plugin collects all groups where the group's
 `basePackage` matches the source file's package name. In case multiple groups are
 matching, only the group with the _most specific_ base package is retained and the others
 are ignored for this file. Have a look at [this](https://github.com/skuzzle/restrict-imports-enforcer-rule/blob/develop/src/test/java/de/skuzzle/enforcer/restrictimports/analyze/PackagePatternSpecifityTest.java#L34) file to have a glance at how _specificity_ works.

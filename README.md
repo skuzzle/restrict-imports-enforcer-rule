@@ -1,7 +1,7 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.5.1-develop&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.5.1-develop/jar)
-[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=2.5.1-develop)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/2.5.1-develop)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.5.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.5.0/jar)
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=2.5.0)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/2.5.0)
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/ProjectPolly)
 
@@ -32,7 +32,7 @@ information or have a look at the [Full configuration example](#full-configurati
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>2.5.1-develop</version>
+            <version>2.5.0</version>
         </dependency>
     </dependencies>
     <executions>
@@ -69,7 +69,7 @@ information or have a look at the [Full configuration example](#full-configurati
 ### ... with Groovy DSL
 ```
 plugins {
-    id("de.skuzzle.restrictimports") version("2.5.1-develop")
+    id("de.skuzzle.restrictimports") version("2.5.0")
 }
 
 restrictImports {
@@ -81,7 +81,7 @@ restrictImports {
 ### ... with Kotlin DSL
 ```
 plugins {
-    id("de.skuzzle.restrictimports") version("2.5.1-develop")
+    id("de.skuzzle.restrictimports") version("2.5.0")
 }
 
 restrictImports {

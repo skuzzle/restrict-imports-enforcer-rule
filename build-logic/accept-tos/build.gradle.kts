@@ -4,11 +4,6 @@ plugins {
     `kotlin-dsl`
 }
 
-repositories {
-    mavenLocal()
-    gradlePluginPortal() // so that external plugins can be resolved in dependencies section
-}
-
 dependencies {
     implementation(kotlin("gradle-plugin"))
 }

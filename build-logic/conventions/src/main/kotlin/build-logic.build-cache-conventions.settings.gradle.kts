@@ -1,4 +1,4 @@
-var isCi = System.getenv("CI")?.toBoolean() ?: false
+var isCi = !System.getenv("CI").isNullOrEmpty()
 
 buildCache {
     local {

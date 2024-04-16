@@ -4,6 +4,11 @@ dependencyResolutionManagement {
             from(files("../gradle/libs.versions.toml"))
         }
     }
+
+    repositories {
+        mavenLocal()
+        gradlePluginPortal() // so that external plugins can be resolved in dependencies section
+    }
 }
 
 // kind of a hack to reuse the build cache configuration for both the included plugin build as well as

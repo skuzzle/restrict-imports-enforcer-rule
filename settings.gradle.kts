@@ -10,16 +10,16 @@ plugins {
     id("build-logic.settings-conventions")
 }
 
-var isCi = System.getenv("CI")?.toBoolean() ?: false
+var isCi = !System.getenv("CI").isNullOrEmpty()
 var acceptTos = isCi || file("YOU ACCEPTED THE TOS FOR PUBLISHING BUILD SCANS").exists()
-gradleEnterprise {
+
+develocity {
     buildScan {
-        publishAlways()
-        termsOfServiceUrl = "https://gradle.com/terms-of-service"
-        termsOfServiceAgree = if (acceptTos) "yes" else null
-        isUploadInBackground = !isCi
+        termsOfUseUrl = "https://gradle.com/terms-of-service"
+        termsOfUseAgree = if (acceptTos) "yes" else null
+        uploadInBackground = !isCi
         capture {
-            isTaskInputFiles = false
+            fileFingerprints = false
         }
     }
 }

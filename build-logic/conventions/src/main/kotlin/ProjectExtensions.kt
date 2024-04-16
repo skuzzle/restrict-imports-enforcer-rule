@@ -7,8 +7,7 @@ val Project.isSnapshot: Boolean
     get() = (project.version as String).contains("SNAPSHOT")
 
 val Project.isCI: Boolean
-    get() = System.getenv("CI")?.toBoolean() ?: false
-
+    get() = !System.getenv("CI").isNullOrEmpty()
 
 fun Project.requiredVersionFromLibs(name: String) =
     libsVersionCatalog.findVersion(name).get().requiredVersion

@@ -10,7 +10,10 @@
 * [#59](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/59) Provide a Gradle plugin
 * [#118](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/118) Print absolute paths in exception messages to make IntelliJ render clickable links
 
-maven
+### Dependency coordinates
+<details>
+    <summary><b>Maven dependency declaration</b></summary>
+
 ```xml
 <dependency>
     <groupId>@project.groupId@</groupId>
@@ -18,6 +21,10 @@ maven
     <version>@project.version@</version>
 </dependency>
 ```
+</details>
+
+<details>
+    <summary><b>Gradle dependency declaration</b></summary>
 
 Gradle plugin DSL
 ```groovy
@@ -47,3 +54,4 @@ Gradle version catalog (Toml)
 [plugins]
 restrictImports = { id = "@project.pluginId@", version = "@project.version@" }
 ```
+</details>

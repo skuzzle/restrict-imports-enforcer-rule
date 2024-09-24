@@ -32,167 +32,161 @@ public class PackagePatternTest {
     }
 
     @Test
-    public void testNull() throws Exception {
+    void testNull() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> PackagePattern.parse(null));
     }
 
     @Test
-    public void testNull2() throws Exception {
+    void testNull2() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> PackagePattern.parseAll(null));
     }
 
     @Test
-    public void testMisplacedDoubleWildcardInfix() throws Exception {
+    void testMisplacedDoubleWildcardInfix() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> PackagePattern.parse("foo.xyz**abc"));
     }
 
     @Test
-    public void testMisplacedSingleWildcardInfix() throws Exception {
+    void testMisplacedSingleWildcardInfix() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> PackagePattern.parse("foo.xyz*abc"));
     }
 
     @Test
-    public void testMisplacedDoubleWildcardPrefix() throws Exception {
+    void testMisplacedDoubleWildcardPrefix() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> PackagePattern.parse("foo.**abc"));
     }
 
     @Test
-    public void testMisplacedDoubleWildcardSuffix() throws Exception {
+    void testMisplacedDoubleWildcardSuffix() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> PackagePattern.parse("foo.abc**"));
     }
 
     @Test
-    public void testMisplacedSingleWildcardPrefix() throws Exception {
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> PackagePattern.parse("foo.*abc"));
-    }
-
-    @Test
-    public void testMisplacedSingleWildcardSuffix() throws Exception {
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> PackagePattern.parse("foo.abc*"));
-    }
-
-    @Test
-    public void testEmptyPartInfix() throws Exception {
+    void testEmptyPartInfix() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> PackagePattern.parse("foo..bar"));
     }
 
     @Test
-    public void testEmptyPartPrefix() throws Exception {
+    void testEmptyPartPrefix() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> PackagePattern.parse(".bar"));
     }
 
     @Test
-    public void testEmptyPartSuffix() throws Exception {
+    void testEmptyPartSuffix() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> PackagePattern.parse("bar."));
     }
 
     @Test
-    public void testIllegalWhitespace() throws Exception {
+    void testIllegalWhitespace() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> PackagePattern.parse("com foo"));
     }
 
     @Test
-    public void testToString() throws Exception {
+    void testToString() {
         assertThat(PackagePattern.parse("de.skuzzle.**").toString())
                 .isEqualTo("de.skuzzle.**");
     }
 
     @Test
-    public void testToStringStatic() throws Exception {
+    void testToStringStatic() {
         assertThat(PackagePattern.parse("static de.skuzzle.**").toString())
                 .isEqualTo("static de.skuzzle.**");
     }
 
     @Test
-    public void testVerifyEquals() throws Exception {
+    void testVerifyEquals() {
         EqualsVerifier.forClass(PackagePattern.class).verify();
     }
 
     @Test
-    public void testNotEquals() throws Exception {
+    void testNotEquals() {
         assertThat(PackagePattern.parse("de.skuzzle.**")).isNotEqualTo(
                 PackagePattern.parse("de.skuzzle.*"));
     }
 
     @Test
-    public void testMatchDefaultPackage() throws Exception {
+    void testMatchDefaultPackage() {
         final PackagePattern pattern = PackagePattern.parse("**");
         assertThat(pattern.matches("")).isTrue();
     }
 
     @Test
-    public void testMatchesDefaultPackage2() throws Exception {
+    void testMatchesDefaultPackage2() {
         final PackagePattern pattern = PackagePattern.parse("*");
         assertThat(pattern.matches("")).isTrue();
     }
 
     @Test
-    public void testMatchExactly() throws Exception {
+    void testMatchesDefaultPackage3() {
+        final PackagePattern pattern = PackagePattern.parse("*Foo*");
+        assertThat(pattern.matches("NotFooType")).isTrue();
+    }
+
+    @Test
+    void testMatchExactly() {
         final PackagePattern pattern = PackagePattern.parse("de.skuzzle.SomeClass");
         assertThat(pattern.matches("de.skuzzle.SomeClass")).isTrue();
         assertThat(pattern.matches("de.skuzzle.SomeClass2")).isFalse();
     }
 
     @Test
-    public void testMatchWildCardSuffix() throws Exception {
+    void testMatchWildCardSuffix() {
         final PackagePattern pattern = PackagePattern.parse("de.skuzzle.*");
         assertThat(pattern.matches("de.skuzzle.TestClass")).isTrue();
         assertThat(pattern.matches("de.skuzzle.TestClass2")).isTrue();
     }
 
     @Test
-    public void testWildCardMatchesSingle() throws Exception {
+    void testWildCardMatchesSingle() {
         final PackagePattern pattern = PackagePattern.parse("de.skuzzle.*");
         assertThat(pattern.matches("de.skuzzle.sub.TestClass")).isFalse();
     }
 
     @Test
-    public void testMatchInfix() throws Exception {
+    void testMatchInfix() {
         final PackagePattern pattern = PackagePattern.parse("de.skuzzle.*.test");
         assertThat(pattern.matches("de.skuzzle.foo.test")).isTrue();
         assertThat(pattern.matches("de.skuzzle.test")).isFalse();
     }
 
     @Test
-    public void testMatchMultipleInfix() throws Exception {
+    void testMatchMultipleInfix() {
         final PackagePattern pattern = PackagePattern.parse("de.skuzzle.*.xx.*.test");
         assertThat(pattern.matches("de.skuzzle.foo.xx.bar.test")).isTrue();
         assertThat(pattern.matches("de.skuzzle.foo.xx.bar")).isFalse();
     }
 
     @Test
-    public void testWildcardMatchMultiple() throws Exception {
+    void testWildcardMatchMultiple() {
         final PackagePattern pattern = PackagePattern.parse("de.skuzzle.**");
         assertThat(pattern.matches("de.skuzzle.sub.TestClass")).isTrue();
         assertThat(pattern.matches("de.skuzzle.TestClass2")).isTrue();
     }
 
     @Test
-    public void testLogger() throws Exception {
+    void testLogger() {
         final PackagePattern pattern = PackagePattern.parse("java.util.**");
         assertThat(pattern.matches("java.util.logging.Logger")).isTrue();
     }
 
     @Test
-    public void testWildcardInStringToTest() throws Exception {
+    void testWildcardInStringToTest() {
         final PackagePattern pattern = PackagePattern.parse("java.util.ArrayList");
         assertThat(pattern.matches("java.util.*")).isFalse();
     }
 
     @Test
-    public void testDoubleWildcardInBetween() throws Exception {
+    void testDoubleWildcardInBetween() {
         final PackagePattern pattern = PackagePattern.parse("com.**.bar.ClassName");
         assertThat(pattern.matches("com.foo.bar.ClassName")).isTrue();
         assertThat(pattern.matches("com.xyz.foo.bar")).isFalse();
@@ -201,40 +195,40 @@ public class PackagePatternTest {
     }
 
     @Test
-    public void testDoubleWildcardInBetweenSkipMultiple() throws Exception {
+    void testDoubleWildcardInBetweenSkipMultiple() {
         final PackagePattern pattern = PackagePattern.parse("com.**.bar.ClassName");
         assertThat(pattern.matches("com.xyz.foo.bar.ClassName")).isTrue();
         assertThat(pattern.matches("com.xyz.foo.bar")).isFalse();
     }
 
     @Test
-    public void testConsecutiveDoubleWildcard() throws Exception {
+    void testConsecutiveDoubleWildcard() {
         final PackagePattern pattern = PackagePattern.parse("com.**.**.ClassName");
         assertThat(pattern.matches("com.xyz.foo.bar.ClassName")).isTrue();
         assertThat(pattern.matches("com.xyz.foo.bar")).isFalse();
     }
 
     @Test
-    public void testDoubleWildcard() throws Exception {
+    void testDoubleWildcard() {
         final PackagePattern pattern = PackagePattern.parse("com.**.xx.**.ClassName");
         assertThat(pattern.matches("com.xyz.foo.yy.xx.bar.ClassName")).isTrue();
         assertThat(pattern.matches("com.xyz.foo.bar")).isFalse();
     }
 
     @Test
-    public void testDoubleWildCartBeginning() throws Exception {
+    void testDoubleWildCartBeginning() {
         final PackagePattern pattern = PackagePattern.parse("**.ClassName");
         assertThat(pattern.matches("com.xyz.foo.bar.ClassName")).isTrue();
     }
 
     @Test
-    public void test() throws Exception {
+    void test() {
         final PackagePattern pattern = PackagePattern.parse("com.foo.**");
         assertThat(pattern.matches("java.util.ArrayList")).isFalse();
     }
 
     @Test
-    public void testPatternMatchesPattern() throws Exception {
+    void testPatternMatchesPattern() {
         assertThat(PackagePattern.parse("com.foo.**")
                 .matches(PackagePattern.parse("com.foo.*"))).isTrue();
         assertThat(PackagePattern.parse("com.foo.*")
@@ -244,32 +238,81 @@ public class PackagePatternTest {
     }
 
     @Test
-    public void testStaticImport() throws Exception {
+    void testStaticImport() {
         assertThat(PackagePattern.parse("static com.foo.bar.*")
                 .matches("static com.foo.bar.Test")).isTrue();
     }
 
     @Test
-    public void testImplicitStaticImport() throws Exception {
+    void testImplicitStaticImport() {
         assertThat(PackagePattern.parse("com.foo.bar.*")
                 .matches("static com.foo.bar.Test")).isTrue();
     }
 
     @Test
-    public void testStaticImportWithWildWhitespaces() throws Exception {
+    void testStaticImportWithWildWhitespaces() {
         assertThat(PackagePattern.parse("\n   \tstatic   \t  \n \r    com.foo.bar.*\t   ")
                 .matches("       static \r  \t com.foo.bar.Test   \n       ")).isTrue();
     }
 
     @Test
-    public void testRealPackageNameStartswithStatic() throws Exception {
+    void testRealPackageNameStartswithStatic() {
         final PackagePattern pattern = PackagePattern.parse("staticc.foo.Bar");
         assertThat(pattern.toString()).isEqualTo("staticc.foo.Bar");
     }
 
     @Test
-    public void testParseEmptyString() throws Exception {
+    void testParseEmptyString() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> PackagePattern.parse(""));
+    }
+
+    @Test
+    void testMatchSuffixWithinLastPart() {
+        final PackagePattern pattern = PackagePattern.parse("com.console.model.*Entity");
+        assertThat(pattern.matches("com.console.model.UserEntity")).isTrue();
+    }
+
+    @Test
+    void testMatchSuffixWithinMiddlePart() {
+        final PackagePattern pattern = PackagePattern.parse("com.console.*model.UserEntity");
+        assertThat(pattern.matches("com.console.whatevermodel.UserEntity")).isTrue();
+    }
+
+    @Test
+    void testMatchPrefixWithinLastPart() {
+        final PackagePattern pattern = PackagePattern.parse("com.console.model.Entity*");
+        assertThat(pattern.matches("com.console.model.EntityWhatever")).isTrue();
+    }
+
+    @Test
+    void testMatchPrefixWithinMiddlePart() {
+        final PackagePattern pattern = PackagePattern.parse("com.console.model*.UserEntity");
+        assertThat(pattern.matches("com.console.modelwhatever.UserEntity")).isTrue();
+    }
+
+    @Test
+    void testMatchContainingStringWithinLastPart() {
+        final PackagePattern pattern = PackagePattern.parse("com.console.model.*Foo*");
+        assertThat(pattern.matches("com.console.model.XxFooBar")).isTrue();
+    }
+
+    @Test
+    void testMatchContainingStringWithinMiddlePart() {
+        final PackagePattern pattern = PackagePattern.parse("com.console.*model*.Foo");
+        assertThat(pattern.matches("com.console.foomodelfoo.Foo")).isTrue();
+    }
+
+    @Test
+    void testMatchContainingStringExactMatch() {
+        final PackagePattern pattern = PackagePattern.parse("com.console.*model*.Foo");
+        assertThat(pattern.matches("com.console.model.Foo")).isTrue();
+    }
+
+    @Test
+    void testDumbNameExample() {
+        final PackagePattern pattern = PackagePattern.parse("**.*DumbName");
+        assertThat(pattern.matches("com.console.model.ThisIsADumbName")).isTrue();
+        assertThat(pattern.matches("com.foo.bar.ThisIsADumbName")).isTrue();
     }
 }

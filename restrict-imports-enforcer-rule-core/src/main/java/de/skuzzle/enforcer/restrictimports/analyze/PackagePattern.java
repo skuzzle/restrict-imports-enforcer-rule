@@ -68,9 +68,9 @@ public final class PackagePattern implements Comparable<PackagePattern> {
 
         if (part.isEmpty()) {
             throw new IllegalArgumentException(String.format("The pattern '%s' contains an empty part", original));
-        } else if ("*".equals(part) || "**".equals(part) || "'*'".equals(part)) {
+        } else if (isValidWildcardPart(part)) {
             return;
-        } else if (part.contains("*")) {
+        } else if (part.contains("*") && (part.indexOf('*') > 1 || part.indexOf('*') < part.length() - 2)) {
             throw new IllegalArgumentException(String.format(
                     "The pattern '%s' contains a part which mixes wildcards and normal characters", original));
         } else if (partIndex == 0 && "static".equals(part)) {
@@ -89,6 +89,17 @@ public final class PackagePattern implements Comparable<PackagePattern> {
                         Integer.toHexString(chars[i])));
             }
         }
+    }
+
+    private boolean isValidWildcardPart(String patternPart) {
+        if ("*".equals(patternPart) || "**".equals(patternPart) || "'*'".equals(patternPart)) {
+            return true;
+        }
+        if (patternPart.startsWith("*") || patternPart.endsWith("*")) {
+            final String substring = patternPart.substring(1, patternPart.length() - 1);
+            return !substring.contains("*");
+        }
+        return false;
     }
 
     /**
@@ -193,6 +204,15 @@ public final class PackagePattern implements Comparable<PackagePattern> {
             return true;
         } else if ("'*'".equals(patternPart)) {
             return matchPart.equals("*");
+        } else if (patternPart.startsWith("*") && patternPart.endsWith("*")) {
+            final String infix = patternPart.substring(1, patternPart.length() - 1);
+            return matchPart.contains(infix);
+        } else if (patternPart.startsWith("*")) {
+            final String suffix = patternPart.substring(1);
+            return matchPart.endsWith(suffix);
+        } else if (patternPart.endsWith("*")) {
+            final String prefix = patternPart.substring(0, patternPart.length() - 1);
+            return matchPart.startsWith(prefix);
         }
         return patternPart.equals(matchPart);
     }
@@ -228,7 +248,7 @@ public final class PackagePattern implements Comparable<PackagePattern> {
     private int specificityOf(String part) {
         if (part.equals("**")) {
             return 0;
-        } else if (part.equals("*")) {
+        } else if (part.contains("*")) {
             return 1;
         }
         return 2;

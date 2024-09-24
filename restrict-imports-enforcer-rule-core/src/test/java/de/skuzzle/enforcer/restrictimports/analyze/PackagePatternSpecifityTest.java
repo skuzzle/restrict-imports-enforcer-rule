@@ -35,6 +35,12 @@ public class PackagePatternSpecifityTest {
             expect("*").toBeMoreSpecificThan("**"),
             expect("de.**").toBeMoreSpecificThan("**"),
             expect("de.xyz.*").toBeMoreSpecificThan("de.xyz.**"),
+            expect("de.xyz.Foo").toBeMoreSpecificThan("de.xyz.Foo*"),
+            expect("de.xyz.Foo").toBeMoreSpecificThan("de.xyz.*Foo"),
+            expect("de.xyz.Foo").toBeMoreSpecificThan("de.xyz.*Foo*"),
+            expect("de.xyz.*Foo").toBeMoreSpecificThan("de.*xyz.*Foo"),
+            expect("de.x.y.z.*Foo").toBeMoreSpecificThan("de.*xyz.*Foo"),
+
             expect("de.*.xyz").toBeMoreSpecificThan("de.**.xyz"),
             expect("de").toBeMoreSpecificThan("*"),
             expect("de").toBeMoreSpecificThan("**"),
@@ -50,7 +56,7 @@ public class PackagePatternSpecifityTest {
             expect("*.xyz").toBeMoreSpecificThan("**.xyz"));
 
     @TestFactory
-    Stream<DynamicNode> testCompareToSelf() throws Exception {
+    Stream<DynamicNode> testCompareToSelf() {
         return patterns.stream()
                 .map(pattern -> DynamicTest.dynamicTest(String.format(
                         "%s should be more specific than itself", pattern.moreSpecific),
@@ -64,7 +70,7 @@ public class PackagePatternSpecifityTest {
     }
 
     @TestFactory
-    Stream<DynamicNode> testCompareSpecificty() throws Exception {
+    Stream<DynamicNode> testCompareSpecificty() {
         return patterns.stream()
                 .map(pattern -> DynamicTest.dynamicTest(String.format(
                         "%s should be more specific than %s", pattern.moreSpecific,
@@ -80,7 +86,7 @@ public class PackagePatternSpecifityTest {
     }
 
     @TestFactory
-    Stream<DynamicNode> testCompareSpecifictyReverse() throws Exception {
+    Stream<DynamicNode> testCompareSpecifictyReverse() {
         return patterns.stream()
                 .map(pattern -> DynamicTest.dynamicTest(String.format(
                         "%s should not be more specific than %s", pattern.lessSpecific,

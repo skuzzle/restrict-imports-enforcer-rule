@@ -715,19 +715,20 @@ considerably slower.
 ## Package Patterns
 
 Package patterns are dot separated strings that can be compared case sensitively part by part. Every part must adhere to
-the java identifier rules with the exception of a some special literals:
+the java identifier rules except some special literals:
 
 1. `*` matches every package part but exactly one.
 2. `**` matches multiple package parts but at least one.
 3. `'*'` matches a literal `*` in an import statement.
+4. `*SomeString` matches every package part that ends with `SomeString`.
+5. `SomeString*` matches every package part that starts with `SomeString`.
+6. `*SomeString*` matches every package part that contains `SomeString`.
 
 The pattern `java.util.*` matches `java.util.ArrayList` but not `java.util.regex.Pattern`.
 
-Likewise the pattern `java.util.**` matches all classes and subclasses contained in
-`java.util`. Double wildcards are supported everywhere within a pattern. `**.DumbName`
-would match every import which ends in `DumbName`. Wildcards are forbidden to be used in
-combination with other characters within a single part, like in `com.foo**`. Also parts
-within a package must not be empty like in `foo..bar`.
+Likewise, the pattern `java.util.**` matches all classes and subclasses contained in`java.util`.
+Double wildcards are supported everywhere within a pattern. `**.*DumbName` would match every import which ends in `DumbName`.
+Parts within a package must not be empty like in `foo..bar`.
 
 If a pattern does not contain any wildcards, matching degrades to a simple String
 comparison.

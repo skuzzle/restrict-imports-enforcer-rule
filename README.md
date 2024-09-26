@@ -1,7 +1,7 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.5.1-develop&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.5.1-develop/jar)
-[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=2.5.1-develop)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/2.5.1-develop)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.6.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.6.0/jar)
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=2.6.0)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/2.6.0)
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/ProjectPolly)
 
@@ -17,7 +17,7 @@ Supported source files:
 
 Compatibility:
 - Works with Java 8+
-- Tested against _maven-enforcer-plugin_ versions `1.4.1` and `3.4.1`.
+- Tested against _maven-enforcer-plugin_ versions `1.4.1` and `3.5.0`.
 
 ## Maven quick start
 This is a minimal usage example. Please scroll down for detailed configuration
@@ -27,12 +27,12 @@ information or have a look at the [Full configuration example](#full-configurati
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-enforcer-plugin</artifactId>
-    <version>3.4.1</version>
+    <version>3.5.0</version>
     <dependencies>
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>2.5.1-develop</version>
+            <version>2.6.0</version>
         </dependency>
     </dependencies>
     <executions>
@@ -69,7 +69,7 @@ information or have a look at the [Full configuration example](#full-configurati
 ### ... with Groovy DSL
 ```
 plugins {
-    id("de.skuzzle.restrictimports") version("2.5.1-develop")
+    id("de.skuzzle.restrictimports") version("2.6.0")
 }
 
 restrictImports {
@@ -81,7 +81,7 @@ restrictImports {
 ### ... with Kotlin DSL
 ```
 plugins {
-    id("de.skuzzle.restrictimports") version("2.5.1-develop")
+    id("de.skuzzle.restrictimports") version("2.6.0")
 }
 
 restrictImports {
@@ -715,19 +715,20 @@ considerably slower.
 ## Package Patterns
 
 Package patterns are dot separated strings that can be compared case sensitively part by part. Every part must adhere to
-the java identifier rules with the exception of a some special literals:
+the java identifier rules except some special literals:
 
 1. `*` matches every package part but exactly one.
 2. `**` matches multiple package parts but at least one.
 3. `'*'` matches a literal `*` in an import statement.
+4. `*SomeString` matches every package part that ends with `SomeString`.
+5. `SomeString*` matches every package part that starts with `SomeString`.
+6. `*SomeString*` matches every package part that contains `SomeString`.
 
 The pattern `java.util.*` matches `java.util.ArrayList` but not `java.util.regex.Pattern`.
 
-Likewise the pattern `java.util.**` matches all classes and subclasses contained in
-`java.util`. Double wildcards are supported everywhere within a pattern. `**.DumbName`
-would match every import which ends in `DumbName`. Wildcards are forbidden to be used in
-combination with other characters within a single part, like in `com.foo**`. Also parts
-within a package must not be empty like in `foo..bar`.
+Likewise, the pattern `java.util.**` matches all classes and subclasses contained in`java.util`.
+Double wildcards are supported everywhere within a pattern. `**.*DumbName` would match every import which ends in `DumbName`.
+Parts within a package must not be empty like in `foo..bar`.
 
 If a pattern does not contain any wildcards, matching degrades to a simple String
 comparison.
@@ -742,7 +743,7 @@ String split operations and only reading each source file up until a non-import 
 discovered. We cover a set of esoteric edge cases, for example block comments within a single import statement and the
 like.
 
-> [!NOTE]
+> !NOTE]
 > Plus side to this approach is, that we are mostly agnostic to the Java version you are using. Our parser doesn't
 > need updates even if you want to use latest Java language features in your code base.
 

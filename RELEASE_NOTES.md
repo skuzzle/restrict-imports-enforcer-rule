@@ -1,28 +1,30 @@
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.5.1-develop&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.5.1-develop/jar)
-[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=2.5.1-develop)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/2.5.1-develop)
-
-> [!NOTE]
-> This is the first release after migrating our build to Gradle and which uses shaded dependencies.
-> If you encounter any irregularities with this version, please do not hesitate to file an issue.
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.6.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.6.0/jar)
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=2.6.0)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/2.6.0)
 
 ### Features
-* [#38](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/38) Dependencies are shaded into plugin artifacts
-* [#59](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/59) Provide a Gradle plugin
-* [#118](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/118) Print absolute paths in exception messages to make IntelliJ render clickable links
+* [#177](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/177) Support matching prefix, suffix and infix
+parts within a package pattern.
 
-maven
+### Dependency coordinates
+<details>
+    <summary><b>Maven dependency declaration</b></summary>
+
 ```xml
 <dependency>
     <groupId>de.skuzzle.enforcer</groupId>
     <artifactId>restrict-imports-enforcer-rule</artifactId>
-    <version>2.5.1-develop</version>
+    <version>2.6.0</version>
 </dependency>
 ```
+</details>
+
+<details>
+    <summary><b>Gradle dependency declaration</b></summary>
 
 Gradle plugin DSL
 ```groovy
 plugins {
-  id("de.skuzzle.restrictimports") version "2.5.1-develop"
+  id("de.skuzzle.restrictimports") version "2.6.0"
 }
 ```
 
@@ -35,7 +37,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath("de.skuzzle.enforcer:restrict-imports-gradle-plugin:2.5.1-develop")
+    classpath("de.skuzzle.enforcer:restrict-imports-gradle-plugin:2.6.0")
   }
 }
 
@@ -45,5 +47,6 @@ apply(plugin = "de.skuzzle.restrictimports")
 Gradle version catalog (Toml)
 ```toml
 [plugins]
-restrictImports = { id = "de.skuzzle.restrictimports", version = "2.5.1-develop" }
+restrictImports = { id = "de.skuzzle.restrictimports", version = "2.6.0" }
 ```
+</details>

@@ -10,28 +10,28 @@ import org.junit.jupiter.api.DynamicNode;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
-public class PackagePatternSpecifityTest {
+public class PackagePatternSpecificityTest {
 
-    private static class SpecifityTest {
+    private static class SpecificityTest {
         private String lessSpecific;
         private final String moreSpecific;
 
-        public SpecifityTest(String moreSpecific) {
+        public SpecificityTest(String moreSpecific) {
             this.moreSpecific = moreSpecific;
         }
 
-        public SpecifityTest toBeMoreSpecificThan(String lessSpecific) {
+        public SpecificityTest toBeMoreSpecificThan(String lessSpecific) {
             this.lessSpecific = lessSpecific;
             return this;
         }
     }
 
-    private static SpecifityTest expect(String moreSpecific) {
-        return new SpecifityTest(moreSpecific);
+    private static SpecificityTest expect(String moreSpecific) {
+        return new SpecificityTest(moreSpecific);
 
     }
 
-    private final Collection<SpecifityTest> patterns = Arrays.asList(
+    private final Collection<SpecificityTest> patterns = Arrays.asList(
             expect("*").toBeMoreSpecificThan("**"),
             expect("de.**").toBeMoreSpecificThan("**"),
             expect("de.xyz.*").toBeMoreSpecificThan("de.xyz.**"),
@@ -70,7 +70,7 @@ public class PackagePatternSpecifityTest {
     }
 
     @TestFactory
-    Stream<DynamicNode> testCompareSpecificty() {
+    Stream<DynamicNode> testCompareSpecificity() {
         return patterns.stream()
                 .map(pattern -> DynamicTest.dynamicTest(String.format(
                         "%s should be more specific than %s", pattern.moreSpecific,
@@ -86,7 +86,7 @@ public class PackagePatternSpecifityTest {
     }
 
     @TestFactory
-    Stream<DynamicNode> testCompareSpecifictyReverse() {
+    Stream<DynamicNode> testCompareSpecificityReverse() {
         return patterns.stream()
                 .map(pattern -> DynamicTest.dynamicTest(String.format(
                         "%s should not be more specific than %s", pattern.lessSpecific,

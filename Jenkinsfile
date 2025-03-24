@@ -29,6 +29,13 @@ pipeline {
                 }
             }
         }
+        stage('build-logic tests') {
+            steps {
+                withGradle {
+                    sh './gradlew build-logic:check'
+                }
+            }
+        }
         stage('Unit-tests') {
             steps {
                 withGradle {

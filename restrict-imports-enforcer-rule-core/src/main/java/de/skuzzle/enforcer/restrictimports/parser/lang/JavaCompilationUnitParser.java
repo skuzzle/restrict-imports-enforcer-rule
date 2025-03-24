@@ -39,7 +39,9 @@ final class JavaCompilationUnitParser {
         final CompilationUnit compilationUnit = StaticJavaParser.parse(sourceFilePath);
 
         final List<ImportStatement> imports = compilationUnit.getImports().stream()
-                .map(id -> new ImportStatement(id.getNameAsString(), id.getBegin().map(p -> p.line).orElse(0),
+                .map(id -> new ImportStatement(
+                        id.isAsterisk() ? id.getNameAsString() + ".*" : id.getNameAsString(),
+                        id.getBegin().map(p -> p.line).orElse(0),
                         id.isStatic() ? ImportType.STATIC_IMPORT : ImportType.IMPORT))
                 .collect(Collectors.toList());
 

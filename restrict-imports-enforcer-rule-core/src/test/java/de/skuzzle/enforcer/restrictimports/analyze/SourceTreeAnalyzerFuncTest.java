@@ -426,6 +426,27 @@ public class SourceTreeAnalyzerFuncTest {
     }
 
     @Test
+    void shouldCatchWildcardImportIfParseFullCompilationIsEnabled() throws IOException {
+        new SourceFileBuilder(fs)
+                .atPath("src/main/java/de/skuzzle/Sample.java")
+                .withLines("import com.foo.*;");
+
+        final BannedImportGroups groups = BannedImportGroups.builder()
+                .withGroup(BannedImportGroup.builder()
+                        .withBasePackages("**")
+                        .withBannedImports("**.'*'"))
+                .build();
+
+        final SourceTreeAnalyzer subject = SourceTreeAnalyzer.getInstance();
+        final AnalyzeResult result = subject.analyze(AnalyzerSettings.builder()
+                .withSrcDirectories(root)
+                .withParseFullCompilationUnit(true)
+                .build(), groups);
+
+        assertThat(result.bannedImportsFound()).isTrue();
+    }
+
+    @Test
     void testReportWarningWhenFallBackToLineByLineParsingButNoBannedImportsDetected() throws IOException {
         new SourceFileBuilder(fs)
                 .atPath("src/main/java/de/skuzzle/Sample.java")
@@ -458,7 +479,7 @@ public class SourceTreeAnalyzerFuncTest {
                         "package de.skuzzle;",
                         "import org.apache.commons.lang.StringUtils;",
                         "}"); // compile failure to force fall back to line-by-line
-                              // parsing
+        // parsing
 
         final BannedImportGroups groups = BannedImportGroups.builder()
                 .withGroup(BannedImportGroup.builder()

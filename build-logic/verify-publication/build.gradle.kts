@@ -36,3 +36,4 @@ testing {
     }
 }
 gradlePlugin.testSourceSets.add(sourceSets["functionalTest"])
+tasks.check.configure { dependsOn("functionalTest") }

@@ -2,6 +2,7 @@ package de.skuzzle.enforcer.restrictimports.analyze;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -110,8 +111,38 @@ public final class BannedImportGroups {
             return this;
         }
 
+        private void checkGroupsConsistency() {
+            groupsShouldNotBeEmpty();
+            groupsShouldNotHaveEqualBasePackages();
+        }
+
+        private void groupsShouldNotBeEmpty() {
+            if (groups.isEmpty()) {
+                throw new BannedImportDefinitionException("No BannedImportGroups have been specified");
+            }
+        }
+
+        private void groupsShouldNotHaveEqualBasePackages() {
+            // there should be no 2 groups with equal base packages
+            for (BannedImportGroup groupOuter : groups) {
+                for (BannedImportGroup groupInner : groups) {
+                    if (groupInner == groupOuter) {
+                        continue;
+                    }
+                    if (new HashSet<>(groupOuter.getBasePackages())
+                            .equals(new HashSet<>(groupInner.getBasePackages()))) {
+                        throw new BannedImportDefinitionException(
+                                "There are two groups with equal base package definitions: "
+                                        + groupInner.getBasePackages().stream().map(PackagePattern::toString)
+                                                .collect(Collectors.joining(", ")));
+                    }
+                }
+            }
+
+        }
+
         public BannedImportGroups build() {
-            Preconditions.checkArgument(!groups.isEmpty(), "No BannedImportGroups have been specified");
+            checkGroupsConsistency();
             return new BannedImportGroups(groups);
         }
     }

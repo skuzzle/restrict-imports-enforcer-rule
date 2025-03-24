@@ -35,7 +35,7 @@ class VerifyPublicationFuncTest extends Specification {
         plugins {
             id("maven-publish")
             id("java-library")
-            id("verify-publication-conventions")
+            id("build-logic.verify-publication")
         }
         """.stripIndent(true)
     }
@@ -71,7 +71,7 @@ class VerifyPublicationFuncTest extends Specification {
         def result = runAndFail("verifyPublication")
 
         then:
-        result.output.contains("Expected 0 published artifacts but found 1")
+        result.output.find("Expected 0 published artifacts in .* but found 1") != null
         result.task(":verifyPublication").outcome == FAILED
     }
 

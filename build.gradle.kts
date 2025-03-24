@@ -20,3 +20,20 @@ nexusPublishing.repositories {
         password.set(property("sonatype_PSW").toString())
     }
 }
+
+fun TaskContainer.connectIncludedBuildTasks(
+    includedBuildName: String,
+    taskName: String,
+    taskToConnect: String = taskName,
+) {
+    named(taskName) {
+        dependsOn(
+            project.gradle.includedBuild(includedBuildName).task(":$taskToConnect")
+        )
+    }
+}
+
+tasks {
+    connectIncludedBuildTasks("build-logic", "check")
+    connectIncludedBuildTasks("build-logic", "quickCheck")
+}

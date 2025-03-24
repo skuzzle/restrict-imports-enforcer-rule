@@ -26,11 +26,11 @@ publishToVerificationRepoTasks.configureEach {
     mustRunAfter(clearTempRepo)
 }
 
-val clearTempRepo by tasks.creating(Delete::class.java) {
+val clearTempRepo by tasks.registering(Delete::class) {
     delete(extension.verificationRepoDir)
 }
 
-val verifyPublication by tasks.creating(VerifyPublicationTask::class.java) {
+val verifyPublication by tasks.registering(VerifyPublicationTask::class) {
     group = "verification"
     description = "Verifies structure and contents of all published artifacts"
     dependsOn(clearTempRepo, publishToVerificationRepoTasks)

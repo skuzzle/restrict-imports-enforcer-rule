@@ -12,10 +12,6 @@ dependencies {
     testImplementation(libs.bytebuddy)
     testImplementation(libs.bytebuddyAgent)
 
-    testImplementation(platform(libs.junit.bom))
-    testImplementation(libs.junit.jupiter)
-    testRuntimeOnly(libs.junit.launcher)
-
     testImplementation(libs.equalsverifier)
     testImplementation(libs.assertj.core)
     testImplementation(libs.equalsverifier)

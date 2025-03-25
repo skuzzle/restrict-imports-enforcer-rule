@@ -11,7 +11,7 @@ val m2Repository: Provider<Directory> = rootProject.layout.buildDirectory.dir("m
 val publishEnforcerRuleTask =
     projects.restrictImportsEnforcerRule.dependencyProject.tasks.findByName("publishMavenPublicationToLocalIntegrationTestsRepository")
 
-val functionalTest by tasks.creating {
+val functionalTest by tasks.registering {
     group = "verification"
 }
 
@@ -19,14 +19,14 @@ listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
     .map { it.get() }
     .forEach { enforcerVersion ->
         val safeVersion = enforcerVersion.replace(".", "_")
-        tasks.create<MavenExec>("runMavenFuncTests_$safeVersion") {
+        tasks.register<MavenExec>("runMavenFuncTests_$safeVersion") {
             description = "Executes Maven Enforcer Plugin integration tests"
             group = "verification"
             notCompatibleWithConfigurationCache("Inherently not")
 
             val mavenExecTask = this
 
-            functionalTest.dependsOn(mavenExecTask)
+            functionalTest.configure { dependsOn(mavenExecTask) }
             tasks.check.configure { dependsOn(mavenExecTask) }
 
             with(publishEnforcerRuleTask) {

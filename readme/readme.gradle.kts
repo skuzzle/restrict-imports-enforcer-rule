@@ -5,7 +5,7 @@ plugins {
     id("build-logic.release-lifecycle")
 }
 
-val generateReadmeAndReleaseNotes by tasks.creating(CopyAndFilterReadmeTask::class.java) {
+val generateReadmeAndReleaseNotes by tasks.registering(CopyAndFilterReadmeTask::class) {
     group = "documentation"
     description = "Copies the readme and release notes file into the root directory, replacing all placeholders"
     sourceDir.set(project.projectDir)

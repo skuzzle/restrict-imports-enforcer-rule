@@ -40,7 +40,7 @@ verifyPublication {
             // Test for shadowed files
             aFile("de/skuzzle/enforcer/restrictimports/analyze/AnalyzeResult.class")
             aFile("META-INF/services/de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport") {
-                matching("") {content ->
+                matching("") { content ->
                     content.contains("de.skuzzle.enforcer.restrictimports.parser.lang.KotlinGroovyLanguageSupport")
                 }
             }
@@ -62,22 +62,19 @@ dependencies {
     implementation(projects.restrictImportsEnforcerRuleCore)
 }
 
-testing {
-    suites {
-        val functionalTest by registering(JvmTestSuite::class) {
-            useSpock(libs.versions.spock)
+val functionalTest by testing.suites.registering(JvmTestSuite::class) {
+    useSpock(libs.versions.spock)
 
-            dependencies {
-                implementation(platform(libs.groovy.bom.get().toString()))
-                implementation(libs.groovy.nio)
-            }
-        }
-
-        tasks.named<Task>("check") {
-            dependsOn(functionalTest)
-        }
+    dependencies {
+        implementation(platform(libs.groovy.bom.get().toString()))
+        implementation(libs.groovy.nio)
     }
 }
+
+tasks.named<Task>("check") {
+    dependsOn(functionalTest)
+}
+
 gradlePlugin.testSourceSets.add(sourceSets["functionalTest"])
 
 tasks.publishPlugins.configure {

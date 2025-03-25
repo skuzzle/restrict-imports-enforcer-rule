@@ -2,6 +2,7 @@ plugins {
     id("build-logic.base")
     id("java-library")
     id("jacoco")
+    id("jvm-test-suite")
 }
 
 val productionCodeJavaVersion = JavaLanguageVersion.of(8)
@@ -26,13 +27,6 @@ tasks {
         }
     }
 
-    withType<Test>().configureEach {
-        useJUnitPlatform()
-        javaLauncher.set(javaToolchains.launcherFor {
-            languageVersion = testCodeJavaVersion
-        })
-    }
-
     withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
         options.compilerArgs + "-parameters"
@@ -46,6 +40,19 @@ tasks {
                     "implSpec:a:Implementation Requirements:",
                     "implNote:a:Implementation Note:"
                 )
+            }
+        }
+    }
+}
+
+val test by testing.suites.getting(JvmTestSuite::class) {
+    useJUnitJupiter(requiredVersionFromLibs("junit5"))
+    targets {
+        all {
+            testTask {
+                javaLauncher.set(javaToolchains.launcherFor {
+                    languageVersion = testCodeJavaVersion
+                })
             }
         }
     }

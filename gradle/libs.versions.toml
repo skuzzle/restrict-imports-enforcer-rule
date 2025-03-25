@@ -17,7 +17,7 @@ equalsverifier = { module = "nl.jqno.equalsverifier:equalsverifier", version.ref
 bytebuddy = { module = "net.bytebuddy:byte-buddy", version.ref = "bytebuddy" }
 bytebuddyAgent = { module = "net.bytebuddy:byte-buddy-agent", version.ref = "bytebuddy" }
 # can't update to latest because its writing to illegal places on jenkins
-gradle-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version = "6.15.0" }
+gradle-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version = "7.0.2" }
 gradle-develocity = { module = "com.gradle:develocity-gradle-plugin", version = "3.17.1" }
 gradle-commonCustomUserData = { module = "com.gradle:common-custom-user-data-gradle-plugin", version = "2.0" }
 maven-core = { module = "org.apache.maven:maven-core", version.ref = "maven" }

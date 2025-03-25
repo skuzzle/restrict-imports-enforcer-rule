@@ -298,6 +298,8 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
                 "Configuration error: you should either specify a single not-fixable entry using <notFixable> or multiple "
                         +
                         "entries using <notFixables> but not both");
+        checkArgument(this.notFixable == null,
+                "If you want to specify multiple notFixable imports you have to wrap them in a <notFixables> tag");
         this.notFixable = notFixable;
     }
 

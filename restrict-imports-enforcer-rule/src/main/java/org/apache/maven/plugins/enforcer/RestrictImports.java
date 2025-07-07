@@ -6,28 +6,19 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
-import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
-import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
-import de.skuzzle.enforcer.restrictimports.analyze.NotFixable;
-import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
-import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import de.skuzzle.enforcer.restrictimports.analyze.*;
 import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
 
+import org.apache.maven.enforcer.rule.api.AbstractEnforcerRule;
 import org.apache.maven.enforcer.rule.api.EnforcerLevel;
-import org.apache.maven.enforcer.rule.api.EnforcerRule;
-import org.apache.maven.enforcer.rule.api.EnforcerRule2;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
-import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.apache.maven.project.MavenProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,7 +27,8 @@ import org.slf4j.LoggerFactory;
  * Enforcer rule which restricts the usage of certain packages or classes within a Java
  * code base.
  */
-public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImportGroupDefinitionInterface {
+@Named("restrictImports")
+public class RestrictImports extends AbstractEnforcerRule implements BannedImportGroupDefinitionInterface {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RestrictImports.class);
 
@@ -48,6 +40,8 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
     private final MatchFormatter matchFormatter = MatchFormatter.getInstance();
 
     private final BannedImportGroupDefinition group = new BannedImportGroupDefinition();
+    private final MavenProject project;
+
     private List<BannedImportGroupDefinition> groups = new ArrayList<>();
 
     private NotFixableDefinition notFixable = null;
@@ -61,6 +55,11 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
     private boolean parallel = true;
     private boolean parseFullCompilationUnit = false;
 
+    @Inject
+    public RestrictImports(MavenProject project) {
+        this.project = Objects.requireNonNull(project);
+    }
+
     @Override
     public EnforcerLevel getLevel() {
         return failBuild
@@ -69,21 +68,19 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
     }
 
     @Override
-    public void execute(EnforcerRuleHelper helper) throws EnforcerRuleException {
+    public void execute() throws EnforcerRuleException {
         try {
-            if (isSkip(helper)) {
+            if (isSkip()) {
                 LOGGER.info("restrict-imports-enforcer rule is skipped");
                 return;
             }
-
-            final MavenProject project = (MavenProject) helper.evaluate("${project}");
 
             LOGGER.debug("Checking for banned imports");
 
             final BannedImportGroups groups = createGroupsFromPluginConfiguration();
             LOGGER.debug("Banned import groups:\n{}", groups);
 
-            final AnalyzerSettings analyzerSettings = createAnalyzerSettingsFromPluginConfiguration(helper, project);
+            final AnalyzerSettings analyzerSettings = createAnalyzerSettingsFromPluginConfiguration();
             LOGGER.debug("Analyzer settings:\n{}", analyzerSettings);
 
             final AnalyzeResult analyzeResult = analyzer.analyze(analyzerSettings, groups);
@@ -92,7 +89,7 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
             if (analyzeResult.bannedImportsOrWarningsFound()) {
                 final String errorMessage = matchFormatter.formatMatches(analyzeResult);
 
-                if (analyzeResult.bannedImportsFound() && isFailBuild(helper)) {
+                if (analyzeResult.bannedImportsFound() && isFailBuild()) {
                     throw new EnforcerRuleException(errorMessage);
                 } else {
                     LOGGER.warn(errorMessage);
@@ -135,23 +132,21 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
                 .build();
     }
 
-    private AnalyzerSettings createAnalyzerSettingsFromPluginConfiguration(
-            EnforcerRuleHelper helper,
-            MavenProject mavenProject) throws Exception {
+    private AnalyzerSettings createAnalyzerSettingsFromPluginConfiguration() {
         if (!(includeCompileCode || includeTestCode)) {
             throw new IllegalArgumentException("Configuration error: No sources were included");
         }
 
         final List<Path> excludedSourceRootsAbsolutePaths = excludedSourceRootsAbsolutePaths();
         final Collection<Path> srcDirectories = this.includeCompileCode
-                ? listSourceRoots(mavenProject.getCompileSourceRoots(), excludedSourceRootsAbsolutePaths)
+                ? listSourceRoots(project.getCompileSourceRoots(), excludedSourceRootsAbsolutePaths)
                 : Collections.emptyList();
         final Collection<Path> testDirectories = this.includeTestCode
-                ? listSourceRoots(mavenProject.getTestCompileSourceRoots(), excludedSourceRootsAbsolutePaths)
+                ? listSourceRoots(project.getTestCompileSourceRoots(), excludedSourceRootsAbsolutePaths)
                 : Collections.emptyList();
 
-        final Charset sourceFileCharset = determineSourceFileCharset(mavenProject);
-        final boolean parallel = isParallel(helper);
+        final Charset sourceFileCharset = determineSourceFileCharset(project);
+        final boolean parallel = isParallel();
         final boolean parseFullCompilationUnit = this.parseFullCompilationUnit;
 
         return AnalyzerSettings.builder()
@@ -316,8 +311,9 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
         this.failBuild = failBuild;
     }
 
-    private boolean isFailBuild(EnforcerRuleHelper evaluator) throws Exception {
-        final Object failBuildProperty = evaluator.evaluate("${" + FAIL_BUILD_PROPERTY_NAME + "}");
+    private boolean isFailBuild() {
+
+        final Object failBuildProperty = System.getProperty(FAIL_BUILD_PROPERTY_NAME);
         if (failBuildProperty != null) {
             LOGGER.warn(
                     "'{}={}' has been passed which takes precedence over 'failBuild={}' configuration in the pom file",
@@ -331,8 +327,8 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
         this.skip = skip;
     }
 
-    private boolean isSkip(EnforcerRuleHelper evaluator) throws Exception {
-        final Object skipProperty = evaluator.evaluate("${" + SKIP_PROPERTY_NAME + "}");
+    private boolean isSkip() {
+        final Object skipProperty = System.getProperty(SKIP_PROPERTY_NAME);
         if (skipProperty != null) {
             LOGGER.warn(
                     "'{}={}' has been passed which takes precedence over 'skip={}' configuration in the pom file",
@@ -346,8 +342,8 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
         this.parallel = parallel;
     }
 
-    private boolean isParallel(EnforcerRuleHelper evaluator) throws Exception {
-        final Object parallelProperty = evaluator.evaluate("${" + PARALLEL_ANALYSIS_PROPERTY_NAME + "}");
+    private boolean isParallel() {
+        final Object parallelProperty = System.getProperty(PARALLEL_ANALYSIS_PROPERTY_NAME);
         if (parallelProperty != null) {
             LOGGER.warn(
                     "'{}={}' has been passed which takes precedence over 'parallel={}' configuration in the pom file",
@@ -359,17 +355,7 @@ public class RestrictImports implements EnforcerRule, EnforcerRule2, BannedImpor
 
     @Override
     public String getCacheId() {
-        return "";
+        // This rule is not cacheable
+        return null;
     }
-
-    @Override
-    public boolean isCacheable() {
-        return false;
-    }
-
-    @Override
-    public boolean isResultValid(EnforcerRule rule) {
-        return false;
-    }
-
 }

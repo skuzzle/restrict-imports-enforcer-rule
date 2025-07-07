@@ -29,7 +29,7 @@ public class RestrictImportsTest {
     private final Log log = mock(Log.class);
     private final MavenProject mavenProject = mock(MavenProject.class);
 
-    private final RestrictImports subject = new RestrictImports();
+    private final RestrictImports subject = new RestrictImports(mavenProject);
 
     @BeforeEach
     public void setUp() throws Exception {
@@ -47,73 +47,71 @@ public class RestrictImportsTest {
     @Test
     void testRestrictImportsNoFailure() throws Exception {
         this.subject.setBannedImport("foo.com.**");
-        this.subject.execute(this.helper);
+        this.subject.execute();
     }
 
     @Test
     void testRestrictFailure() {
         this.subject.setBannedImports(Collections.singletonList("java.util.**"));
         assertThatExceptionOfType(EnforcerRuleException.class)
-                .isThrownBy(() -> this.subject.execute(this.helper));
+                .isThrownBy(() -> this.subject.execute());
     }
 
     @Test
     void testRestrictFailureForFileUnderGeneratedSources() {
         this.subject.setBannedImports(Collections.singletonList("java.io.**"));
         assertThatExceptionOfType(EnforcerRuleException.class)
-                .isThrownBy(() -> this.subject.execute(this.helper));
+                .isThrownBy(() -> this.subject.execute());
     }
 
     @Test
     void testRestrictImportsNoFailureForFileUnderExcludedSourceRoot() throws Exception {
         this.subject.setExcludedSourceRoot(new File(absolutePath(SOURCE_ROOTS.get(1))));
         this.subject.setBannedImports(Collections.singletonList("java.io.**"));
-        this.subject.execute(this.helper);
+        this.subject.execute();
     }
 
     @Test
     void testRestrictImportsNoFailureForFileUnderExcludedSourceRoots() throws Exception {
         this.subject.setExcludedSourceRoots(Collections.singletonList(new File(absolutePath(SOURCE_ROOTS.get(1)))));
         this.subject.setBannedImports(Collections.singletonList("java.io.**"));
-        this.subject.execute(this.helper);
+        this.subject.execute();
     }
 
     @Test
-    void testConsistentConfigurationExcludeTestCodeAndCompileCode() throws Exception {
+    void testConsistentConfigurationExcludeTestCodeAndCompileCode() {
         this.subject.setIncludeCompileCode(false);
         this.subject.setIncludeTestCode(false);
         assertThatExceptionOfType(EnforcerRuleException.class)
-                .isThrownBy(() -> {
-                    subject.execute(helper);
-                });
+                .isThrownBy(() -> subject.execute());
     }
 
     @Test
     void testExcludedByBasePackage() throws Exception {
         this.subject.setBasePackage("foo.bar");
         this.subject.setBannedImports(Collections.singletonList("java.util.**"));
-        this.subject.execute(this.helper);
+        this.subject.execute();
     }
 
     @Test
     void testExcludedByMultipleBasePackages() throws Exception {
         this.subject.setBasePackages(Arrays.asList("foo.bar"));
         this.subject.setBannedImports(Collections.singletonList("java.util.**"));
-        this.subject.execute(this.helper);
+        this.subject.execute();
     }
 
     @Test
     void testExcludedClass() throws Exception {
         this.subject.setBannedImports(Collections.singletonList("java.util.**"));
         this.subject.setExclusions(Collections.singletonList("de.skuzzle.**"));
-        this.subject.execute(this.helper);
+        this.subject.execute();
     }
 
     @Test
     void testAllowImport() throws Exception {
         this.subject.setBannedImports(Collections.singletonList("java.util.**"));
         this.subject.setAllowedImports(Collections.singletonList("java.util.ArrayList"));
-        this.subject.execute(this.helper);
+        this.subject.execute();
     }
 
     @Test
@@ -138,7 +136,7 @@ public class RestrictImportsTest {
     }
 
     @Test
-    void testConsistentConfigurationSpecifyGroupsLast() throws Exception {
+    void testConsistentConfigurationSpecifyGroupsLast() {
         this.subject.setBannedImport("**");
         final BannedImportGroupDefinition group1 = new BannedImportGroupDefinition();
         assertThatExceptionOfType(IllegalArgumentException.class)
@@ -146,7 +144,7 @@ public class RestrictImportsTest {
     }
 
     @Test
-    void testConsistentConfigurationSpecifyGroupsFirst() throws Exception {
+    void testConsistentConfigurationSpecifyGroupsFirst() {
         final BannedImportGroupDefinition group1 = new BannedImportGroupDefinition();
         this.subject.setGroups(Arrays.asList(group1));
         assertThatExceptionOfType(IllegalArgumentException.class)
@@ -154,7 +152,7 @@ public class RestrictImportsTest {
     }
 
     @Test
-    void testConsistentConfigurationBasePackage1() throws Exception {
+    void testConsistentConfigurationBasePackage1() {
         this.subject.setBasePackage("**");
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> {
@@ -163,7 +161,7 @@ public class RestrictImportsTest {
     }
 
     @Test
-    void testConsistentConfigurationBasePackage2() throws Exception {
+    void testConsistentConfigurationBasePackage2() {
         this.subject.setBasePackages(Arrays.asList("*", "**"));
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> {
@@ -172,7 +170,7 @@ public class RestrictImportsTest {
     }
 
     @Test
-    void testConsistentConfigurationBannedImport1() throws Exception {
+    void testConsistentConfigurationBannedImport1() {
         this.subject.setBannedImport("**");
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> {
@@ -181,7 +179,7 @@ public class RestrictImportsTest {
     }
 
     @Test
-    void testConsistentConfigurationBannedImport2() throws Exception {
+    void testConsistentConfigurationBannedImport2() {
         this.subject.setBannedImports(Arrays.asList("**", "*"));
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> {
@@ -190,7 +188,7 @@ public class RestrictImportsTest {
     }
 
     @Test
-    void testConsistentConfigurationAllowedImport1() throws Exception {
+    void testConsistentConfigurationAllowedImport1() {
         this.subject.setAllowedImport("**");
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> {
@@ -199,7 +197,7 @@ public class RestrictImportsTest {
     }
 
     @Test
-    void testConsistentConfigurationAllowedImport2() throws Exception {
+    void testConsistentConfigurationAllowedImport2() {
         this.subject.setAllowedImports(Arrays.asList("**", "*"));
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> {
@@ -208,7 +206,7 @@ public class RestrictImportsTest {
     }
 
     @Test
-    void testConsistentConfigurationExclusion1() throws Exception {
+    void testConsistentConfigurationExclusion1() {
         this.subject.setExclusion("**");
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> {
@@ -217,7 +215,7 @@ public class RestrictImportsTest {
     }
 
     @Test
-    void testConsistentConfigurationExclusion2() throws Exception {
+    void testConsistentConfigurationExclusion2() {
         this.subject.setExclusions(Arrays.asList("**", "*"));
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> {
@@ -231,7 +229,7 @@ public class RestrictImportsTest {
                 Arrays.asList("de.skuzzle.test.**", "de.skuzzle.enforcer.**"));
         this.subject.setBannedImports(Arrays.asList("java.util.*"));
         this.subject.setAllowedImports(Arrays.asList("java.util.ArrayList"));
-        subject.execute(helper);
+        subject.execute();
     }
 
     @Test

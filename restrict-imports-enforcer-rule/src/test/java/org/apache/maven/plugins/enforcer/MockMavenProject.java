@@ -45,8 +45,8 @@ public class MockMavenProject {
         return new MockMavenProject("/src/main/java/SampleJavaFile.java");
     }
 
-    public EnforcerRuleHelper enforcerRuleHelper() {
-        return this.enforcerRuleHelper;
+    public MavenProject mavenProject() {
+        return this.mavenProject;
     }
 
     public MockMavenProject withExpression(String expression, Object result) {

@@ -6,16 +6,26 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import de.skuzzle.enforcer.restrictimports.analyze.*;
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzeResult;
+import de.skuzzle.enforcer.restrictimports.analyze.AnalyzerSettings;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportDefinitionException;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroup;
+import de.skuzzle.enforcer.restrictimports.analyze.BannedImportGroups;
+import de.skuzzle.enforcer.restrictimports.analyze.NotFixable;
+import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
+import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
 import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
-
 import org.apache.maven.enforcer.rule.api.AbstractEnforcerRule;
 import org.apache.maven.enforcer.rule.api.EnforcerLevel;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
@@ -175,7 +185,7 @@ public class RestrictImports extends AbstractEnforcerRule implements BannedImpor
     }
 
     private Collection<Path> listSourceRoots(Collection<String> pathNames,
-            Collection<Path> excludedSourceRootsAbsolutePaths) {
+                                             Collection<Path> excludedSourceRootsAbsolutePaths) {
         return pathNames.stream()
                 .peek(pathName -> LOGGER.debug("Including source dir: {}", pathName))
                 .map(Paths::get)

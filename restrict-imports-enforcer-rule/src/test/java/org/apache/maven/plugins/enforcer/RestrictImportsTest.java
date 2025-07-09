@@ -14,8 +14,6 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
-import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
-import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -25,17 +23,12 @@ public class RestrictImportsTest {
     private static final List<String> SOURCE_ROOTS = Arrays.asList("/src/main/java",
             "/target/generated-sources/main/java/");
 
-    private final EnforcerRuleHelper helper = mock(EnforcerRuleHelper.class);
-    private final Log log = mock(Log.class);
     private final MavenProject mavenProject = mock(MavenProject.class);
 
     private final RestrictImports subject = new RestrictImports(mavenProject);
 
     @BeforeEach
-    public void setUp() throws Exception {
-        when(this.helper.getLog()).thenReturn(this.log);
-        when(this.helper.evaluate("${project}")).thenReturn(this.mavenProject);
-
+    public void setUp() {
         when(this.mavenProject.getProperties()).thenReturn(new Properties());
 
         final List<String> paths = SOURCE_ROOTS.stream()

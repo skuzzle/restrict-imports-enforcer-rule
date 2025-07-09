@@ -26,6 +26,7 @@ import de.skuzzle.enforcer.restrictimports.analyze.NotFixable;
 import de.skuzzle.enforcer.restrictimports.analyze.PackagePattern;
 import de.skuzzle.enforcer.restrictimports.analyze.SourceTreeAnalyzer;
 import de.skuzzle.enforcer.restrictimports.formatting.MatchFormatter;
+
 import org.apache.maven.enforcer.rule.api.AbstractEnforcerRule;
 import org.apache.maven.enforcer.rule.api.EnforcerLevel;
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
@@ -185,7 +186,7 @@ public class RestrictImports extends AbstractEnforcerRule implements BannedImpor
     }
 
     private Collection<Path> listSourceRoots(Collection<String> pathNames,
-                                             Collection<Path> excludedSourceRootsAbsolutePaths) {
+            Collection<Path> excludedSourceRootsAbsolutePaths) {
         return pathNames.stream()
                 .peek(pathName -> LOGGER.debug("Including source dir: {}", pathName))
                 .map(Paths::get)
@@ -322,8 +323,7 @@ public class RestrictImports extends AbstractEnforcerRule implements BannedImpor
     }
 
     private boolean isFailBuild() {
-
-        final Object failBuildProperty = System.getProperty(FAIL_BUILD_PROPERTY_NAME);
+        final Object failBuildProperty = project.getProperties().getProperty(FAIL_BUILD_PROPERTY_NAME);
         if (failBuildProperty != null) {
             LOGGER.warn(
                     "'{}={}' has been passed which takes precedence over 'failBuild={}' configuration in the pom file",
@@ -338,7 +338,7 @@ public class RestrictImports extends AbstractEnforcerRule implements BannedImpor
     }
 
     private boolean isSkip() {
-        final Object skipProperty = System.getProperty(SKIP_PROPERTY_NAME);
+        final Object skipProperty = project.getProperties().getProperty(SKIP_PROPERTY_NAME);
         if (skipProperty != null) {
             LOGGER.warn(
                     "'{}={}' has been passed which takes precedence over 'skip={}' configuration in the pom file",
@@ -353,7 +353,7 @@ public class RestrictImports extends AbstractEnforcerRule implements BannedImpor
     }
 
     private boolean isParallel() {
-        final Object parallelProperty = System.getProperty(PARALLEL_ANALYSIS_PROPERTY_NAME);
+        final Object parallelProperty = project.getProperties().getProperty(PARALLEL_ANALYSIS_PROPERTY_NAME);
         if (parallelProperty != null) {
             LOGGER.warn(
                     "'{}={}' has been passed which takes precedence over 'parallel={}' configuration in the pom file",

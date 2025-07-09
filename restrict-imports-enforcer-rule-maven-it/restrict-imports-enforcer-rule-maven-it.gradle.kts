@@ -15,9 +15,9 @@ val functionalTest by tasks.registering {
     group = "verification"
 }
 
-listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
+val funcTestTasks = listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
     .map { it.get() }
-    .forEach { enforcerVersion ->
+    .map { enforcerVersion ->
         val safeVersion = enforcerVersion.replace(".", "_")
         tasks.register<MavenExec>("runMavenFuncTests_$safeVersion") {
             description = "Executes Maven Enforcer Plugin integration tests"
@@ -25,9 +25,6 @@ listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
             notCompatibleWithConfigurationCache("Inherently not")
 
             val mavenExecTask = this
-
-            functionalTest.configure { dependsOn(mavenExecTask) }
-            tasks.check.configure { dependsOn(mavenExecTask) }
 
             with(publishEnforcerRuleTask) {
                 mavenExecTask.dependsOn(this)
@@ -55,3 +52,8 @@ listOf(libs.versions.enforcerMin, libs.versions.enforcerMax)
             )
         }
     }
+
+funcTestTasks.forEach {
+    functionalTest.configure { dependsOn(it) }
+    tasks.check.configure { dependsOn(it) }
+}

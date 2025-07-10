@@ -9,6 +9,7 @@ dependencies {
     implementation(projects.restrictImportsEnforcerRuleCore)
     implementation(libs.slf4j)
 
+    compileOnly(libs.javax.inject)
     compileOnly(libs.maven.core)
     compileOnly(libs.maven.plugin.api)
     compileOnly(libs.maven.enforcer.api)
@@ -50,6 +51,11 @@ verifyPublication {
             aFile("META-INF/services/de.skuzzle.enforcer.restrictimports.parser.lang.LanguageSupport") {
                 matching("") {content ->
                     content.contains("de.skuzzle.enforcer.restrictimports.parser.lang.KotlinGroovyLanguageSupport")
+                }
+            }
+            aFile("META-INF/services/org.apache.maven.enforcer.rule.api.EnforcerRuleBase") {
+                matching("") {content ->
+                    content.contains("org.apache.maven.plugins.enforcer.RestrictImports")
                 }
             }
         }

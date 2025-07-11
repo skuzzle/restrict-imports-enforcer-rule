@@ -37,7 +37,7 @@ groovy-core.module = "org.codehaus.groovy:groovy"
 groovy-nio.module = "org.codehaus.groovy:groovy-nio"
 spock-bom = { module = "org.spockframework:spock-bom", version.ref = "spock" }
 shadowPlugin = { module = "com.github.johnrengelman:shadow", version = "8.1.1" }
-foojayResolver = { module = "org.gradle.toolchains:foojay-resolver", version = "0.7.0" }
+foojayResolver = { module = "org.gradle.toolchains:foojay-resolver", version = "1.0.0" }
 
 [plugins]
 nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version = "2.0.0" }

@@ -6,8 +6,8 @@ bytebuddy = "1.17.6"
 maven = "3.9.10"
 enforcerMin = "3.5.0"
 enforcerMax = "3.6.0"
-invokerPlugin = "3.9.0"
 javax-inject = "1"
+invokerPlugin = "3.9.1"
 spock = "2.4-M6-groovy-3.0"
 groovy = "3.0.24" # version must match the one shipped with gradle
 

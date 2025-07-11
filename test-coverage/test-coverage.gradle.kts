@@ -1,5 +1,3 @@
-import org.gradle.api.attributes.TestSuiteType
-
 plugins {
     id("build-logic.base")
     id("jacoco-report-aggregation")
@@ -16,7 +14,7 @@ val coverageReportName = "testCodeCoverageReport"
 reporting {
     reports {
         create<JacocoCoverageReport>(coverageReportName) {
-            testSuiteName = TestSuiteType.UNIT_TEST
+            testSuiteName = "unit-test"
         }
     }
 }

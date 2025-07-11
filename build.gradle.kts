@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.nexus.publish)
     id("build-logic.base")

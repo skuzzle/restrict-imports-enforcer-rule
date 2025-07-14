@@ -1,4 +1,4 @@
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.6.1&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.6.1/jar) [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=2.6.1)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/2.6.1)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.6.2-skuzzle-add-gh-actions&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.6.2-skuzzle-add-gh-actions/jar) [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=2.6.2-skuzzle-add-gh-actions)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/2.6.2-skuzzle-add-gh-actions)
 
 ### Bug fixes
 * [#221](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/221) Use of parseFullCompilationUnit=true breaks wildcard literal matches
@@ -12,7 +12,7 @@
 <dependency>
     <groupId>de.skuzzle.enforcer</groupId>
     <artifactId>restrict-imports-enforcer-rule</artifactId>
-    <version>2.6.1</version>
+    <version>2.6.2-skuzzle-add-gh-actions</version>
 </dependency>
 ```
 </details>
@@ -23,7 +23,7 @@
 Gradle plugin DSL
 ```groovy
 plugins {
-  id("de.skuzzle.restrictimports") version "2.6.1"
+  id("de.skuzzle.restrictimports") version "2.6.2-skuzzle-add-gh-actions"
 }
 ```
 
@@ -36,7 +36,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath("de.skuzzle.enforcer:restrict-imports-gradle-plugin:2.6.1")
+    classpath("de.skuzzle.enforcer:restrict-imports-gradle-plugin:2.6.2-skuzzle-add-gh-actions")
   }
 }
 
@@ -46,6 +46,6 @@ apply(plugin = "de.skuzzle.restrictimports")
 Gradle version catalog (Toml)
 ```toml
 [plugins]
-restrictImports = { id = "de.skuzzle.restrictimports", version = "2.6.1" }
+restrictImports = { id = "de.skuzzle.restrictimports", version = "2.6.2-skuzzle-add-gh-actions" }
 ```
 </details>

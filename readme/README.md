@@ -19,7 +19,7 @@ Compatibility:
 - Works with Java 8+
 - Tested against _maven-enforcer-plugin_ versions `@version.enforcer-api.min@` and `@version.enforcer-api.max@`.
 
-[Contributions](CONTRIBUTING.md) are welcome! 
+[Contributions](CONTRIBUTING.md) are welcome!
 
 ## Maven quick start
 This is a minimal usage example. Please scroll down for detailed configuration

@@ -24,6 +24,10 @@ githubRelease {
     targetCommitish.set(releaseExtension.mainBranch)
 }
 
+// characters invalid in a SemVer pre-release identifier
+val invalidPreReleasePattern = "[^0-9a-zA-Z.-]+".toRegex()
+fun sanitizeBranchName(name: String): String? = name.replace(invalidPreReleasePattern, "-")
+
 val calculatedVersion = calculateVersion()
 logger.lifecycle("The current version is: $calculatedVersion")
 rootProject.allprojects { this.version = calculatedVersion }
@@ -41,9 +45,7 @@ fun calculateVersion(): String {
         })
         .get()
 }
-// characters invalid in a SemVer pre-release identifier
-val invalidPreReleasePattern = "[^0-9a-zA-Z.-]+".toRegex()
-fun sanitizeBranchName(name: String): String = name.replace(invalidPreReleasePattern, "-")
+
 
 val releaseGitLocal by tasks.registering(ReleaseGitLocalTask::class) {
     fromExtension(releaseExtension)

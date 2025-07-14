@@ -9,6 +9,12 @@ val Project.isSnapshot: Boolean
 val Project.isCI: Boolean
     get() = !System.getenv("CI").isNullOrEmpty()
 
+val Project.isJenkins: Boolean
+    get() = !System.getenv("JENKINS_URL").isNullOrEmpty()
+
+val Project.isGhActions: Boolean
+    get() =!System.getenv("GITHUB_ACTIONS").isNullOrEmpty()
+
 fun Project.requiredVersionFromLibs(name: String) =
     libsVersionCatalog.findVersion(name).get().requiredVersion
 

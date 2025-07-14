@@ -36,11 +36,14 @@ fun calculateVersion(): String {
     return releaseExtension.releaseVersion
         .orElse(provider {
             Version.parseVersion(latestVersion)
-                .nextPatch(git.currentBranch())
+                .nextPatch(sanitizeBranchName(git.currentBranch()))
                 .toString()
         })
         .get()
 }
+// characters invalid in a SemVer pre-release identifier
+val invalidPreReleasePattern = "[^0-9a-zA-Z.-]+".toRegex()
+fun sanitizeBranchName(name: String): String = name.replace(invalidPreReleasePattern, "-")
 
 val releaseGitLocal by tasks.registering(ReleaseGitLocalTask::class) {
     fromExtension(releaseExtension)

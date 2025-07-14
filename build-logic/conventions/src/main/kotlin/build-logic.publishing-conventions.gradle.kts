@@ -20,7 +20,7 @@ tasks.withType<Jar>().configureEach {
 }
 
 tasks.withType<Sign>().configureEach {
-    onlyIf("Run on CI") { project.isCI }
+    onlyIf("Run on Jenkins, but not GitHub") { project.isJenkins }
 }
 
 signing {

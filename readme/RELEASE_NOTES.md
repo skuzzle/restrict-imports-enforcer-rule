@@ -1,8 +1,10 @@
 [![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=@project.version@&color=blue)](https://search.maven.org/artifact/@project.groupId@/restrict-imports-enforcer-rule/@project.version@/jar) [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/@project.pluginId@?versionSuffix=@project.version@)](https://plugins.gradle.org/plugin/@project.pluginId@/@project.version@)
 
-### Bug fixes
-* [#221](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/221) Use of parseFullCompilationUnit=true breaks wildcard literal matches
-* [#220](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/220) Add error message when multiple groups have identical basePackages
+> [!NOTE]
+> This version removes support for all enforcer-plugin versions prior to 3.2.1
+
+### Features
+* [#90](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/90) Replace implementation of deprecated Maven interfaces `EnforcerRule` and `EnforcerRule2` with using `AbstractEnforcerRule`
 
 ### Dependency coordinates
 <details>

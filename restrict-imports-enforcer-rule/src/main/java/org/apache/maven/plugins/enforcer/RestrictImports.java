@@ -323,7 +323,7 @@ public class RestrictImports extends AbstractEnforcerRule implements BannedImpor
     }
 
     private boolean isFailBuild() {
-        final Object failBuildProperty = project.getProperties().getProperty(FAIL_BUILD_PROPERTY_NAME);
+        final Object failBuildProperty = property(FAIL_BUILD_PROPERTY_NAME);
         if (failBuildProperty != null) {
             LOGGER.warn(
                     "'{}={}' has been passed which takes precedence over 'failBuild={}' configuration in the pom file",
@@ -338,7 +338,7 @@ public class RestrictImports extends AbstractEnforcerRule implements BannedImpor
     }
 
     private boolean isSkip() {
-        final Object skipProperty = project.getProperties().getProperty(SKIP_PROPERTY_NAME);
+        final Object skipProperty = property(SKIP_PROPERTY_NAME);
         if (skipProperty != null) {
             LOGGER.warn(
                     "'{}={}' has been passed which takes precedence over 'skip={}' configuration in the pom file",
@@ -348,12 +348,20 @@ public class RestrictImports extends AbstractEnforcerRule implements BannedImpor
         return this.skip;
     }
 
+    private Object property(String name) {
+        final Object skipProperty = System.getProperty(name);
+        if (skipProperty != null) {
+            return skipProperty;
+        }
+        return project.getProperties().getProperty(name);
+    }
+
     public void setParallel(boolean parallel) {
         this.parallel = parallel;
     }
 
     private boolean isParallel() {
-        final Object parallelProperty = project.getProperties().getProperty(PARALLEL_ANALYSIS_PROPERTY_NAME);
+        final Object parallelProperty = property(PARALLEL_ANALYSIS_PROPERTY_NAME);
         if (parallelProperty != null) {
             LOGGER.warn(
                     "'{}={}' has been passed which takes precedence over 'parallel={}' configuration in the pom file",

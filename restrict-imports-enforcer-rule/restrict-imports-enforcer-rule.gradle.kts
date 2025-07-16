@@ -9,7 +9,6 @@ dependencies {
     implementation(projects.restrictImportsEnforcerRuleCore)
     implementation(libs.slf4j)
 
-    compileOnly(libs.javax.inject)
     compileOnly(libs.maven.core)
     compileOnly(libs.maven.plugin.api)
     compileOnly(libs.maven.enforcer.api)

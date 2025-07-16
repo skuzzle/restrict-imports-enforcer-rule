@@ -51,7 +51,7 @@ public class RestrictImports extends AbstractEnforcerRule implements BannedImpor
     private final MatchFormatter matchFormatter = MatchFormatter.getInstance();
 
     private final BannedImportGroupDefinition group = new BannedImportGroupDefinition();
-    private final MavenProject project;
+    private final MavenProject mavenProject;
 
     private List<BannedImportGroupDefinition> groups = new ArrayList<>();
 
@@ -67,8 +67,8 @@ public class RestrictImports extends AbstractEnforcerRule implements BannedImpor
     private boolean parseFullCompilationUnit = false;
 
     @Inject
-    public RestrictImports(MavenProject project) {
-        this.project = Objects.requireNonNull(project);
+    public RestrictImports(MavenProject mavenProject) {
+        this.mavenProject = Objects.requireNonNull(mavenProject);
     }
 
     @Override
@@ -150,13 +150,13 @@ public class RestrictImports extends AbstractEnforcerRule implements BannedImpor
 
         final List<Path> excludedSourceRootsAbsolutePaths = excludedSourceRootsAbsolutePaths();
         final Collection<Path> srcDirectories = this.includeCompileCode
-                ? listSourceRoots(project.getCompileSourceRoots(), excludedSourceRootsAbsolutePaths)
+                ? listSourceRoots(mavenProject.getCompileSourceRoots(), excludedSourceRootsAbsolutePaths)
                 : Collections.emptyList();
         final Collection<Path> testDirectories = this.includeTestCode
-                ? listSourceRoots(project.getTestCompileSourceRoots(), excludedSourceRootsAbsolutePaths)
+                ? listSourceRoots(mavenProject.getTestCompileSourceRoots(), excludedSourceRootsAbsolutePaths)
                 : Collections.emptyList();
 
-        final Charset sourceFileCharset = determineSourceFileCharset(project);
+        final Charset sourceFileCharset = determineSourceFileCharset(mavenProject);
         final boolean parallel = isParallel();
         final boolean parseFullCompilationUnit = this.parseFullCompilationUnit;
 
@@ -353,7 +353,7 @@ public class RestrictImports extends AbstractEnforcerRule implements BannedImpor
         if (skipProperty != null) {
             return skipProperty;
         }
-        return project.getProperties().getProperty(name);
+        return mavenProject.getProperties().getProperty(name);
     }
 
     public void setParallel(boolean parallel) {

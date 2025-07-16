@@ -16,8 +16,9 @@ release {
 
 nexusPublishing.repositories {
     sonatype {
-        username.set(property("sonatype_USR").toString())
-        password.set(property("sonatype_PSW").toString())
+        nexusUrl = uri("https://ossrh-staging-api.central.sonatype.com/service/local/")
+        username = property("sonatype_USR").toString()
+        password = property("sonatype_PSW").toString()
     }
 }
 

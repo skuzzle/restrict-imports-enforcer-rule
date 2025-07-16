@@ -5,14 +5,12 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import java.util.Collections;
 
 import org.apache.maven.enforcer.rule.api.EnforcerRuleException;
-import org.apache.maven.enforcer.rule.api.EnforcerRuleHelper;
 import org.junit.jupiter.api.Test;
 
 public class ExceptionFormattingTest {
 
-    private final RestrictImports subject = new RestrictImports();
     private final MockMavenProject mmp = MockMavenProject.fromStaticTestFile();
-    private final EnforcerRuleHelper helper = mmp.enforcerRuleHelper();
+    private final RestrictImports subject = new RestrictImports(mmp.mavenProject());
 
     @Test
     void testFormatWithReason() {
@@ -20,7 +18,7 @@ public class ExceptionFormattingTest {
         this.subject.setReason("Some reason");
 
         assertThatExceptionOfType(EnforcerRuleException.class)
-                .isThrownBy(() -> this.subject.execute(helper))
+                .isThrownBy(() -> this.subject.execute())
                 .withMessageContaining("\nBanned imports detected:\n\n" +
                         "Reason: Some reason\n" +
                         "\tin file://" + mmp.testSourceFile().toAbsolutePath() + "\n" +

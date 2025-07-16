@@ -52,6 +52,11 @@ verifyPublication {
                     content.contains("de.skuzzle.enforcer.restrictimports.parser.lang.KotlinGroovyLanguageSupport")
                 }
             }
+            aFile("META-INF/sisu/javax.inject.Named") {
+                matching("") {content ->
+                    content.contains("org.apache.maven.plugins.enforcer.RestrictImports")
+                }
+            }
         }
     }
 }

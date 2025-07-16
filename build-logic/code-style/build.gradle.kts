@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -14,8 +15,8 @@ tasks {
         options.release.set(11)
     }
     withType<KotlinCompile>().configureEach {
-        kotlinOptions {
-            jvmTarget = "11"
+        compilerOptions {
+            jvmTarget = JvmTarget.JVM_11
             allWarningsAsErrors = true
         }
     }

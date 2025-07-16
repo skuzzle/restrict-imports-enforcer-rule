@@ -1,8 +1,10 @@
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.6.2-skuzzle-add-gh-actions&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.6.2-skuzzle-add-gh-actions/jar) [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=2.6.2-skuzzle-add-gh-actions)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/2.6.2-skuzzle-add-gh-actions)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.6.2-skuzzle-dependency-updates&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.6.2-skuzzle-dependency-updates/jar) [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=2.6.2-skuzzle-dependency-updates)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/2.6.2-skuzzle-dependency-updates)
 
-### Bug fixes
-* [#221](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/221) Use of parseFullCompilationUnit=true breaks wildcard literal matches
-* [#220](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/220) Add error message when multiple groups have identical basePackages
+> [!NOTE]
+> This version removes support for all enforcer-plugin versions prior to 3.2.1
+
+### Features
+* [#90](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/90) Replace implementation of deprecated Maven interfaces `EnforcerRule` and `EnforcerRule2` with using `AbstractEnforcerRule`
 
 ### Dependency coordinates
 <details>
@@ -12,7 +14,7 @@
 <dependency>
     <groupId>de.skuzzle.enforcer</groupId>
     <artifactId>restrict-imports-enforcer-rule</artifactId>
-    <version>2.6.2-skuzzle-add-gh-actions</version>
+    <version>2.6.2-skuzzle-dependency-updates</version>
 </dependency>
 ```
 </details>
@@ -23,7 +25,7 @@
 Gradle plugin DSL
 ```groovy
 plugins {
-  id("de.skuzzle.restrictimports") version "2.6.2-skuzzle-add-gh-actions"
+  id("de.skuzzle.restrictimports") version "2.6.2-skuzzle-dependency-updates"
 }
 ```
 
@@ -36,7 +38,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath("de.skuzzle.enforcer:restrict-imports-gradle-plugin:2.6.2-skuzzle-add-gh-actions")
+    classpath("de.skuzzle.enforcer:restrict-imports-gradle-plugin:2.6.2-skuzzle-dependency-updates")
   }
 }
 
@@ -46,6 +48,6 @@ apply(plugin = "de.skuzzle.restrictimports")
 Gradle version catalog (Toml)
 ```toml
 [plugins]
-restrictImports = { id = "de.skuzzle.restrictimports", version = "2.6.2-skuzzle-add-gh-actions" }
+restrictImports = { id = "de.skuzzle.restrictimports", version = "2.6.2-skuzzle-dependency-updates" }
 ```
 </details>

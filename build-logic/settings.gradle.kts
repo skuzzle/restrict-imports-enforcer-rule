@@ -22,5 +22,6 @@ include("conventions")
 include("release-plugin")
 include("verify-publication")
 include("code-style")
+include("maven-download")
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")

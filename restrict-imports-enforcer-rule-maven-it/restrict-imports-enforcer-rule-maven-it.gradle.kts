@@ -25,8 +25,6 @@ val crossVersionTests = listOf(libs.versions.mavenMin, libs.versions.mavenMax)
             .map { enforcerVersion -> CrossVersionTest(mavenVersion, enforcerVersion) }
     }
 
-//crossVersionTests.forEach { maven.versions.add(it.mavenVersion) }
-
 val funcTestTasks = crossVersionTests
     .map { crossVersionTest ->
         val enforcerVersion = crossVersionTest.enforcerVersion.get()

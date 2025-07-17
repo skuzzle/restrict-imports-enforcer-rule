@@ -12,7 +12,7 @@ dependencies {
 
 tasks {
     withType<JavaCompile>().configureEach {
-        options.release.set(11)
+        options.release = 11
     }
     withType<KotlinCompile>().configureEach {
         compilerOptions {

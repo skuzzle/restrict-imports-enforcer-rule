@@ -11,7 +11,7 @@ group = "de.skuzzle.restrictimports"
 description = "Restrict Imports Gradle Plugin"
 
 val gradlePluginArtifactId = "restrict-imports-gradle-plugin"
-base.archivesName.set(gradlePluginArtifactId)
+base.archivesName = gradlePluginArtifactId
 afterEvaluate {
     val pluginMaven by publishing.publications.getting(MavenPublication::class) {
         artifactId = project.name
@@ -54,7 +54,7 @@ verifyPublication {
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+        languageVersion = JavaLanguageVersion.of(8)
     }
 }
 

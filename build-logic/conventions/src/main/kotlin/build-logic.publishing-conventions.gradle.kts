@@ -10,7 +10,11 @@ plugins {
 tasks.withType<Jar>().configureEach {
     manifest {
         attributes(
-            "Created-By" to "${System.getProperty("java.version")} (${System.getProperty("java.vendor")} ${System.getProperty("java.vm.version")})",
+            "Created-By" to "${System.getProperty("java.version")} (${System.getProperty("java.vendor")} ${
+                System.getProperty(
+                    "java.vm.version"
+                )
+            })",
             "Specification-Title" to project.name,
             "Specification-Version" to (project.version as String).substringBefore('-'),
             "Implementation-Title" to project.name,
@@ -48,29 +52,29 @@ val m2Repository: Provider<Directory> = rootProject.layout.buildDirectory.dir("m
 
 publishing {
     publications {
-        withType(MavenPublication::class.java) {
+        withType(MavenPublication::class) {
             signing.sign(this)
             pom {
-                name.set(provider { project.description ?: "${project.group}:${project.name}" })
-                description.set(provider { project.name })
-                url.set("https://github.com/skuzzle/restrict-imports-enforcer-rule")
+                name = provider { project.description ?: "${project.group}:${project.name}" }
+                description = provider { project.name }
+                url = "https://github.com/skuzzle/restrict-imports-enforcer-rule"
                 scm {
-                    connection.set("scm:git:git://github.com/skuzzle/restrict-imports-enforcer-rule")
-                    developerConnection.set("scm:git:git://github.com/skuzzle/restrict-imports-enforcer-rule")
-                    url.set("https://github.com/skuzzle/restrict-imports-enforcer-rule")
+                    connection = "scm:git:git://github.com/skuzzle/restrict-imports-enforcer-rule"
+                    developerConnection = "scm:git:git://github.com/skuzzle/restrict-imports-enforcer-rule"
+                    url = "https://github.com/skuzzle/restrict-imports-enforcer-rule"
                 }
                 licenses {
                     license {
-                        name.set("The MIT License (MIT)")
-                        url.set("http://opensource.org/licenses/MIT")
-                        distribution.set("repo")
+                        name = "The MIT License (MIT)"
+                        url = "http://opensource.org/licenses/MIT"
+                        distribution = "repo"
                     }
                 }
                 developers {
                     developer {
-                        id.set("simont")
-                        name.set("Simon Taddiken")
-                        email.set("simon@taddiken.net")
+                        id = "simont"
+                        name = "Simon Taddiken"
+                        email = "simon@taddiken.net"
                     }
                 }
             }

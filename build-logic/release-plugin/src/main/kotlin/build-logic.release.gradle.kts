@@ -15,13 +15,13 @@ require(project == rootProject) { "Release plugin should only be applied to root
 val releaseExtension = extensions.getByType(ReleaseExtension::class.java)
 
 githubRelease {
-    draft.set(true)
+    draft = true
     token(releaseExtension.githubReleaseToken)
-    owner.set(releaseExtension.githubRepoOwner)
-    repo.set(releaseExtension.githubRepoName)
-    dryRun.set(releaseExtension.dryRun)
-    body.set(releaseExtension.releaseNotesContent)
-    targetCommitish.set(releaseExtension.mainBranch)
+    owner = releaseExtension.githubRepoOwner
+    repo = releaseExtension.githubRepoName
+    dryRun = releaseExtension.dryRun
+    body = releaseExtension.releaseNotesContent
+    targetCommitish = releaseExtension.mainBranch
 }
 
 // characters invalid in a SemVer pre-release identifier

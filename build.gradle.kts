@@ -1,4 +1,3 @@
-
 plugins {
     alias(libs.plugins.nexus.publish)
     id("build-logic.base")
@@ -7,11 +6,11 @@ plugins {
 }
 
 release {
-    mainBranch.set("master")
-    devBranch.set("develop")
-    githubRepoOwner.set("skuzzle")
-    githubRepoName.set("restrict-imports-enforcer-rule")
-    releaseNotesContent.set(providers.fileContents(layout.projectDirectory.file("RELEASE_NOTES.md")).asText)
+    mainBranch = "master"
+    devBranch = "develop"
+    githubRepoOwner = "skuzzle"
+    githubRepoName = "restrict-imports-enforcer-rule"
+    releaseNotesContent = providers.fileContents(layout.projectDirectory.file("RELEASE_NOTES.md")).asText
 }
 
 nexusPublishing.repositories {
@@ -21,6 +20,8 @@ nexusPublishing.repositories {
         password = property("sonatype_PSW").toString()
     }
 }
+
+tasks.prepareRelease.configure { dependsOn(tasks.closeAndReleaseStagingRepositories) }
 
 fun TaskContainer.connectIncludedBuildTasks(
     includedBuildName: String,

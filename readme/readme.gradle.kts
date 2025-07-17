@@ -8,8 +8,8 @@ plugins {
 val generateReadmeAndReleaseNotes by tasks.registering(CopyAndFilterReadmeTask::class) {
     group = "documentation"
     description = "Copies the readme and release notes file into the root directory, replacing all placeholders"
-    sourceDir.set(project.projectDir)
-    targetDir.set(project.rootDir)
+    sourceDir = project.projectDir
+    targetDir = project.rootDir
     replaceTokens = mapOf(
         "project.version" to project.version as String,
         "project.groupId" to project.group as String,

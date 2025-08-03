@@ -18,8 +18,8 @@ If your idea is accepted, simply send the PR targeting the *development* branch.
 For fast feedback during development you can run
 1. `./gradlew quickCheck` or its short-form `./gradlew qC` for fast superficial tests
 2. `./gradlew test` for only running quick unit tests
-4. `./gradlew functionalTest` for only running slow but comprehensive functional tests
-5`./gradlew check` for running the full test suite
+3. `./gradlew functionalTest` for only running slow but comprehensive functional tests
+4. `./gradlew check` for running the full test suite
 
 Compiling and testing requires Java 17+
 

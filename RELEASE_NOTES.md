@@ -1,4 +1,4 @@
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=2.6.2-skuzzle-dependency-updates&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/2.6.2-skuzzle-dependency-updates/jar) [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=2.6.2-skuzzle-dependency-updates)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/2.6.2-skuzzle-dependency-updates)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=3.0.0-rc2&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/3.0.0-rc2/jar) [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=3.0.0-rc2)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/3.0.0-rc2)
 
 > [!NOTE]
 > This version removes support for all enforcer-plugin versions prior to 3.2.1
@@ -14,7 +14,7 @@
 <dependency>
     <groupId>de.skuzzle.enforcer</groupId>
     <artifactId>restrict-imports-enforcer-rule</artifactId>
-    <version>2.6.2-skuzzle-dependency-updates</version>
+    <version>3.0.0-rc2</version>
 </dependency>
 ```
 </details>
@@ -25,7 +25,7 @@
 Gradle plugin DSL
 ```groovy
 plugins {
-  id("de.skuzzle.restrictimports") version "2.6.2-skuzzle-dependency-updates"
+  id("de.skuzzle.restrictimports") version "3.0.0-rc2"
 }
 ```
 
@@ -38,7 +38,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath("de.skuzzle.enforcer:restrict-imports-gradle-plugin:2.6.2-skuzzle-dependency-updates")
+    classpath("de.skuzzle.enforcer:restrict-imports-gradle-plugin:3.0.0-rc2")
   }
 }
 
@@ -48,6 +48,6 @@ apply(plugin = "de.skuzzle.restrictimports")
 Gradle version catalog (Toml)
 ```toml
 [plugins]
-restrictImports = { id = "de.skuzzle.restrictimports", version = "2.6.2-skuzzle-dependency-updates" }
+restrictImports = { id = "de.skuzzle.restrictimports", version = "3.0.0-rc2" }
 ```
 </details>

@@ -1,7 +1,7 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=3.0.0-rc2&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/3.0.0-rc2/jar)
-[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=3.0.0-rc2)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/3.0.0-rc2)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=3.0.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/3.0.0/jar)
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=3.0.0)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/3.0.0)
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/ProjectPolly)
 
@@ -17,7 +17,7 @@ Supported source files:
 
 Compatibility:
 - Works with Java 8+
-- Tested against _maven-enforcer-plugin_ versions `3.2.1` and `3.6.0`.
+- Tested against _maven-enforcer-plugin_ versions `3.2.1` and `3.6.1`.
 
 [Contributions](CONTRIBUTING.md) are welcome!
 
@@ -29,12 +29,12 @@ information or have a look at the [Full configuration example](#full-configurati
 <plugin>
     <groupId>org.apache.maven.plugins</groupId>
     <artifactId>maven-enforcer-plugin</artifactId>
-    <version>3.6.0</version>
+    <version>3.6.1</version>
     <dependencies>
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>3.0.0-rc2</version>
+            <version>3.0.0</version>
         </dependency>
     </dependencies>
     <executions>
@@ -71,7 +71,7 @@ information or have a look at the [Full configuration example](#full-configurati
 ### ... with Groovy DSL
 ```
 plugins {
-    id("de.skuzzle.restrictimports") version("3.0.0-rc2")
+    id("de.skuzzle.restrictimports") version("3.0.0")
 }
 
 restrictImports {
@@ -83,7 +83,7 @@ restrictImports {
 ### ... with Kotlin DSL
 ```
 plugins {
-    id("de.skuzzle.restrictimports") version("3.0.0-rc2")
+    id("de.skuzzle.restrictimports") version("3.0.0")
 }
 
 restrictImports {

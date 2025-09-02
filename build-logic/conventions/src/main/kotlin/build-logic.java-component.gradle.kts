@@ -6,7 +6,7 @@ plugins {
 }
 
 val productionCodeJavaVersion = JavaLanguageVersion.of(8)
-val testCodeJavaVersion = JavaLanguageVersion.of(11)
+val testCodeJavaVersion = JavaLanguageVersion.of(21)
 
 java {
     withJavadocJar()

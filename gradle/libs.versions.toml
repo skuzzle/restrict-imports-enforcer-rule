@@ -1,6 +1,6 @@
 [versions]
 junit5 = "5.13.4"
-assertj = "3.27.4"
+assertj = "3.27.5"
 equalsverifier = "4.1"
 bytebuddy = "1.17.7"
 mavenMin = "3.8.1"

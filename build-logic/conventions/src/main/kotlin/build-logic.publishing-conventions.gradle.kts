@@ -9,12 +9,12 @@ plugins {
 
 tasks.withType<Jar>().configureEach {
     manifest {
+        // Intentionally no "Created-By" attribute — the previous value derived from
+        // System.getProperty("java.version"/"java.vendor"/"java.vm.version") varied
+        // across JVMs and would cause cache misses for any downstream tasks that
+        // fingerprint the JAR's manifest, were Jar tasks ever opted into the build
+        // cache.
         attributes(
-            "Created-By" to "${System.getProperty("java.version")} (${System.getProperty("java.vendor")} ${
-                System.getProperty(
-                    "java.vm.version"
-                )
-            })",
             "Specification-Title" to project.name,
             "Specification-Version" to (project.version as String).substringBefore('-'),
             "Implementation-Title" to project.name,

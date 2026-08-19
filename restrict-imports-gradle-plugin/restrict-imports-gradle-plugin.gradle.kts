@@ -69,6 +69,18 @@ val functionalTest by testing.suites.registering(JvmTestSuite::class) {
         implementation(platform(libs.groovy.bom.get().toString()))
         implementation(libs.groovy.nio)
     }
+
+    targets {
+        all {
+            testTask {
+                // TestKit launches the Gradle distribution under test with the JVM that runs the
+                // tests. Gradle 9 requires Java 17+, so we must not use the production toolchain here.
+                javaLauncher = javaToolchains.launcherFor {
+                    languageVersion = JavaLanguageVersion.of(21)
+                }
+            }
+        }
+    }
 }
 
 tasks.named<Task>("check") {

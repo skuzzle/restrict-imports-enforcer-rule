@@ -7,7 +7,7 @@ spotless {
         target("*.gradle.kts", "*.gradle", "gradle/**/*.gradle", "gradle/**/*.gradle.kts", "*.gitignore")
         targetExclude("gradle/**/build/**")
         trimTrailingWhitespace()
-        indentWithSpaces()
+        leadingTabsToSpaces()
         endWithNewline()
     }
 
@@ -21,7 +21,7 @@ spotless {
         target("**Jenkinsfile", "**JenkinsfileRelease")
         greclipse()
         trimTrailingWhitespace()
-        indentWithSpaces()
+        leadingTabsToSpaces()
         endWithNewline()
     }
 

@@ -13,11 +13,11 @@ dependencies {
 
 tasks {
     withType<JavaCompile>().configureEach {
-        options.release = 11
+        options.release = 17
     }
     withType<KotlinCompile>().configureEach {
         compilerOptions {
-            jvmTarget = JvmTarget.JVM_11
+            jvmTarget = JvmTarget.JVM_17
             allWarningsAsErrors = true
         }
     }
@@ -25,7 +25,7 @@ tasks {
 
 testing {
     suites {
-        val functionalTest by registering(JvmTestSuite::class) {
+        register<JvmTestSuite>("functionalTest") {
             useSpock(libs.versions.spock)
 
             dependencies {

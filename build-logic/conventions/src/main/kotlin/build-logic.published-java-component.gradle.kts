@@ -5,7 +5,7 @@ plugins {
     id("build-logic.publishing-conventions")
     id("build-logic.java-component")
     id("build-logic.verify-publication")
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
 }
 
 tasks.withType<ShadowJar>().configureEach {

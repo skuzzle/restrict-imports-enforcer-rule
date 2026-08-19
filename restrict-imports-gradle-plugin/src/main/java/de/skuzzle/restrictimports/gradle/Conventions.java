@@ -13,7 +13,7 @@ final class Conventions {
     static void apply(Project project, RestrictImportsTaskConfiguration taskConfiguration, String taskName) {
         final ProviderFactory providers = project.getProviders();
 
-        final SourceSetContainer sourceSets = (SourceSetContainer) project.getProperties().get("sourceSets");
+        final SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
 
         final Provider<FileCollection> main = sourceSets.named(SourceSet.MAIN_SOURCE_SET_NAME).map(SourceSet::getJava)
                 .map(SourceDirectorySet::getSourceDirectories);

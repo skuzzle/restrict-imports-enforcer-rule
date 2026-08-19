@@ -36,6 +36,10 @@ abstract class BaseRestrictsImportsFuncTest extends Specification {
         return gradleRunner(arguments).buildAndFail()
     }
 
+    BuildResult runWithGradleVersion(String gradleVersion, String... arguments) {
+        return gradleRunner(arguments).withGradleVersion(gradleVersion).build()
+    }
+
     @NamedVariant
     def javaClassWithImports(List<String> imports = [], String packageName = "", String name = "SampleClass", String srcSet = "main/java", String body = "") {
         def path = workspace.resolve("src/$srcSet/${packageName.split("\\.").join(File.separator)}")

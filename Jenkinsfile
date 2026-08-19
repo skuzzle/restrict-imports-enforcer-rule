@@ -24,14 +24,7 @@ pipeline {
     stages {
         stage('Load Gradle Cache from host') {
             steps {
-                // Copy the Gradle cache from the host, so we can write to it
-                sh '''
-                    for dir in jdks caches wrapper; do
-                        [ -d "$GRADLE_CACHE/$dir" ] || continue
-                        mkdir -p "$GRADLE_USER_HOME/$dir"
-                        cp -a "$GRADLE_CACHE/$dir/." "$GRADLE_USER_HOME/$dir/" || true
-                    done
-                '''
+                sh './.jenkins/load-gradle-cache.sh'
             }
         }
         stage('Quickcheck') {
@@ -72,14 +65,7 @@ pipeline {
     }
     post {
         success {
-            // Write updates to the Gradle cache back to the host
-            sh '''
-                for dir in jdks caches wrapper; do
-                    [ -d "$GRADLE_USER_HOME/$dir" ] || continue
-                    mkdir -p "$GRADLE_CACHE/$dir"
-                    cp -au "$GRADLE_USER_HOME/$dir/." "$GRADLE_CACHE/$dir/" || true
-                done
-            '''
+            sh './.jenkins/store-gradle-cache.sh'
         }
         always {
             archiveArtifacts(artifacts: '*.md')

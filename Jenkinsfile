@@ -9,6 +9,9 @@ pipeline {
         }
     }
     environment {
+        // Enables Build Scan publishing and pushing to the remote build cache, both of which
+        // the build gates on this variable being set. Jenkins does not set it by itself.
+        CI = 'true'
         COVERALLS_REPO_TOKEN = credentials('coveralls_repo_token_restrict_imports_rule')
         BUILD_CACHE = credentials('build_cache')
         GRADLE_CACHE = '/tmp/gradle-user-home'

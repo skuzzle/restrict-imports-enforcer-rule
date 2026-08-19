@@ -12,6 +12,9 @@ pipeline {
         }
     }
     environment {
+        // Enables Build Scan publishing and pushing to the remote build cache, both of which
+        // the build gates on this variable being set. Jenkins does not set it by itself.
+        CI = 'true'
         GITHUB = credentials('Github-Username-Pw')
         GIT_ASKPASS = './.git-askpass'
         RELEASE_GITHUB_TOKEN = credentials('github_registry_release')

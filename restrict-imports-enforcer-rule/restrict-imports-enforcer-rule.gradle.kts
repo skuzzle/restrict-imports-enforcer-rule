@@ -27,11 +27,12 @@ dependencies {
     testImplementation(libs.maven.enforcer.api)
 }
 
-val maven by publishing.publications.creating(MavenPublication::class) {
+publishing.publications.register<MavenPublication>("maven") {
     artifactId = "restrict-imports-enforcer-rule"
     artifact(tasks.named("javadocJar"))
     artifact(tasks.named("sourcesJar"))
-    shadow.component(this)
+    // ShadowExtension.component() was removed in Shadow 9
+    from(components["shadow"])
 }
 
 tasks.jar.configure {

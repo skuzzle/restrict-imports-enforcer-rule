@@ -10,6 +10,13 @@ import static org.gradle.testkit.runner.TaskOutcome.FAILED
 import static org.gradle.testkit.runner.TaskOutcome.SUCCESS
 
 class VerifyPublicationFuncTest extends Specification {
+
+    // Matcher lambdas that are declared in the build script under test can not be restored from
+    // the configuration cache, because TestKit's injected plugin classpath is not visible to the
+    // build script's class loader when the cache entry is read back. Real builds, which get these
+    // classes from their buildscript classpath, are not affected.
+    private static final String NO_CONFIGURATION_CACHE = "--no-configuration-cache"
+
     @TempDir
     FileSystemFixture workspace
     def buildFile
@@ -103,7 +110,7 @@ class VerifyPublicationFuncTest extends Specification {
         """.stripIndent(true)
 
         when:
-        def result = runAndFail("verifyPublication")
+        def result = runAndFail("verifyPublication", NO_CONFIGURATION_CACHE)
 
         then:
         result.output.contains("library-1.1.pom: content doesn't match: expected foo")
@@ -147,7 +154,7 @@ class VerifyPublicationFuncTest extends Specification {
         """.stripIndent(true)
 
         when:
-        def result = runAndFail("verifyPublication")
+        def result = runAndFail("verifyPublication", NO_CONFIGURATION_CACHE)
 
         then:
         result.output.contains("META-INF/MANIFEST.MF: content doesn't match: Expected foo")

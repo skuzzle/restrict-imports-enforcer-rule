@@ -10,10 +10,11 @@ plugins {
 // TODO: fix duplication (see publishing-conventions)
 val m2Repository: Provider<Directory> = rootProject.layout.buildDirectory.dir("m2")
 
-val publishEnforcerRuleTask =
-    projects.restrictImportsEnforcerRule.dependencyProject.tasks.findByName("publishMavenPublicationToLocalIntegrationTestsRepository")
+// ProjectDependency.getDependencyProject() was removed in Gradle 9, resolve the project by its path instead
+val publishEnforcerRuleTask: Task? = project(projects.restrictImportsEnforcerRule.path)
+    .tasks.findByName("publishMavenPublicationToLocalIntegrationTestsRepository")
 
-val functionalTest by tasks.registering {
+val functionalTest = tasks.register("functionalTest") {
     group = "verification"
 }
 
@@ -44,10 +45,10 @@ val funcTestTasks = crossVersionTests
 
             val mavenExecTask = this
 
-            with(publishEnforcerRuleTask) {
-                mavenExecTask.dependsOn(this)
-                mavenExecTask.inputs.files(this?.outputs)
-                mavenExecTask.inputs.files(this?.project?.tasks?.withType<JavaCompile>())
+            publishEnforcerRuleTask?.let { publishTask ->
+                mavenExecTask.dependsOn(publishTask)
+                mavenExecTask.inputs.files(publishTask.outputs)
+                mavenExecTask.inputs.files(publishTask.project.tasks.withType<JavaCompile>())
             }
 
             val outputDir = mavenExecTask.name

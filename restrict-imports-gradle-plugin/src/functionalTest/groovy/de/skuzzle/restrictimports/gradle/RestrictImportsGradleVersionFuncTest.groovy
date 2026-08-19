@@ -1,6 +1,7 @@
 package de.skuzzle.restrictimports.gradle
 
 import org.gradle.testkit.runner.TaskOutcome
+import org.gradle.util.GradleVersion
 
 class RestrictImportsGradleVersionFuncTest extends BaseRestrictsImportsFuncTest {
 
@@ -9,7 +10,7 @@ class RestrictImportsGradleVersionFuncTest extends BaseRestrictsImportsFuncTest 
         return GradleDSL.GROOVY
     }
 
-    def "does not use deprecated Gradle API with Gradle #gradleVersion"() {
+    def "plugin works without using deprecated Gradle API with Gradle #gradleVersion"() {
         given:
         javaClassWithImports([], "", "ClassWithNoBannedImports")
 
@@ -33,6 +34,7 @@ class RestrictImportsGradleVersionFuncTest extends BaseRestrictsImportsFuncTest 
         result.task(":defaultRestrictImports").outcome == TaskOutcome.SUCCESS
 
         where:
-        gradleVersion << ["9.7.0"]
+        // latest release of every Gradle generation we support, plus the version this project builds with
+        gradleVersion << ["7.6.6", "8.14.5", GradleVersion.current().version]
     }
 }

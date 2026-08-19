@@ -26,7 +26,7 @@ abstract class CopyAndFilterReadmeTask : DefaultTask() {
     abstract val targetDir: Property<File>
 
     @get:[Input Optional]
-    abstract val replaceTokens: MapProperty<String?, Any?>
+    abstract val replaceTokens: MapProperty<String, Any>
 
     @TaskAction
     fun copyAndFilter() {
@@ -40,7 +40,7 @@ abstract class CopyAndFilterReadmeTask : DefaultTask() {
         }
     }
 
-    private fun flattenTokenMap(): Map<String?, String?> {
+    private fun flattenTokenMap(): Map<String, String?> {
         return replaceTokens.map { realMap -> realMap.mapValues { mapValue(it.value) } }.get()
     }
 

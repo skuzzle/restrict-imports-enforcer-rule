@@ -20,17 +20,17 @@ publishing {
     }
 }
 
+val clearTempRepo = tasks.register<Delete>("clearTempRepo") {
+    delete(extension.verificationRepoDir)
+}
+
 val publishToVerificationRepoTasks = tasks.withType<PublishToMavenRepository>().matching { it.name.endsWith("VerifyPublicationRepository") }
 publishToVerificationRepoTasks.configureEach {
     outputs.dir(extension.verificationRepoDir.locationOnly)
     mustRunAfter(clearTempRepo)
 }
 
-val clearTempRepo by tasks.registering(Delete::class) {
-    delete(extension.verificationRepoDir)
-}
-
-val verifyPublication by tasks.registering(VerifyPublicationTask::class) {
+val verifyPublication = tasks.register<VerifyPublicationTask>("verifyPublication") {
     group = "verification"
     description = "Verifies structure and contents of all published artifacts"
     dependsOn(clearTempRepo, publishToVerificationRepoTasks)

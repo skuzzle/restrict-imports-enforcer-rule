@@ -13,7 +13,7 @@ pipeline {
         MAVEN_CONFIG = ''
         ORG_GRADLE_PROJECT_sonatype = credentials('SONATYPE_NEXUS')
         ORG_GRADLE_PROJECT_signingPassword = credentials('gpg_password')
-        ORG_GRADLE_PROJECT_base64EncodedAsciiArmoredSigningKey  = credentials('gpg_private_key')
+        ORG_GRADLE_PROJECT_base64EncodedAsciiArmoredSigningKey = credentials('gpg_private_key')
     }
     stages {
         stage('Load Gradle Cache from host') {
@@ -65,7 +65,7 @@ pipeline {
         }
         always {
             archiveArtifacts(artifacts: '*.md')
-            junit (testResults: '**/build/test-results/test/**.xml,**/build/*/reports/**.xml', allowEmptyResults: true)
+            junit(testResults: '**/build/test-results/test/**.xml,**/build/*/reports/**.xml', allowEmptyResults: true)
         }
     }
 }

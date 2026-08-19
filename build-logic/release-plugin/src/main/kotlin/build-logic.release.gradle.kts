@@ -47,11 +47,11 @@ fun calculateVersion(): String {
 }
 
 
-val releaseGitLocal by tasks.registering(ReleaseGitLocalTask::class) {
+tasks.register<ReleaseGitLocalTask>("releaseGitLocal") {
     fromExtension(releaseExtension)
 }
 
-val pushReleaseInternal by tasks.registering(FinalizeReleaseTask::class) {
+val pushReleaseInternal = tasks.register<FinalizeReleaseTask>("pushReleaseInternal") {
     fromExtension(releaseExtension)
 }
 
@@ -61,6 +61,6 @@ githubReleaseTasks.configureEach {
     dependsOn(pushReleaseInternal)
 }
 
-val pushRelease by tasks.registering {
+tasks.register("pushRelease") {
     dependsOn(pushReleaseInternal, githubReleaseTasks)
 }

@@ -2,11 +2,11 @@ plugins {
     base
 }
 
-val test by tasks.registering {
+tasks.register("test") {
     group = "verification"
 }
 
-val quickCheck by tasks.registering {
+tasks.register("quickCheck") {
     group = "verification"
 }
 

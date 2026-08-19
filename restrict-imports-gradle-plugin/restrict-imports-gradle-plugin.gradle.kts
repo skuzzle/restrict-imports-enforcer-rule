@@ -13,14 +13,14 @@ description = "Restrict Imports Gradle Plugin"
 val gradlePluginArtifactId = "restrict-imports-gradle-plugin"
 base.archivesName = gradlePluginArtifactId
 afterEvaluate {
-    val pluginMaven by publishing.publications.getting(MavenPublication::class) {
+    publishing.publications.named<MavenPublication>("pluginMaven") {
         artifactId = project.name
     }
 }
 gradlePlugin {
     website = "https://github.com/skuzzle/restrict-imports-enforcer-rule"
     vcsUrl = "https://github.com/skuzzle/restrict-imports-enforcer-rule"
-    val restrictImports by plugins.creating {
+    plugins.register("restrictImports") {
         id = providers.gradleProperty("pluginId").get()
         implementationClass = "de.skuzzle.restrictimports.gradle.RestrictImportsPlugin"
         displayName = "Restrict Imports Gradle Plugin"
@@ -52,17 +52,27 @@ verifyPublication {
 }
 
 
+// As of Gradle 9, gradleApi() is compiled to Java 17 bytecode, which a Java 8 compiler can not
+// read. Compile with a Java 17 toolchain instead and let --release 8 take care of still producing
+// Java 8 bytecode that is limited to the Java 8 API, so the plugin keeps working on Java 8.
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
+        languageVersion = JavaLanguageVersion.of(17)
     }
+}
+
+tasks.compileJava {
+    javaCompiler = javaToolchains.compilerFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+    options.release = 8
 }
 
 dependencies {
     implementation(projects.restrictImportsEnforcerRuleCore)
 }
 
-val functionalTest by testing.suites.registering(JvmTestSuite::class) {
+val functionalTest = testing.suites.register<JvmTestSuite>("functionalTest") {
     useSpock(libs.versions.spock)
 
     dependencies {
@@ -74,9 +84,10 @@ val functionalTest by testing.suites.registering(JvmTestSuite::class) {
         all {
             testTask {
                 // TestKit launches the Gradle distribution under test with the JVM that runs the
-                // tests. Gradle 9 requires Java 17+, so we must not use the production toolchain here.
+                // tests. Java 17 is the only version supported by every Gradle version we test
+                // against: Gradle 9 requires at least 17 and Gradle 7.6 supports at most 19.
                 javaLauncher = javaToolchains.launcherFor {
-                    languageVersion = JavaLanguageVersion.of(21)
+                    languageVersion = JavaLanguageVersion.of(17)
                 }
             }
         }

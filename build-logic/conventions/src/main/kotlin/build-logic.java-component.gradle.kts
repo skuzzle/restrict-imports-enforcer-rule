@@ -45,7 +45,7 @@ tasks {
     }
 }
 
-val test by testing.suites.getting(JvmTestSuite::class) {
+testing.suites.named<JvmTestSuite>("test") {
     useJUnitJupiter(requiredVersionFromLibs("junit5"))
     targets {
         all {

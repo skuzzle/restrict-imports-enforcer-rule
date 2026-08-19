@@ -8,8 +8,8 @@ mavenMax = "3.9.11"
 enforcerMin = "3.2.1"
 enforcerMax = "3.6.1"
 invokerPlugin = "3.9.1"
-spock = "2.3-groovy-3.0"
-groovy = "3.0.24" # version must match the one shipped with gradle
+spock = "2.4-groovy-4.0"
+groovy = "4.0.32" # version must match the one shipped with gradle
 
 [libraries]
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit5" }
@@ -17,10 +17,9 @@ assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 equalsverifier = { module = "nl.jqno.equalsverifier:equalsverifier", version.ref = "equalsverifier" }
 bytebuddy = { module = "net.bytebuddy:byte-buddy", version.ref = "bytebuddy" }
 bytebuddyAgent = { module = "net.bytebuddy:byte-buddy-agent", version.ref = "bytebuddy" }
-# can't update to latest because its writing to illegal places on jenkins
-gradle-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version = "6.15.0" }
-gradle-develocity = { module = "com.gradle:develocity-gradle-plugin", version = "3.19.2" }
-gradle-commonCustomUserData = { module = "com.gradle:common-custom-user-data-gradle-plugin", version = "2.3" }
+gradle-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version = "8.10.0" }
+gradle-develocity = { module = "com.gradle:develocity-gradle-plugin", version = "4.5.0" }
+gradle-commonCustomUserData = { module = "com.gradle:common-custom-user-data-gradle-plugin", version = "2.8.0" }
 maven-core = { module = "org.apache.maven:maven-core", version.ref = "mavenMin" }
 maven-plugin-api = { module = "org.apache.maven:maven-plugin-api", version.ref = "mavenMin" }
 maven-enforcer-api = { module = "org.apache.maven.enforcer:enforcer-api", version.ref = "enforcerMax" }
@@ -31,11 +30,11 @@ jimfs = { module = "com.google.jimfs:jimfs", version = "1.3.1" }
 mockito = { module = "org.mockito:mockito-core", version = "5.19.0" }
 semanticVersion = { module = "de.skuzzle:semantic-version", version = "2.1.1" }
 githubRelease = { module = "com.github.breadmoirai:github-release", version = "2.5.2" }
-groovy-bom = { module = "org.codehaus.groovy:groovy-bom", version.ref = "groovy" }
-groovy-core.module = "org.codehaus.groovy:groovy"
-groovy-nio.module = "org.codehaus.groovy:groovy-nio"
+groovy-bom = { module = "org.apache.groovy:groovy-bom", version.ref = "groovy" }
+groovy-core.module = "org.apache.groovy:groovy"
+groovy-nio.module = "org.apache.groovy:groovy-nio"
 spock-bom = { module = "org.spockframework:spock-bom", version.ref = "spock" }
-shadowPlugin = { module = "com.github.johnrengelman:shadow", version = "8.1.1" }
+shadowPlugin = { module = "com.gradleup.shadow:shadow-gradle-plugin", version = "9.6.1" }
 foojayResolver = { module = "org.gradle.toolchains:foojay-resolver", version = "0.10.0" }
 mavenExec = { module = "gradle.plugin.com.github.dkorotych.gradle.maven.exec:gradle-maven-exec-plugin", version = "4.0.0" }
 

@@ -1,8 +1,11 @@
 pipeline {
+    // The Maven cache must be mounted at the home directory of the image's uid 1000 user:
+    // Maven resolves its local repository from the JVM's user.home, which comes from the
+    // passwd entry and can not be redirected with the HOME environment variable.
     agent {
         docker {
             image 'gradle:jdk21'
-            args '-v /home/jenkins/caches/restrict-imports/.m2:/tmp/jenkins-home/.m2:rw -v /home/jenkins/caches/restrict-imports/.gradle:/tmp/gradle-user-home:rw -v /home/jenkins/.gnupg:/.gnupg:ro'
+            args '-v /home/jenkins/caches/restrict-imports/.m2:/home/gradle/.m2:rw -v /home/jenkins/caches/restrict-imports/.gradle:/tmp/gradle-user-home:rw -v /home/jenkins/.gnupg:/.gnupg:ro'
         }
     }
     environment {
@@ -10,7 +13,6 @@ pipeline {
         BUILD_CACHE = credentials('build_cache')
         GRADLE_CACHE = '/tmp/gradle-user-home'
         GRADLE_USER_HOME = '/tmp/gradle-home'
-        HOME = '/tmp/jenkins-home'
         MAVEN_CONFIG = ''
         ORG_GRADLE_PROJECT_sonatype = credentials('SONATYPE_NEXUS')
         ORG_GRADLE_PROJECT_signingPassword = credentials('gpg_password')

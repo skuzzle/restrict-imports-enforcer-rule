@@ -35,7 +35,7 @@ groovy-core.module = "org.apache.groovy:groovy"
 groovy-nio.module = "org.apache.groovy:groovy-nio"
 spock-bom = { module = "org.spockframework:spock-bom", version.ref = "spock" }
 shadowPlugin = { module = "com.gradleup.shadow:shadow-gradle-plugin", version = "9.6.1" }
-foojayResolver = { module = "org.gradle.toolchains:foojay-resolver", version = "0.10.0" }
+foojayResolver = { module = "org.gradle.toolchains:foojay-resolver", version = "1.0.0" }
 mavenExec = { module = "gradle.plugin.com.github.dkorotych.gradle.maven.exec:gradle-maven-exec-plugin", version = "4.0.0" }
 
 [plugins]

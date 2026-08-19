@@ -52,20 +52,15 @@ verifyPublication {
 }
 
 
-// As of Gradle 9, gradleApi() is compiled to Java 17 bytecode, which a Java 8 compiler can not
-// read. Compile with a Java 17 toolchain instead and let --release 8 take care of still producing
-// Java 8 bytecode that is limited to the Java 8 API, so the plugin keeps working on Java 8.
+// TestKit launches the Gradle distribution under test with the JVM that runs the tests, and
+// Java 17 is the only version every Gradle version we test against supports: Gradle 9 requires at
+// least 17 and Gradle 7.6 supports at most 19. This targets the whole module at that version so
+// the functional tests are compiled for the JVM they are executed on. Production code is
+// unaffected, build-logic.java-component compiles it with --release.
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
     }
-}
-
-tasks.compileJava {
-    javaCompiler = javaToolchains.compilerFor {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
-    options.release = 8
 }
 
 dependencies {
@@ -78,19 +73,6 @@ val functionalTest = testing.suites.register<JvmTestSuite>("functionalTest") {
     dependencies {
         implementation(platform(libs.groovy.bom.get().toString()))
         implementation(libs.groovy.nio)
-    }
-
-    targets {
-        all {
-            testTask {
-                // TestKit launches the Gradle distribution under test with the JVM that runs the
-                // tests. Java 17 is the only version supported by every Gradle version we test
-                // against: Gradle 9 requires at least 17 and Gradle 7.6 supports at most 19.
-                javaLauncher = javaToolchains.launcherFor {
-                    languageVersion = JavaLanguageVersion.of(17)
-                }
-            }
-        }
     }
 }
 

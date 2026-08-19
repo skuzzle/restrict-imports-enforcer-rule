@@ -5,8 +5,11 @@ plugins {
     id("jvm-test-suite")
 }
 
+// Version production code is compiled *for*, see the --release usage below
 val productionCodeJavaVersion = JavaLanguageVersion.of(8)
-val testCodeJavaVersion = JavaLanguageVersion.of(21)
+
+// Version used to compile and run everything that is not published
+val buildJavaVersion = JavaLanguageVersion.of(21)
 
 java {
     withJavadocJar()
@@ -16,14 +19,19 @@ java {
 tasks {
 
     compileJava {
+        // Production code is compiled by a current compiler targeting productionCodeJavaVersion
+        // via --release, rather than by a compiler of that version. As of Gradle 9 the gradleApi()
+        // dependency consists of Java 17 class files, which a Java 8 compiler can not read at all.
+        // --release still emits bytecode for, and limits the code to the API of, that version.
         javaCompiler = javaToolchains.compilerFor {
-            languageVersion = productionCodeJavaVersion
+            languageVersion = buildJavaVersion
         }
+        options.release = productionCodeJavaVersion.asInt()
     }
 
     compileTestJava {
         javaCompiler = javaToolchains.compilerFor {
-            languageVersion = testCodeJavaVersion
+            languageVersion = buildJavaVersion
         }
     }
 
@@ -51,7 +59,7 @@ testing.suites.named<JvmTestSuite>("test") {
         all {
             testTask {
                 javaLauncher.set(javaToolchains.launcherFor {
-                    languageVersion = testCodeJavaVersion
+                    languageVersion = buildJavaVersion
                 })
             }
         }

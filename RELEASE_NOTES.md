@@ -38,7 +38,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath("de.skuzzle.enforcer:restrict-imports-gradle-plugin:3.0.1")
+    classpath("de.skuzzle.restrictimports:restrict-imports-gradle-plugin:3.0.1")
   }
 }
 

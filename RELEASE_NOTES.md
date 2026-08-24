@@ -1,10 +1,10 @@
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=3.0.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/3.0.0/jar) [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=3.0.0)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/3.0.0)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=3.0.1&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/3.0.1/jar) [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=3.0.1)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/3.0.1)
 
 > [!NOTE]
-> This version removes support for all enforcer-plugin versions prior to 3.2.1
+> The Gradle plugin is now tested against the latest Gradle 7.x, 8.x and 9.x releases
 
-### Features
-* [#90](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/90) Replace implementation of deprecated Maven interfaces `EnforcerRule` and `EnforcerRule2` with using `AbstractEnforcerRule`
+### Bug fixes
+* [#274](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/274) The Gradle plugin no longer uses the deprecated `Project.getProperties` method, which emits a deprecation warning since Gradle 9.6 and would have become an error in Gradle 10
 
 ### Dependency coordinates
 <details>
@@ -14,7 +14,7 @@
 <dependency>
     <groupId>de.skuzzle.enforcer</groupId>
     <artifactId>restrict-imports-enforcer-rule</artifactId>
-    <version>3.0.0</version>
+    <version>3.0.1</version>
 </dependency>
 ```
 </details>
@@ -25,7 +25,7 @@
 Gradle plugin DSL
 ```groovy
 plugins {
-  id("de.skuzzle.restrictimports") version "3.0.0"
+  id("de.skuzzle.restrictimports") version "3.0.1"
 }
 ```
 
@@ -38,7 +38,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath("de.skuzzle.enforcer:restrict-imports-gradle-plugin:3.0.0")
+    classpath("de.skuzzle.enforcer:restrict-imports-gradle-plugin:3.0.1")
   }
 }
 
@@ -48,6 +48,6 @@ apply(plugin = "de.skuzzle.restrictimports")
 Gradle version catalog (Toml)
 ```toml
 [plugins]
-restrictImports = { id = "de.skuzzle.restrictimports", version = "3.0.0" }
+restrictImports = { id = "de.skuzzle.restrictimports", version = "3.0.1" }
 ```
 </details>

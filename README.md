@@ -1,7 +1,7 @@
 <!-- This file is auto generated during release from readme/README.md -->
 
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=3.0.0&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/3.0.0/jar)
-[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=3.0.0)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/3.0.0)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=3.0.1&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/3.0.1/jar)
+[![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=3.0.1)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/3.0.1)
 [![Coverage Status](https://coveralls.io/repos/github/skuzzle/restrict-imports-enforcer-rule/badge.svg?branch=master)](https://coveralls.io/github/skuzzle/restrict-imports-enforcer-rule?branch=master)
 [![Twitter Follow](https://img.shields.io/twitter/follow/skuzzleOSS.svg?style=social)](https://twitter.com/ProjectPolly)
 
@@ -34,7 +34,7 @@ information or have a look at the [Full configuration example](#full-configurati
         <dependency>
             <groupId>de.skuzzle.enforcer</groupId>
             <artifactId>restrict-imports-enforcer-rule</artifactId>
-            <version>3.0.0</version>
+            <version>3.0.1</version>
         </dependency>
     </dependencies>
     <executions>
@@ -71,7 +71,7 @@ information or have a look at the [Full configuration example](#full-configurati
 ### ... with Groovy DSL
 ```
 plugins {
-    id("de.skuzzle.restrictimports") version("3.0.0")
+    id("de.skuzzle.restrictimports") version("3.0.1")
 }
 
 restrictImports {
@@ -83,7 +83,7 @@ restrictImports {
 ### ... with Kotlin DSL
 ```
 plugins {
-    id("de.skuzzle.restrictimports") version("3.0.0")
+    id("de.skuzzle.restrictimports") version("3.0.1")
 }
 
 restrictImports {

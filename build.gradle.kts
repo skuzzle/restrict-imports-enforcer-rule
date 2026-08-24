@@ -21,7 +21,14 @@ nexusPublishing.repositories {
     }
 }
 
-tasks.prepareRelease.configure { dependsOn(tasks.closeAndReleaseStagingRepositories) }
+tasks.prepareRelease.configure {
+    val dryRunEnabled = release.dryRun.get()
+    if (dryRunEnabled) {
+        logger.lifecycle("Not promoting the staging repository because release dry run is enabled")
+    } else {
+        dependsOn(tasks.closeAndReleaseStagingRepositories)
+    }
+}
 
 fun TaskContainer.connectIncludedBuildTasks(
     includedBuildName: String,

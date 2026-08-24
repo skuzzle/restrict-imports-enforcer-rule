@@ -1,6 +1,5 @@
 plugins {
     id("build-logic.published-java-component")
-    id("build-logic.release-lifecycle")
 }
 
 description = "Restrict Imports Enforcer Rule"
@@ -61,5 +60,3 @@ verifyPublication {
         }
     }
 }
-
-tasks.prepareRelease.configure { dependsOn(tasks.publishToSonatype) }

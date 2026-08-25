@@ -1,0 +1,103 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: [
+    "config:recommended",
+    // Dependabot ran weekly; keep that cadence instead of Renovate's continuous default.
+    "schedule:weekly",
+  ],
+  // Dependency updates target the integration branch, not the release branch.
+  // Mirrors the `target-branch: develop` that .github/dependabot.yml used.
+  baseBranchPatterns: ["develop"],
+  // Read the config file from `develop` too and merge it over this one, so that rule
+  // changes take effect when they are merged to develop rather than waiting for the next
+  // release to reach the default branch. `baseBranchPatterns` and this option itself are
+  // always resolved from the default branch, so those two lines can only change there.
+  useBaseBranchConfig: "merge",
+  packageRules: [
+    {
+      // `mavenMin` is the oldest Maven we claim to support. The maven-it module runs
+      // cross-version tests against it and readme/ documents it, so it only moves when
+      // we deliberately drop support for a Maven version.
+      matchPackageNames: [
+        "org.apache.maven:maven-core",
+        "org.apache.maven:maven-plugin-api",
+      ],
+      enabled: false,
+    },
+    {
+      // "version must match the one shipped with gradle" - bumping this independently of
+      // the Gradle wrapper is always wrong.
+      matchPackageNames: ["org.apache.groovy:*"],
+      enabled: false,
+    },
+    {
+      // Only ever the groovy-4.0 variant; Renovate would otherwise happily offer
+      // 2.4-groovy-3.0 or a future -groovy-5.0 as an "update".
+      matchPackageNames: ["org.spockframework:*"],
+      allowedVersions: "/-groovy-4\\.0$/",
+    },
+    {
+      // slf4j-api is an `implementation` dependency of the published enforcer rule, so at
+      // runtime it has to line up with the slf4j that Maven itself ships. Maven 3.8/3.9
+      // ship 1.7.x, and `mavenMin` keeps us on Maven 3.8. Moving to 2.x is a deliberate
+      // decision to be made together with raising `mavenMin`.
+      matchPackageNames: ["org.slf4j:slf4j-api"],
+      allowedVersions: "<2.0",
+    },
+    {
+      // `mavenMax` is "the newest Maven we test against". Maven 4 is a support decision,
+      // not a routine bump.
+      matchDepNames: ["maven-max"],
+      allowedVersions: "<4",
+    },
+    {
+      // The func test pins the latest release of each Gradle generation we support.
+      // Dropping or adding a generation is a manual change; staying current inside a
+      // generation is not.
+      matchDepNames: ["gradle-7"],
+      allowedVersions: "<8",
+    },
+    {
+      matchDepNames: ["gradle-8"],
+      allowedVersions: "<9",
+    },
+  ],
+  customManagers: [
+    {
+      // Renovate's gradle manager can only update [versions] entries that a [libraries]
+      // or [plugins] entry references. `mavenMax` is consumed straight from the build
+      // script (restrict-imports-enforcer-rule-maven-it), so it needs its own manager.
+      customType: "regex",
+      description: "Keep mavenMax on the newest Maven 3 release",
+      managerFilePatterns: ["/^gradle/libs\\.versions\\.toml$/"],
+      matchStrings: ["mavenMax\\s*=\\s*\"(?<currentValue>[^\"]+)\""],
+      depNameTemplate: "maven-max",
+      packageNameTemplate: "org.apache.maven:apache-maven",
+      datasourceTemplate: "maven",
+    },
+    {
+      // The two Gradle versions the compatibility func test runs against. Both are plain
+      // string literals in the test, so they are invisible to every built-in manager.
+      customType: "regex",
+      description: "Keep the Gradle compatibility matrix on the latest 7.x release",
+      managerFilePatterns: [
+        "/^restrict-imports-gradle-plugin/src/functionalTest/groovy/de/skuzzle/restrictimports/gradle/RestrictImportsGradleVersionFuncTest\\.groovy$/",
+      ],
+      matchStrings: ["\"(?<currentValue>7\\.\\d+(\\.\\d+)?)\""],
+      depNameTemplate: "gradle-7",
+      packageNameTemplate: "gradle",
+      datasourceTemplate: "gradle-version",
+    },
+    {
+      customType: "regex",
+      description: "Keep the Gradle compatibility matrix on the latest 8.x release",
+      managerFilePatterns: [
+        "/^restrict-imports-gradle-plugin/src/functionalTest/groovy/de/skuzzle/restrictimports/gradle/RestrictImportsGradleVersionFuncTest\\.groovy$/",
+      ],
+      matchStrings: ["\"(?<currentValue>8\\.\\d+(\\.\\d+)?)\""],
+      depNameTemplate: "gradle-8",
+      packageNameTemplate: "gradle",
+      datasourceTemplate: "gradle-version",
+    },
+  ],
+}

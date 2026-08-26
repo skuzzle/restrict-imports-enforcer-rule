@@ -44,6 +44,14 @@ val crossVersionTests = listOf(libs.versions.mavenMin, libs.versions.mavenMax)
             .map { enforcerVersion -> CrossVersionTest(mavenVersion, enforcerVersion) }
     }
 
+// Only the newest combination records coverage. The agent slows every JVM the invoker forks, and
+// the invoker runs them in parallel against one local repository that starts out empty - which
+// Maven only accesses safely from concurrent processes as of 3.9, so instrumenting `mavenMin` races
+// it into downloading half a POM. Coverage is not lost by this: all four combinations put the same
+// rule code through the same paths.
+val instrumentedMavenVersion = libs.versions.mavenMax.get()
+val instrumentedEnforcerVersion = libs.versions.enforcerMax.get()
+
 val funcTestTasks = crossVersionTests
     .map { crossVersionTest ->
         val enforcerVersion = crossVersionTest.enforcerVersion.get()
@@ -55,6 +63,8 @@ val funcTestTasks = crossVersionTests
         val downloadTask = maven.download(mavenVersion)
 
         val taskName = "funcTestMaven_${safeMavenVersion}_enforcer_${safeEnforcerVersion}"
+        val recordsCoverage = mavenVersion == instrumentedMavenVersion &&
+            enforcerVersion == instrumentedEnforcerVersion
         // Every Maven the invoker forks appends to this one file; the agent locks it
         val coverageData = layout.buildDirectory.file("jacoco/$taskName.exec")
 
@@ -67,7 +77,9 @@ val funcTestTasks = crossVersionTests
 
             val mavenExecTask = this
 
-            outputs.file(coverageData).withPropertyName("coverageData")
+            if (recordsCoverage) {
+                outputs.file(coverageData).withPropertyName("coverageData")
+            }
 
             publishEnforcerRuleTask?.let { publishTask ->
                 mavenExecTask.dependsOn(publishTask)
@@ -108,14 +120,17 @@ val funcTestTasks = crossVersionTests
                     "fromGradle.invoker-plugin-version" to libs.versions.invokerPlugin.get(),
                     "fromGradle.integration-test-threads" to "2C",
                     "fromGradle.localIntegrationTestRepo" to m2Repository.get().dir("repository").asFile.absolutePath,
-                    "fromGradle.maven-opts" to jacocoTestKit.javaAgentArgument(coverageData).get()
+                    "fromGradle.maven-opts" to
+                        if (recordsCoverage) jacocoTestKit.javaAgentArgument(coverageData).get() else ""
                 )
             )
         }
 
-        artifacts.add(coverageDataElements.name, coverageData) {
-            type = ArtifactTypeDefinition.BINARY_DATA_TYPE
-            builtBy(funcTestTask)
+        if (recordsCoverage) {
+            artifacts.add(coverageDataElements.name, coverageData) {
+                type = ArtifactTypeDefinition.BINARY_DATA_TYPE
+                builtBy(funcTestTask)
+            }
         }
 
         funcTestTask

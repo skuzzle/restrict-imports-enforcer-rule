@@ -44,7 +44,7 @@ pipeline {
         stage('Unit-tests') {
             steps {
                 withGradle {
-                    sh './gradlew test coveralls'
+                    sh './gradlew test coverallsJacoco'
                 }
             }
         }

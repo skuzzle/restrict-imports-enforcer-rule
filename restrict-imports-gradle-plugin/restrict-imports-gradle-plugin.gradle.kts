@@ -76,6 +76,35 @@ val functionalTest = testing.suites.register<JvmTestSuite>("functionalTest") {
     }
 }
 
+// The functional tests exercise the plugin through TestKit, which runs the build under test in a
+// Gradle daemon rather than in the test JVM. The JaCoCo agent that the `jacoco` plugin attaches to
+// the test JVM therefore sees none of the plugin's code, so the tests have to attach a second agent
+// to that daemon themselves - see BaseRestrictsImportsFuncTest. This configuration resolves the
+// agent jar to attach; the `runtime` classifier artifact of the agent module *is* jacocoagent.jar.
+val testKitJacocoAgent: Configuration by configurations.creating {
+    isCanBeConsumed = false
+    isCanBeResolved = true
+    isVisible = false
+}
+dependencies {
+    testKitJacocoAgent("org.jacoco:org.jacoco.agent:${jacoco.toolVersion}:runtime")
+}
+
+tasks.named<Test>("functionalTest") {
+    val agentJar = testKitJacocoAgent
+    // The daemon has to append to this very file: it is the one the jacoco plugin registers as the
+    // task's coverage data, and hence the only one that test-coverage's aggregation picks up.
+    val execFile = the<JacocoTaskExtension>().destinationFile!!
+
+    inputs.files(agentJar).withPropertyName("testKitJacocoAgent").withNormalizer(ClasspathNormalizer::class)
+    jvmArgumentProviders.add(CommandLineArgumentProvider {
+        listOf(
+            "-Djacoco.agent.jar=${agentJar.singleFile.absolutePath}",
+            "-Djacoco.agent.destfile=${execFile.absolutePath}",
+        )
+    })
+}
+
 tasks.named<Task>("check") {
     dependsOn(functionalTest)
 }

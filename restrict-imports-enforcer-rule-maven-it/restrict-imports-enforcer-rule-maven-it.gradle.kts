@@ -1,9 +1,27 @@
 import com.github.dkorotych.gradle.maven.exec.MavenExec
+import org.gradle.api.artifacts.type.ArtifactTypeDefinition
+import org.gradle.api.attributes.Category
+import org.gradle.api.attributes.TestSuiteName
+import org.gradle.api.attributes.VerificationType
 
 plugins {
     id("build-logic.base")
     id("build-logic.maven-download")
+    id("build-logic.jacoco-testkit")
     alias(libs.plugins.mavenExec)
+}
+
+// This module has no sources of its own; it exercises the published enforcer rule through real
+// Maven builds. The coverage those record is exposed the way a test suite of a Java module would
+// expose it, so that test-coverage's aggregation picks it up by test suite name.
+val mavenFunctionalTestSuiteName = "mavenFunctionalTest"
+val coverageDataElements = configurations.consumable("coverageDataElementsForMavenFunctionalTest") {
+    description = "Binary results containing Jacoco test coverage of the Maven integration tests."
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.VERIFICATION))
+        attribute(TestSuiteName.TEST_SUITE_NAME_ATTRIBUTE, objects.named(mavenFunctionalTestSuiteName))
+        attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE, objects.named(VerificationType.JACOCO_RESULTS))
+    }
 }
 
 
@@ -36,7 +54,11 @@ val funcTestTasks = crossVersionTests
 
         val downloadTask = maven.download(mavenVersion)
 
-        tasks.register<MavenExec>("funcTestMaven_${safeMavenVersion}_enforcer_${safeEnforcerVersion}") {
+        val taskName = "funcTestMaven_${safeMavenVersion}_enforcer_${safeEnforcerVersion}"
+        // Every Maven the invoker forks appends to this one file; the agent locks it
+        val coverageData = layout.buildDirectory.file("jacoco/$taskName.exec")
+
+        val funcTestTask = tasks.register<MavenExec>(taskName) {
             description = "Executes Maven Enforcer Plugin integration tests"
             group = "verification"
             notCompatibleWithConfigurationCache("Inherently not")
@@ -44,6 +66,8 @@ val funcTestTasks = crossVersionTests
             dependsOn(downloadTask)
 
             val mavenExecTask = this
+
+            outputs.file(coverageData).withPropertyName("coverageData")
 
             publishEnforcerRuleTask?.let { publishTask ->
                 mavenExecTask.dependsOn(publishTask)
@@ -83,10 +107,18 @@ val funcTestTasks = crossVersionTests
                     "fromGradle.enforcer-api-version" to enforcerVersion,
                     "fromGradle.invoker-plugin-version" to libs.versions.invokerPlugin.get(),
                     "fromGradle.integration-test-threads" to "2C",
-                    "fromGradle.localIntegrationTestRepo" to m2Repository.get().dir("repository").asFile.absolutePath
+                    "fromGradle.localIntegrationTestRepo" to m2Repository.get().dir("repository").asFile.absolutePath,
+                    "fromGradle.maven-opts" to jacocoTestKit.javaAgentArgument(coverageData).get()
                 )
             )
         }
+
+        artifacts.add(coverageDataElements.name, coverageData) {
+            type = ArtifactTypeDefinition.BINARY_DATA_TYPE
+            builtBy(funcTestTask)
+        }
+
+        funcTestTask
     }
 
 funcTestTasks.forEach {

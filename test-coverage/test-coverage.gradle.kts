@@ -8,35 +8,38 @@ dependencies {
     rootProject.allJavaModules()
         .map { it.path }
         .forEach { jacocoAggregation(project(it)) }
+    // Has no sources of its own, but records coverage of the published enforcer rule
+    jacocoAggregation(projects.restrictImportsEnforcerRuleMavenIt)
 }
 
-val unitTestReportName = "testCodeCoverageReport"
-val functionalTestReportName = "functionalTestCodeCoverageReport"
+// Report name to the name of the test suite it aggregates
+val reportsBySuiteName = mapOf(
+    "testCodeCoverageReport" to "test",
+    "functionalTestCodeCoverageReport" to "functionalTest",
+    "mavenFunctionalTestCodeCoverageReport" to "mavenFunctionalTest",
+)
 reporting {
     reports {
-        create<JacocoCoverageReport>(unitTestReportName) {
-            testSuiteName = "test"
-        }
-        create<JacocoCoverageReport>(functionalTestReportName) {
-            testSuiteName = "functionalTest"
+        reportsBySuiteName.forEach { (reportName, suiteName) ->
+            create<JacocoCoverageReport>(reportName) {
+                testSuiteName = suiteName
+            }
         }
     }
 }
 
 // A JacocoCoverageReport covers exactly one test suite, but coveralls consumes a single report:
-// merge the execution data of both aggregations. The class and source directories are the same
-// for both - they come from the aggregated projects, not from the suite - so taking them from
-// either report covers all modules.
-val unitTestReport = tasks.named<JacocoReport>(unitTestReportName)
-val functionalTestReport = tasks.named<JacocoReport>(functionalTestReportName)
+// merge the execution data of all of them. The class and source directories are the same for every
+// one - they come from the aggregated projects, not from the suite - so taking them from any single
+// report covers all modules.
+val suiteReports = reportsBySuiteName.keys.map { tasks.named<JacocoReport>(it) }
 val allTestsReport = tasks.register<JacocoReport>("allTestsCodeCoverageReport") {
     group = "verification"
-    description = "Aggregates the unit and functional test coverage of all projects"
+    description = "Aggregates the coverage of every test suite of all projects"
 
-    executionData.from(unitTestReport.map { it.executionData })
-    executionData.from(functionalTestReport.map { it.executionData })
-    classDirectories.from(unitTestReport.map { it.classDirectories })
-    sourceDirectories.from(unitTestReport.map { it.sourceDirectories })
+    suiteReports.forEach { report -> executionData.from(report.map { it.executionData }) }
+    classDirectories.from(suiteReports.first().map { it.classDirectories })
+    sourceDirectories.from(suiteReports.first().map { it.sourceDirectories })
 
     reports {
         xml.required = true

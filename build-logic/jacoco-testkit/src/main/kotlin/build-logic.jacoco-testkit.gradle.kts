@@ -1,5 +1,4 @@
 import de.skuzzle.buildlogic.jacocotestkit.JacocoTestKitExtension
-import java.util.concurrent.Callable
 
 plugins {
     id("jacoco")
@@ -27,21 +26,22 @@ dependencies {
 }
 extension.agentClasspath.from(agentClasspath)
 
-tasks.withType<Test>().configureEach {
-    val instrumented = extension.testTasks.map { it.contains(name) }
-    val propertyName = extension.systemPropertyNames.javaAgentArgument
-    // The forked JVM has to append to this very file: it is the one the `jacoco` plugin registers
-    // as the task's coverage data, and hence the only one an aggregated report picks up.
-    val argument = extension.javaAgentArgument(
-        layout.file(provider { the<JacocoTaskExtension>().destinationFile })
-    )
+extension.instrumentedTaskNames.all {
+    val taskName = this
+    tasks.named<Test>(taskName) {
+        val propertyName = extension.systemPropertyNames.javaAgentArgument
+        // The forked JVM has to append to this very file: it is the one the `jacoco` plugin
+        // registers as the task's coverage data, and hence the only one a report aggregation picks
+        // up.
+        val argument = extension.javaAgentArgument(
+            layout.file(provider { the<JacocoTaskExtension>().destinationFile })
+        )
 
-    // Both of these are resolved after the configuration phase, so that this does not depend on
-    // whether the task is realized before or after the build script configures the extension.
-    inputs.files(Callable { if (instrumented.get()) agentClasspath else objects.fileCollection() })
-        .withPropertyName("jacocoTestKitAgent")
-        .withNormalizer(ClasspathNormalizer::class)
-    jvmArgumentProviders.add(CommandLineArgumentProvider {
-        if (instrumented.get()) listOf("-D${propertyName.get()}=${argument.get()}") else emptyList()
-    })
+        inputs.files(agentClasspath)
+            .withPropertyName("jacocoTestKitAgent")
+            .withNormalizer(ClasspathNormalizer::class)
+        jvmArgumentProviders.add(CommandLineArgumentProvider {
+            listOf("-D${propertyName.get()}=${argument.get()}")
+        })
+    }
 }

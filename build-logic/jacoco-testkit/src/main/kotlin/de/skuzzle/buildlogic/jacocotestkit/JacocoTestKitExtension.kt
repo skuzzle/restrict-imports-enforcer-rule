@@ -1,25 +1,27 @@
 package de.skuzzle.buildlogic.jacocotestkit
 
+import javax.inject.Inject
 import org.gradle.api.Action
+import org.gradle.api.DomainObjectSet
 import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.file.RegularFile
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Nested
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.testing.Test
 
-abstract class JacocoTestKitExtension {
+abstract class JacocoTestKitExtension @Inject constructor(objects: ObjectFactory) {
     companion object {
         const val NAME = "jacocoTestKit"
     }
 
     /**
-     * Names of the test tasks whose forked builds should record coverage. Prefer passing the tasks
-     * themselves to [testTasks].
+     * Names of the test tasks whose forked builds record coverage, as added by [testTasks]. The
+     * plugin instruments each one as it is added.
      */
-    abstract val testTasks: SetProperty<String>
+    val instrumentedTaskNames: DomainObjectSet<String> = objects.domainObjectSet(String::class.java)
 
     /** The system properties under which the instrumented test tasks talk to their tests. */
     @get:Nested
@@ -30,7 +32,7 @@ abstract class JacocoTestKitExtension {
 
     fun testTasks(vararg tasks: TaskProvider<out Test>) {
         // Reading only the name keeps the tasks unrealized
-        testTasks.addAll(tasks.map { it.name })
+        tasks.forEach { instrumentedTaskNames.add(it.name) }
     }
 
     fun systemPropertyNames(action: Action<in SystemPropertyNames>) {

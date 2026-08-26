@@ -12,14 +12,14 @@ plugins {
 }
 
 // This module has no sources of its own; it exercises the published enforcer rule through real
-// Maven builds. The coverage those record is exposed the way a test suite of a Java module would
-// expose it, so that test-coverage's aggregation picks it up by test suite name.
-val mavenFunctionalTestSuiteName = "mavenFunctionalTest"
-val coverageDataElements = configurations.consumable("coverageDataElementsForMavenFunctionalTest") {
+// Maven builds. The coverage those record is exposed exactly the way the `functionalTest` suite of
+// a Java module would expose it, so that test-coverage's aggregation picks it up by suite name
+// along with every other functional test of the build.
+val coverageDataElements = configurations.consumable("coverageDataElementsForFunctionalTest") {
     description = "Binary results containing Jacoco test coverage of the Maven integration tests."
     attributes {
         attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.VERIFICATION))
-        attribute(TestSuiteName.TEST_SUITE_NAME_ATTRIBUTE, objects.named(mavenFunctionalTestSuiteName))
+        attribute(TestSuiteName.TEST_SUITE_NAME_ATTRIBUTE, objects.named("functionalTest"))
         attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE, objects.named(VerificationType.JACOCO_RESULTS))
     }
 }

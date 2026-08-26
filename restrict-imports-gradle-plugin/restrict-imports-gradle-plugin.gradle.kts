@@ -3,6 +3,7 @@ plugins {
     `kotlin-dsl`
     groovy
     `jvm-test-suite`
+    id("build-logic.jacoco-testkit")
     id("build-logic.published-java-component")
     id("build-logic.release-extension")
 }
@@ -76,33 +77,13 @@ val functionalTest = testing.suites.register<JvmTestSuite>("functionalTest") {
     }
 }
 
-// The functional tests exercise the plugin through TestKit, which runs the build under test in a
-// Gradle daemon rather than in the test JVM. The JaCoCo agent that the `jacoco` plugin attaches to
-// the test JVM therefore sees none of the plugin's code, so the tests have to attach a second agent
-// to that daemon themselves - see BaseRestrictsImportsFuncTest. This configuration resolves the
-// agent jar to attach; the `runtime` classifier artifact of the agent module *is* jacocoagent.jar.
-val testKitJacocoAgent: Configuration by configurations.creating {
-    isCanBeConsumed = false
-    isCanBeResolved = true
-    isVisible = false
-}
-dependencies {
-    testKitJacocoAgent("org.jacoco:org.jacoco.agent:${jacoco.toolVersion}:runtime")
-}
-
-tasks.named<Test>("functionalTest") {
-    val agentJar = testKitJacocoAgent
-    // The daemon has to append to this very file: it is the one the jacoco plugin registers as the
-    // task's coverage data, and hence the only one that test-coverage's aggregation picks up.
-    val execFile = the<JacocoTaskExtension>().destinationFile!!
-
-    inputs.files(agentJar).withPropertyName("testKitJacocoAgent").withNormalizer(ClasspathNormalizer::class)
-    jvmArgumentProviders.add(CommandLineArgumentProvider {
-        listOf(
-            "-Djacoco.agent.jar=${agentJar.singleFile.absolutePath}",
-            "-Djacoco.agent.destfile=${execFile.absolutePath}",
-        )
-    })
+// The functional tests drive the plugin through TestKit, so the coverage they produce is recorded
+// by the daemon they launch rather than by this task's JVM - see BaseRestrictsImportsFuncTest.
+jacocoTestKit {
+    testTasks(tasks.named<Test>("functionalTest"))
+    systemPropertyNames {
+        javaAgentArgument = "jacoco.agent.jvmarg"
+    }
 }
 
 tasks.named<Task>("check") {

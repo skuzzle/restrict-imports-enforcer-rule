@@ -42,25 +42,23 @@ abstract class BaseRestrictsImportsFuncTest extends Specification {
     /**
      * TestKit runs the build under test in a Gradle daemon, so the plugin's code never executes in
      * this JVM and the JaCoCo agent that the build attaches to it records nothing for the plugin.
-     * Attach a second agent to that daemon, appending to the very file that the functionalTest task
-     * declares as its execution data, so that the coverage of these tests ends up in the aggregated
-     * report along with the unit tests'.
+     * Attach the agent that the build offers for exactly this to that daemon, so that the coverage
+     * of these tests ends up in the aggregated report along with the unit tests'.
      *
-     * <p>The daemon is single-use, which is what makes {@code dumponexit} write the data while the
-     * test is still running rather than whenever a reused daemon happens to expire.
+     * <p>The daemon is single-use, which is what makes the agent write its data while the test is
+     * still running rather than whenever a reused daemon happens to expire.
      *
-     * <p>Yields nothing when the two system properties are absent, so that the tests still run when
-     * they are started outside of the functionalTest task, e.g. from an IDE.
+     * <p>Yields nothing when the system property is absent, so that the tests still run when they
+     * are started outside of the functionalTest task, e.g. from an IDE.
      */
     private String jacocoDaemonProperties() {
-        def agentJar = System.getProperty("jacoco.agent.jar")
-        def destFile = System.getProperty("jacoco.agent.destfile")
-        if (!instrumentTestKitDaemon() || agentJar == null || destFile == null) {
+        def javaAgentArgument = System.getProperty("jacoco.agent.jvmarg")
+        if (!instrumentTestKitDaemon() || javaAgentArgument == null) {
             return ""
         }
         return """\
         org.gradle.daemon=false
-        org.gradle.jvmargs=-javaagent:$agentJar=destfile=$destFile,append=true,dumponexit=true,jmx=false
+        org.gradle.jvmargs=$javaAgentArgument
         """.stripIndent(true)
     }
 

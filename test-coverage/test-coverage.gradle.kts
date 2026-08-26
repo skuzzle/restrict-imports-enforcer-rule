@@ -14,9 +14,6 @@ val unitTestReportName = "testCodeCoverageReport"
 val functionalTestReportName = "functionalTestCodeCoverageReport"
 reporting {
     reports {
-        // The names of the test suites whose coverage data is aggregated, not the values of the
-        // `testType` attribute that this replaced in Gradle 8.13: a name that no suite has
-        // silently aggregates nothing, and the report task is SKIPPED for having no input.
         create<JacocoCoverageReport>(unitTestReportName) {
             testSuiteName = "test"
         }

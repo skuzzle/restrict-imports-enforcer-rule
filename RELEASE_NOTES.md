@@ -1,10 +1,13 @@
-[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=3.0.1&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/3.0.1/jar) [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=3.0.1)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/3.0.1)
+[![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=3.0.2&color=blue)](https://search.maven.org/artifact/de.skuzzle.enforcer/restrict-imports-enforcer-rule/3.0.2/jar) [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/de.skuzzle.restrictimports?versionSuffix=3.0.2)](https://plugins.gradle.org/plugin/de.skuzzle.restrictimports/3.0.2)
 
 > [!NOTE]
-> The Gradle plugin is now tested against the latest Gradle 7.x, 8.x and 9.x releases
+> This release contains no functional changes. A release dry run accidentally promoted its
+> staging repository, which published `3.0.2-develop` to Maven Central and left it there as
+> the latest version of `de.skuzzle.enforcer:restrict-imports-enforcer-rule`. This release
+> supersedes those artifacts with a proper release. Do not use `3.0.2-develop`.
 
-### Bug fixes
-* [#274](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/274) The Gradle plugin no longer uses the deprecated `Project.getProperties` method, which emits a deprecation warning since Gradle 9.6 and would have become an error in Gradle 10
+### Documentation
+* [#278](https://github.com/skuzzle/restrict-imports-enforcer-rule/pull/278) The legacy `buildscript` snippet below now declares the Gradle plugin under `de.skuzzle.restrictimports:restrict-imports-gradle-plugin`. The `de.skuzzle.enforcer` coordinates documented until 3.0.1 never existed on Maven Central, so the declared dependency could not be resolved
 
 ### Dependency coordinates
 <details>
@@ -14,7 +17,7 @@
 <dependency>
     <groupId>de.skuzzle.enforcer</groupId>
     <artifactId>restrict-imports-enforcer-rule</artifactId>
-    <version>3.0.1</version>
+    <version>3.0.2</version>
 </dependency>
 ```
 </details>
@@ -25,7 +28,7 @@
 Gradle plugin DSL
 ```groovy
 plugins {
-  id("de.skuzzle.restrictimports") version "3.0.1"
+  id("de.skuzzle.restrictimports") version "3.0.2"
 }
 ```
 
@@ -38,7 +41,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath("de.skuzzle.enforcer:restrict-imports-gradle-plugin:3.0.1")
+    classpath("de.skuzzle.restrictimports:restrict-imports-gradle-plugin:3.0.2")
   }
 }
 
@@ -48,6 +51,6 @@ apply(plugin = "de.skuzzle.restrictimports")
 Gradle version catalog (Toml)
 ```toml
 [plugins]
-restrictImports = { id = "de.skuzzle.restrictimports", version = "3.0.1" }
+restrictImports = { id = "de.skuzzle.restrictimports", version = "3.0.2" }
 ```
 </details>

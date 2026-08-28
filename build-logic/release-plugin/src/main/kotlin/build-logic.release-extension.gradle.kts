@@ -10,11 +10,13 @@ val releaseExtension = extensions.create<ReleaseExtension>(ReleaseExtension.NAME
             .orElse(providers.environmentVariable("RELEASE_VERSION"))
             .orElse(providers.gradleProperty("releaseVersion"))
     )
+    // Dry run is the safe default: a real release must opt in explicitly by setting one of
+    // the properties below to 'false'.
     dryRun.convention(
         providers.systemProperty("RELEASE_DRY_RUN").map { it == "true" }
             .orElse(providers.environmentVariable("RELEASE_DRY_RUN").map { it == "true" })
             .orElse(providers.gradleProperty("releaseDryRun").map { it == "true" })
-            .orElse(false)
+            .orElse(true)
     )
     verbose.convention(
         providers.systemProperty("RELEASE_VERBOSE").map { it == "true" }

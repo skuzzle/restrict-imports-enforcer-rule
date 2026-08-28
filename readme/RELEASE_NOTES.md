@@ -1,10 +1,13 @@
 [![Maven Central](https://img.shields.io/static/v1?label=MavenCentral&message=@project.version@&color=blue)](https://search.maven.org/artifact/@project.groupId@/restrict-imports-enforcer-rule/@project.version@/jar) [![Gradle Plugin Portal](https://img.shields.io/gradle-plugin-portal/v/@project.pluginId@?versionSuffix=@project.version@)](https://plugins.gradle.org/plugin/@project.pluginId@/@project.version@)
 
 > [!NOTE]
-> The Gradle plugin is now tested against the latest Gradle 7.x, 8.x and 9.x releases
+> This release contains no functional changes. A release dry run accidentally promoted its
+> staging repository, which published `3.0.2-develop` to Maven Central and left it there as
+> the latest version of `de.skuzzle.enforcer:restrict-imports-enforcer-rule`. This release
+> supersedes those artifacts with a proper release. Do not use `3.0.2-develop`.
 
-### Bug fixes
-* [#274](https://github.com/skuzzle/restrict-imports-enforcer-rule/issues/274) The Gradle plugin no longer uses the deprecated `Project.getProperties` method, which emits a deprecation warning since Gradle 9.6 and would have become an error in Gradle 10
+### Documentation
+* [#278](https://github.com/skuzzle/restrict-imports-enforcer-rule/pull/278) The legacy `buildscript` snippet below now declares the Gradle plugin under `de.skuzzle.restrictimports:restrict-imports-gradle-plugin`. The `de.skuzzle.enforcer` coordinates documented until 3.0.1 never existed on Maven Central, so the declared dependency could not be resolved
 
 ### Dependency coordinates
 <details>

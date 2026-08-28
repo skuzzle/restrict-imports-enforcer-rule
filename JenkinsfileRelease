@@ -18,7 +18,7 @@ pipeline {
         GITHUB = credentials('Github-Username-Pw')
         GIT_ASKPASS = './.git-askpass'
         RELEASE_GITHUB_TOKEN = credentials('github_registry_release')
-        BUILD_CACHE = credentials('build_cache')
+        DEVELOCITY_ACCESS_KEY = credentials('develocity_access_key')
         GRADLE_CACHE = '/tmp/gradle-user-home'
         GRADLE_USER_HOME = '/tmp/gradle-home'
         MAVEN_CONFIG = ''

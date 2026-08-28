@@ -36,7 +36,7 @@ abstract class AbstractReleaseStep() : DefaultTask() {
     val git: Git
 
     init {
-        dryRun.convention(false)
+        dryRun.convention(true)
         verbose.convention(true)
         git = Git(providers, dryRun, verbose)
     }

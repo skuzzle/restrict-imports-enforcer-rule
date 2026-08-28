@@ -13,7 +13,7 @@ pipeline {
         // the build gates on this variable being set. Jenkins does not set it by itself.
         CI = 'true'
         COVERALLS_REPO_TOKEN = credentials('coveralls_repo_token_restrict_imports_rule')
-        BUILD_CACHE = credentials('build_cache')
+        DEVELOCITY_ACCESS_KEY = credentials('develocity_access_key')
         GRADLE_CACHE = '/tmp/gradle-user-home'
         GRADLE_USER_HOME = '/tmp/gradle-home'
         MAVEN_CONFIG = ''

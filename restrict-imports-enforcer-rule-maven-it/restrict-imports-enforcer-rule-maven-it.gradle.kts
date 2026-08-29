@@ -1,4 +1,10 @@
 import com.github.dkorotych.gradle.maven.exec.MavenExec
+import com.gradle.develocity.agent.gradle.test.ImportJUnitXmlReports
+import com.gradle.develocity.agent.gradle.test.JUnitXmlDialect
+import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 
 plugins {
     id("build-logic.base")
@@ -36,7 +42,14 @@ val funcTestTasks = crossVersionTests
 
         val downloadTask = maven.download(mavenVersion)
 
-        tasks.register<MavenExec>("funcTestMaven_${safeMavenVersion}_enforcer_${safeEnforcerVersion}") {
+        val taskName = "funcTestMaven_${safeMavenVersion}_enforcer_${safeEnforcerVersion}"
+
+        // JUnit XML as written by the Maven Invoker Plugin, and the copies of it that are
+        // normalized for Develocity (see the doLast block below).
+        val invokerReportsDir = layout.buildDirectory.dir("$taskName/reports")
+        val develocityReportsDir = layout.buildDirectory.dir("$taskName/develocity-junit-reports")
+
+        val funcTestTask = tasks.register<MavenExec>(taskName) {
             description = "Executes Maven Enforcer Plugin integration tests"
             group = "verification"
             notCompatibleWithConfigurationCache("Inherently not")
@@ -78,7 +91,7 @@ val funcTestTasks = crossVersionTests
             define(
                 mapOf(
                     "revision" to project.version.toString(),
-                    "fromGradle.test-id" to "maven.invoker.it._$safeEnforcerVersion",
+                    "fromGradle.test-id" to "maven.invoker.it.maven_$safeMavenVersion.enforcer_$safeEnforcerVersion",
                     "fromGradle.output-dir" to outputDir,
                     "fromGradle.enforcer-api-version" to enforcerVersion,
                     "fromGradle.invoker-plugin-version" to libs.versions.invokerPlugin.get(),
@@ -86,7 +99,60 @@ val funcTestTasks = crossVersionTests
                     "fromGradle.localIntegrationTestRepo" to m2Repository.get().dir("repository").asFile.absolutePath
                 )
             )
+
+            doLast("normalize JUnit XML for Develocity") {
+                // The Maven Invoker Plugin never writes the 'timestamp' attribute on
+                // <testsuite> (still true as of 3.10.1), but Develocity's JUnit XML parser
+                // requires it and aborts the whole import without it. Write normalized
+                // copies rather than editing the originals, so the invoker's own reports
+                // stay untouched. Both directories live inside this task's output
+                // directory, so the copies survive a build cache hit as well.
+                val reportsDir = invokerReportsDir.get().asFile
+                val normalizedDir = develocityReportsDir.get().asFile
+                normalizedDir.deleteRecursively()
+                normalizedDir.mkdirs()
+
+                // The invoker writes each report once its build job has finished, so the
+                // file's modification time minus the recorded duration approximates when
+                // that job started. There is no better source: the XML records no start.
+                val durationPattern = Regex("<testsuite\\b[^>]*\\btime=\"([^\"]*)\"")
+
+                reportsDir.listFiles { file -> file.name.startsWith("TEST-") && file.name.endsWith(".xml") }
+                    .orEmpty()
+                    .forEach { report ->
+                        val xml = report.readText()
+                        // Only look at the opening <testsuite> tag: <system-out> embeds the
+                        // whole Maven build log, which may well contain 'timestamp=' itself.
+                        val normalized = if (xml.substringBefore('>').contains("timestamp=")) {
+                            xml
+                        } else {
+                            val durationMillis = durationPattern.find(xml)
+                                ?.groupValues?.get(1)?.toDoubleOrNull()
+                                ?.times(1000)?.toLong()
+                                ?: 0L
+                            val startedAt = Instant.ofEpochMilli(report.lastModified())
+                                .minusMillis(durationMillis)
+                            val timestamp = OffsetDateTime.ofInstant(startedAt, ZoneId.systemDefault())
+                                .truncatedTo(ChronoUnit.SECONDS)
+                            xml.replaceFirst("<testsuite ", """<testsuite timestamp="$timestamp" """)
+                        }
+                        normalizedDir.resolve(report.name).writeText(normalized)
+                    }
+            }
         }
+
+        // Report the Maven Invoker results as tests in the Build Scan. The invoker plugin
+        // already writes JUnit XML (see <writeJunitReport> in pom.xml); this registers a
+        // finalizer task that hands those reports to Develocity, attributed to the
+        // MavenExec task that produced them.
+        ImportJUnitXmlReports.register(tasks, funcTestTask, JUnitXmlDialect.GENERIC).configure {
+            // setFrom replaces the default, which is the task's entire output file tree:
+            // that would also feed the parser the invoker's own BUILD-*.xml (a <build-job>
+            // format, not JUnit XML) and the cloned projects under builds/.
+            reports.setFrom(develocityReportsDir.map { it.asFileTree.matching { include("TEST-*.xml") } })
+        }
+
+        funcTestTask
     }
 
 funcTestTasks.forEach {

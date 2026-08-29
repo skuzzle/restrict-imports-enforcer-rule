@@ -15,6 +15,8 @@ pipeline {
         // Enables Build Scan publishing and pushing to the remote build cache, both of which
         // the build gates on this variable being set. Jenkins does not set it by itself.
         CI = 'true'
+        // Tags the Build Scans produced by this pipeline as 'release-build' in Develocity.
+        RELEASE_BUILD = 'true'
         GITHUB = credentials('Github-Username-Pw')
         GIT_ASKPASS = './.git-askpass'
         RELEASE_GITHUB_TOKEN = credentials('github_registry_release')

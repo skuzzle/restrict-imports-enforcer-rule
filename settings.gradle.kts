@@ -11,11 +11,20 @@ plugins {
 }
 
 val isCI = System.getenv("CI") != null
+val isReleaseBuild = System.getenv("RELEASE_BUILD") != null
+// Mirrors how the release plugin resolves its own dry run flag
+val isDryRunRelease = (System.getProperty("RELEASE_DRY_RUN") ?: System.getenv("RELEASE_DRY_RUN")) == "true"
 
 develocity {
     server = "https://community.develocity.cloud"
     projectId = "skuzzle"
     buildScan {
+        if (isReleaseBuild) {
+            tag("release-build")
+            if (isDryRunRelease) {
+                tag("release-dry-run")
+            }
+        }
         uploadInBackground = !isCI
         publishing.onlyIf { it.isAuthenticated }
         obfuscation {

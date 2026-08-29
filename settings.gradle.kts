@@ -10,17 +10,29 @@ plugins {
     id("build-logic.settings-conventions")
 }
 
-var isCi = !System.getenv("CI").isNullOrEmpty()
-var acceptTos = isCi || file("YOU ACCEPTED THE TOS FOR PUBLISHING BUILD SCANS").exists()
+val isCI = System.getenv("CI") != null
 
 develocity {
+    server = "https://community.develocity.cloud"
+    projectId = "skuzzle"
     buildScan {
-        termsOfUseUrl = "https://gradle.com/terms-of-service"
-        termsOfUseAgree = if (acceptTos) "yes" else null
-        uploadInBackground = !isCi
-        capture {
-            fileFingerprints = false
+        uploadInBackground = !isCI
+        publishing.onlyIf { it.isAuthenticated }
+        obfuscation {
+            ipAddresses { addresses -> addresses.map { _ -> "0.0.0.0" } }
         }
+    }
+}
+
+buildCache {
+    local {
+        isEnabled = true
+    }
+
+    remote(develocity.buildCache) {
+        isEnabled = true
+        val accessKey = System.getenv("DEVELOCITY_ACCESS_KEY")
+        isPush = isCI && accessKey != null
     }
 }
 

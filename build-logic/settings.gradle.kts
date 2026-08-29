@@ -1,3 +1,7 @@
+plugins {
+    id("com.gradle.develocity") version "4.5.0"
+}
+
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
@@ -11,9 +15,23 @@ dependencyResolutionManagement {
     }
 }
 
-// kind of a hack to reuse the build cache configuration for both the included plugin build as well as
-// the main build.
-apply(from = "conventions/src/main/kotlin/build-logic.build-cache-conventions.settings.gradle.kts")
+val isCI = System.getenv("CI") != null
+
+develocity {
+    server = "https://community.develocity.cloud"
+}
+
+buildCache {
+    local {
+        isEnabled = true
+    }
+
+    remote(develocity.buildCache) {
+        isEnabled = true
+        val accessKey = System.getenv("DEVELOCITY_ACCESS_KEY")
+        isPush = isCI && accessKey != null
+    }
+}
 
 rootProject.name="build-logic"
 

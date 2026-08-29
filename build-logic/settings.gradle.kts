@@ -35,7 +35,6 @@ buildCache {
 
 rootProject.name="build-logic"
 
-include("accept-tos")
 include("conventions")
 include("release-plugin")
 include("verify-publication")

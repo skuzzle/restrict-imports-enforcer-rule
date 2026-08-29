@@ -2,7 +2,6 @@ plugins {
     alias(libs.plugins.nexus.publish)
     id("build-logic.base")
     id("build-logic.release")
-    id("build-logic.accept-tos")
 }
 
 release {

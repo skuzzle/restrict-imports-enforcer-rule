@@ -28,10 +28,6 @@ Note that code formatting is enforced by `spotless`. You can apply the configure
 formatting rules to your changes by running `./gradlew spotlessApply`
 
 ### Build Scans
-When building the project locally gradle will ask you whether you want to accept the TOS of the public
-Build Scan service:
-> Publishing a build scan to scans.gradle.com requires accepting the Gradle Terms of Service defined at https://gradle.com/terms-of-service. Do you accept these terms? [yes, no]
-
-You can safely decline this if you do not want to publish a Build Scan.
-
-You can also run `./gradlew acceptToS` to permanently accept the TOS on the current working copy of the project. This task creates a marker file in the root directory of the project. As long as this file exists, Build Scans will be published without further asking for consent. You can remove the marker file at any time.
+This project uses the Community Develocity instance provided by
+[Develocity.ai](https://develocity.ai) at https://community.develocity.cloud for Build
+Scans and remote build caching.

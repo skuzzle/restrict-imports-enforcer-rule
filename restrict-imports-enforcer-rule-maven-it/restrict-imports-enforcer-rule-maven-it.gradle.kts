@@ -36,7 +36,11 @@ val funcTestTasks = crossVersionTests
 
         val downloadTask = maven.download(mavenVersion)
 
-        tasks.register<MavenExec>("funcTestMaven_${safeMavenVersion}_enforcer_${safeEnforcerVersion}") {
+        val taskName = "funcTestMaven_${safeMavenVersion}_enforcer_${safeEnforcerVersion}"
+
+        val taskOutputDir = layout.buildDirectory.dir(taskName)
+
+        val funcTestTask = tasks.register<MavenExec>(taskName) {
             description = "Executes Maven Enforcer Plugin integration tests"
             group = "verification"
             notCompatibleWithConfigurationCache("Inherently not")
@@ -51,7 +55,6 @@ val funcTestTasks = crossVersionTests
                 mavenExecTask.inputs.files(publishTask.project.tasks.withType<JavaCompile>())
             }
 
-            val outputDir = mavenExecTask.name
             inputs.files(layout.projectDirectory.dir("src/it/maven"))
                 .withPropertyName("mavenIntegrationTestSources")
                 .withPathSensitivity(PathSensitivity.RELATIVE)
@@ -61,7 +64,7 @@ val funcTestTasks = crossVersionTests
             inputs.files(layout.projectDirectory.file("pom.xml"))
                 .withPropertyName("mavenItPom")
                 .withPathSensitivity(PathSensitivity.RELATIVE)
-            outputs.dir(layout.buildDirectory.file(outputDir))
+            outputs.dir(taskOutputDir)
 
             // Opt this task into the build cache. The MavenExec task type from the
             // 'com.github.dkorotych.gradle-maven-exec' plugin is not annotated
@@ -78,8 +81,8 @@ val funcTestTasks = crossVersionTests
             define(
                 mapOf(
                     "revision" to project.version.toString(),
-                    "fromGradle.test-id" to "maven.invoker.it._$safeEnforcerVersion",
-                    "fromGradle.output-dir" to outputDir,
+                    "fromGradle.test-id" to "maven.invoker.it.maven_$safeMavenVersion.enforcer_$safeEnforcerVersion",
+                    "fromGradle.output-dir" to taskName,
                     "fromGradle.enforcer-api-version" to enforcerVersion,
                     "fromGradle.invoker-plugin-version" to libs.versions.invokerPlugin.get(),
                     "fromGradle.integration-test-threads" to "2C",
@@ -87,6 +90,11 @@ val funcTestTasks = crossVersionTests
                 )
             )
         }
+
+        // Report the Maven Invoker results as tests in the Build Scan.
+        importMavenInvokerTestResults(funcTestTask, taskOutputDir)
+
+        funcTestTask
     }
 
 funcTestTasks.forEach {

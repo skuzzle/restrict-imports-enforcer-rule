@@ -44,7 +44,7 @@ pipeline {
         stage('Unit-tests') {
             steps {
                 withGradle {
-                    sh './gradlew test coveralls'
+                    sh './gradlew test'
                 }
             }
         }
@@ -52,6 +52,14 @@ pipeline {
             steps {
                 withGradle {
                     sh './gradlew functionalTest'
+                }
+            }
+        }
+        stage('Coverage') {
+            steps {
+                withGradle {
+                    // Aggregates the coverage of both test stages, so it has to run after them.
+                    sh './gradlew coverallsJacoco'
                 }
             }
         }

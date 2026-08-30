@@ -10,6 +10,14 @@ class RestrictImportsGradleVersionFuncTest extends BaseRestrictsImportsFuncTest 
         return GradleDSL.GROOVY
     }
 
+    @Override
+    protected boolean instrumentTestKitDaemon() {
+        // Gradle 8 fails a build that uses a Java agent together with the configuration cache, and
+        // this test intentionally runs with the configuration cache on. The coverage lost here is
+        // recorded by the tests that run against the current Gradle anyway.
+        return false
+    }
+
     def "plugin works without using deprecated Gradle API with Gradle #gradleVersion"() {
         given:
         javaClassWithImports([], "", "ClassWithNoBannedImports")

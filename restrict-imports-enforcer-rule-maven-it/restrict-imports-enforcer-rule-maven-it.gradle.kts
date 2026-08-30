@@ -1,9 +1,27 @@
 import com.github.dkorotych.gradle.maven.exec.MavenExec
+import org.gradle.api.artifacts.type.ArtifactTypeDefinition
+import org.gradle.api.attributes.Category
+import org.gradle.api.attributes.TestSuiteName
+import org.gradle.api.attributes.VerificationType
 
 plugins {
     id("build-logic.base")
     id("build-logic.maven-download")
+    id("build-logic.jacoco-testkit")
     alias(libs.plugins.mavenExec)
+}
+
+// This module has no sources of its own; it exercises the published enforcer rule through real
+// Maven builds. The coverage those record is exposed exactly the way the `functionalTest` suite of
+// a Java module would expose it, so that test-coverage's aggregation picks it up by suite name
+// along with every other functional test of the build.
+val coverageDataElements = configurations.consumable("coverageDataElementsForFunctionalTest") {
+    description = "Binary results containing Jacoco test coverage of the Maven integration tests."
+    attributes {
+        attribute(Category.CATEGORY_ATTRIBUTE, objects.named(Category.VERIFICATION))
+        attribute(TestSuiteName.TEST_SUITE_NAME_ATTRIBUTE, objects.named("functionalTest"))
+        attribute(VerificationType.VERIFICATION_TYPE_ATTRIBUTE, objects.named(VerificationType.JACOCO_RESULTS))
+    }
 }
 
 
@@ -26,6 +44,14 @@ val crossVersionTests = listOf(libs.versions.mavenMin, libs.versions.mavenMax)
             .map { enforcerVersion -> CrossVersionTest(mavenVersion, enforcerVersion) }
     }
 
+// Only the newest combination records coverage. The agent slows every JVM the invoker forks, and
+// the invoker runs them in parallel against one local repository that starts out empty - which
+// Maven only accesses safely from concurrent processes as of 3.9, so instrumenting `mavenMin` races
+// it into downloading half a POM. Coverage is not lost by this: all four combinations put the same
+// rule code through the same paths.
+val instrumentedMavenVersion = libs.versions.mavenMax.get()
+val instrumentedEnforcerVersion = libs.versions.enforcerMax.get()
+
 val funcTestTasks = crossVersionTests
     .map { crossVersionTest ->
         val enforcerVersion = crossVersionTest.enforcerVersion.get()
@@ -36,7 +62,13 @@ val funcTestTasks = crossVersionTests
 
         val downloadTask = maven.download(mavenVersion)
 
-        tasks.register<MavenExec>("funcTestMaven_${safeMavenVersion}_enforcer_${safeEnforcerVersion}") {
+        val taskName = "funcTestMaven_${safeMavenVersion}_enforcer_${safeEnforcerVersion}"
+        val recordsCoverage = mavenVersion == instrumentedMavenVersion &&
+            enforcerVersion == instrumentedEnforcerVersion
+        // Every Maven the invoker forks appends to this one file; the agent locks it
+        val coverageData = layout.buildDirectory.file("jacoco/$taskName.exec")
+
+        val funcTestTask = tasks.register<MavenExec>(taskName) {
             description = "Executes Maven Enforcer Plugin integration tests"
             group = "verification"
             notCompatibleWithConfigurationCache("Inherently not")
@@ -44,6 +76,10 @@ val funcTestTasks = crossVersionTests
             dependsOn(downloadTask)
 
             val mavenExecTask = this
+
+            if (recordsCoverage) {
+                outputs.file(coverageData).withPropertyName("coverageData")
+            }
 
             publishEnforcerRuleTask?.let { publishTask ->
                 mavenExecTask.dependsOn(publishTask)
@@ -83,10 +119,21 @@ val funcTestTasks = crossVersionTests
                     "fromGradle.enforcer-api-version" to enforcerVersion,
                     "fromGradle.invoker-plugin-version" to libs.versions.invokerPlugin.get(),
                     "fromGradle.integration-test-threads" to "2C",
-                    "fromGradle.localIntegrationTestRepo" to m2Repository.get().dir("repository").asFile.absolutePath
+                    "fromGradle.localIntegrationTestRepo" to m2Repository.get().dir("repository").asFile.absolutePath,
+                    "fromGradle.maven-opts" to
+                        if (recordsCoverage) jacocoTestKit.javaAgentArgument(coverageData).get() else ""
                 )
             )
         }
+
+        if (recordsCoverage) {
+            artifacts.add(coverageDataElements.name, coverageData) {
+                type = ArtifactTypeDefinition.BINARY_DATA_TYPE
+                builtBy(funcTestTask)
+            }
+        }
+
+        funcTestTask
     }
 
 funcTestTasks.forEach {

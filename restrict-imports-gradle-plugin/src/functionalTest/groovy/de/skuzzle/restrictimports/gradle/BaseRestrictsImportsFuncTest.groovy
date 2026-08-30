@@ -24,8 +24,42 @@ abstract class BaseRestrictsImportsFuncTest extends Specification {
         org.gradle.caching=true
         org.gradle.configuration-cache=true
         """.stripIndent(true)
+        propertiesFile << jacocoDaemonProperties()
         settingsFile = workspace.file("settings${dsl.fileExtension}")
         buildFile = workspace.file("build${dsl.fileExtension}")
+    }
+
+    /**
+     * Whether the Gradle daemon that runs the build under test should record coverage, see
+     * {@link #jacocoDaemonProperties()}. Gradle 8 rejects a build that combines a Java agent with
+     * the configuration cache, which these tests always enable, so tests that run against an older
+     * Gradle have to turn this off.
+     */
+    protected boolean instrumentTestKitDaemon() {
+        return true
+    }
+
+    /**
+     * TestKit runs the build under test in a Gradle daemon, so the plugin's code never executes in
+     * this JVM and the JaCoCo agent that the build attaches to it records nothing for the plugin.
+     * Attach the agent that the build offers for exactly this to that daemon, so that the coverage
+     * of these tests ends up in the aggregated report along with the unit tests'.
+     *
+     * <p>The daemon is single-use, which is what makes the agent write its data while the test is
+     * still running rather than whenever a reused daemon happens to expire.
+     *
+     * <p>Yields nothing when the system property is absent, so that the tests still run when they
+     * are started outside of the functionalTest task, e.g. from an IDE.
+     */
+    private String jacocoDaemonProperties() {
+        def javaAgentArgument = System.getProperty("jacoco.agent.jvmarg")
+        if (!instrumentTestKitDaemon() || javaAgentArgument == null) {
+            return ""
+        }
+        return """\
+        org.gradle.daemon=false
+        org.gradle.jvmargs=$javaAgentArgument
+        """.stripIndent(true)
     }
 
     BuildResult run(String... arguments) {

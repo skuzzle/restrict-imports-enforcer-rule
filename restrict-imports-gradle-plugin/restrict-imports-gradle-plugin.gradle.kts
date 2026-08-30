@@ -3,6 +3,7 @@ plugins {
     `kotlin-dsl`
     groovy
     `jvm-test-suite`
+    id("build-logic.jacoco-testkit")
     id("build-logic.published-java-component")
     id("build-logic.release-extension")
 }
@@ -73,6 +74,15 @@ val functionalTest = testing.suites.register<JvmTestSuite>("functionalTest") {
     dependencies {
         implementation(platform(libs.groovy.bom.get().toString()))
         implementation(libs.groovy.nio)
+    }
+}
+
+// The functional tests drive the plugin through TestKit, so the coverage they produce is recorded
+// by the daemon they launch rather than by this task's JVM - see BaseRestrictsImportsFuncTest.
+jacocoTestKit {
+    testTasks(tasks.named<Test>("functionalTest"))
+    systemPropertyNames {
+        javaAgentArgument = "jacoco.agent.jvmarg"
     }
 }
 

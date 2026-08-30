@@ -25,8 +25,10 @@
                     </pomIncludes>
                     <parallelThreads>${fromGradle.integration-test-threads}</parallelThreads>
                     <writeJunitReport>true</writeJunitReport>
-                    <!--uncomment next line to debug invoker tests -->
-                    <!--<mavenOpts>-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000</mavenOpts> -->
+                    <!-- The rule under test runs in the Maven that the invoker forks per project, so
+                         this is where the build attaches its coverage agent. Append -Xdebug
+                         -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000 to debug. -->
+                    <mavenOpts>${fromGradle.maven-opts}</mavenOpts>
                 </configuration>
                 <executions>
                     <execution>

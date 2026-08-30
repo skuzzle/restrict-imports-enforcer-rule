@@ -74,7 +74,9 @@ pipeline {
         stage('Unit-tests') {
             steps {
                 withGradle {
-                    sh './gradlew test coveralls'
+                    // No coverage upload here: this pipeline has no COVERALLS_REPO_TOKEN, and the
+                    // branch build already reports coverage for every commit it releases.
+                    sh './gradlew test'
                 }
             }
         }

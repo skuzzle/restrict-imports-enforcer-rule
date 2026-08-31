@@ -35,7 +35,11 @@ develocity {
 
 buildCache {
     local {
-        isEnabled = true
+        // Off on CI, where it is only ever a liability: the remote cache already serves
+        // every hit, but the local one still grows - it reached 339MB - and the Jenkins
+        // pipeline copies the whole Gradle home in and out of every build, so that growth
+        // is paid for on both legs of the copy, every time.
+        isEnabled = !isCI
     }
 
     remote(develocity.buildCache) {

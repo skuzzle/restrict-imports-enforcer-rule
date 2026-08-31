@@ -8,24 +8,17 @@ plugins {
 
 
 // TODO: fix duplication (see publishing-conventions)
+//
+// This holds the enforcer rule as Gradle publishes it, and nothing else of consequence:
+// it is the outer Maven's local repository, and invoker-settings.xml exposes it to the
+// integration tests as the 'local.central' repository so they can resolve the rule under
+// test. The artifacts those tests pull from Central land in a repository of their own,
+// per cross-version leg - see below.
 val m2Repository: Provider<Directory> = rootProject.layout.buildDirectory.dir("m2")
-
-// Maven downloads into this repository, and Gradle does not track what it writes there:
-// the publish task only ever removes its own outputs, so third-party artifacts survive
-// into the next build. In a reused CI workspace that is forever - which is how a
-// truncated enforcer-api jar kept every 'success' scenario failing for days, on a branch
-// whose sources were fine. Wiping it before anything publishes into it makes every build
-// start from the state a fresh workspace would have.
-val cleanInvokerLocalRepo = tasks.register<Delete>("cleanInvokerLocalRepo") {
-    description = "Deletes the Maven Invoker's local repository so no build inherits another build's artifacts"
-    delete(m2Repository)
-}
 
 // ProjectDependency.getDependencyProject() was removed in Gradle 9, resolve the project by its path instead
 val publishEnforcerRuleTask: Task? = project(projects.restrictImportsEnforcerRule.path)
     .tasks.findByName("publishMavenPublicationToLocalIntegrationTestsRepository")
-
-publishEnforcerRuleTask?.mustRunAfter(cleanInvokerLocalRepo)
 
 val functionalTest = tasks.register("functionalTest") {
     group = "verification"
@@ -58,7 +51,7 @@ val funcTestTasks = crossVersionTests
             group = "verification"
             notCompatibleWithConfigurationCache("Inherently not")
 
-            dependsOn(downloadTask, cleanInvokerLocalRepo)
+            dependsOn(downloadTask)
 
             val mavenExecTask = this
 
@@ -88,6 +81,22 @@ val funcTestTasks = crossVersionTests
             // to absolute paths baked into the Maven define map.
             outputs.cacheIf("inputs fully tracked with relative path sensitivity") { true }
 
+            // Every leg resolves into its own local repository, so a 3.8.1 leg can not
+            // leave an artifact behind that a 3.9.11 leg then silently passes on. It sits
+            // beside the task's output directory rather than inside it: outputs are opted
+            // into the build cache above, and ~10MB of third-party artifacts per leg do
+            // not belong in a cache entry.
+            //
+            // Nothing tracks this directory, so it is wiped here rather than left to
+            // Gradle. A local repository that outlives the build is how one truncated
+            // enforcer-api jar kept every 'success' scenario failing for days in a reused
+            // CI workspace: a checksum policy only applies while an artifact is being
+            // downloaded, so nothing ever rechecks what is already there.
+            val invokerLocalRepo = layout.buildDirectory.dir("m2-$taskName/repository")
+            doFirst("wipe the invoker's local repository") {
+                invokerLocalRepo.get().asFile.deleteRecursively()
+            }
+
             mavenDir = maven.mavenHome(mavenVersion)
             goals(setOf("verify"))
             options.showVersion(true)
@@ -105,7 +114,7 @@ val funcTestTasks = crossVersionTests
                     "fromGradle.enforcer-api-version" to enforcerVersion,
                     "fromGradle.invoker-plugin-version" to libs.versions.invokerPlugin.get(),
                     "fromGradle.integration-test-threads" to "2C",
-                    "fromGradle.localIntegrationTestRepo" to m2Repository.get().dir("repository").asFile.absolutePath
+                    "fromGradle.localIntegrationTestRepo" to invokerLocalRepo.get().asFile.absolutePath
                 )
             )
         }

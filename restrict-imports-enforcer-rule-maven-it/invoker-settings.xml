@@ -12,9 +12,17 @@
 					<url>@localRepositoryUrl@</url>
 					<releases>
 						<enabled>true</enabled>
+						<!-- Maven's default is 'warn': a truncated artifact would be accepted with
+						     nothing but a warning, and only surface much later as a
+						     NoClassDefFoundError from inside a forked build. Fail on it instead. -->
+						<checksumPolicy>fail</checksumPolicy>
 					</releases>
 					<snapshots>
 						<enabled>true</enabled>
+						<!-- Maven's default is 'warn': a truncated artifact would be accepted with
+						     nothing but a warning, and only surface much later as a
+						     NoClassDefFoundError from inside a forked build. Fail on it instead. -->
+						<checksumPolicy>fail</checksumPolicy>
 					</snapshots>
 				</repository>
 			</repositories>
@@ -24,9 +32,11 @@
 					<url>@localRepositoryUrl@</url>
 					<releases>
 						<enabled>true</enabled>
+						<checksumPolicy>fail</checksumPolicy>
 					</releases>
 					<snapshots>
 						<enabled>true</enabled>
+						<checksumPolicy>fail</checksumPolicy>
 					</snapshots>
 				</pluginRepository>
 			</pluginRepositories>

@@ -113,7 +113,12 @@ val funcTestTasks = crossVersionTests
                     "fromGradle.output-dir" to taskName,
                     "fromGradle.enforcer-api-version" to enforcerVersion,
                     "fromGradle.invoker-plugin-version" to libs.versions.invokerPlugin.get(),
-                    "fromGradle.integration-test-threads" to "2C",
+                    // One invoker JVM per core, not two. Each scenario forks a JVM, so
+                    // 2C oversubscribes the agent, and the surplus threads mostly widen
+                    // the window in which they contend for the same local repository -
+                    // which is not safe for concurrent access across processes and can
+                    // not be locked on mavenMin (see extraArtifacts in the pom).
+                    "fromGradle.integration-test-threads" to "1C",
                     "fromGradle.localIntegrationTestRepo" to invokerLocalRepo.get().asFile.absolutePath
                 )
             )

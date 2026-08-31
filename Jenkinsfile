@@ -16,7 +16,10 @@ pipeline {
     agent {
         docker {
             image 'gradle:jdk21'
-            args "-v /home/jenkins/caches/restrict-imports/.m2:/home/gradle/.m2:rw -v restrict-imports-gradle-home-${env.EXECUTOR_NUMBER}:/home/gradle/.gradle -v /home/jenkins/.gnupg:/.gnupg:ro"
+            // Single-quoted on purpose: EXECUTOR_NUMBER is a node variable and does not
+            // exist yet when this block is evaluated, so Groovy would interpolate it to
+            // 'null'. Left for the shell running 'docker run', where it is set.
+            args '-v /home/jenkins/caches/restrict-imports/.m2:/home/gradle/.m2:rw -v restrict-imports-gradle-home-$EXECUTOR_NUMBER:/home/gradle/.gradle -v /home/jenkins/.gnupg:/.gnupg:ro'
         }
     }
     environment {

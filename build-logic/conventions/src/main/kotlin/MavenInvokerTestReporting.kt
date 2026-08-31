@@ -1,9 +1,9 @@
 import com.gradle.develocity.agent.gradle.test.ImportJUnitXmlReports
 import com.gradle.develocity.agent.gradle.test.JUnitXmlDialect
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.AbstractExecTask
 import org.gradle.api.tasks.TaskProvider
 import java.io.File
 import java.time.Instant
@@ -19,16 +19,17 @@ import java.time.temporal.ChronoUnit
  * reports to Develocity. This registers a finalizer of [invokerTask] which imports them
  * as real test executions, attributed to [invokerTask] itself.
  *
- * This is an extension on [Project] rather than on the Maven exec task: the conventions
- * build does not depend on the maven-exec plugin and therefore can not see its task type,
- * and registering the import task needs the `TaskContainer` at configuration time, which
- * a `TaskProvider` can only reach by realizing itself.
+ * This is an extension on [Project] rather than on the invoker task: registering the
+ * import task needs the `TaskContainer` at configuration time, which a `TaskProvider` can
+ * only reach by realizing itself. The task is typed as [AbstractExecTask] and not as the
+ * maven-exec plugin's `MavenExec`, which the conventions build does not depend on and
+ * therefore can not see.
  *
  * @param invokerTask The task running the Maven Invoker Plugin.
  * @param invokerOutputDir That task's output directory.
  */
 fun Project.importMavenInvokerTestResults(
-    invokerTask: TaskProvider<out Task>,
+    invokerTask: TaskProvider<out AbstractExecTask<*>>,
     invokerOutputDir: Provider<Directory>
 ) {
     // 'reports' must match <reportsDirectory> in the maven-it pom. Both directories live
@@ -38,8 +39,19 @@ fun Project.importMavenInvokerTestResults(
     val normalizedReportsDir = invokerOutputDir.map { it.dir("develocity-junit-reports") }
 
     invokerTask.configure {
+        // Maven's exit code must not end the task before the reports are normalized
+        // below: a failing action skips every action after it, and a run that failed is
+        // precisely the run whose per-scenario reports are worth having in the Build
+        // Scan. The exit code is asserted in the last action instead, so the task still
+        // fails - and is therefore still not cached - for exactly the same runs as before.
+        isIgnoreExitValue = true
+        val invokerResult = executionResult
+
         doLast("normalize JUnit XML for Develocity") {
             normalizeInvokerReports(invokerReportsDir.get().asFile, normalizedReportsDir.get().asFile)
+        }
+        doLast("assert Maven Invoker exit code") {
+            invokerResult.get().assertNormalExitValue()
         }
     }
 

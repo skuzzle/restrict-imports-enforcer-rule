@@ -18,6 +18,49 @@ val functionalTest = tasks.register("functionalTest") {
     group = "verification"
 }
 
+// TEMPORARY DIAGNOSTIC - remove once the CI func-test failures are understood.
+//
+// Every invoker sub-build on CI (Jenkins and GitHub Actions alike) dies with
+// NoClassDefFoundError: org/apache/maven/enforcer/rule/api/EnforcerRuleError, while the
+// plugin realm lists enforcer-api-3.6.1.jar under this very repository. A URLClassLoader
+// silently skips a URL whose file is absent or unreadable, which produces exactly that
+// error - so this dumps what is actually on disk, from inside the CI container, both
+// before Maven starts and after it has failed.
+fun dumpInvokerRepoState(label: String, repoRoot: File) {
+    fun log(line: String) = println("[IT-DIAG] $line")
+
+    log("=== $label ===")
+    log("user.name=${System.getProperty("user.name")} user.home=${System.getProperty("user.home")}")
+    log("repoRoot=$repoRoot exists=${repoRoot.isDirectory} totalFiles=${repoRoot.walkTopDown().count { it.isFile }}")
+
+    listOf("org/apache/maven/enforcer", "org/apache/maven/plugins/maven-enforcer-plugin").forEach { subPath ->
+        val dir = repoRoot.resolve(subPath)
+        log("-- $subPath exists=${dir.isDirectory}")
+        if (!dir.isDirectory) return@forEach
+
+        dir.walkTopDown().filter { it.isFile }.sortedBy { it.path }.forEach { file ->
+            val sha1 = runCatching {
+                java.security.MessageDigest.getInstance("SHA-1")
+                    .digest(file.readBytes())
+                    .joinToString("") { byte -> "%02x".format(byte) }
+            }.getOrElse { "unreadable: $it" }
+            log("   ${file.length()}\t$sha1\treadable=${file.canRead()}\t${file.relativeTo(repoRoot)}")
+
+            if (file.name.endsWith(".lastUpdated") || file.name == "_remote.repositories") {
+                file.readLines().filterNot { it.startsWith("#") || it.isBlank() }.forEach { log("      $it") }
+            }
+            if (file.name.startsWith("enforcer-api-") && file.name.endsWith(".jar")) {
+                val entries = runCatching {
+                    java.util.zip.ZipFile(file).use { zip ->
+                        zip.entries().asSequence().count { it.name.contains("EnforcerRuleError") }
+                    }
+                }
+                log("      EnforcerRuleError entries=${entries.getOrElse { "ZIP ERROR: $it" }}")
+            }
+        }
+    }
+}
+
 data class CrossVersionTest(val mavenVersion: Provider<String>, val enforcerVersion: Provider<String>)
 
 val crossVersionTests = listOf(libs.versions.mavenMin, libs.versions.mavenMax)
@@ -74,6 +117,13 @@ val funcTestTasks = crossVersionTests
             // same-machine rebuilds. Cross-machine cache hits may still miss due
             // to absolute paths baked into the Maven define map.
             outputs.cacheIf("inputs fully tracked with relative path sensitivity") { true }
+
+            // TEMPORARY DIAGNOSTIC - remove with dumpInvokerRepoState above.
+            // The 'after' dump runs before the exit-code assertion added by
+            // importMavenInvokerTestResults, so it is reached on a failing run too.
+            val invokerRepo = m2Repository.map { it.dir("repository").asFile }
+            doFirst("dump invoker repo state before") { dumpInvokerRepoState("$taskName BEFORE", invokerRepo.get()) }
+            doLast("dump invoker repo state after") { dumpInvokerRepoState("$taskName AFTER", invokerRepo.get()) }
 
             mavenDir = maven.mavenHome(mavenVersion)
             goals(setOf("verify"))

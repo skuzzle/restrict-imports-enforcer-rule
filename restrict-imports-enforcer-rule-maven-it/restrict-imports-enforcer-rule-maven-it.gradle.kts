@@ -10,55 +10,25 @@ plugins {
 // TODO: fix duplication (see publishing-conventions)
 val m2Repository: Provider<Directory> = rootProject.layout.buildDirectory.dir("m2")
 
+// Maven downloads into this repository, and Gradle does not track what it writes there:
+// the publish task only ever removes its own outputs, so third-party artifacts survive
+// into the next build. In a reused CI workspace that is forever - which is how a
+// truncated enforcer-api jar kept every 'success' scenario failing for days, on a branch
+// whose sources were fine. Wiping it before anything publishes into it makes every build
+// start from the state a fresh workspace would have.
+val cleanInvokerLocalRepo = tasks.register<Delete>("cleanInvokerLocalRepo") {
+    description = "Deletes the Maven Invoker's local repository so no build inherits another build's artifacts"
+    delete(m2Repository)
+}
+
 // ProjectDependency.getDependencyProject() was removed in Gradle 9, resolve the project by its path instead
 val publishEnforcerRuleTask: Task? = project(projects.restrictImportsEnforcerRule.path)
     .tasks.findByName("publishMavenPublicationToLocalIntegrationTestsRepository")
 
+publishEnforcerRuleTask?.mustRunAfter(cleanInvokerLocalRepo)
+
 val functionalTest = tasks.register("functionalTest") {
     group = "verification"
-}
-
-// TEMPORARY DIAGNOSTIC - remove once the CI func-test failures are understood.
-//
-// Every invoker sub-build on CI (Jenkins and GitHub Actions alike) dies with
-// NoClassDefFoundError: org/apache/maven/enforcer/rule/api/EnforcerRuleError, while the
-// plugin realm lists enforcer-api-3.6.1.jar under this very repository. A URLClassLoader
-// silently skips a URL whose file is absent or unreadable, which produces exactly that
-// error - so this dumps what is actually on disk, from inside the CI container, both
-// before Maven starts and after it has failed.
-fun dumpInvokerRepoState(label: String, repoRoot: File) {
-    fun log(line: String) = println("[IT-DIAG] $line")
-
-    log("=== $label ===")
-    log("user.name=${System.getProperty("user.name")} user.home=${System.getProperty("user.home")}")
-    log("repoRoot=$repoRoot exists=${repoRoot.isDirectory} totalFiles=${repoRoot.walkTopDown().count { it.isFile }}")
-
-    listOf("org/apache/maven/enforcer", "org/apache/maven/plugins/maven-enforcer-plugin").forEach { subPath ->
-        val dir = repoRoot.resolve(subPath)
-        log("-- $subPath exists=${dir.isDirectory}")
-        if (!dir.isDirectory) return@forEach
-
-        dir.walkTopDown().filter { it.isFile }.sortedBy { it.path }.forEach { file ->
-            val sha1 = runCatching {
-                java.security.MessageDigest.getInstance("SHA-1")
-                    .digest(file.readBytes())
-                    .joinToString("") { byte -> "%02x".format(byte) }
-            }.getOrElse { "unreadable: $it" }
-            log("   ${file.length()}\t$sha1\treadable=${file.canRead()}\t${file.relativeTo(repoRoot)}")
-
-            if (file.name.endsWith(".lastUpdated") || file.name == "_remote.repositories") {
-                file.readLines().filterNot { it.startsWith("#") || it.isBlank() }.forEach { log("      $it") }
-            }
-            if (file.name.startsWith("enforcer-api-") && file.name.endsWith(".jar")) {
-                val entries = runCatching {
-                    java.util.zip.ZipFile(file).use { zip ->
-                        zip.entries().asSequence().count { it.name.contains("EnforcerRuleError") }
-                    }
-                }
-                log("      EnforcerRuleError entries=${entries.getOrElse { "ZIP ERROR: $it" }}")
-            }
-        }
-    }
 }
 
 data class CrossVersionTest(val mavenVersion: Provider<String>, val enforcerVersion: Provider<String>)
@@ -88,7 +58,7 @@ val funcTestTasks = crossVersionTests
             group = "verification"
             notCompatibleWithConfigurationCache("Inherently not")
 
-            dependsOn(downloadTask)
+            dependsOn(downloadTask, cleanInvokerLocalRepo)
 
             val mavenExecTask = this
 
@@ -118,18 +88,17 @@ val funcTestTasks = crossVersionTests
             // to absolute paths baked into the Maven define map.
             outputs.cacheIf("inputs fully tracked with relative path sensitivity") { true }
 
-            // TEMPORARY DIAGNOSTIC - remove with dumpInvokerRepoState above.
-            // The 'after' dump runs before the exit-code assertion added by
-            // importMavenInvokerTestResults, so it is reached on a failing run too.
-            val invokerRepo = m2Repository.map { it.dir("repository").asFile }
-            doFirst("dump invoker repo state before") { dumpInvokerRepoState("$taskName BEFORE", invokerRepo.get()) }
-            doLast("dump invoker repo state after") { dumpInvokerRepoState("$taskName AFTER", invokerRepo.get()) }
-
             mavenDir = maven.mavenHome(mavenVersion)
             goals(setOf("verify"))
             options.showVersion(true)
             define(
                 mapOf(
+                    // Without this the outer Maven resolves into ~/.m2, which on the CI
+                    // agent is a bind mount shared live with every concurrently running
+                    // build - and invoker-settings.xml then exposes that directory to all
+                    // 16 invoker JVMs as the 'local.central' repository. Pointing it at the
+                    // project-local repository keeps the integration tests off it entirely.
+                    "maven.repo.local" to m2Repository.get().dir("repository").asFile.absolutePath,
                     "revision" to project.version.toString(),
                     "fromGradle.test-id" to "maven.invoker.it.maven_$safeMavenVersion.enforcer_$safeEnforcerVersion",
                     "fromGradle.output-dir" to taskName,

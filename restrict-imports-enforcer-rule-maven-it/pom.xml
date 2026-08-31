@@ -31,10 +31,26 @@
                 <executions>
                     <execution>
                         <goals>
+                            <!-- 'install' resolves extraArtifacts below into the local
+                                 repository before any integration test runs. -->
+                            <goal>install</goal>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
                         </goals>
                         <configuration>
+                            <!-- Every scenario needs the enforcer plugin, and with a local
+                                 repository per leg they all need it at the same instant, on
+                                 an empty repository. Maven's local repository is not safe
+                                 for concurrent access across processes (MNG-2802), and the
+                                 fix for that - Resolver's named locks - needs resolver 1.7+,
+                                 while mavenMin 3.8.1 ships 1.6.2. Resolving these serially
+                                 up front is what keeps parallelThreads invoker JVMs from
+                                 racing to download the same artifacts. -->
+                            <extraArtifacts>
+                                <extraArtifact>org.apache.maven.plugins:maven-enforcer-plugin:${fromGradle.enforcer-api-version}</extraArtifact>
+                                <extraArtifact>org.apache.maven.enforcer:enforcer-api:${fromGradle.enforcer-api-version}</extraArtifact>
+                                <extraArtifact>org.apache.maven.enforcer:enforcer-rules:${fromGradle.enforcer-api-version}</extraArtifact>
+                            </extraArtifacts>
                             <junitPackageName>${fromGradle.test-id}</junitPackageName>
                             <reportsDirectory>${project.build.directory}/${fromGradle.output-dir}/reports</reportsDirectory>
                             <cloneProjectsTo>${project.build.directory}/${fromGradle.output-dir}/builds</cloneProjectsTo>

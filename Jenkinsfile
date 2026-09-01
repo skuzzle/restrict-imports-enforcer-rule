@@ -1,11 +1,17 @@
 pipeline {
-    // The Maven cache must be mounted at the home directory of the image's uid 1000 user:
-    // Maven resolves its local repository from the JVM's user.home, which comes from the
-    // passwd entry and can not be redirected with the HOME environment variable.
+    // The Gradle user home lives in a named volume shared by this agent's executors, with
+    // a directory per executor. An executor runs one build at a time, so every build gets
+    // a cache it has entirely to itself and that is still there for the next build on that
+    // executor - no copying in and out, and no two builds writing the same Gradle home.
+    //
+    // The Maven cache can not follow suit. It must be mounted at the home directory of the
+    // image's uid 1000 user: Maven resolves its local repository from the JVM's user.home,
+    // which comes from the passwd entry and can not be redirected with the HOME environment
+    // variable, so it stays one directory shared by everything on this agent.
     agent {
         dockerfile {
             filename 'docker/Dockerfile'
-            args '-v /home/jenkins/caches/restrict-imports/.m2:/home/gradle/.m2:rw -v /home/jenkins/caches/restrict-imports/.gradle:/tmp/gradle-user-home:rw -v /home/jenkins/.gnupg:/.gnupg:ro'
+            args '-v /home/jenkins/caches/restrict-imports/.m2:/home/gradle/.m2:rw -v restrict-imports-gradle-user-homes:/gradle-homes:rw -v /home/jenkins/.gnupg:/.gnupg:ro'
         }
     }
     environment {
@@ -14,8 +20,7 @@ pipeline {
         CI = 'true'
         COVERALLS_REPO_TOKEN = credentials('coveralls_repo_token_restrict_imports_rule')
         DEVELOCITY_ACCESS_KEY = credentials('develocity_access_key')
-        GRADLE_CACHE = '/tmp/gradle-user-home'
-        GRADLE_USER_HOME = '/tmp/gradle-home'
+        GRADLE_USER_HOME = "/gradle-homes/${env.EXECUTOR_NUMBER}"
         MAVEN_CONFIG = ''
         ORG_GRADLE_PROJECT_sonatype = credentials('SONATYPE_NEXUS')
         ORG_GRADLE_PROJECT_signingPassword = credentials('gpg_password')
@@ -24,12 +29,15 @@ pipeline {
     stages {
         stage('Prepare Gradle user home') {
             steps {
-                // Creates GRADLE_USER_HOME and seeds it with the Gradle distribution baked
-                // into the image. The image would do this from its entrypoint, but the
-                // Docker Pipeline plugin starts the container with --entrypoint cat and
-                // runs every step through docker exec.
+                // An EXECUTOR_NUMBER that did not resolve would put every executor on this
+                // agent in the same Gradle user home, which is a data race rather than a
+                // slow build. Fail on it instead.
+                sh 'test "$GRADLE_USER_HOME" = "/gradle-homes/$EXECUTOR_NUMBER"'
+                // Creates the directory on first use and seeds it with the Gradle
+                // distribution baked into the image. The image would do this from its
+                // entrypoint, but the Docker Pipeline plugin starts the container with
+                // --entrypoint cat and runs every step through docker exec.
                 sh 'prepare-gradle-user-home'
-                sh './.jenkins/load-gradle-cache.sh'
             }
         }
         stage('Quickcheck') {
@@ -69,9 +77,6 @@ pipeline {
         }
     }
     post {
-        success {
-            sh './.jenkins/store-gradle-cache.sh'
-        }
         always {
             archiveArtifacts(artifacts: '*.md')
             junit(testResults: '**/build/test-results/test/**.xml,**/build/*/reports/**.xml', allowEmptyResults: true)

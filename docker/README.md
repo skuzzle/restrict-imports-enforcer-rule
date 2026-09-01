@@ -56,6 +56,24 @@ plugin launches agents - nothing inside the container can change ownership. The 
 only warns when `GRADLE_USER_HOME` is not writable. Either mount a directory that already
 belongs to that uid, or keep the Gradle user home inside the container.
 
+## One home per container out of a shared volume
+
+`/gradle-homes` exists for runners that hand several containers a cache each out of one
+volume. Mount a named volume over it and point every container at its own subdirectory:
+
+```shell
+docker run --rm -v gradle-user-homes:/gradle-homes -e GRADLE_USER_HOME=/gradle-homes/0 ...
+```
+
+Docker initialises a fresh named volume from the image's directory, mode included, which
+is the point of creating `/gradle-homes` as 1777: a container that is not root can make
+its own home in a volume that would otherwise belong to root, and still cannot touch
+anybody else's. Without it the first unprivileged container fails on `mkdir`.
+
+This is what both Jenkinsfiles do, keyed on `EXECUTOR_NUMBER`. An executor runs one build
+at a time, so each build gets a Gradle user home no other build is writing to, and finds
+it warm on the next run.
+
 ## Runners that override the entrypoint
 
 The Jenkins Docker Pipeline plugin starts containers with `--entrypoint cat` and runs every

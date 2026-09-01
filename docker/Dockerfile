@@ -32,6 +32,13 @@ RUN GRADLE_USER_HOME="$GRADLE_USER_HOME_SEED" /tmp/wrapper/gradlew --version \
     && rm -rf /tmp/wrapper "$GRADLE_USER_HOME_SEED/daemon" "$GRADLE_USER_HOME_SEED/.tmp" \
     && chmod -R a+rX "$GRADLE_USER_HOME_SEED"
 
+# A parent for Gradle user homes, meant to have a shared volume mounted over it so that
+# several containers can keep a home each. Docker initialises a fresh named volume from
+# the image's directory, mode included, and 1777 is what lets an unprivileged container
+# create its own home in a volume that would otherwise belong to root - while still
+# keeping it from touching anybody else's, the same bargain /tmp makes.
+RUN install -d -m 1777 /gradle-homes
+
 COPY --chmod=0755 docker/prepare-gradle-user-home docker/gradle-entrypoint.sh /usr/local/bin/
 
 ENTRYPOINT ["/usr/local/bin/gradle-entrypoint.sh"]

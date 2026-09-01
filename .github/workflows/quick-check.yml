@@ -17,5 +17,6 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
         with:
           develocity-access-key: ${{ secrets.DEVELOCITY_ACCESS_KEY }}
+          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Build with Gradle
-        run: ./gradlew quickCheck
+        run: ./gradlew quickCheck --configuration-cache

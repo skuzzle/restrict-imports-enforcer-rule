@@ -19,6 +19,10 @@ val isCI = System.getenv("CI") != null
 
 develocity {
     server = "https://community.develocity.cloud"
+    // Must match the projectId of the main build: this is a separate build, so it needs its own
+    // project association. Without it the instance treats its build cache requests as having no
+    // associated project, which credentials that are scoped to the project may not read.
+    projectId = "skuzzle"
 }
 
 buildCache {

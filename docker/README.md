@@ -74,14 +74,21 @@ This is what both Jenkinsfiles do, keyed on `EXECUTOR_NUMBER`. An executor runs 
 at a time, so each build gets a Gradle user home no other build is writing to, and finds
 it warm on the next run.
 
-## Runners that override the entrypoint
+## Preparing the home without the entrypoint
 
-The Jenkins Docker Pipeline plugin starts containers with `--entrypoint cat` and runs every
-step through `docker exec`, so the image entrypoint never runs. The preparation is a script
-of its own for that reason - call it as the first step of the build:
+`prepare-gradle-user-home` is a script of its own, on `PATH`, and the entrypoint is only its
+first caller. Call it directly wherever the entrypoint is not the right place:
 
 ```shell
 prepare-gradle-user-home
 ```
 
 It is idempotent, so calling it more than once costs nothing.
+
+The Jenkins Docker Pipeline plugin is the case this exists for. It starts the container with
+the pipeline's `environment` block not yet applied, so `GRADLE_USER_HOME` still holds the
+image default and the entrypoint would seed a home no build ever uses - copying the baked
+distribution for nothing on every build. The plugin also checks, moments after the container
+starts, that the command it passed is the one running, and reports an entrypoint still busy
+at that point as an error. So both Jenkinsfiles pass `--entrypoint=''` and call the script as
+the build's first step, once the real `GRADLE_USER_HOME` is in scope.

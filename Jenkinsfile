@@ -11,7 +11,13 @@ pipeline {
     agent {
         dockerfile {
             filename 'docker/Dockerfile'
-            args '-v /home/jenkins/caches/restrict-imports/.m2:/home/gradle/.m2:rw -v restrict-imports-gradle-user-homes:/gradle-homes:rw -v /home/jenkins/.gnupg:/.gnupg:ro'
+            // The image entrypoint is disabled on purpose. The plugin starts the container
+            // before this pipeline's environment block applies, so GRADLE_USER_HOME is not
+            // set yet and the entrypoint would seed a home no build ever uses - a 164MB
+            // copy per build. The plugin also checks that the command it passed is running
+            // moments after the container starts and reports an entrypoint still busy at
+            // that point as an error. The build prepares the real home in its first step.
+            args "--entrypoint='' -v /home/jenkins/caches/restrict-imports/.m2:/home/gradle/.m2:rw -v restrict-imports-gradle-user-homes:/gradle-homes:rw -v /home/jenkins/.gnupg:/.gnupg:ro"
         }
     }
     environment {
@@ -34,9 +40,8 @@ pipeline {
                 // slow build. Fail on it instead.
                 sh 'test "$GRADLE_USER_HOME" = "/gradle-homes/$EXECUTOR_NUMBER"'
                 // Creates the directory on first use and seeds it with the Gradle
-                // distribution baked into the image. The image would do this from its
-                // entrypoint, but the Docker Pipeline plugin starts the container with
-                // --entrypoint cat and runs every step through docker exec.
+                // distribution baked into the image, which is what the entrypoint the
+                // agent disables would otherwise do.
                 sh 'prepare-gradle-user-home'
             }
         }

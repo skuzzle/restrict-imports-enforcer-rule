@@ -1,0 +1,75 @@
+#!/bin/sh
+# Prepares the effective GRADLE_USER_HOME before a build runs:
+#   - creates it, wherever GRADLE_USER_HOME points
+#   - seeds it from the Gradle distribution baked into the image, so the wrapper
+#     finds its distribution instead of downloading it again
+#   - hands it to the user the build runs as
+#
+# Existing files are never overwritten, so a cache mounted into the container survives
+# and stays authoritative. Running this twice is a no-op.
+#
+# The image entrypoint calls this, but it is also meant to be called directly: runners
+# like the Jenkins Docker Pipeline plugin start containers with --entrypoint overridden
+# and would otherwise skip it.
+set -eu
+
+seed=${GRADLE_USER_HOME_SEED:-/opt/gradle-user-home}
+home=${GRADLE_USER_HOME:-/home/gradle/.gradle}
+fix=${GRADLE_FIX_OWNERSHIP:-auto}
+run_as=${GRADLE_RUN_AS:-}
+
+log() { echo "prepare-gradle-user-home: $*" >&2; }
+
+# The uid/gid the Gradle user home should end up belonging to. Only root can hand it to
+# somebody else; an unprivileged container can at most confirm that it already fits.
+if [ "$(id -u)" -eq 0 ] && [ -n "$run_as" ] && [ "$run_as" != root ]; then
+    entry=$(getent passwd "$run_as") || {
+        log "GRADLE_RUN_AS=$run_as is not a user of this image"
+        exit 1
+    }
+    uid=$(echo "$entry" | cut -d: -f3)
+    gid=$(echo "$entry" | cut -d: -f4)
+else
+    uid=$(id -u)
+    gid=$(id -g)
+fi
+
+mkdir -p "$home"
+
+if [ "$seed" != "$home" ] && [ -d "$seed" ]; then
+    # Keep whatever the mounted cache already holds. GNU coreutils 9.3 deprecated -n in
+    # favour of --update=none; both spellings are needed to stay base image agnostic.
+    if cp --help 2>&1 | grep -q -- --update=none; then
+        no_clobber=--update=none
+    else
+        no_clobber=-n
+    fi
+    # Ownership is deliberately not preserved: the copy belongs to whoever runs this,
+    # which is who needs to write it.
+    cp -dR --preserve=mode,timestamps "$no_clobber" "$seed/." "$home/" ||
+        log "WARNING: could not seed $home from $seed, the wrapper may re-download Gradle"
+fi
+
+case $fix in
+    never)
+        exit 0
+        ;;
+    always)
+        ;;
+    auto)
+        # A recursive chown over a warm cache is expensive, so only pay for it when the
+        # directory itself points at somebody else - which is what a fresh host mount does.
+        [ "$(stat -c %u "$home")" = "$uid" ] && exit 0
+        ;;
+    *)
+        log "GRADLE_FIX_OWNERSHIP must be one of auto, always, never, but was '$fix'"
+        exit 1
+        ;;
+esac
+
+if [ "$(id -u)" -eq 0 ]; then
+    chown -R "$uid:$gid" "$home"
+elif [ ! -w "$home" ]; then
+    log "WARNING: $home belongs to uid $(stat -c %u "$home") and is not writable by uid $uid."
+    log "WARNING: Start the container as root to have its ownership fixed automatically."
+fi

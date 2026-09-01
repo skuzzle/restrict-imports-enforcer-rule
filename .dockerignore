@@ -1,0 +1,7 @@
+# The build image needs the wrapper and the scripts under docker/, nothing else. Without
+# this the build context is the whole workspace - on a Jenkins agent that means every
+# build directory and the checkout's .git, shipped to the daemon on every build.
+*
+!gradlew
+!gradle/wrapper
+!docker

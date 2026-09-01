@@ -3,8 +3,8 @@ pipeline {
     // Maven resolves its local repository from the JVM's user.home, which comes from the
     // passwd entry and can not be redirected with the HOME environment variable.
     agent {
-        docker {
-            image 'gradle:jdk21'
+        dockerfile {
+            filename 'docker/Dockerfile'
             args '-v /home/jenkins/caches/restrict-imports/.m2:/home/gradle/.m2:rw -v /home/jenkins/caches/restrict-imports/.gradle:/tmp/gradle-user-home:rw -v /home/jenkins/.gnupg:/.gnupg:ro'
         }
     }
@@ -22,8 +22,13 @@ pipeline {
         ORG_GRADLE_PROJECT_base64EncodedAsciiArmoredSigningKey = credentials('gpg_private_key')
     }
     stages {
-        stage('Load Gradle Cache from host') {
+        stage('Prepare Gradle user home') {
             steps {
+                // Creates GRADLE_USER_HOME and seeds it with the Gradle distribution baked
+                // into the image. The image would do this from its entrypoint, but the
+                // Docker Pipeline plugin starts the container with --entrypoint cat and
+                // runs every step through docker exec.
+                sh 'prepare-gradle-user-home'
                 sh './.jenkins/load-gradle-cache.sh'
             }
         }

@@ -17,7 +17,7 @@ assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 equalsverifier = { module = "nl.jqno.equalsverifier:equalsverifier", version.ref = "equalsverifier" }
 bytebuddy = { module = "net.bytebuddy:byte-buddy", version.ref = "bytebuddy" }
 bytebuddyAgent = { module = "net.bytebuddy:byte-buddy-agent", version.ref = "bytebuddy" }
-gradle-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version = "8.10.0" }
+gradle-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version = "8.10.1" }
 gradle-develocity = { module = "com.gradle:develocity-gradle-plugin", version = "4.5.0" }
 gradle-commonCustomUserData = { module = "com.gradle:common-custom-user-data-gradle-plugin", version = "2.8.0" }
 maven-core = { module = "org.apache.maven:maven-core", version.ref = "mavenMin" }

@@ -100,6 +100,7 @@ val funcTestTasks = crossVersionTests
             mavenDir = maven.mavenHome(mavenVersion)
             goals(setOf("verify"))
             options.showVersion(true)
+            options.strictChecksums(true)
             define(
                 mapOf(
                     // Without this the outer Maven resolves into ~/.m2, which on the CI

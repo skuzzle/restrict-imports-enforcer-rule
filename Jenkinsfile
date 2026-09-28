@@ -47,7 +47,7 @@ pipeline {
         stage('Quickcheck') {
             steps {
                 withGradle {
-                    sh './gradlew quickCheck'
+                    sh './gradlew quickCheck --configuration-cache'
                 }
             }
         }

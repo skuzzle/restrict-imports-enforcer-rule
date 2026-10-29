@@ -24,7 +24,7 @@ maven-core = { module = "org.apache.maven:maven-core", version.ref = "mavenMin" 
 maven-plugin-api = { module = "org.apache.maven:maven-plugin-api", version.ref = "mavenMin" }
 maven-enforcer-api = { module = "org.apache.maven.enforcer:enforcer-api", version.ref = "enforcerMax" }
 maven-invoker = { module = "org.apache.maven.plugins:maven-invoker-plugin", version.ref = "invokerPlugin" }
-javaparser = { module = "com.github.javaparser:javaparser-core", version = "3.27.0" }
+javaparser = { module = "com.github.javaparser:javaparser-core", version = "3.28.2" }
 slf4j = { module = "org.slf4j:slf4j-api", version = "1.7.36" }
 jimfs = { module = "com.google.jimfs:jimfs", version = "1.3.2" }
 mockito = { module = "org.mockito:mockito-core", version = "5.19.0" }

@@ -35,6 +35,6 @@ class RestrictImportsGradleVersionFuncTest extends BaseRestrictsImportsFuncTest 
 
         where:
         // latest release of every Gradle generation we support, plus the version this project builds with
-        gradleVersion << ["7.6.6", "8.14.5", GradleVersion.current().version]
+        gradleVersion << ["7.6.6", "8.14.6", GradleVersion.current().version]
     }
 }

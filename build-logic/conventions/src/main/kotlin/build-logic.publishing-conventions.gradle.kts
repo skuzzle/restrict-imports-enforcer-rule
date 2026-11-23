@@ -23,8 +23,10 @@ tasks.withType<Jar>().configureEach {
     }
 }
 
+val runSigning = providers.environmentVariable("JENKINS_URL").map { it.isNotEmpty() }.orElse(false)
+
 tasks.withType<Sign>().configureEach {
-    onlyIf("Run on Jenkins, but not GitHub") { project.isJenkins }
+    enabled = runSigning.get()
 }
 
 signing {
